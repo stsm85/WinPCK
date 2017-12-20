@@ -1,0 +1,496 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define _VC80_UPGRADE 0x0800
+#include "afxres.h"
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 非特定语言 resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(936)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,22,6,0
+ PRODUCTVERSION 1,22,6,0
+ FILEFLAGSMASK 0x37L
+#ifdef _DEBUG
+ FILEFLAGS 0x21L
+#else
+ FILEFLAGS 0x20L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "FileDescription", "WinPCK"
+            VALUE "FileVersion", "1.22.6.0"
+            VALUE "InternalName", "WinPCK"
+            VALUE "LegalCopyright", "Copyright (C) 2012-2017 stsm"
+            VALUE "OriginalFilename", "WinPCK.exe"
+            VALUE "ProductName", "WinPCK"
+            VALUE "ProductVersion", "1.22.6.0"
+            VALUE "SpecialBuild", "WinPCK by stsm"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+#endif    // 非特定语言 resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(简体，中国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAIN DIALOGEX 0, 0, 543, 319
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_ACCEPTFILES | WS_EX_APPWINDOW
+MENU IDR_MENU_MAIN
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,0,36,542,260
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",WS_BORDER,0,298,542,8
+    CONTROL         "",IDC_STATUS,"msctls_statusbar32",0x0,0,307,542,13
+    CONTROL         "",IDC_TOOLBAR,"ToolbarWindow32",0x2810,0,0,542,36
+END
+
+IDD_DIALOG_INFO DIALOGEX 0, 0, 268, 153
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "附加信息"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,216,137,50,14
+    PUSHBUTTON      "取消",IDCANCEL,161,137,50,14
+    EDITTEXT        IDC_EDIT_INFO,2,2,264,132,ES_MULTILINE
+END
+
+IDD_DIALOG_SEARCH DIALOGEX 0, 0, 253, 28
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "查找"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "查找",IDOK,198,7,48,14
+    EDITTEXT        IDC_EDIT_SEARCH,54,7,139,12,ES_AUTOHSCROLL
+    LTEXT           "查找内容：",IDC_STATIC,7,8,45,10
+END
+
+IDD_DIALOG_COMPRESS DIALOGEX 0, 0, 186, 98
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "压缩选项"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,129,77,50,14
+    PUSHBUTTON      "取消",IDCANCEL,74,77,50,14
+    CONTROL         "",IDC_SLIDER_LEVEL,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,63,7,92,17
+    CONTROL         "",IDC_SLIDER_THREAD,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,63,25,92,18
+    LTEXT           "压缩等级：",IDC_STATIC,7,9,41,11
+    LTEXT           "CPU 线程数：",IDC_STATIC,7,28,51,10
+    LTEXT           "9",IDC_STATIC_LEVEL,157,9,17,8
+    LTEXT           "3",IDC_STATIC_THREAD,157,28,17,8
+    LTEXT           "缓存是按需分配的，此处为上限值。",IDC_STATIC,7,64,129,8
+    LTEXT           "多线程缓存：",IDC_STATIC,7,46,51,10
+    EDITTEXT        IDC_EDIT_MEM,67,46,35,12,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "MB",IDC_STATIC,107,46,29,10
+END
+
+IDD_DIALOG_VIEW DIALOGEX 0, 0, 467, 249
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "查看"
+FONT 9, "宋体", 400, 0, 0x86
+BEGIN
+    DEFPUSHBUTTON   "保存",IDOK,417,232,50,16,NOT WS_VISIBLE
+    PUSHBUTTON      "关闭",IDCANCEL,363,232,50,16,NOT WS_VISIBLE
+    CONTROL         "",IDC_RICHEDIT_VIEW,"RichEdit20W",WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP | 0x8c4,0,0,467,248
+    EDITTEXT        IDC_EDIT_VIEW,1,1,466,247,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | NOT WS_VISIBLE | WS_VSCROLL
+END
+
+IDD_DIALOG_PIC DIALOGEX 0, 0, 557, 354
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_VSCROLL | WS_HSCROLL | WS_SYSMENU | WS_THICKFRAME
+CAPTION "图片查看"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
+IDD_DIALOG_ATTR DIALOGEX 0, 0, 240, 242
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "属性"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,186,224,50,14
+    PUSHBUTTON      "取消",IDCANCEL,131,224,50,14
+    LTEXT           "名称:",IDC_STATIC,10,17,38,10
+    LTEXT           "类型:",IDC_STATIC,10,48,38,10
+    LTEXT           "压缩大小:",IDC_STATIC,10,64,38,10
+    LTEXT           "实际大小:",IDC_STATIC,10,80,38,10
+    LTEXT           "压缩率:",IDC_STATIC,10,96,38,10
+    LTEXT           "包含:",IDC_STATIC,10,112,38,10
+    LTEXT           "偏移地址:",IDC_STATIC,10,128,38,10
+    LTEXT           "路径:",IDC_STATIC,10,32,38,10
+    EDITTEXT        IDC_EDIT_ATTR_NAME,57,17,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_ATTR_PATH,57,32,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_ATTR_TYPE,57,48,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_ATTR_CIPHER,57,64,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_ATTR_SIZE,57,80,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_ATTR_CMPR,57,96,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_ATTR_FILECOUNT,57,112,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_ATTR_ADDR,57,128,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    GROUPBOX        "目录信息",IDC_STATIC,4,4,232,139
+    GROUPBOX        "压缩包信息",IDC_STATIC,4,146,232,75
+    LTEXT           "文件总大小:",IDC_STATIC,10,175,44,10
+    LTEXT           "压缩包大小:",IDC_STATIC,10,160,46,10
+    LTEXT           "压缩率:",IDC_STATIC,10,190,46,10
+    LTEXT           "冗余数据量:",IDC_STATIC,10,205,46,10
+    EDITTEXT        IDC_EDIT_ATTR_ALLSIZE,57,175,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_ATTR_PCKSIZE,57,160,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_ATTR_PCKCMPR,57,190,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_ATTR_DIRT,57,205,177,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+END
+
+IDD_DIALOG_LOG DIALOGEX 0, 0, 373, 207
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "WinPCK日志"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_LIST_LOG,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,0,0,373,207
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_MAIN, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 317
+    END
+
+    IDD_DIALOG_INFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 2
+        RIGHTMARGIN, 266
+        TOPMARGIN, 2
+        BOTTOMMARGIN, 151
+    END
+
+    IDD_DIALOG_SEARCH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 246
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 21
+    END
+
+    IDD_DIALOG_COMPRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 91
+    END
+
+    IDD_DIALOG_VIEW, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 248
+    END
+
+    IDD_DIALOG_PIC, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_ATTR, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 236
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 238
+    END
+
+    IDD_DIALOG_LOG, DIALOG
+    BEGIN
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON_APP            ICON                    "icons\\chinaz1.ico"
+
+IDI_ICON_FILE           ICON                    "icons\\file.ico"
+
+IDI_ICON_DIR            ICON                    "icons\\dir.ico"
+
+IDI_ICON_EDIT           ICON                    "icons\\edit.ico"
+
+IDI_ICON_ADD            ICON                    "icons\\edit_add.ico"
+
+IDI_ICON_CLOSE          ICON                    "icons\\fileclose.ico"
+
+IDI_ICON_NEW            ICON                    "icons\\filenew.ico"
+
+IDI_ICON_OPEN           ICON                    "icons\\fileopen.ico"
+
+IDI_ICON_SAVE           ICON                    "icons\\filesave.ico"
+
+IDI_ICON_INFO           ICON                    "icons\\info.ico"
+
+IDI_ICON_OPT            ICON                    "icons\\lin_agt_wrench.ico"
+
+IDI_ICON_REBUILD        ICON                    "icons\\rebuild.ico"
+
+IDI_ICON_SAVEALL        ICON                    "icons\\save_all.ico"
+
+IDI_ICON_SEARCH         ICON                    "icons\\search.ico"
+
+IDI_ICON_EXIT           ICON                    "icons\\exit.ico"
+
+IDI_ICON_STOP           ICON                    "icons\\stop.ico"
+
+IDI_ICON_LOGE           ICON                    "icons\\logerror.ico"
+
+IDI_ICON_LOGI           ICON                    "icons\\loginfo.ico"
+
+IDI_ICON_LOGW           ICON                    "icons\\logwarning.ico"
+
+IDI_ICON_LOGD           ICON                    "icons\\logdebug.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_MAIN MENU
+BEGIN
+    POPUP "文件"
+    BEGIN
+        MENUITEM "打开",                          ID_MENU_OPEN
+        MENUITEM "新建",                          ID_MENU_NEW
+        MENUITEM "关闭文件",                        ID_MENU_CLOSE
+        MENUITEM SEPARATOR
+        MENUITEM "退出",                          ID_MENU_EXIT
+    END
+    POPUP "解压"
+    BEGIN
+        MENUITEM "解压选中",                        ID_MENU_UNPACK_SELECTED
+        MENUITEM "全部解压",                        ID_MENU_UNPACK_ALL
+    END
+    POPUP "操作"
+    BEGIN
+        MENUITEM "添加文件",                        ID_MENU_ADD
+        MENUITEM "整理重建",                        ID_MENU_REBUILD
+        MENUITEM SEPARATOR
+        MENUITEM "附加信息",                        ID_MENU_INFO
+        MENUITEM "查找",                          ID_MENU_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM "压缩选项",                        ID_MENU_COMPRESS_OPT
+    END
+    POPUP "其他"
+    BEGIN
+        MENUITEM "日志",                          ID_MENU_LOG
+        MENUITEM SEPARATOR
+        MENUITEM "安装",                          ID_MENU_SETUP
+        MENUITEM "卸载",                          ID_MENU_UNSETUP
+        MENUITEM SEPARATOR
+        MENUITEM "关于",                          ID_MENU_ABOUT
+    END
+    MENUITEM "任何写操作前请务必做好备份！！！",            0
+END
+
+IDR_MENU_RCLICK MENU
+BEGIN
+    POPUP "右击"
+    BEGIN
+        MENUITEM "查看",                          ID_MENU_VIEW
+        MENUITEM SEPARATOR
+        MENUITEM "解压选中",                        ID_MENU_UNPACK_SELECTED
+        MENUITEM "重命名",                         ID_MENU_RENAME
+        MENUITEM "删除",                          ID_MENU_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "全选",                          ID_MENU_SELECTALL
+        MENUITEM "反选",                          ID_MENU_SELECTORP
+        MENUITEM SEPARATOR
+        MENUITEM "属性",                          ID_MENU_ATTR
+    END
+END
+
+IDR_MENU_LOG MENU
+BEGIN
+    POPUP "文件"
+    BEGIN
+        MENUITEM "复制当前日志",                      ID_MENU_LOG_COPY
+        MENUITEM SEPARATOR
+        MENUITEM "导出选中日志",                      ID_MENU_LOG_SAVE_SEL
+        MENUITEM "导出所有日志",                      ID_MENU_LOG_SAVE_ALL
+        MENUITEM SEPARATOR
+        MENUITEM "清空日志",                        ID_MENU_LOG_CLEAR
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_CURSOR_DROP         CURSOR                  "icons\\DROP.cur"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_OPEN         "打开文件"
+    IDS_STRING_CLOSE        "关闭文件"
+    IDS_STRING_INFO         "附加信息"
+    IDS_STRING_ADD          "添加文件"
+    IDS_STRING_UNPACK_SELECTED "解压选中"
+    IDS_STRING_UNPACK_ALL   "全部解压"
+    IDS_STRING_REBUILD      "整理重建"
+    IDS_STRING_SEARCH       "查找"
+    IDS_STRING_NEW          "新建"
+    IDS_STRING_ABOUT        "关于"
+    IDS_STRING_COMPRESS_OPT "压缩选项"
+    IDS_STRING_CANCEL       "取消"
+    IDS_STRING_EXIT         "退出"
+    IDS_STRING_DELETE       "删除"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_RENAME       "重命名"
+    IDS_STRING_SELALL       "全选"
+    IDS_STRING_REVSEL       "反选"
+    IDS_STRING_ISEXIT       "有任务正在进行中，是否确认退出？"
+    IDS_STRING_ISEXITTITLE  "退出？"
+    IDS_STRING_EXITING      "正在退出，请稍候..."
+    IDS_STRING_RENEWING     "正在更新...%s"
+    IDS_STRING_RENEWOK      "更新完成，用时 %.0fms"
+    IDS_STRING_REBUILDING   "正在重建...%s"
+    IDS_STRING_REBUILDOK    "重建完成，用时 %.0fms"
+    IDS_STRING_COMPING      "正在压缩...%s"
+    IDS_STRING_COMPOK       "压缩完成，用时 %.0fms"
+    IDS_STRING_EXPING       "正在解压...%s"
+    IDS_STRING_EXPOK        "解压完成，用时 %.0fms"
+    IDS_STRING_OPENOK       "已打开文件，用时 %.0fms"
+    IDS_STRING_OPENFAIL     "打开文件失败！"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_OPENFILESIZE "大小:%llu"
+    IDS_STRING_OPENFILECOUNT "数量:%u"
+    IDS_STRING_SEARCHING    "正在查找""%s""，请稍等..."
+    IDS_STRING_SEARCHOK     "找到""%s""一共 %u 处"
+    IDS_STRING_TIMEROK      "已完成: %u/%u 100.0%%"
+    IDS_STRING_TIMERING     "进度: %u/%u %.1f%% 缓存:%.1f%%"
+    IDS_STRING_LISTHEAD1    "文件名"
+    IDS_STRING_LISTHEAD2    "实际大小"
+    IDS_STRING_LISTHEAD3    "压缩大小"
+    IDS_STRING_LISTHEAD4    "压缩率"
+    IDS_STRING_ISDELETE     "文件（夹）删除后将不能恢复！\r\n确认删除这些文件（夹）吗？"
+    IDS_STRING_ISDELETETITLE "删除"
+    IDS_STRING_INVALIDFILENAME "文件名中不得包含下列任何字符：\r\n%s"
+    IDS_STRING_RENAMEERROR  "文件夹名过长或重命名时出现错误！"
+    IDS_STRING_ERROR        "错误！"
+    IDS_STRING_PROCESS_ERROR "操作未能正常结束"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_FILE_EXT_PIC ".dds.tga.bmp.jpg.png.gif.jpeg.tif.tiff.emf"
+END
+
+#endif    // 中文(简体，中国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 英语(美国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define _VC80_UPGRADE 0x0800\r\n"
+    "#include ""afxres.h""\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define IDR_MANIFEST\t\t\t\t\t1\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // 英语(美国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define IDR_MANIFEST					1
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

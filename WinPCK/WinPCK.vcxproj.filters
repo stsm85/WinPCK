@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="头文件\dds">
+      <UniqueIdentifier>{e285f6cc-c0da-4b77-b9f0-8ade51a52d0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\tlib">
+      <UniqueIdentifier>{1b0c2642-ff3e-499f-af73-1b180c0785a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ZupClass">
+      <UniqueIdentifier>{8c908083-5d92-4757-a9f8-f2a7f225baa3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\PckControlCenter">
+      <UniqueIdentifier>{c855237d-8b85-4ec8-a30b-63da8ebdc6d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\PckClass">
+      <UniqueIdentifier>{42f9514c-977b-450f-955c-7d8133f5bc0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\MapViewFile">
+      <UniqueIdentifier>{8b88d815-a0ab-425e-924a-7484f5a3efbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\DictHash">
+      <UniqueIdentifier>{4fcdb324-3994-4179-bac4-967b7387e7d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\DictHash">
+      <UniqueIdentifier>{adc7731f-259f-417d-aac7-3609a1cfb16e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\MapViewFile">
+      <UniqueIdentifier>{eafc3962-d9d6-4b6d-b476-d5b480b3986c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\PckClass">
+      <UniqueIdentifier>{4ce84adb-dc57-4cee-87f8-f62da1391b3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\PckControlCenter">
+      <UniqueIdentifier>{8ec205e9-8b63-4bec-8df7-0df5223f5a51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\ZupClass">
+      <UniqueIdentifier>{229c4c48-5c97-41ea-b058-8c2aa51e6d06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\dds">
+      <UniqueIdentifier>{579fc46f-f0d2-448f-8b8a-c984c9d2ae9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\tlib">
+      <UniqueIdentifier>{f8ac42b8-a202-4f12-8caf-a6bf5dbb4071}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="winmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="miscdlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="helpfunc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mainfunc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="threadproc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDragPath.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="miscdecode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tlib\tapi32ex.cpp">
+      <Filter>源文件\tlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tlib\tapp.cpp">
+      <Filter>源文件\tlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tlib\tdlg.cpp">
+      <Filter>源文件\tlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tlib\tmisc.cpp">
+      <Filter>源文件\tlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tlib\twin.cpp">
+      <Filter>源文件\tlib</Filter>
+    </ClCompile>
+    <ClCompile Include="guirelated.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include=".\DictHash\DictHash.cpp">
+      <Filter>源文件\DictHash</Filter>
+    </ClCompile>
+    <ClCompile Include=".\PckClass\PckClass.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include=".\PckClass\PckClassThread.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include=".\PckClass\PckClassExtract.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include=".\ZupClass\ZupClass.cpp">
+      <Filter>源文件\ZupClass</Filter>
+    </ClCompile>
+    <ClCompile Include=".\ZupClass\ZupClassThread.cpp">
+      <Filter>源文件\ZupClass</Filter>
+    </ClCompile>
+    <ClCompile Include=".\ZupClass\ZupClassExtract.cpp">
+      <Filter>源文件\ZupClass</Filter>
+    </ClCompile>
+    <ClCompile Include=".\ZupClass\ZupClassFunction.cpp">
+      <Filter>源文件\ZupClass</Filter>
+    </ClCompile>
+    <ClCompile Include=".\dds\DDSTextureLoader.cpp">
+      <Filter>源文件\dds</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileWrite.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileRead.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFile.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassFeedback.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassMainFunction.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassAllocFunctions.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassHelpFunction.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckControlCenter\PckControlCenterLog.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckControlCenter\PckControlCenterAttribute.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckControlCenter\PckControlCenterInterface.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckControlCenter\PckControlCenterParams.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckControlCenter\PckControlCenterOperation.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckControlCenter\PckControlCenter.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassMount.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tlib\tapi32u8.cpp">
+      <Filter>源文件\tlib</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildDIB.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassVersionDetect.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassExceptionRestore.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassReader.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tlib\tini.cpp">
+      <Filter>源文件\tlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tlib\tlist.cpp">
+      <Filter>源文件\tlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tlib\tregist.cpp">
+      <Filter>源文件\tlib</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassCompress.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WinPCK.rc">
+      <Filter>源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="winmain.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="miscdlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="miscpicdlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\DictHash\DictHash.h">
+      <Filter>头文件\DictHash</Filter>
+    </ClInclude>
+    <ClInclude Include=".\dds\DDS.h">
+      <Filter>头文件\dds</Filter>
+    </ClInclude>
+    <ClInclude Include=".\dds\DDSTextureLoader.h">
+      <Filter>头文件\dds</Filter>
+    </ClInclude>
+    <ClInclude Include=".\dds\dxgiformat.h">
+      <Filter>头文件\dds</Filter>
+    </ClInclude>
+    <ClInclude Include=".\PckClass\PckClass.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include=".\PckClass\PckHeader.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include=".\ZupClass\ZupClass.h">
+      <Filter>头文件\ZupClass</Filter>
+    </ClInclude>
+    <ClInclude Include=".\ZupClass\ZupHeader.h">
+      <Filter>头文件\ZupClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckControlCenter\PckControlCenter.h">
+      <Filter>头文件\PckControlCenter</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MapViewFile\MapViewFile.h">
+      <Filter>头文件\MapViewFile</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckDefines.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckStructs.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckConf.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckXchgDef.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassVersionDetect.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassExceptionRestore.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassReader.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tlib\tapi32ex.h">
+      <Filter>头文件\tlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tlib\tapi32u8.h">
+      <Filter>头文件\tlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tlib\tconf.h">
+      <Filter>头文件\tlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tlib\tini.h">
+      <Filter>头文件\tlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tlib\tlib.h">
+      <Filter>头文件\tlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tlib\tlist.h">
+      <Filter>头文件\tlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tlib\tregist.h">
+      <Filter>头文件\tlib</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassCompress.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassThreadCompressFunctions.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassVersionDetectFunctionDefinitions.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\file.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\dir.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\chinaz1.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\edit.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\edit_add.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\fileclose.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\filenew.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\fileopen.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\filesave.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\info.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\lin_agt_wrench.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\rebuild.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\save_all.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\search.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\exit.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\stop.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\DROP.cur">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\logerror.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\loginfo.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\logwarning.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\logdebug.ico">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="X86-64.manifest" />
+  </ItemGroup>
+</Project>
