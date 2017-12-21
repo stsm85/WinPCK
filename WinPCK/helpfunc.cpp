@@ -25,6 +25,128 @@
 inline LONG RecurseDeleteKey(HKEY hRegKey, LPCTSTR lpszKey);
 inline void CreateAndSetDefaultValue(LPCTSTR pszValueName, LPCTSTR pszValue);
 
+void TInstDlg::DbClickListView(int itemIndex)
+{
+
+	LVITEM						item;
+	LPPCK_PATH_NODE		lpNodeToShow;
+
+	m_lpPckCenter->SetListCurrentHotItem(itemIndex);
+
+	item.mask = LVIF_PARAM;
+	item.iItem = itemIndex;
+	item.iSubItem = 0;
+	item.stateMask = 0;
+	ListView_GetItem(GetDlgItem(IDC_LIST), &item);
+
+	//isSearchMode = 2 == item.iImage ? TRUE : FALSE;
+
+	//列表是否是以搜索状态显示
+	if (m_lpPckCenter->GetListInSearchMode())
+	{
+		//memset(&m_PathDirs, 0, sizeof(m_PathDirs));
+		//*m_PathDirs.lpszDirNames = m_PathDirs.szPaths;
+		//m_PathDirs.nDirCount = 0;
+
+		if (0 != itemIndex)
+		{
+			ViewFile();
+			return;
+		}
+	}
+
+	lpNodeToShow = (LPPCK_PATH_NODE)item.lParam;
+
+	if (NULL == lpNodeToShow)return;
+
+	//本级是否是文件夹(NULL=文件夹)
+	if (NULL == lpNodeToShow->lpPckIndexTable)
+	{
+		//是否是上级目录(".."目录)
+		if (NULL == lpNodeToShow->parentfirst)
+		{
+			//进入目录中(下一级)
+			if (NULL != lpNodeToShow->child)
+			{
+				char **lpCurrentDir = m_PathDirs.lpszDirNames + m_PathDirs.nDirCount;
+
+				StringCchCopyA(*lpCurrentDir, MAX_PATH - (*lpCurrentDir - *m_PathDirs.lpszDirNames), lpNodeToShow->szName);
+
+				*(lpCurrentDir + 1) = *lpCurrentDir + strlen(*lpCurrentDir) + 1;
+
+				m_PathDirs.nDirCount++;
+			}
+
+			ShowPckFiles(lpNodeToShow->child);
+		}
+		else
+		{
+			//上一级
+			m_PathDirs.nDirCount--;
+			char **lpCurrentDir = m_PathDirs.lpszDirNames + m_PathDirs.nDirCount;
+			memset(*lpCurrentDir, 0, strlen(*lpCurrentDir));
+
+			ShowPckFiles(lpNodeToShow->parentfirst);
+		}
+	}
+	else {
+		ViewFile();
+	}
+}
+
+void TInstDlg::PopupRightMenu(int itemIndex)
+{
+
+	LVITEM						item;
+	LPPCK_PATH_NODE		lpNodeToShow;
+
+	m_lpPckCenter->SetListCurrentHotItem(itemIndex);
+
+	HMENU hMenuRClick = GetSubMenu(LoadMenu(TApp::GetInstance(), MAKEINTRESOURCE(IDR_MENU_RCLICK)), 0);
+
+	item.mask = LVIF_PARAM;
+	item.iItem = itemIndex;
+	item.iSubItem = 0;
+	item.stateMask = 0;
+	ListView_GetItem(GetDlgItem(IDC_LIST), &item);
+
+	//isSearchMode = 2 == item.iImage ? TRUE : FALSE;
+
+	if (!m_lpPckCenter->GetListInSearchMode())
+	{
+
+		lpNodeToShow = (LPPCK_PATH_NODE)item.lParam;
+
+		if (NULL == lpNodeToShow || lpPckParams->cVarParams.bThreadRunning)
+		{
+			::EnableMenuItem(hMenuRClick, ID_MENU_VIEW, MF_GRAYED);
+			::EnableMenuItem(hMenuRClick, ID_MENU_RENAME, MF_GRAYED);
+			::EnableMenuItem(hMenuRClick, ID_MENU_DELETE, MF_GRAYED);
+			::EnableMenuItem(hMenuRClick, ID_MENU_UNPACK_SELECTED, MF_GRAYED);
+
+		}
+		else {
+			::EnableMenuItem(hMenuRClick, ID_MENU_VIEW, NULL != lpNodeToShow->lpPckIndexTable ? MF_ENABLED : MF_GRAYED);
+			::EnableMenuItem(hMenuRClick, ID_MENU_RENAME, 0 != itemIndex ? MF_ENABLED : MF_GRAYED);
+			::EnableMenuItem(hMenuRClick, ID_MENU_DELETE, 0 != itemIndex ? MF_ENABLED : MF_GRAYED);
+			::EnableMenuItem(hMenuRClick, ID_MENU_UNPACK_SELECTED, 0 != itemIndex ? MF_ENABLED : MF_GRAYED);
+
+		}
+
+	}
+	else {
+		::EnableMenuItem(hMenuRClick, ID_MENU_VIEW, 0 != itemIndex ? MF_ENABLED : MF_GRAYED);
+		::EnableMenuItem(hMenuRClick, ID_MENU_RENAME, 0 != itemIndex ? MF_ENABLED : MF_GRAYED);
+		::EnableMenuItem(hMenuRClick, ID_MENU_DELETE, 0 != itemIndex ? MF_ENABLED : MF_GRAYED);
+		::EnableMenuItem(hMenuRClick, ID_MENU_UNPACK_SELECTED, 0 != itemIndex ? MF_ENABLED : MF_GRAYED);
+
+	}
+
+	::EnableMenuItem(hMenuRClick, ID_MENU_ATTR, 0 != itemIndex ? MF_ENABLED : MF_GRAYED);
+
+	TrackPopupMenu(hMenuRClick, TPM_LEFTALIGN, LOWORD(GetMessagePos()), HIWORD(GetMessagePos()), 0, hWnd, NULL);
+}
+
 VOID TInstDlg::ViewFileAttribute()
 {
 	if(lpPckParams->cVarParams.bThreadRunning)return;

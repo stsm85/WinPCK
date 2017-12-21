@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "MapViewFile.h"
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 CMapViewFileWrite::CMapViewFileWrite(DWORD dwMaxPckSize)
 {
 #ifdef _DEBUG
@@ -37,7 +37,7 @@ CMapViewFileWrite::CMapViewFileWrite()
 //CMapViewFileWrite::CMapViewFileWrite(DWORD dwMaxPckSize)
 //{
 //
-//#ifdef USE_MAX_SINGLE_FILESIZE
+//#if ENABLE_PCK_PKX_FILE
 //	dwViewSizePck = dwViewSizePkx = 0;
 //
 //	*m_szPckFileName = 0;
@@ -56,7 +56,7 @@ CMapViewFileWrite::~CMapViewFileWrite()
 {
 }
 
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 
 //void CMapViewFileWrite::SetMaxSinglePckSize(QWORD qwMaxPckSize)
 //{
@@ -70,13 +70,13 @@ BOOL CMapViewFileWrite::OpenPck(LPCSTR lpszFilename, DWORD dwCreationDisposition
 
 	if(Open(lpszFilename, dwCreationDisposition)){
 
-		dwPkxSize = 0;
+		dwPkxSize.qwValue = 0;
 		GetPkxName(m_szPkxFileName, lpszFilename);
-		dwPckSize = ::GetFileSize(hFile, NULL);
+		dwPckSize.dwValue = ::GetFileSize(hFile, &dwPckSize.dwValueHigh);
 
 		OpenPkx(m_szPkxFileName, OPEN_EXISTING);
 
-		uqwFullSize.qwValue = dwPckSize + dwPkxSize;
+		uqwFullSize.qwValue = dwPckSize.qwValue + dwPkxSize.qwValue;
 
 	}else{
 		return FALSE;
@@ -93,13 +93,13 @@ BOOL CMapViewFileWrite::OpenPck(LPCTSTR lpszFilename, DWORD dwCreationDispositio
 
 	if(Open(lpszFilename, dwCreationDisposition)){
 
-		dwPkxSize = 0;
+		dwPkxSize.qwValue = 0;
 		GetPkxName(m_tszPkxFileName, lpszFilename);
-		dwPckSize = ::GetFileSize(hFile, NULL);
+		dwPckSize.dwValue = ::GetFileSize(hFile, &dwPckSize.dwValueHigh);
 
 		OpenPkx(m_tszPkxFileName, OPEN_EXISTING);
 
-		uqwFullSize.qwValue = dwPckSize + dwPkxSize;
+		uqwFullSize.qwValue = dwPckSize.qwValue + dwPkxSize.qwValue;
 
 	}else{
 		return FALSE;
@@ -120,9 +120,9 @@ void CMapViewFileWrite::OpenPkx(LPCSTR lpszFilename, DWORD dwCreationDisposition
 
 		hFile2 = hFile;
 		hasPkx = TRUE;
-		uqdwMaxPckSize.qwValue = dwPckSize;
+		uqdwMaxPckSize.qwValue = dwPckSize.qwValue;
 
-		dwPkxSize = ::GetFileSize(hFile2, NULL);
+		dwPkxSize.dwValue = ::GetFileSize(hFile2, &dwPkxSize.dwValueHigh);
 	}else{
 		//assert(m_Max_PckFile_Size);
 		uqdwMaxPckSize.qwValue = m_Max_PckFile_Size;
@@ -141,9 +141,9 @@ void CMapViewFileWrite::OpenPkx(LPCWSTR lpszFilename, DWORD dwCreationDispositio
 
 		hFile2 = hFile;
 		hasPkx = TRUE;
-		uqdwMaxPckSize.qwValue = dwPckSize;
+		uqdwMaxPckSize.qwValue = dwPckSize.qwValue;
 
-		dwPkxSize = ::GetFileSize(hFile2, NULL);
+		dwPkxSize.dwValue = ::GetFileSize(hFile2, &dwPkxSize.dwValueHigh);
 
 	}else{
 		//assert(m_Max_PckFile_Size);
@@ -173,7 +173,7 @@ BOOL CMapViewFileWrite::Open(LPCSTR lpszFilename, DWORD dwCreationDisposition)
 		}
 
 	}
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	strcpy_s(m_szPckFileName, MAX_PATH, lpszFilename);
 #endif
 	return TRUE;
@@ -197,7 +197,7 @@ BOOL CMapViewFileWrite::Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition)
 		}
 
 	}
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	wcscpy_s(m_tszPckFileName, MAX_PATH, lpszFilename);
 #endif
 	return TRUE;
@@ -205,14 +205,14 @@ BOOL CMapViewFileWrite::Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition)
 
 BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)
 {
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	if(IsPckFile && (uqdwMaxPckSize.qwValue < qwMaxSize)){
 
-		if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READWRITE, 0, (DWORD)uqdwMaxPckSize.qwValue, lpszNamespace))){
+		if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READWRITE, uqdwMaxPckSize.dwValueHigh, uqdwMaxPckSize.dwValue, lpszNamespace))){
 			return FALSE;
 		}
 
-		dwPckSize = uqdwMaxPckSize.qwValue;
+		dwPckSize.qwValue = uqdwMaxPckSize.qwValue;
 
 		if(!hasPkx){
 			if(0 != *m_szPkxFileName)
@@ -226,7 +226,7 @@ BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)
 			}
 		}
 
-		dwPkxSize = qwMaxSize - uqdwMaxPckSize.qwValue;
+		dwPkxSize.qwValue = qwMaxSize - uqdwMaxPckSize.qwValue;
 		//dwPckSize = dwMaxPckSize;
 
 		//if(dwMaxPckSize < dwPkxSize){
@@ -242,7 +242,7 @@ BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)
 		memcpy(szNamespace_2, lpszNamespace, 16);
 		strcat_s(szNamespace_2, 16, "_2");
 
-		if(NULL == (hFileMapping2 = CreateFileMappingA(hFile2, NULL, PAGE_READWRITE, 0, (DWORD)dwPkxSize, szNamespace_2))){
+		if(NULL == (hFileMapping2 = CreateFileMappingA(hFile2, NULL, PAGE_READWRITE, dwPkxSize.dwValueHigh, dwPkxSize.dwValue, szNamespace_2))){
 			return FALSE;
 		}
 
@@ -262,21 +262,21 @@ BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)
 
 void CMapViewFileWrite::SetEndOfFile()
 {
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	if(hasPkx){
 		if(::SetEndOfFile(hFile2))
-		dwPkxSize = ::SetFilePointer(hFile2, 0, 0, FILE_CURRENT);
+		dwPkxSize.qwValue = ::SetFilePointer(hFile2, 0, 0, FILE_CURRENT);
 	}
 #endif
 	if(::SetEndOfFile(hFile))
-		dwPckSize = ::SetFilePointer(hFile, 0, 0, FILE_CURRENT);
+		dwPckSize.qwValue = ::SetFilePointer(hFile, 0, 0, FILE_CURRENT);
 
 }
 
 DWORD CMapViewFileWrite::Write(LPVOID buffer, DWORD dwBytesToWrite)
 {
 	DWORD	dwFileBytesWrote = 0;
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	if(hasPkx){
 
 		//DWORD	dwAddressPck, dwAddressPkx;

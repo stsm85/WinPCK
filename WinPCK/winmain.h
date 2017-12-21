@@ -138,6 +138,9 @@ protected:
 
 	void InitLogWindow();
 
+	void DbClickListView(int itemIndex);	//进入列表中的itemIndex项（进入目录或预览文件）
+	void PopupRightMenu(int itemIndex);		//listview上右击出菜单
+
 
 };
 

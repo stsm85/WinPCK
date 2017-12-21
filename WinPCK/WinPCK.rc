@@ -25,8 +25,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,22,6,0
- PRODUCTVERSION 1,22,6,0
+ FILEVERSION 1,22,7,0
+ PRODUCTVERSION 1,22,7,0
  FILEFLAGSMASK 0x37L
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -42,12 +42,12 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "FileDescription", "WinPCK"
-            VALUE "FileVersion", "1.22.6.0"
+            VALUE "FileVersion", "1.22.7.0"
             VALUE "InternalName", "WinPCK"
             VALUE "LegalCopyright", "Copyright (C) 2012-2017 stsm"
             VALUE "OriginalFilename", "WinPCK.exe"
             VALUE "ProductName", "WinPCK"
-            VALUE "ProductVersion", "1.22.6.0"
+            VALUE "ProductVersion", "1.22.7.0"
             VALUE "SpecialBuild", "WinPCK by stsm"
         END
     END
@@ -375,6 +375,28 @@ END
 //
 
 IDC_CURSOR_DROP         CURSOR                  "icons\\DROP.cur"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR1 ACCELERATORS
+BEGIN
+    "I",            ID_ADD_FILE_TO_PCK,     VIRTKEY, CONTROL, NOINVERT
+    "W",            ID_CLOSE_PCK,           VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_CREATE_NEWPCK,       VIRTKEY, CONTROL, NOINVERT
+    VK_BACK,        ID_LISTVIEW_BACK,       VIRTKEY, NOINVERT
+    VK_DELETE,      ID_LISTVIEW_DELETE,     VIRTKEY, NOINVERT
+    VK_RETURN,      ID_LISTVIEW_ENTER,      VIRTKEY, NOINVERT
+    "A",            ID_LISTVIEW_SELECT_ALL, VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_LISTVIEW_SELECT_REV, VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_OPEN_PCK,            VIRTKEY, CONTROL, NOINVERT
+    VK_F2,          ID_LISTVIEW_RENAME,     VIRTKEY, NOINVERT
+    VK_RETURN,      ID_LISTVIEW_ATTR,       VIRTKEY, ALT, NOINVERT
+    VK_RMENU,       ID_LISTVIEW_POPMENU,    VIRTKEY, NOINVERT
+END
 
 
 /////////////////////////////////////////////////////////////////////////////

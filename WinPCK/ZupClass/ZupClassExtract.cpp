@@ -44,10 +44,10 @@ BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFi
 		if(CPckClass::GetSingleFileData(lpvoidFileRead, lpPckFileIndexTable, _cipherbuf, dwFileLengthDecompress1))
 		{
 
-			if(PCK_BEGINCOMPRESS_SIZE < lpZupFileIndexTable->cFileIndex.dwFileClearTextSize)
+			if(check_zlib_header(_cipherbuf + 4))
 			{
 
-				if(decompress_part((BYTE*)buffer, &dwFileLengthDecompress2,
+				if(Z_OK != decompress_part((BYTE*)buffer, &dwFileLengthDecompress2,
 							(BYTE*)_cipherbuf + 4, dwFileLengthDecompress1 - 4, lpZupFileIndexTable->cFileIndex.dwFileClearTextSize))
 				{
 					if(lpZupFileIndexTable->cFileIndex.dwFileClearTextSize == lpZupFileIndexTable->cFileIndex.dwFileCipherTextSize)
@@ -58,6 +58,7 @@ BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFi
 					{
 						char szPrintf[160];
 						sprintf_s(szPrintf, 160, TEXT_UNCOMPRESSDATA_FAIL, lpZupFileIndexTable->cFileIndex.szFilename);
+						assert(FALSE);
 						PrintLogE(szPrintf);
 					}
 				}

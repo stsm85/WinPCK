@@ -105,10 +105,15 @@ void CZupClass::BuildDirTree()
 
 			}else{
 
-				DWORD	dwFileBytesRead = 4;
-				//if(Z_OK != 
-					decompress((BYTE*)&lpZupIndexTable->cFileIndex.dwFileClearTextSize, &dwFileBytesRead,
-						lpbuffer, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
+				if (check_zlib_header(lpbuffer))
+				{
+					DWORD	dwFileBytesRead = 4;
+					decompress_part((BYTE*)&lpZupIndexTable->cFileIndex.dwFileClearTextSize, &dwFileBytesRead,
+						lpbuffer, lpZupIndexTable->cFileIndex.dwFileCipherTextSize, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
+				}
+				else {
+					lpZupIndexTable->cFileIndex.dwFileClearTextSize = *(DWORD*)lpbuffer;
+				}
 
 				lpZupIndexTable->cFileIndex.dwFileCipherTextSize = lpPckIndexTable->cFileIndex.dwFileClearTextSize;
 

@@ -49,10 +49,10 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFi
 		dwFileLengthToWrite = sizeOfBuffer;
 
 
-	if(PCK_BEGINCOMPRESS_SIZE < lpPckFileIndex->dwFileClearTextSize)
+	if(check_zlib_header(lpMapAddress))
 	{
 
-		if(!decompress_part((BYTE*)buffer, &dwFileLengthToWrite,
+		if(Z_OK != decompress_part((BYTE*)buffer, &dwFileLengthToWrite,
 					lpMapAddress, lpPckFileIndex->dwFileCipherTextSize, lpPckFileIndex->dwFileClearTextSize))
 		{
 			if(lpPckFileIndex->dwFileClearTextSize == lpPckFileIndex->dwFileCipherTextSize)
@@ -61,7 +61,7 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFi
 			{
 
 				PrintLogE(TEXT_UNCOMPRESSDATA_FAIL, lpPckFileIndex->szFilename, __FILE__, __FUNCTION__, __LINE__);
-
+				assert(FALSE);
 				lpFileRead->UnmapView();
 
 				if(NULL == lpvoidFileRead)

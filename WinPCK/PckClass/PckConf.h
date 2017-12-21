@@ -18,3 +18,6 @@
 
 //使用压缩程序单线程版本
 #define PCK_COMPRESS_NEED_ST	0
+
+//不限制文件大小
+#define PCK_SIZE_UNLIMITED		1

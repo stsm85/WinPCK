@@ -20,6 +20,9 @@ typedef int                 BOOL;
 typedef unsigned char       BYTE;
 #define MAX_PATH			260
 
+//zlib
+#define Z_OK				0
+
 
 //PckVersion
 #define	PCK_VERSION_ZX		0

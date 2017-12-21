@@ -10,12 +10,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include <windows.h>
+#include <assert.h>
 
-#define USE_MAX_SINGLE_FILESIZE
-
-//#ifdef USE_MAX_SINGLE_FILESIZE
-//#include "PckConf.h"
-//#endif
+#define ENABLE_PCK_PKX_FILE 1
 
 #if !defined(_MAPVIEWFILE_H_)
 #define _MAPVIEWFILE_H_
@@ -24,6 +21,7 @@ typedef unsigned __int64	QWORD;
 
 typedef union _QWORD{
 	QWORD qwValue;
+	LONGLONG llwValue;
 	struct {
 		DWORD dwValue;
 		DWORD dwValueHigh;
@@ -71,6 +69,11 @@ public:
 	void	UnMaping();
 	void	clear();
 
+#if ENABLE_PCK_PKX_FILE
+
+	BOOL	SetPckPackSize(QWORD qwPckSize);
+#endif
+
 protected:
 
 	
@@ -78,12 +81,12 @@ protected:
 	void MakeUnlimitedPath(WCHAR *_dst, LPCWSTR	_src, size_t size);
 	void MakeUnlimitedPath(char *_dst, LPCSTR _src, size_t size);
 
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	void GetPkxName(LPSTR dst, LPCSTR src);
 	void GetPkxName(LPWSTR dst, LPCWSTR src);
 #endif
 
-	LPBYTE	ViewReal(LPVOID & lpMapAddress, HANDLE hFileMapping, DWORD dwAddress, DWORD dwSize);
+	LPBYTE	ViewReal(LPVOID & lpMapAddress, HANDLE hFileMapping, QWORD qwAddress, DWORD dwSize);
 
 public:
 
@@ -94,19 +97,17 @@ protected:
 	HANDLE	hFile;
 	HANDLE	hFileMapping;
 	LPVOID	lpMapAddress;
-	//LPVOID	lpVirtualAddress;
 
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 
 	HANDLE	hFile2;
 	HANDLE	hFileMapping2;
 	LPVOID	lpMapAddress2;
 
-	QWORD	dwPckSize, dwPkxSize;
-	UNQWORD	uqdwMaxPckSize;
+	UNQWORD	dwPckSize, dwPkxSize;
+	UNQWORD	uqdwMaxPckSize;				//pck文件的最大值
 
-	UNQWORD	uqwFullSize;
-	//UNQWORD	uqwMaxPckSize;
+	UNQWORD	uqwFullSize;				//pck+pkx文件的大小，以PCKHEAD中的dwPckSize为准
 
 	BOOL	IsPckFile, hasPkx;
 
@@ -122,8 +123,7 @@ protected:
 	wchar_t	m_tszPkxFileName[MAX_PATH];
 #endif
 
-	//DWORD	dwCurrentPos;
-	UNQWORD	uqwCurrentPos;
+	UNQWORD	uqwCurrentPos;		//当前文件指针位置
 
 	BOOL	isWriteMode;
 };
@@ -136,7 +136,8 @@ public:
 	CMapViewFileRead();
 	virtual ~CMapViewFileRead();
 
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
+
 	BOOL	OpenPck(LPCSTR lpszFilename);
 	BOOL	OpenPck(LPCWSTR lpszFilename);
 #endif
@@ -158,7 +159,7 @@ public:
 	CMapViewFileWrite(DWORD);
 	virtual ~CMapViewFileWrite();
 	
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	//void	SetMaxSinglePckSize(QWORD qwMaxPckSize);
 	BOOL	OpenPck(LPCSTR lpszFilename, DWORD dwCreationDisposition);
 	BOOL	OpenPck(LPCWSTR lpszFilename, DWORD dwCreationDisposition);
@@ -176,7 +177,7 @@ public:
 
 protected:
 
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	void	OpenPkx(LPCSTR lpszFilename, DWORD dwCreationDisposition);
 	void	OpenPkx(LPCWSTR lpszFilename, DWORD dwCreationDisposition);
 #endif
@@ -184,7 +185,7 @@ protected:
 public:
 
 protected:
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	//一个大文件需要分块成2个小文件时，分块的大小
 	QWORD	m_Max_PckFile_Size;
 #endif

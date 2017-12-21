@@ -158,13 +158,14 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 
 	//计算大概需要多大空间qwTotalFileSize
 	qwTotalFileSizeTemp = qwTotalFileSize * 0.6 + PCK_SPACE_DETECT_SIZE;
-
+#if !PCK_SIZE_UNLIMITED
 	if (((0 != (qwTotalFileSizeTemp >> 32)) && (0x20002 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version)) || \
 		((0 != (qwTotalFileSizeTemp >> 33)) && (0x20003 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version))) {
 
 		PrintLogE(TEXT_COMPFILE_TOOBIG, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
+#endif
 	mt_CompressTotalFileSize = qwTotalFileSizeTemp;
 	//if (PCK_SPACE_DETECT_SIZE >= mt_CompressTotalFileSize)mt_CompressTotalFileSize = PCK_STEP_ADD_SIZE;
 

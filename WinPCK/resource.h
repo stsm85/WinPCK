@@ -78,6 +78,7 @@
 #define IDI_ICON1                       181
 #define IDI_ICON_LOGD                   181
 #define IDS_STRING_LISTHEAD1            182
+#define IDR_ACCELERATOR1                182
 #define IDS_STRING_LISTHEAD2            183
 #define IDS_STRING_LISTHEAD3            184
 #define IDS_STRING_LISTHEAD4            185
@@ -151,13 +152,25 @@
 #define ID_40031                        40031
 #define ID_MENU_                        40032
 #define ID_MENU_LOG_COPY                40033
+#define ID_LISTVIEW_SELECT_ALL          40034
+#define ID_LISTVIEW_BACK                40035
+#define ID_CREATE_NEWPCK                40036
+#define ID_OPEN_PCK                     40037
+#define ID_CLOSE_PCK                    40038
+#define ID_ADD_FILE_TO_PCK              40039
+#define ID_LISTVIEW_SELECT_REV          40040
+#define ID_LISTVIEW_ENTER               40041
+#define ID_LISTVIEW_DELETE              40042
+#define ID_LISTVIEW_RENAME              40044
+#define ID_LISTVIEW_ATTR                40045
+#define ID_LISTVIEW_POPMENU             40046
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        182
-#define _APS_NEXT_COMMAND_VALUE         40034
+#define _APS_NEXT_RESOURCE_VALUE        183
+#define _APS_NEXT_COMMAND_VALUE         40048
 #define _APS_NEXT_CONTROL_VALUE         1038
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

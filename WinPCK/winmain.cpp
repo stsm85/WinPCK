@@ -153,6 +153,9 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 	//初始化浏览路径
 	initArgument();
 
+	//快捷键
+	hAccel = LoadAccelerators(TApp::GetInstance(), MAKEINTRESOURCE(IDR_ACCELERATOR1));
+
 	return	TRUE;
 }
 
@@ -229,6 +232,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		return	TRUE;
 
 	//case IDC_BUTTON_OPEN:
+	case ID_OPEN_PCK:
 	case ID_MENU_OPEN:
 
 		OpenPckFile();
@@ -281,6 +285,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		break;
 
 	//case IDC_BUTTON_CLOSE:
+	case ID_CLOSE_PCK:
 	case ID_MENU_CLOSE:
 		if(lpPckParams->cVarParams.bThreadRunning)
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
@@ -318,6 +323,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		break;
 
 	//case IDC_BUTTON_NEW:
+	case ID_CREATE_NEWPCK:
 	case ID_MENU_NEW:
 
 		if(lpPckParams->cVarParams.bThreadRunning)
@@ -334,6 +340,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		break;
 
 	//case IDC_BUTTON_ADD:
+	case ID_ADD_FILE_TO_PCK:
 	case ID_MENU_ADD:
 
 			if(lpPckParams->cVarParams.bThreadRunning)
@@ -375,6 +382,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		}
 		break;
 
+	case ID_LISTVIEW_RENAME:
 	case ID_MENU_RENAME:
 
 		{
@@ -389,6 +397,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		}
 		break;
 
+	case ID_LISTVIEW_DELETE:
 	case ID_MENU_DELETE:
 
 		if(lpPckParams->cVarParams.bThreadRunning)break;
@@ -400,6 +409,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 		break;
 
+	case ID_LISTVIEW_SELECT_ALL:
 	case ID_MENU_SELECTALL:
 		{
 			LVITEM item = {0};
@@ -418,6 +428,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		}
 		break;
 
+	case ID_LISTVIEW_SELECT_REV:
 	case ID_MENU_SELECTORP:
 		{
 			LVITEM item = {0};
@@ -438,6 +449,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		}
 		break;
 
+	case ID_LISTVIEW_ATTR:
 	case ID_MENU_ATTR:
 		
 		if(lpPckParams->cVarParams.bThreadRunning)
@@ -493,6 +505,20 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 		break;
 
+	case ID_LISTVIEW_ENTER:
+
+		DbClickListView(m_lpPckCenter->GetListCurrentHotItem());
+		break;
+
+	case ID_LISTVIEW_BACK:
+
+		DbClickListView(0);
+		break;
+
+	case ID_LISTVIEW_POPMENU:
+
+		PopupRightMenu(m_lpPckCenter->GetListCurrentHotItem());
+		break;
 
 	}
 
@@ -619,75 +645,34 @@ BOOL TInstDlg::InitListView(CONST HWND hWndListView, LPTSTR *lpszText, int *icx,
 
 BOOL TInstDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 {
-	LVITEM						item;
-	//int							iListTopView;
-	//BOOL	**lpCellDropedNode;// = m_lpCellDropedRoot + iItem;
 
 	LPPCK_PATH_NODE		lpNodeToShow;
 	LPPCKINDEXTABLE		lpIndexToShow;
-
-	//BOOL				isSearchMode;
 
 	switch(ctlID)
 	{
 
 
 	case IDC_LIST:
-		//Debug(L"%d--%d\r\n", pNmHdr->code, pNmHdr->code);
+		//Debug(L"lv:LVN_FIRST-%d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
 
 		int iCurrentHotItem = ((LPNMLISTVIEW)pNmHdr)->iItem;
 
-		switch(pNmHdr->code)
+		switch (pNmHdr->code)
 		{
+
+		case LVN_ITEMCHANGED:
+		case NM_CLICK:
+
+			if (-1 != iCurrentHotItem){
+				m_lpPckCenter->SetListCurrentHotItem(iCurrentHotItem);
+			}
+			break;
+
 		case NM_RCLICK:
 			if(-1 != iCurrentHotItem)
 			{
-
-				//ListView_SetHotItem(pNmHdr->hwndFrom, ((LPNMLISTVIEW)pNmHdr)->iItem);
-				m_lpPckCenter->SetListCurrentHotItem(iCurrentHotItem);
-
-				HMENU hMenuRClick = GetSubMenu(LoadMenu(TApp::GetInstance(), MAKEINTRESOURCE(IDR_MENU_RCLICK)), 0);
-
-				item.mask = LVIF_PARAM;
-				item.iItem = iCurrentHotItem;
-				item.iSubItem = 0;
-				item.stateMask = 0;	
-				ListView_GetItem(pNmHdr->hwndFrom, &item);
-
-				//isSearchMode = 2 == item.iImage ? TRUE : FALSE;
-
-				if(!m_lpPckCenter->GetListInSearchMode())
-				{
-
-					lpNodeToShow = (LPPCK_PATH_NODE)item.lParam;
-
-					if(NULL == lpNodeToShow || lpPckParams->cVarParams.bThreadRunning)
-					{
-						::EnableMenuItem(hMenuRClick, ID_MENU_VIEW, MF_GRAYED);
-						::EnableMenuItem(hMenuRClick, ID_MENU_RENAME, MF_GRAYED);
-						::EnableMenuItem(hMenuRClick, ID_MENU_DELETE, MF_GRAYED);
-						::EnableMenuItem(hMenuRClick, ID_MENU_UNPACK_SELECTED, MF_GRAYED);
-						
-					}else{
-						::EnableMenuItem(hMenuRClick, ID_MENU_VIEW, NULL != lpNodeToShow->lpPckIndexTable ? MF_ENABLED : MF_GRAYED);
-						::EnableMenuItem(hMenuRClick, ID_MENU_RENAME, 0 != ((LPNMLISTVIEW)pNmHdr)->iItem ? MF_ENABLED : MF_GRAYED);
-						::EnableMenuItem(hMenuRClick, ID_MENU_DELETE, 0 != ((LPNMLISTVIEW)pNmHdr)->iItem ? MF_ENABLED : MF_GRAYED);
-						::EnableMenuItem(hMenuRClick, ID_MENU_UNPACK_SELECTED, 0 != ((LPNMLISTVIEW)pNmHdr)->iItem ? MF_ENABLED : MF_GRAYED);
-
-					}
-
-				}else{
-					::EnableMenuItem(hMenuRClick, ID_MENU_VIEW, 0 != ((LPNMLISTVIEW)pNmHdr)->iItem ? MF_ENABLED : MF_GRAYED);
-					::EnableMenuItem(hMenuRClick, ID_MENU_RENAME, 0 != ((LPNMLISTVIEW)pNmHdr)->iItem ? MF_ENABLED : MF_GRAYED);
-					::EnableMenuItem(hMenuRClick, ID_MENU_DELETE, 0 != ((LPNMLISTVIEW)pNmHdr)->iItem ? MF_ENABLED : MF_GRAYED);
-					::EnableMenuItem(hMenuRClick, ID_MENU_UNPACK_SELECTED, 0 != ((LPNMLISTVIEW)pNmHdr)->iItem ? MF_ENABLED : MF_GRAYED);
-					
-				}
-
-				::EnableMenuItem(hMenuRClick, ID_MENU_ATTR, 0 != iCurrentHotItem ? MF_ENABLED : MF_GRAYED);
-				
-				TrackPopupMenu(hMenuRClick, TPM_LEFTALIGN, LOWORD(GetMessagePos()), HIWORD(GetMessagePos()), 0, hWnd, NULL);
-
+				PopupRightMenu(iCurrentHotItem);
 			}
 
 			break;
@@ -695,68 +680,7 @@ BOOL TInstDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 			
 			if(-1 != iCurrentHotItem)
 			{
-				//ListView_SetHotItem(pNmHdr->hwndFrom, iCurrentHotItem);
-				m_lpPckCenter->SetListCurrentHotItem(iCurrentHotItem);
-
-				item.mask = LVIF_PARAM;
-				item.iItem = iCurrentHotItem;
-				item.iSubItem = 0;
-				item.stateMask = 0;	
-				ListView_GetItem(pNmHdr->hwndFrom, &item);
-
-				//isSearchMode = 2 == item.iImage ? TRUE : FALSE;
-
-				//列表是否是以搜索状态显示
-				if(m_lpPckCenter->GetListInSearchMode())
-				{
-					//memset(&m_PathDirs, 0, sizeof(m_PathDirs));
-					//*m_PathDirs.lpszDirNames = m_PathDirs.szPaths;
-					//m_PathDirs.nDirCount = 0;
-
-					if(0 != iCurrentHotItem)
-					{
-						ViewFile();
-						break;
-					}
-				}
-
-				lpNodeToShow = (LPPCK_PATH_NODE)item.lParam;
-
-				if(NULL == lpNodeToShow)return FALSE;
-				
-				//本级是否是文件夹(NULL=文件夹)
-				if(NULL == lpNodeToShow->lpPckIndexTable)
-				{
-					//是否是上级目录(".."目录)
-					if(NULL == lpNodeToShow->parentfirst)
-					{
-						//进入目录中(下一级)
-						if(NULL != lpNodeToShow->child)
-						{
-							char **lpCurrentDir = m_PathDirs.lpszDirNames + m_PathDirs.nDirCount;
-							
-							StringCchCopyA(*lpCurrentDir, MAX_PATH - (*lpCurrentDir - *m_PathDirs.lpszDirNames), lpNodeToShow->szName);
-							
-							*(lpCurrentDir + 1) = *lpCurrentDir + strlen(*lpCurrentDir) + 1;
-
-							m_PathDirs.nDirCount++;
-						}
-
-						ShowPckFiles(lpNodeToShow->child);
-					}
-					else
-					{
-						//上一级
-						m_PathDirs.nDirCount--;
-						char **lpCurrentDir = m_PathDirs.lpszDirNames + m_PathDirs.nDirCount;
-						memset(*lpCurrentDir, 0, strlen(*lpCurrentDir));
-
-						ShowPckFiles(lpNodeToShow->parentfirst);
-					}
-				}else{
-					ViewFile();
-				}
-
+				DbClickListView(iCurrentHotItem);
 			}
 
 			break;

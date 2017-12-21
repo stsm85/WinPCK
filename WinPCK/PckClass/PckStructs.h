@@ -42,10 +42,10 @@ typedef struct _PCK_KEYS
 	//tail
 	DWORD		TailVerifyKey1;
 	QWORD		IndexesEntryAddressCryptKey;
-	DWORD		TailVerifyKey2;
+	DWORD		TailVerifyKey2;	//在文件尾第-3个DWORD(xx xx xx xx 00 00 00 00 00 00 00 00)
 	//index
-	DWORD		IndexCompressedFilenameDataLengthCryptKey1;
-	DWORD		IndexCompressedFilenameDataLengthCryptKey2;
+	DWORD		IndexCompressedFilenameDataLengthCryptKey1;//pck中的每一个文件都有一个索引存在文件尾（除最后280字节）
+	DWORD		IndexCompressedFilenameDataLengthCryptKey2;//数据为len^key1, len^key2, data(PCKFILEINDEX), (11 11 11 11 22 22 22 22 dd dd dd dd .....)
 	//pkx
 	DWORD		dwMaxSinglePckSize;
 }PCK_KEYS, *LPPCK_KEYS;

@@ -20,43 +20,34 @@ CMapViewFileRead::~CMapViewFileRead()
 {
 }
 
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 
 BOOL CMapViewFileRead::OpenPck(LPCSTR lpszFilename)
 {
 
 	IsPckFile = TRUE;
-
 	if(Open(lpszFilename)){
 
-		//strcpy_s(m_szPckFilename, MAX_PATH, lpszFilename);
+		dwPkxSize.qwValue = 0;
+		dwPckSize.dwValue = ::GetFileSize(hFile, &dwPckSize.dwValueHigh);
 
-		dwPkxSize = 0;
-		dwPckSize = ::GetFileSize(hFile, NULL);
+		GetPkxName(m_szPkxFileName, lpszFilename);
 
-		//if(MAX_PCKFILE_SIZE <= dwPckSize){
+		HANDLE hFilePck = hFile;
 
-			//char szFilename[MAX_PATH];
+		if(Open(m_szPkxFileName)){
 
-			GetPkxName(m_szPkxFileName, lpszFilename);
+			hFile2 = hFile;
+			hasPkx = TRUE;
+			uqdwMaxPckSize.qwValue = dwPckSize.qwValue;
 
-			HANDLE hFilePck = hFile;
+			dwPkxSize.dwValue = ::GetFileSize(hFile2, &dwPkxSize.dwValueHigh);
 
-			if(Open(m_szPkxFileName)){
+		}
 
-				hFile2 = hFile;
-				hasPkx = TRUE;
-				uqdwMaxPckSize.qwValue = dwPckSize;
+		hFile = hFilePck;
 
-				dwPkxSize = ::GetFileSize(hFile2, NULL);
-
-			}
-
-			hFile = hFilePck;
-
-		//}
-
-		uqwFullSize.qwValue = dwPckSize + dwPkxSize;
+		uqwFullSize.qwValue = dwPckSize.qwValue + dwPkxSize.qwValue;
 
 	}else{
 		return FALSE;
@@ -72,33 +63,27 @@ BOOL CMapViewFileRead::OpenPck(LPCWSTR lpszFilename)
 
 	if(Open(lpszFilename)){
 
-		dwPkxSize = 0;
-		dwPckSize = ::GetFileSize(hFile, NULL);
+		dwPkxSize.qwValue = 0;
+		dwPckSize.dwValue = ::GetFileSize(hFile, &dwPckSize.dwValueHigh);
 
-		//if(MAX_PCKFILE_SIZE <= dwPckSize){
+		GetPkxName(m_tszPkxFileName, lpszFilename);
 
-			//TCHAR szFilename[MAX_PATH];
-
-			GetPkxName(m_tszPkxFileName, lpszFilename);
-
-			HANDLE hFilePck = hFile;
+		HANDLE hFilePck = hFile;
 			
 
-			if(Open(m_tszPkxFileName)){
+		if(Open(m_tszPkxFileName)){
 
-				hFile2 = hFile;
-				hasPkx = TRUE;
-				uqdwMaxPckSize.qwValue = dwPckSize;
+			hFile2 = hFile;
+			hasPkx = TRUE;
+			uqdwMaxPckSize.qwValue = dwPckSize.qwValue;
 
-				dwPkxSize = ::GetFileSize(hFile2, NULL);
+			dwPkxSize.dwValue = ::GetFileSize(hFile2, &dwPkxSize.dwValueHigh);
 
-			}
+		}
 
-			hFile = hFilePck;
+		hFile = hFilePck;
 
-		//}
-
-		uqwFullSize.qwValue = dwPckSize + dwPkxSize;
+		uqwFullSize.qwValue = dwPckSize.qwValue + dwPkxSize.qwValue;
 
 	}else{
 		return FALSE;
@@ -107,6 +92,7 @@ BOOL CMapViewFileRead::OpenPck(LPCWSTR lpszFilename)
 	return TRUE;
 
 }
+
 #endif
 
 BOOL CMapViewFileRead::Open(LPCSTR lpszFilename)
@@ -124,7 +110,7 @@ BOOL CMapViewFileRead::Open(LPCSTR lpszFilename)
 			return FALSE;
 		}
 	}
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	strcpy_s(m_szPckFileName, MAX_PATH, lpszFilename);
 #endif
 	return TRUE;
@@ -146,7 +132,7 @@ BOOL CMapViewFileRead::Open(LPCWSTR lpszFilename)
 		}
 
 	}
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	wcscpy_s(m_tszPckFileName, MAX_PATH, lpszFilename);
 #endif
 	return TRUE;
@@ -158,7 +144,7 @@ BOOL CMapViewFileRead::Mapping(LPCSTR lpszNamespace)
 
 		return FALSE;
 	}
-#ifdef USE_MAX_SINGLE_FILESIZE
+#if ENABLE_PCK_PKX_FILE
 	if(hasPkx){
 		char szNamespace_2[16];
 		memcpy(szNamespace_2, lpszNamespace, 16);

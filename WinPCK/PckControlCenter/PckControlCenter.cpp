@@ -46,6 +46,7 @@ void CPckControlCenter::init()
 
 	//cParams.lpPckVersion = new CPckVersion();
 	cParams.lpPckControlCenter = this;
+	cParams.iListHotItem = 0;
 }
 
 void CPckControlCenter::Reset(DWORD dwUIProgressUpper)

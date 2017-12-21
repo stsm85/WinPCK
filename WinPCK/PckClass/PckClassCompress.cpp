@@ -33,6 +33,21 @@ void CPckClass::init_compressor()
 	}
 }
 
+int CPckClass::check_zlib_header(void *data)
+{
+	char cDeflateFlag = (*(char*)data) & 0xf;
+
+	if (Z_DEFLATED != cDeflateFlag)
+		return 0;
+
+
+
+	unsigned short header = _byteswap_ushort(*(unsigned short*)data);
+	
+	return (0 == (header % 31));
+
+}
+
 unsigned long CPckClass::compressBound(unsigned long sourceLen)
 {
 	return m_PckCompressFunc.compressBound(sourceLen);
@@ -107,10 +122,10 @@ int CPckClass::decompress_part(void *dest, unsigned long  *destLen, const void *
 #define Z_BUF_ERROR    (-5)
 #define Z_VERSION_ERROR (-6)
 */
-
+	unsigned long partlen = *destLen;
 	int rtn = uncompress((Bytef*)dest, destLen, (Bytef*)source, sourceLen);
 //#ifdef USE_ZLIB
-	if (Z_OK != rtn && !((Z_BUF_ERROR == rtn) && ((*destLen) < fullDestLen))) {
+	if (Z_OK != rtn && !((Z_BUF_ERROR == rtn) && ((partlen == (*destLen)) || ((*destLen) < fullDestLen)))) {
 		char *lpReason;
 		switch (rtn) {
 		case Z_NEED_DICT:
@@ -131,10 +146,11 @@ int CPckClass::decompress_part(void *dest, unsigned long  *destLen, const void *
 		default:
 			lpReason = "ÆäËû´íÎó";
 		}
+		assert(FALSE);
 		PrintLogE(TEXT_UNCOMPRESSDATA_FAIL_REASON, lpReason, __FILE__, __FUNCTION__, __LINE__);
-		return 0;
+		return rtn;
 	} else {
-		return 1;
+		return Z_OK;
 	}
 
 //#else

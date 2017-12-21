@@ -21,7 +21,7 @@
 char *formatString(const char *format, ...)
 {
 	const int BUFFER_SIZE = 4097;
-	char strbuf[BUFFER_SIZE];
+	static char strbuf[BUFFER_SIZE];
 	memset(strbuf, 0, sizeof(strbuf));
 
 	va_list ap;

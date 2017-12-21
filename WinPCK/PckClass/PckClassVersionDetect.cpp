@@ -163,6 +163,14 @@ BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
 		goto dect_err;
 	}
 
+	//判断是不是64位的文件大小
+	if (0x100 < cPckHead.dwHeadCheckTail) {
+		lpRead->SetPckPackSize(cPckHead.dwPckSize);
+	}
+	else {
+		lpRead->SetPckPackSize(((PCKHEAD_V2030*)&cPckHead)->dwPckSize);
+	}
+
 	lpRead->SetFilePointer(-((QWORD)(sizeof(DWORD) * 4)), FILE_END);
 
 	if(!lpRead->Read(&dwTailVals, sizeof(DWORD) * 4))
