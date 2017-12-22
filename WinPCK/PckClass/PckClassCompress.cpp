@@ -36,16 +36,11 @@ void CPckClass::init_compressor()
 int CPckClass::check_zlib_header(void *data)
 {
 	char cDeflateFlag = (*(char*)data) & 0xf;
-
 	if (Z_DEFLATED != cDeflateFlag)
 		return 0;
 
-
-
 	unsigned short header = _byteswap_ushort(*(unsigned short*)data);
-	
 	return (0 == (header % 31));
-
 }
 
 unsigned long CPckClass::compressBound(unsigned long sourceLen)
@@ -65,13 +60,11 @@ unsigned long CPckClass::compressBound_zlib(unsigned long sourceLen)
 
 int	CPckClass::compress_zlib(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen, int level)
 {
-#ifdef _DEBUG
+	assert(0 != *destLen);
 	int rtnc = compress2((Bytef*)dest, destLen, (Bytef*)source, sourceLen, level);
+	assert(0 != *destLen);
 	assert(rtnc == Z_OK);
 	return (rtnc == Z_OK);
-#else
-	return (Z_OK == compress2((Bytef*)dest, destLen, (Bytef*)source, sourceLen, level));
-#endif
 }
 
 unsigned long CPckClass::compressBound_libdeflate(unsigned long sourceLen)
@@ -84,13 +77,13 @@ int	CPckClass::compress_libdeflate(void *dest, unsigned long *destLen, const voi
 	struct libdeflate_compressor* compressor;
 	compressor = libdeflate_alloc_compressor(level);
 
-	*destLen = libdeflate_zlib_compress(compressor, source, sourceLen, dest, *destLen);
+	assert(0 != *destLen);
 
+	*destLen = libdeflate_zlib_compress(compressor, source, sourceLen, dest, *destLen);
 	libdeflate_free_compressor(compressor);
 
-#ifdef _DEBUG
 	assert(0 != *destLen);
-#endif
+
 	if (!(*destLen))
 		return 0;
 
@@ -99,13 +92,11 @@ int	CPckClass::compress_libdeflate(void *dest, unsigned long *destLen, const voi
 
 int CPckClass::decompress(void *dest, unsigned long  *destLen, const void *source, unsigned long sourceLen)
 {
-#ifdef _DEBUG
+	assert(0 != *destLen);
 	int rtnd = uncompress((Bytef*)dest, destLen, (Bytef*)source, sourceLen);
+	assert(0 != *destLen);
 	assert(rtnd == Z_OK);
 	return (rtnd == Z_OK);
-#else
-	return (Z_OK == uncompress((Bytef*)dest, destLen, (Bytef*)source, sourceLen));
-#endif
 }
 
 //如果只需要解压一部分数据
@@ -123,8 +114,10 @@ int CPckClass::decompress_part(void *dest, unsigned long  *destLen, const void *
 #define Z_VERSION_ERROR (-6)
 */
 	unsigned long partlen = *destLen;
+	assert(0 != *destLen);
 	int rtn = uncompress((Bytef*)dest, destLen, (Bytef*)source, sourceLen);
-//#ifdef USE_ZLIB
+	assert(0 != *destLen);
+
 	if (Z_OK != rtn && !((Z_BUF_ERROR == rtn) && ((partlen == (*destLen)) || ((*destLen) < fullDestLen)))) {
 		char *lpReason;
 		switch (rtn) {
@@ -152,12 +145,4 @@ int CPckClass::decompress_part(void *dest, unsigned long  *destLen, const void *
 	} else {
 		return Z_OK;
 	}
-
-//#else
-//	if(LIBDEFLATE_SUCCESS)
-//		return 1;
-//	else
-//		return 0;
-//
-//#endif
 }

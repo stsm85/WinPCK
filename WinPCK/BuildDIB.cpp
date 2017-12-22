@@ -21,8 +21,8 @@ _inline void CalcRgbsDXT1(UINT32 dwRGBIndex[4], UINT16 wBlockColor2[2])
 	__m128i xmmgmask = _mm_set_epi32(0, 0, 0x07e0, 0x07e0);
 	__m128i xmmbmask = _mm_set_epi32(0, 0, 0x001f, 0x001f);
 
-	__m128i xmmres = _mm_set_epi16(	0, 0, 0, 0, \
-									0xff, wBlockColor2[1], 0xff, wBlockColor2[0]);
+	__m128i xmmres = _mm_set_epi16(0, 0, 0, 0, \
+		0xff, wBlockColor2[1], 0xff, wBlockColor2[0]);
 
 	__m128i xmmr = _mm_and_si128(xmmres, xmmrmask);
 	__m128i xmmg = _mm_and_si128(xmmres, xmmgmask);
@@ -40,7 +40,7 @@ _inline void CalcRgbsDXT1(UINT32 dwRGBIndex[4], UINT16 wBlockColor2[2])
 
 	__m128i xmm0 = _mm_setzero_si128();
 
-	if( wBlockColor2[0] > wBlockColor2[1] ){
+	if(wBlockColor2[0] > wBlockColor2[1]) {
 		xmm1 = _mm_slli_epi64(_mm_unpacklo_epi8(xmm1, xmm0), 1);
 		xmm2 = _mm_unpacklo_epi8(xmm2, xmm0);
 		xmmres = _mm_set_epi32(0x00000001, 0x00010001, 0x00000001, 0x00010001);
@@ -50,7 +50,7 @@ _inline void CalcRgbsDXT1(UINT32 dwRGBIndex[4], UINT16 wBlockColor2[2])
 		xmm1 = _mm_packus_epi16(xmm1, xmm0);
 		dwRGBIndex[2] = xmm1.m128i_u32[1];
 		dwRGBIndex[3] = xmm1.m128i_u32[0];
-	}else{
+	} else {
 		xmm1 = _mm_avg_epu8(xmm1, xmm2);
 		dwRGBIndex[2] = xmm1.m128i_u32[1];
 		dwRGBIndex[3] = 0;
@@ -64,8 +64,8 @@ _inline void CalcRgbsDXT35(UINT32 dwRGBIndex[4], UINT16 wBlockColor2[2])
 	__m128i xmmgmask = _mm_set_epi32(0, 0, 0x07e0, 0x07e0);
 	__m128i xmmbmask = _mm_set_epi32(0, 0, 0x001f, 0x001f);
 
-	__m128i xmmres = _mm_set_epi16(	0, 0, 0, 0, \
-									0, wBlockColor2[1], 0, wBlockColor2[0]);
+	__m128i xmmres = _mm_set_epi16(0, 0, 0, 0, \
+		0, wBlockColor2[1], 0, wBlockColor2[0]);
 
 	__m128i xmmr = _mm_and_si128(xmmres, xmmrmask);
 	__m128i xmmg = _mm_and_si128(xmmres, xmmgmask);
@@ -92,9 +92,9 @@ _inline void CalcRgbsDXT35(UINT32 dwRGBIndex[4], UINT16 wBlockColor2[2])
 	xmm3 = _mm_srli_epi16(_mm_mulhi_epu16(xmm3, xmm5), 1);
 	xmm3 = _mm_packus_epi16(xmm3, xmm0);
 
-	if( wBlockColor2[0] > wBlockColor2[1] ){
+	if(wBlockColor2[0] > wBlockColor2[1]) {
 		dwRGBIndex[2] = xmm3.m128i_u32[1];
-	}else{
+	} else {
 		xmm1 = _mm_avg_epu8(xmm1, xmm2);
 		dwRGBIndex[2] = xmm1.m128i_u32[1];
 	}
@@ -118,10 +118,8 @@ void TPicDlg::decode_dds_dxt1(BYTE *ddsimage)
 	dwQuotX = picWidth & 0xfffffffc;
 	dwQuotY = picHeight & 0xfffffffc;
 
-	for(UINT32 ly = 0;ly<dwQuotY;ly += 4)
-	{
-		for(UINT32 lx = 0;lx<dwQuotX;lx += 4)
-		{
+	for(UINT32 ly = 0;ly < dwQuotY;ly += 4) {
+		for(UINT32 lx = 0;lx < dwQuotX;lx += 4) {
 
 			CalcRgbsDXT1(dwColorIndexInBlock, lpwDdsBuffer);
 			lpwDdsBuffer += 2;
@@ -129,17 +127,15 @@ void TPicDlg::decode_dds_dxt1(BYTE *ddsimage)
 			UINT32	iColorIndex = *(UINT32*)lpwDdsBuffer;
 			lpwDdsBuffer += 2;
 
-			for(int j = 0, k = 0; j < 4; ++j )
-			{
-				for(int i = 0; i < 4; ++i, k += 2 )
-				{
-					int index = (iColorIndex >> k) & 0x03 ;
+			for(int j = 0, k = 0; j < 4; ++j) {
+				for(int i = 0; i < 4; ++i, k += 2) {
+					int index = (iColorIndex >> k) & 0x03;
 					*(lpdwBuffer + (ly + j) * picWidth + lx + i) = dwColorIndexInBlock[index];
 				}
 			}
 
 		}
-				
+
 	}
 }
 
@@ -156,10 +152,8 @@ void TPicDlg::decode_dds_dxt3(BYTE *ddsimage)
 	dwQuotX = picWidth & 0xfffffffc;
 	dwQuotY = picHeight & 0xfffffffc;
 
-	for(UINT32 ly = 0;ly<dwQuotY;ly += 4)
-	{
-		for(UINT32 lx = 0;lx<dwQuotX;lx += 4)
-		{
+	for(UINT32 ly = 0;ly < dwQuotY;ly += 4) {
+		for(UINT32 lx = 0;lx < dwQuotX;lx += 4) {
 			BYTE	*dwAlpha;
 
 			__m128i xmm0, xmm1, xmm2, xmm3;
@@ -179,17 +173,15 @@ void TPicDlg::decode_dds_dxt3(BYTE *ddsimage)
 			lpwDdsBuffer += 4;
 
 			CalcRgbsDXT35(dwColorIndexInBlock, lpwDdsBuffer);
-			lpwDdsBuffer +=2;
+			lpwDdsBuffer += 2;
 
 			UINT32	iColorIndex = *(UINT32*)lpwDdsBuffer;
-			lpwDdsBuffer +=2;
+			lpwDdsBuffer += 2;
 
-			for(int j = 0, k = 0; j < 4; ++j )
-			{
-				for(int i = 0; i < 4; ++i, ++k )
-				{
+			for(int j = 0, k = 0; j < 4; ++j) {
+				for(int i = 0; i < 4; ++i, ++k) {
 					int cindex = iColorIndex & 0x03;
-					iColorIndex>>=2;
+					iColorIndex >>= 2;
 
 					UINT32	*lpbufptr = lpdwBuffer + (ly + j) * picWidth + lx + i;
 					*lpbufptr = dwColorIndexInBlock[cindex] | (dwAlpha[k] << 24);
@@ -219,10 +211,8 @@ void TPicDlg::decode_dds_dxt5(BYTE *ddsimage)
 
 	QWORD	iAlphaIndex;
 
-	for(UINT32 ly = 0;ly<dwQuotY;ly += 4)
-	{
-		for(UINT32 lx = 0;lx<dwQuotX;lx += 4)
-		{
+	for(UINT32 ly = 0;ly < dwQuotY;ly += 4) {
+		for(UINT32 lx = 0;lx < dwQuotX;lx += 4) {
 			//DXT5使用64bit 保存 alpha 信息，其中前2个8bit用来存放alpha0,alpha1,这是最大值和最小值，后3*16个bit存放索引，如果
 			//a0>a1,就使用8级插值，如果a0<=a1,就保留110(a6)和111(a7)来显示alpha为0时和255时的情况。
 			BYTE *dwAlpha01 = (BYTE*)lpwDdsBuffer;
@@ -255,8 +245,7 @@ void TPicDlg::decode_dds_dxt5(BYTE *ddsimage)
 			dwAlpha = (UINT16*)&xmm3;
 			xmm0 = _mm_setzero_si128();
 
-			if(dwAlpha01[0] > dwAlpha01[1])
-			{
+			if(dwAlpha01[0] > dwAlpha01[1]) {
 				//x=((uint16(y)*M)>>17+y)>>2 m=0x924a ==>x=y/7
 				xmma = _mm_set1_epi16(dwAlpha01[0]);
 				xmmab = _mm_set1_epi16(dwAlpha01[0] - dwAlpha01[1]);
@@ -268,7 +257,7 @@ void TPicDlg::decode_dds_dxt5(BYTE *ddsimage)
 				xmm3 = _mm_srli_epi16(_mm_mulhi_epu16(xmm3, xmm1), 2);
 				xmm3 = _mm_subs_epu8(xmma, xmm3);
 
-			}else{
+			} else {
 				//x=((uint16(y)*M)>>17+y)>>1 m=0x6667 ==>x=y/5
 				xmma = _mm_set1_epi16(dwAlpha01[0]);
 				xmmab = _mm_set1_epi16(dwAlpha01[1] - dwAlpha01[0]);
@@ -286,21 +275,21 @@ void TPicDlg::decode_dds_dxt5(BYTE *ddsimage)
 			}
 
 			iAlphaIndex = *(QWORD*)lpwDdsBuffer & 0x0000ffffffffffff;
-			lpwDdsBuffer +=3;
+			lpwDdsBuffer += 3;
 
 			CalcRgbsDXT35(dwColorIndexInBlock, lpwDdsBuffer);
-			lpwDdsBuffer +=2;
+			lpwDdsBuffer += 2;
 
 			UINT32	iColorIndex = *(UINT32*)lpwDdsBuffer;
-			lpwDdsBuffer +=2;
+			lpwDdsBuffer += 2;
 
-			for(int j = 0, k = 0; j < 4; ++j ){
-				for(int i = 0; i < 4; ++i, ++k ){
+			for(int j = 0, k = 0; j < 4; ++j) {
+				for(int i = 0; i < 4; ++i, ++k) {
 					int cindex = iColorIndex & 0x03;
-					iColorIndex>>=2;
+					iColorIndex >>= 2;
 
-					int aindex =  iAlphaIndex & 0x07;
-					iAlphaIndex>>=3;
+					int aindex = iAlphaIndex & 0x07;
+					iAlphaIndex >>= 3;
 
 					UINT32	*lpbufptr = lpdwBuffer + (ly + j) * picWidth + lx + i;
 					*lpbufptr = dwColorIndexInBlock[cindex] | (dwAlpha[aindex] << 24);
@@ -317,11 +306,9 @@ void TPicDlg::decode_dds_a8r8g8b8(BYTE *ddsimage)
 	UINT32	*lpdwBuffer = (UINT32*)cleanimage;
 	UINT32	*lpwDdsBuffer = (UINT32*)ddsimage;
 
-	for(UINT32 j = 0;j<picHeight;++j)
-	{
+	for(UINT32 j = 0;j < picHeight;++j) {
 		UINT32 *lpdwBufferPtr = lpdwBuffer + picWidth * j;
-		for(UINT32 i = 0;i<picWidth;++i)
-		{
+		for(UINT32 i = 0;i < picWidth;++i) {
 			*lpdwBufferPtr = *lpwDdsBuffer;
 			++lpdwBufferPtr;
 			++lpwDdsBuffer;
@@ -341,11 +328,9 @@ void TPicDlg::decode_dds_a8b8g8r8(BYTE *ddsimage)
 	UINT32	*lpdwBuffer = (UINT32*)cleanimage;
 	UINT32	*lpwDdsBuffer = (UINT32*)ddsimage;
 
-	for(UINT32 j = 0;j<picHeight;++j)
-	{
+	for(UINT32 j = 0;j < picHeight;++j) {
 		UINT32 *lpdwBufferPtr = lpdwBuffer + picWidth * j;
-		for(UINT32 i = 0;i<picWidth;++i)
-		{
+		for(UINT32 i = 0;i < picWidth;++i) {
 			*lpdwBufferPtr = (*lpwDdsBuffer & 0xff00ff00) | (_lrotr(*lpwDdsBuffer, 16) & 0xff00ff);
 			++lpdwBufferPtr;
 			++lpwDdsBuffer;
@@ -412,8 +397,7 @@ void TPicDlg::decode_dds_a4r4g4b4(BYTE *ddsimage)
 
 	UINT32	nLoopCount = picHeight * picWidth / 4;
 
-	for(UINT32 i = 0;i<nLoopCount;++i)
-	{
+	for(UINT32 i = 0;i < nLoopCount;++i) {
 		__m128i mm1 = _mm_setzero_si128();
 		__m128i mm0 = _mm_set_epi32(0, 0, *(lpwDdsBuffer + 1), *lpwDdsBuffer);
 		//__m128i mm0 = _mm_set_epi32(0, 0, 0x12345678, 0x9abcdef1);
@@ -447,15 +431,13 @@ void TPicDlg::decode_dds_a8r3g3b2(BYTE *ddsimage)
 	UINT32	*lpdwBuffer = (UINT32*)cleanimage;
 	UINT16	*lpwDdsBuffer = (UINT16*)ddsimage;
 
-	for(UINT32 j = 0;j<picHeight;++j)
-	{
-		for(UINT32 i = 0;i<picWidth;++i)
-		{
+	for(UINT32 j = 0;j < picHeight;++j) {
+		for(UINT32 i = 0;i < picWidth;++i) {
 			//no test
-			*lpdwBuffer =	(((*lpwDdsBuffer) & 0xff00) << 24) |
-							(((*lpwDdsBuffer) & 0xe0) << 4) | 
-							(((*lpwDdsBuffer) & 0x1c) << 3) | 
-							(((*lpwDdsBuffer) & 0x3) << 2);
+			*lpdwBuffer = (((*lpwDdsBuffer) & 0xff00) << 24) |
+				(((*lpwDdsBuffer) & 0xe0) << 4) |
+				(((*lpwDdsBuffer) & 0x1c) << 3) |
+				(((*lpwDdsBuffer) & 0x3) << 2);
 			++lpdwBuffer;
 			++lpwDdsBuffer;
 		}
@@ -468,15 +450,13 @@ void TPicDlg::decode_dds_a2r10g10b10(BYTE *ddsimage)
 	UINT32	*lpdwBuffer = (UINT32*)cleanimage;
 	UINT32	*lpwDdsBuffer = (UINT32*)ddsimage;
 
-	for(UINT32 j = 0;j<picHeight;++j)
-	{
-		for(UINT32 i = 0;i<picWidth;++i)
-		{
+	for(UINT32 j = 0;j < picHeight;++j) {
+		for(UINT32 i = 0;i < picWidth;++i) {
 			//no test
-			*lpdwBuffer =	((*lpwDdsBuffer) & 0xc0000000) |
-							(((*lpwDdsBuffer) & 0x3fc00000) >> 6) |
-							(((*lpwDdsBuffer) & 0xff000) >> 4) |
-							(((*lpwDdsBuffer) & 0x3fc) >> 2);
+			*lpdwBuffer = ((*lpwDdsBuffer) & 0xc0000000) |
+				(((*lpwDdsBuffer) & 0x3fc00000) >> 6) |
+				(((*lpwDdsBuffer) & 0xff000) >> 4) |
+				(((*lpwDdsBuffer) & 0x3fc) >> 2);
 			++lpdwBuffer;
 			++lpwDdsBuffer;
 		}
@@ -489,15 +469,13 @@ void TPicDlg::decode_dds_a2b10g10r10(BYTE *ddsimage)
 	UINT32	*lpdwBuffer = (UINT32*)cleanimage;
 	UINT32	*lpwDdsBuffer = (UINT32*)ddsimage;
 
-	for(UINT32 j = 0;j<picHeight;++j)
-	{
-		for(UINT32 i = 0;i<picWidth;++i)
-		{
+	for(UINT32 j = 0;j < picHeight;++j) {
+		for(UINT32 i = 0;i < picWidth;++i) {
 			//no test
-			*lpdwBuffer =	((*lpwDdsBuffer) & 0xc0000000) |
-							(((*lpwDdsBuffer) & 0x3fc00000) >> 22) |
-							(((*lpwDdsBuffer) & 0xff000) >> 4) |
-							(((*lpwDdsBuffer) & 0x3fc) <<14 );
+			*lpdwBuffer = ((*lpwDdsBuffer) & 0xc0000000) |
+				(((*lpwDdsBuffer) & 0x3fc00000) >> 22) |
+				(((*lpwDdsBuffer) & 0xff000) >> 4) |
+				(((*lpwDdsBuffer) & 0x3fc) << 14);
 			++lpdwBuffer;
 			++lpwDdsBuffer;
 		}
@@ -513,8 +491,7 @@ void TPicDlg::decode_dds_a2b10g10r10(BYTE *ddsimage)
 BOOL TPicDlg::makeTgaColorMappedData(BYTE *&tgaimage, int fmt, char * &bufferOfColorMappedData, UINT16 wColorTableSize/*, int nTgaBitsPerPixel*/)
 {
 
-	switch(fmt)
-	{
+	switch(fmt) {
 	case FMTTGA_RAWTBL:
 	case FMTTGA_RLETBL:
 
@@ -596,11 +573,11 @@ void TPicDlg::decode_tga_ColorMapped8(BYTE *tgaimage, char *lpColorMappedData)
 	char	*lpdwBuffer = cleanimage + stride * (picHeight - 1);
 	BYTE *lpRgbdata = tgaimage;
 
-	for(UINT i = 0;i<picHeight;++i){
+	for(UINT i = 0;i < picHeight;++i) {
 
 		char* lpdwBufferPtr = lpdwBuffer;
 
-		for(UINT j = 0;j<picWidth;++j){
+		for(UINT j = 0;j < picWidth;++j) {
 
 			memcpy(lpdwBufferPtr, lpColorMappedData + (*lpRgbdata * bytesPerPixel), bytesPerPixel);
 			++lpRgbdata;
@@ -617,12 +594,12 @@ void TPicDlg::decode_tga_ColorMapped16(BYTE *tgaimage, char *lpColorMappedData)
 {
 	char	*lpdwBuffer = /*(UINT16*)*/(cleanimage + stride * (picHeight - 1));
 	UINT16 *lpRgbdata = (UINT16*)tgaimage;
-				
-	for(UINT i = 0;i<picHeight;++i){
+
+	for(UINT i = 0;i < picHeight;++i) {
 
 		char* lpdwBufferPtr = lpdwBuffer;
 
-		for(UINT j = 0;j<picWidth;++j){
+		for(UINT j = 0;j < picWidth;++j) {
 
 			memcpy(lpdwBufferPtr, lpColorMappedData + (*lpRgbdata * bytesPerPixel), bytesPerPixel);
 			++lpRgbdata;
@@ -640,10 +617,10 @@ void TPicDlg::decode_tga_RGB(BYTE *tgaimage)
 
 	char	*lpdwBuffer = /*(UINT16*)*/(cleanimage + stride * (picHeight - 1));
 	BYTE	*lpRgbdata = /*(UINT16*)*/tgaimage;
-	
+
 	//memcpy(lpdwBuffer, lpRgbdata, stride * picHeight);
 
-	for(UINT i = 0;i<picHeight;++i){
+	for(UINT i = 0;i < picHeight;++i) {
 
 		memcpy(lpdwBuffer, lpRgbdata, bytesPerLine);
 		lpdwBuffer -= stride;
@@ -665,20 +642,18 @@ void TPicDlg::decode_tga_RGBREL(BYTE *tgaimage)
 
 	char* lpdwBufferPtr = lpdwBuffer;
 
-	while(i < dwPixels)
-	{
-		
+	while(i < dwPixels) {
+
 		if(bytesPerLine == iRowPoint)
 			iRowPoint = 0, lpdwBufferPtr = (lpdwBuffer -= stride);
 
 		//检查是否run-length 数据包
 		byteRleRepeatDataCount = (*lpRgbdata & 0x7f) + 1;
 
-		if( *lpRgbdata & 0x80)
-		{
+		if(*lpRgbdata & 0x80) {
 			++lpRgbdata;
 
-			for(int j = 0;j<byteRleRepeatDataCount;++j, ++i){
+			for(int j = 0;j < byteRleRepeatDataCount;++j, ++i) {
 
 				memcpy(lpdwBufferPtr, lpRgbdata, bytesPerPixel);
 				//*(UINT16*)lpdwBufferPtr = *(UINT16*)lpRgbdata;
@@ -690,22 +665,21 @@ void TPicDlg::decode_tga_RGBREL(BYTE *tgaimage)
 
 			}
 
-			lpRgbdata+=bytesPerPixel;
+			lpRgbdata += bytesPerPixel;
 
-		}else{
+		} else {
 			++lpRgbdata;
 
-				for(int j = 0;j<byteRleRepeatDataCount;++j, ++i)
-				{
-					memcpy(lpdwBufferPtr, lpRgbdata, bytesPerPixel);
-					//*(UINT16*)lpdwBufferPtr = *(UINT16*)lpRgbdata;
-					iRowPoint += bytesPerPixel;
-					//if(stride == (iRowPoint += 2))
-					//	iRowPoint = 0, lpdwBufferPtr = (lpdwBuffer -= stride);
-					//else
-					lpdwBufferPtr += bytesPerPixel;
-					lpRgbdata+=bytesPerPixel;
-				}
+			for(int j = 0;j < byteRleRepeatDataCount;++j, ++i) {
+				memcpy(lpdwBufferPtr, lpRgbdata, bytesPerPixel);
+				//*(UINT16*)lpdwBufferPtr = *(UINT16*)lpRgbdata;
+				iRowPoint += bytesPerPixel;
+				//if(stride == (iRowPoint += 2))
+				//	iRowPoint = 0, lpdwBufferPtr = (lpdwBuffer -= stride);
+				//else
+				lpdwBufferPtr += bytesPerPixel;
+				lpRgbdata += bytesPerPixel;
+			}
 
 		}
 
@@ -725,8 +699,7 @@ void TPicDlg::decode_tga_ColorMapped8REL(BYTE *tgaimage, char *lpColorMappedData
 
 	char* lpdwBufferPtr = lpdwBuffer;
 
-	while(i < dwPixels)
-	{
+	while(i < dwPixels) {
 
 		if(bytesPerLine == iRowPoint)
 			iRowPoint = 0, lpdwBufferPtr = (lpdwBuffer -= stride);
@@ -734,12 +707,10 @@ void TPicDlg::decode_tga_ColorMapped8REL(BYTE *tgaimage, char *lpColorMappedData
 		//检查是否run-length 数据包
 		byteRleRepeatDataCount = *lpRgbdata & 0x7f;
 
-		if( *lpRgbdata & 0x80)
-		{
+		if(*lpRgbdata & 0x80) {
 			++lpRgbdata;
 
-			for(int j = 0;j<byteRleRepeatDataCount;++j, ++i)
-			{
+			for(int j = 0;j < byteRleRepeatDataCount;++j, ++i) {
 				//*lpdwBufferPtr = *(lpColorMappedData + *lpRgbdata);
 				memcpy(lpdwBufferPtr, lpColorMappedData + (*lpRgbdata * bytesPerPixel), bytesPerPixel);
 
@@ -749,11 +720,10 @@ void TPicDlg::decode_tga_ColorMapped8REL(BYTE *tgaimage, char *lpColorMappedData
 			}
 			++lpRgbdata;
 
-		}else{
+		} else {
 			++lpRgbdata;
 
-			for(int j = 0;j<byteRleRepeatDataCount;++j, ++i)
-			{
+			for(int j = 0;j < byteRleRepeatDataCount;++j, ++i) {
 				//*lpdwBufferPtr = *(lpColorMappedData + *lpRgbdata);
 				memcpy(lpdwBufferPtr, lpColorMappedData + (*lpRgbdata * bytesPerPixel), bytesPerPixel);
 
@@ -781,20 +751,17 @@ void TPicDlg::decode_tga_ColorMapped16REL(BYTE *tgaimage, char *lpColorMappedDat
 
 	char* lpdwBufferPtr = lpdwBuffer;
 
-	while(i < dwPixels)
-	{
+	while(i < dwPixels) {
 		if(bytesPerLine == iRowPoint)
 			iRowPoint = 0, lpdwBufferPtr = (lpdwBuffer -= stride);
 
 		//检查是否run-length 数据包
 		byteRleRepeatDataCount = *lpRgbdata & 0x7f;
 
-		if( *lpRgbdata & 0x80)
-		{
+		if(*lpRgbdata & 0x80) {
 			++lpRgbdata;
 
-			for(int j = 0;j<byteRleRepeatDataCount;++j, ++i)
-			{
+			for(int j = 0;j < byteRleRepeatDataCount;++j, ++i) {
 				//*lpdwBufferPtr = *(lpColorMappedData + *(WORD*)lpRgbdata);
 				memcpy(lpdwBufferPtr, lpColorMappedData + (*lpRgbdata * bytesPerPixel), bytesPerPixel);
 
@@ -805,11 +772,10 @@ void TPicDlg::decode_tga_ColorMapped16REL(BYTE *tgaimage, char *lpColorMappedDat
 			++lpRgbdata;
 
 
-		}else{
+		} else {
 			++lpRgbdata;
 
-			for(int j = 0;j<byteRleRepeatDataCount;++j, ++i)
-			{
+			for(int j = 0;j < byteRleRepeatDataCount;++j, ++i) {
 				//*lpdwBufferPtr = *(lpColorMappedData + *(WORD*)lpRgbdata);
 				memcpy(lpdwBufferPtr, lpColorMappedData + (*lpRgbdata * bytesPerPixel), bytesPerPixel);
 

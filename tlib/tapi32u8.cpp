@@ -1,6 +1,4 @@
-#ifdef _USE_T_U8FUNC_
-static char *tap32u8_id = 
-	"@(#)Copyright (C) 1996-2010 H.Shirouzu		tap32u8.cpp	Ver0.99";
+
 /* ========================================================================
 	Project  Name			: Win32 Lightweight  Class Library Test
 	Module Name				: Application Frame Class
@@ -9,8 +7,11 @@ static char *tap32u8_id =
 	Copyright				: H.Shirouzu
 	Reference				: 
 	======================================================================== */
-
 #include "tlib.h"
+#ifdef _USE_T_U8FUNC_
+static char *tap32u8_id =
+"@(#)Copyright (C) 1996-2010 H.Shirouzu		tap32u8.cpp	Ver0.99";
+
 #include "tapi32u8.h"
 
 #include <stdio.h>

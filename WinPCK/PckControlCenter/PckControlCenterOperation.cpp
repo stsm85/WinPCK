@@ -32,17 +32,16 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 
 	StringCchLength(lpszFile, MAX_PATH, &nFileLength);
 
-	if(0 == lstrcmpi(lpszFile + nFileLength - 4, TEXT(".pck"))){
+	if(0 == lstrcmpi(lpszFile + nFileLength - 4, TEXT(".pck"))) {
 		emunFileFormat = FMTPCK_PCK;
-	}else if(0 == lstrcmpi(lpszFile + nFileLength - 4, TEXT(".zup"))){
+	} else if(0 == lstrcmpi(lpszFile + nFileLength - 4, TEXT(".zup"))) {
 		emunFileFormat = FMTPCK_ZUP;
 	}
 
-	while(1){
+	while(1) {
 
 		Close();
-		switch(emunFileFormat)
-		{
+		switch(emunFileFormat) {
 		case FMTPCK_PCK:
 			m_lpClassPck = new CPckClass(&cParams);
 			break;
@@ -60,8 +59,8 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 
 		PrintLog(LOG_FLAG_INFO, TEXT_LOG_OPENFILE, (TCHAR *)lpszFile);
 
-		if(m_lpClassPck->Init(lpszFile)){
-			
+		if(m_lpClassPck->Init(lpszFile)) {
+
 			DeleteRestoreData();
 
 			m_lpPckRootNode = m_lpClassPck->GetPckPathNode();
@@ -72,19 +71,19 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 			SendMessage(m_hWndMain, WM_FRESH_MAIN_CAPTION, 1, 0);
 			return TRUE;
 
-		}else{
-			
+		} else {
 
-			if(hasRestoreData){
-				if(IDYES == MessageBoxA(m_hWndMain, TEXT_ERROR_OPEN_AFTER_UPDATE, TEXT_ERROR, MB_YESNO | MB_ICONHAND)){
+
+			if(hasRestoreData) {
+				if(IDYES == MessageBoxA(m_hWndMain, TEXT_ERROR_OPEN_AFTER_UPDATE, TEXT_ERROR, MB_YESNO | MB_ICONHAND)) {
 
 					RestoreData(lpszFile);
-				}else{
+				} else {
 					//Close();
 					return FALSE;
 				}
 
-			}else{
+			} else {
 
 				//Close();
 				return FALSE;
@@ -109,8 +108,7 @@ int	CPckControlCenter::GetPckVersion()
 
 void CPckControlCenter::Close()
 {
-	if(NULL != m_lpClassPck)
-	{
+	if(NULL != m_lpClassPck) {
 		PrintLog(LOG_FLAG_INFO, TEXT_LOG_CLOSEFILE);
 
 		delete m_lpClassPck;
@@ -129,10 +127,9 @@ void CPckControlCenter::Close()
 void CPckControlCenter::CreateRestoreData()
 {
 
-	if(m_lpClassPck->GetPckBasicInfo(m_lpszFile4Restore, &m_PckHeadForRestore, m_lpPckFileIndexData, m_dwPckFileIndexDataSize))
-	{
+	if(m_lpClassPck->GetPckBasicInfo(m_lpszFile4Restore, &m_PckHeadForRestore, m_lpPckFileIndexData, m_dwPckFileIndexDataSize)) {
 		hasRestoreData = TRUE;
-	}else{
+	} else {
 		PrintLogE(TEXT_ERROR_GET_RESTORE_DATA);
 	}
 
@@ -140,9 +137,8 @@ void CPckControlCenter::CreateRestoreData()
 
 void CPckControlCenter::RestoreData(LPCTSTR lpszFile)
 {
-	if(hasRestoreData)
-	{
-		if(0 == lstrcmpi(m_lpszFile4Restore, lpszFile)){
+	if(hasRestoreData) {
+		if(0 == lstrcmpi(m_lpszFile4Restore, lpszFile)) {
 
 			if(!m_lpClassPck->SetPckBasicInfo(&m_PckHeadForRestore, m_lpPckFileIndexData, m_dwPckFileIndexDataSize))
 				PrintLogE(TEXT_ERROR_RESTORING);
@@ -155,7 +151,7 @@ void CPckControlCenter::RestoreData(LPCTSTR lpszFile)
 
 void CPckControlCenter::DeleteRestoreData()
 {
-	if(NULL != m_lpPckFileIndexData){
+	if(NULL != m_lpPckFileIndexData) {
 
 		free(m_lpPckFileIndexData);
 		m_lpPckFileIndexData = NULL;
@@ -180,7 +176,7 @@ BOOL	CPckControlCenter::RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceStri
 }
 
 //更新pck文件
-BOOL	CPckControlCenter::UpdatePckFile(LPTSTR szPckFile, TCHAR (*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert)
+BOOL	CPckControlCenter::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert)
 {
 	return m_lpClassPck->UpdatePckFile(szPckFile, lpszFilePath, nFileCount, lpNodeToInsert);
 }

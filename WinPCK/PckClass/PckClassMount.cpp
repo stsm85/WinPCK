@@ -29,8 +29,7 @@ void CPckClass::BuildDirTree()
 
 	LPPCKINDEXTABLE lpPckIndexTable = m_lpPckIndexTable;
 
-	for(DWORD i = 0;i<m_PckAllInfo.dwFileCount;++i)
-	{
+	for(DWORD i = 0;i < m_PckAllInfo.dwFileCount;++i) {
 		//½¨Á¢Ä¿Â¼
 		AddFileToNode(&m_RootNode, lpPckIndexTable);
 		++lpPckIndexTable;

@@ -86,6 +86,7 @@ BOOL CMapViewFileRead::OpenPck(LPCWSTR lpszFilename)
 		uqwFullSize.qwValue = dwPckSize.qwValue + dwPkxSize.qwValue;
 
 	}else{
+		assert(FALSE);
 		return FALSE;
 	}
 
@@ -107,12 +108,13 @@ BOOL CMapViewFileRead::Open(LPCSTR lpszFilename)
 			if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(szFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL)))
 				return FALSE;
 		}else{
+			assert(FALSE);
 			return FALSE;
 		}
 	}
-#if ENABLE_PCK_PKX_FILE
-	strcpy_s(m_szPckFileName, MAX_PATH, lpszFilename);
-#endif
+//#if ENABLE_PCK_PKX_FILE
+//	strcpy_s(m_szPckFileName, MAX_PATH, lpszFilename);
+//#endif
 	return TRUE;
 }
 
@@ -128,20 +130,21 @@ BOOL CMapViewFileRead::Open(LPCWSTR lpszFilename)
 			if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(szFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL)))
 				return FALSE;
 		}else{
+			assert(FALSE);
 			return FALSE;
 		}
 
 	}
-#if ENABLE_PCK_PKX_FILE
-	wcscpy_s(m_tszPckFileName, MAX_PATH, lpszFilename);
-#endif
+//#if ENABLE_PCK_PKX_FILE
+//	wcscpy_s(m_tszPckFileName, MAX_PATH, lpszFilename);
+//#endif
 	return TRUE;
 }
 
 BOOL CMapViewFileRead::Mapping(LPCSTR lpszNamespace)
 {
 	if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, 0, lpszNamespace))){
-
+		assert(FALSE);
 		return FALSE;
 	}
 #if ENABLE_PCK_PKX_FILE
@@ -151,7 +154,7 @@ BOOL CMapViewFileRead::Mapping(LPCSTR lpszNamespace)
 		strcat_s(szNamespace_2, 16, "_2");
 
 		if(NULL == (hFileMapping2 = CreateFileMappingA(hFile2, NULL, PAGE_READONLY, 0, 0, szNamespace_2))){
-
+			assert(FALSE);
 			return FALSE;
 		}
 

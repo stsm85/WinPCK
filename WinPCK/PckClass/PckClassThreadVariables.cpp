@@ -35,16 +35,15 @@ char *formatString(const char *format, ...)
 int logOutput(const char *file, const char *text)
 {
 	char szFile[MAX_PATH];
-	if (0 == strncmp("CPckClass::", file, strlen("CPckClass::"))) {
+	if(0 == strncmp("CPckClass::", file, strlen("CPckClass::"))) {
 		sprintf_s(szFile, "G:\\pcktest\\%s.log", file + strlen("CPckClass::"));
-	}else{
+	} else {
 		sprintf_s(szFile, "G:\\pcktest\\%s.log", file);
 	}
-	
+
 
 	FILE *pFile = fopen(szFile, "ab");
-	if (pFile != NULL)
-	{
+	if(pFile != NULL) {
 		fseek(pFile, 0, SEEK_END);
 		//string tstr = getLogString() + " - ";
 		//int ret = fwrite(tstr.c_str(), 1, tstr.length(), pFile);
@@ -59,7 +58,7 @@ int logOutput(const char *file, const char *text)
 
 _inline char * __fastcall mystrcpy(char * dest, const char *src)
 {
-	while ((*dest = *src))
+	while((*dest = *src))
 		dest++, src++;
 	return dest;
 }

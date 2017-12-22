@@ -15,67 +15,59 @@
 
 BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer)
 {
-	
+
 	LPPCKINDEXTABLE		lpPckFileIndexTable;
 
 	//"element\" = 0x6d656c65, 0x5c746e656d656c65
-	if(0x6d656c65 == *(DWORD*)lpZupFileIndexTable->cFileIndex.szFilename){
+	if(0x6d656c65 == *(DWORD*)lpZupFileIndexTable->cFileIndex.szFilename) {
 
 		lpPckFileIndexTable = GetBaseFileIndex(lpZupFileIndexTable, m_lpZupIndexTable);
 
 		DWORD	dwFileLengthDecompress2 = lpZupFileIndexTable->cFileIndex.dwFileClearTextSize;
 		DWORD	dwFileLengthDecompress1 = lpPckFileIndexTable->cFileIndex.dwFileClearTextSize;
 
-		if(0 != sizeOfBuffer && sizeOfBuffer < dwFileLengthDecompress2){
+		if(0 != sizeOfBuffer && sizeOfBuffer < dwFileLengthDecompress2) {
 			dwFileLengthDecompress2 = sizeOfBuffer;
 			if(sizeOfBuffer < dwFileLengthDecompress1)
 				dwFileLengthDecompress1 = sizeOfBuffer;
 		}
 
-		char	*_cipherbuf = (char*) malloc (dwFileLengthDecompress1);
+		char	*_cipherbuf = (char*)malloc(dwFileLengthDecompress1);
 
-		if(NULL == _cipherbuf)
-		{
+		if(NULL == _cipherbuf) {
 			PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			return FALSE;
 		}
 
+		if(CPckClass::GetSingleFileData(lpvoidFileRead, lpPckFileIndexTable, _cipherbuf, dwFileLengthDecompress1)) {
 
-		if(CPckClass::GetSingleFileData(lpvoidFileRead, lpPckFileIndexTable, _cipherbuf, dwFileLengthDecompress1))
-		{
-
-			if(check_zlib_header(_cipherbuf + 4))
-			{
+			if(check_zlib_header(_cipherbuf + 4)) {
 
 				if(Z_OK != decompress_part((BYTE*)buffer, &dwFileLengthDecompress2,
-							(BYTE*)_cipherbuf + 4, dwFileLengthDecompress1 - 4, lpZupFileIndexTable->cFileIndex.dwFileClearTextSize))
-				{
-					if(lpZupFileIndexTable->cFileIndex.dwFileClearTextSize == lpZupFileIndexTable->cFileIndex.dwFileCipherTextSize)
-					{
+					(BYTE*)_cipherbuf + 4, dwFileLengthDecompress1 - 4, lpZupFileIndexTable->cFileIndex.dwFileClearTextSize)) {
+					if(lpZupFileIndexTable->cFileIndex.dwFileClearTextSize == lpZupFileIndexTable->cFileIndex.dwFileCipherTextSize) {
 						memcpy(buffer, _cipherbuf + 4, dwFileLengthDecompress2);
-					}
-					else
-					{
+					} else {
 						char szPrintf[160];
 						sprintf_s(szPrintf, 160, TEXT_UNCOMPRESSDATA_FAIL, lpZupFileIndexTable->cFileIndex.szFilename);
 						assert(FALSE);
 						PrintLogE(szPrintf);
 					}
 				}
-			}else{
+			} else {
 				memcpy(buffer, _cipherbuf + 4, dwFileLengthDecompress2);
 			}
 
 			free(_cipherbuf);
 
-		}else{
+		} else {
 			free(_cipherbuf);
 			return FALSE;
 		}
-		
 
-	}else{
-		
+
+	} else {
+
 		lpPckFileIndexTable = lpZupFileIndexTable;
 		return CPckClass::GetSingleFileData(lpvoidFileRead, lpPckFileIndexTable, buffer, sizeOfBuffer);
 	}

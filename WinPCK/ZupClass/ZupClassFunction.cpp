@@ -44,15 +44,13 @@ VOID CZupClass::AddDict(char *&lpszStringToAdd)
 
 	BOOL bContinueWhile = TRUE;
 
-	do{
+	do {
 
-		switch(*lpszFilename)
-		{
+		switch(*lpszFilename) {
 		case '\\':
-			
+
 			*lpszFilename++ = 0;
-			if(NULL != (lpZupDict = m_lpDictHash->add(lpszToFind)))
-			{
+			if(NULL != (lpZupDict = m_lpDictHash->add(lpszToFind))) {
 				DecodeDict(lpZupDict);
 			}
 			lpszToFind = lpszFilename;
@@ -60,10 +58,9 @@ VOID CZupClass::AddDict(char *&lpszStringToAdd)
 			break;
 
 		case '/':
-			
+
 			*lpszFilename++ = 0;
-			if(NULL != (lpZupDict = m_lpDictHash->add(lpszToFind)))
-			{
+			if(NULL != (lpZupDict = m_lpDictHash->add(lpszToFind))) {
 				DecodeDict(lpZupDict);
 			}
 			lpszToFind = lpszFilename;
@@ -73,12 +70,11 @@ VOID CZupClass::AddDict(char *&lpszStringToAdd)
 		case 0x0a:
 
 			*lpszFilename++ = 0;
-			if(NULL != (lpZupDict = m_lpDictHash->add(lpszToFind)))
-			{
+			if(NULL != (lpZupDict = m_lpDictHash->add(lpszToFind))) {
 				DecodeDict(lpZupDict);
 			}
 			lpszToFind = lpszFilename;
-			
+
 			bContinueWhile = FALSE;
 			break;
 
@@ -87,7 +83,7 @@ VOID CZupClass::AddDict(char *&lpszStringToAdd)
 
 			break;
 		}
-	}while(bContinueWhile);
+	} while(bContinueWhile);
 
 	lpszStringToAdd = lpszFilename;
 }
@@ -101,30 +97,27 @@ void CZupClass::DecodeFilename(char *_dst, char *_src)
 	//复制"element\"
 	memcpy(_dst, _src, 8);
 	_dst += 8, _src += 8;
-	
+
 	//char	*_srcptr = _src;
 	//DWORD	dwBase64Len;
 
-	while(0 != *_src)
-	{
+	while(0 != *_src) {
 		__srcbufptr = __srcbuf;
 
-		while( *_src && '\\' != *_src && '/' != *_src)
-		{
+		while(*_src && '\\' != *_src && '/' != *_src) {
 			*__srcbufptr++ = *_src++;
 		}
-		
+
 		*__srcbufptr = 0;
 
 		//在dict中查找base64
 		LPZUP_FILENAME_DICT	lpZupDict;
 
-		if(NULL != (lpZupDict = m_lpDictHash->find(__srcbuf)))
-		{
+		if(NULL != (lpZupDict = m_lpDictHash->find(__srcbuf))) {
 			memcpy(_dst, lpZupDict->realstr, lpZupDict->realstrlength);
 			_dst += lpZupDict->realstrlength;
 			*_dst++ = *_src++;
-		}else{
+		} else {
 			*_dst++ = *_src++;
 		}
 	}
@@ -135,25 +128,22 @@ BOOL CZupClass::BuildZupBaseDict()
 {
 	LPPCKINDEXTABLE	lpPckIndexTable = m_lpPckIndexTable;
 
-	for(unsigned long i = 0;i<m_PckAllInfo.dwFileCount;i++)
-	{
+	for(unsigned long i = 0;i < m_PckAllInfo.dwFileCount;i++) {
 		//以element\开头的都需要解码
 		//其他直接复制
 		//"element\" = 0x6d656c65, 0x5c746e656d656c65
 		//0x2D76 = "v-"
-		if(0x2D76 == *(WORD*)lpPckIndexTable->cFileIndex.szFilename){
+		if(0x2D76 == *(WORD*)lpPckIndexTable->cFileIndex.szFilename) {
 			//wID = atoul(lpNode->szName + 2, NULL, 10);
 			//读取inc文件
-			char	*_incbuf = (char*) malloc (lpPckIndexTable->cFileIndex.dwFileClearTextSize);
+			char	*_incbuf = (char*)malloc(lpPckIndexTable->cFileIndex.dwFileClearTextSize);
 
-			if(NULL == _incbuf)
-			{
+			if(NULL == _incbuf) {
 				//lpNode = lpNode->next;
 				continue;
 			}
 
-			if(GetSingleFileData(NULL, lpPckIndexTable, _incbuf))
-			{
+			if(GetSingleFileData(NULL, lpPckIndexTable, _incbuf)) {
 				char	*__lpincbuf = _incbuf;
 				char	*__lpincbufnextline = _incbuf;
 				char	*__lpincbufEnd = _incbuf + lpPckIndexTable->cFileIndex.dwFileClearTextSize;
@@ -174,8 +164,7 @@ BOOL CZupClass::BuildZupBaseDict()
 
 				//2、!+文件
 				__lpincbuf = __lpincbufnextline;
-				while('!' == *__lpincbuf || '+' == *__lpincbuf)
-				{
+				while('!' == *__lpincbuf || '+' == *__lpincbuf) {
 					//md5值 
 					//34个字节的md5信息
 					//memcpy(szMD5, __lpincbuf, 33);
@@ -258,7 +247,7 @@ BOOL CZupClass::BuildZupBaseDict()
 	//if(NULL == m_lpZupDict)
 	//	return FALSE;
 	//else
-		return TRUE;
+	return TRUE;
 }
 
 

@@ -17,18 +17,15 @@ VOID CPckClass::WriteThread(VOID* pParam)
 	QWORD						dwAddressDataAreaEndAt = mt_dwAddressNameQueue;
 	DWORD						nWrite = 0;
 
-	while (1)
-	{
-		if (pThis->getCompressedDataQueue(dataToWrite, lpPckIndexTableComp))
-		{
+	while(1) {
+		if(pThis->getCompressedDataQueue(dataToWrite, lpPckIndexTableComp)) {
 			QWORD dwAddress = lpPckIndexTableComp->dwAddressFileDataToWrite;
 
 			//此处代码应该在WriteThread线程中实现
 			//判断一下dwAddress的值会不会超过dwTotalFileSizeAfterCompress
 			//如果超过，说明文件空间申请的过小，重新申请一下ReCreateFileMapping
 			//新文件大小在原来的基础上增加(lpfirstFile->dwFileSize + 1mb) >= 64mb ? (lpfirstFile->dwFileSize + 1mb) :64mb
-			if (!pThis->IsNeedExpandWritingFile(mt_lpFileWrite, dwAddress, lpPckIndexTableComp->dwCompressedFilesize, dwTotalFileSizeAfterCompress))
-			{
+			if(!pThis->IsNeedExpandWritingFile(mt_lpFileWrite, dwAddress, lpPckIndexTableComp->dwCompressedFilesize, dwTotalFileSizeAfterCompress)) {
 
 				pThis->AfterWriteThreadFailProcess(
 					mt_lpbThreadRunning,
@@ -44,11 +41,9 @@ VOID CPckClass::WriteThread(VOID* pParam)
 			}
 
 			//处理lpPckFileIndex->dwAddressOffset
-			if (0 != lpPckIndexTableComp->dwCompressedFilesize)
-			{
+			if(0 != lpPckIndexTableComp->dwCompressedFilesize) {
 
-				if (NULL == (lpBufferToWrite = mt_lpFileWrite->View(dwAddress, lpPckIndexTableComp->dwCompressedFilesize)))
-				{
+				if(NULL == (lpBufferToWrite = mt_lpFileWrite->View(dwAddress, lpPckIndexTableComp->dwCompressedFilesize))) {
 					//写过程中目标文件无法View
 					mt_lpFileWrite->UnMaping();
 
@@ -76,19 +71,16 @@ VOID CPckClass::WriteThread(VOID* pParam)
 
 			pThis->freeMaxAndSubtractMemory(lpPckIndexTableComp->dwMallocSize);
 
-			if (mt_dwFileCountOfWriteTarget == nWrite)
-			{
+			if(mt_dwFileCountOfWriteTarget == nWrite) {
 				WaitForSingleObject(mt_evtAllCompressFinish, INFINITE);
 				mt_dwAddressQueue = dwAddressDataAreaEndAt;
 
 				break;
 			}
 
-		}
-		else {
+		} else {
 
-			if (!(*mt_lpbThreadRunning))
-			{
+			if(!(*mt_lpbThreadRunning)) {
 				//取消
 				WaitForSingleObject(mt_evtAllCompressFinish, INFINITE);
 
@@ -99,14 +91,11 @@ VOID CPckClass::WriteThread(VOID* pParam)
 			}
 
 			::Sleep(10);
-
 		}
-
 	}
 
 	SetEvent(mt_evtAllWriteFinish);
-
-	_endthread();
+	return;
 }
 
 
@@ -137,12 +126,12 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	LPFILES_TO_COMPRESS		lpfirstFile;
 
 	size_t nLen = lstrlen(szPath) - 1;
-	if ('\\' == *(szPath + nLen))*(szPath + nLen) = 0;
+	if('\\' == *(szPath + nLen))*(szPath + nLen) = 0;
 	BOOL	IsPatition = lstrlen(szPath) == 2 ? TRUE : FALSE;
 
 	nLen = WideCharToMultiByte(CP_ACP, 0, szPath, -1, szPathMbsc, MAX_PATH, "_", 0);
 
-	if (NULL == (m_firstFile = AllocateFileinfo())) {
+	if(NULL == (m_firstFile = AllocateFileinfo())) {
 
 		PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
@@ -151,7 +140,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 
 	//遍历所有文件
 	EnumFile(szPathMbsc, IsPatition, dwFileCount, lpfirstFile, qwTotalFileSize, nLen);
-	if (0 == dwFileCount)return TRUE;
+	if(0 == dwFileCount)return TRUE;
 
 	//文件数写入窗口类中保存以显示进度
 	mt_dwFileCount = lpPckParams->cVarParams.dwUIProgressUpper = dwFileCount;
@@ -159,7 +148,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	//计算大概需要多大空间qwTotalFileSize
 	qwTotalFileSizeTemp = qwTotalFileSize * 0.6 + PCK_SPACE_DETECT_SIZE;
 #if !PCK_SIZE_UNLIMITED
-	if (((0 != (qwTotalFileSizeTemp >> 32)) && (0x20002 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version)) || \
+	if(((0 != (qwTotalFileSizeTemp >> 32)) && (0x20002 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version)) || \
 		((0 != (qwTotalFileSizeTemp >> 33)) && (0x20003 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version))) {
 
 		PrintLogE(TEXT_COMPFILE_TOOBIG, __FILE__, __FUNCTION__, __LINE__);
@@ -173,7 +162,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	BeforeSingleOrMultiThreadProcess(&pckAllInfo, mt_lpFileWrite, szPckFile, CREATE_ALWAYS, mt_CompressTotalFileSize, threadnum);
 	initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress);
 
-	if (PCK_COMPRESS_NEED_ST < threadnum) {
+	if(PCK_COMPRESS_NEED_ST < threadnum) {
 
 		MultiThreadInitialize(CompressThreadCreate, WriteThread, threadnum);
 		dwAddress = mt_dwAddressQueue;

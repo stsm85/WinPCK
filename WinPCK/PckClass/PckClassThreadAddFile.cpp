@@ -28,7 +28,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 
 	//设置参数
-	if (m_ReadCompleted) {
+	if(m_ReadCompleted) {
 		lstrcpy(szPckFile, m_PckAllInfo.szFilename);
 
 		dwOldPckFileCount = m_PckAllInfo.dwFileCount;
@@ -36,9 +36,9 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 		lpNodeToInsertPtr = lpNodeToInsert;
 
 		//取得当前节点的相对路径
-		if (!GetCurrentNodeString(mt_szCurrentNodeString, lpNodeToInsert))
-		{
+		if(!GetCurrentNodeString(mt_szCurrentNodeString, lpNodeToInsert)) {
 			free(lpszFilePath);
+			assert(FALSE);
 			return FALSE;
 		}
 
@@ -49,8 +49,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 			TEXT_LOG_LEVEL_THREAD, level, threadnum);
 		PrintLogI(szLogString);
 
-	}
-	else {
+	} else {
 
 		m_PckAllInfo.dwAddressName = PCK_DATA_START_AT;
 
@@ -69,11 +68,12 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 	}
 
-	if (NULL == m_firstFile)m_firstFile = AllocateFileinfo();
-	if (NULL == m_firstFile) {
+	if(NULL == m_firstFile)m_firstFile = AllocateFileinfo();
+	if(NULL == m_firstFile) {
 
 		PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		free(lpszFilePath);
+		assert(FALSE);
 		return FALSE;
 	}
 
@@ -81,23 +81,23 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 	//读文件
 	CMapViewFileRead *lpcFileRead = new CMapViewFileRead();
-	for (DWORD i = 0; i < dwAppendCount; i++) {
+	for(DWORD i = 0; i < dwAppendCount; i++) {
 
 		WideCharToMultiByte(CP_ACP, 0, *lpszFilePathPtr, -1, szPathMbsc, MAX_PATH, "_", 0);
 		nLen = (size_t)(strrchr(szPathMbsc, '\\') - szPathMbsc) + 1;
 
-		if (FILE_ATTRIBUTE_DIRECTORY == (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributesA(szPathMbsc))) {
+		if(FILE_ATTRIBUTE_DIRECTORY == (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributesA(szPathMbsc))) {
 			//文件夹
 			EnumFile(szPathMbsc, FALSE, dwFileCount, lpfirstFile, qwTotalFileSize, nLen);
-		}
-		else {
+		} else {
 
-			if (!lpcFileRead->Open(szPathMbsc)) {
+			if(!lpcFileRead->Open(szPathMbsc)) {
 				DeallocateFileinfo();
 				free(lpszFilePath);
 				PrintLogE(TEXT_OPENNAME_FAIL, *lpszFilePathPtr, __FILE__, __FUNCTION__, __LINE__);
 
 				delete lpcFileRead;
+				assert(FALSE);
 				return FALSE;
 			}
 
@@ -123,10 +123,9 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 	free(lpszFilePath);
 
-#ifdef _DEBUG
 	assert(0 != dwFileCount);
-#endif
-	if (0 == dwFileCount)return TRUE;
+
+	if(0 == dwFileCount)return TRUE;
 
 	//参数说明：
 	// mt_dwFileCount	添加的文件总数，计重复
@@ -141,7 +140,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	qwTotalFileSizeTemp = qwTotalFileSize * 0.6 + m_PckAllInfo.dwAddressName + PCK_SPACE_DETECT_SIZE;
 
 #if !PCK_SIZE_UNLIMITED
-	if (((0 != (qwTotalFileSizeTemp >> 32)) && (0x20002 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version)) || \
+	if(((0 != (qwTotalFileSizeTemp >> 32)) && (0x20002 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version)) || \
 		((0 != (qwTotalFileSizeTemp >> 33)) && (0x20003 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version))) {
 
 		PrintLogE(TEXT_COMPFILE_TOOBIG, __FILE__, __FUNCTION__, __LINE__);
@@ -161,19 +160,20 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	//结束 时使用2个循环写入压缩索引 
 
 	//dwFileCount变量在此处指的是添加的文件除去重名的数量 
-	if (m_ReadCompleted) {
+	if(m_ReadCompleted) {
 		lpfirstFile = m_firstFile;
-		while (NULL != lpfirstFile->next) {
+		while(NULL != lpfirstFile->next) {
 			LPPCK_PATH_NODE lpDuplicateNode;
 			lpDuplicateNode = FindFileNode(lpNodeToInsertPtr, lpfirstFile->lpszFileTitle);
 
-			if (-1 == (int)lpDuplicateNode) {
+			if(-1 == (int)lpDuplicateNode) {
 				DeallocateFileinfo();
 				PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
+				assert(FALSE);
 				return FALSE;
 			}
 
-			if (NULL != lpDuplicateNode) {
+			if(NULL != lpDuplicateNode) {
 				lpfirstFile->samePtr = lpDuplicateNode->lpPckIndexTable;
 				dwFileCount--;
 			}
@@ -192,7 +192,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	BeforeSingleOrMultiThreadProcess(&pckAllInfo, mt_lpFileWrite, szPckFile, OPEN_ALWAYS, mt_CompressTotalFileSize, threadnum);
 	initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress = m_PckAllInfo.dwAddressName);
 
-	if (PCK_COMPRESS_NEED_ST < threadnum) {
+	if(PCK_COMPRESS_NEED_ST < threadnum) {
 
 		MultiThreadInitialize(CompressThreadAdd, WriteThread, threadnum);
 		dwAddress = mt_dwAddressQueue;
@@ -217,7 +217,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	//写原来的文件
 	LPPCKINDEXTABLE	lpPckIndexTableSrc = m_lpPckIndexTable;
 
-	for (DWORD i = 0; i < dwOldPckFileCount; i++) {
+	for(DWORD i = 0; i < dwOldPckFileCount; i++) {
 
 		PCKINDEXTABLE_COMPRESS	pckIndexTableTemp;
 		WritePckIndex(mt_lpFileWrite, FillAndCompressIndexData(&pckIndexTableTemp, &lpPckIndexTableSrc->cFileIndex), dwAddress);
@@ -229,22 +229,20 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr = mt_lpPckIndexTable;
 
 	mt_dwFileCount = dwFileCount = mt_dwFileCountOfWriteTarget;
-	for (DWORD i = 0; i < mt_dwFileCountOfWriteTarget; i++) {
+	for(DWORD i = 0; i < mt_dwFileCountOfWriteTarget; i++) {
 		////处理lpPckFileIndex->dwAddressOffset
 
-		if (!lpPckIndexTablePtr->bInvalid) {
+		if(!lpPckIndexTablePtr->bInvalid) {
 
 			WritePckIndex(mt_lpFileWrite, lpPckIndexTablePtr, dwAddress);
 
-		}
-		else {
-#ifdef _DEBUG
+		} else {
+
 			assert(0 != dwFileCount);
-#endif
 			dwFileCount--;
 		}
 
-		if (0 == lpPckIndexTablePtr->dwAddressOfDuplicateOldDataArea)
+		if(0 == lpPckIndexTablePtr->dwAddressOfDuplicateOldDataArea)
 			dwUseNewDataAreaInDuplicateFile++;
 
 		lpPckIndexTablePtr++;

@@ -14,19 +14,19 @@
 #include "PckControlCenter.h"
 #include <commctrl.h>
 #include "resource.h"
+#include <assert.h>
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4244 )
 
-char *GetErrorMsg( CONST DWORD dwError)
+char *GetErrorMsg(CONST DWORD dwError)
 {
 	static char szMessage[1024] = "错误原因：";
 	//strcpy(szMessage, "错误原因：");
 
 	char *lpszMessage = szMessage + 10;
 	// retrieve a message from the system message table
-	switch(dwError)
-	{
+	switch(dwError) {
 	case 2:
 		strcpy(lpszMessage, "系统找不到指定的文件。");
 		break;
@@ -43,16 +43,15 @@ char *GetErrorMsg( CONST DWORD dwError)
 		strcpy(lpszMessage, "另一个程序正在使用此文件，进程无法访问。");
 		break;
 	default:
-		if (!FormatMessageA( 
-			FORMAT_MESSAGE_FROM_SYSTEM | 
+		if(!FormatMessageA(
+			FORMAT_MESSAGE_FROM_SYSTEM |
 			FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL,
 			dwError,
 			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 			lpszMessage,
 			1014,
-			NULL ))
-		{
+			NULL)) {
 			strcpy(lpszMessage, "未知错误");
 		}
 	}
@@ -61,7 +60,7 @@ char *GetErrorMsg( CONST DWORD dwError)
 }
 
 
-inline char *UCS2toA(const WCHAR *src, int max_len=-1)
+inline char *UCS2toA(const WCHAR *src, int max_len = -1)
 {
 	static char dst[8192];
 	::WideCharToMultiByte(CP_ACP, 0, src, max_len, dst, 8192, "_", 0);
@@ -80,14 +79,14 @@ void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const char *_log
 	LVITEMA	item;
 	SYSTEMTIME systime;
 
-	if (LOG_IMAGE_NOTICE == _loglevel) {
+	if(LOG_IMAGE_NOTICE == _loglevel) {
 		::SendDlgItemMessageA(m_hWndMain, IDC_STATUS, SB_SETTEXTA, 4, (LPARAM)_logtext);
 		::SendDlgItemMessageA(m_hWndMain, IDC_STATUS, SB_SETTIPTEXTA, 4, (LPARAM)_logtext);
 	}
 
 	char szPrintf[4096];
 
-	GetLocalTime (&systime);
+	GetLocalTime(&systime);
 
 	sprintf_s(szPrintf, "%02d:%02d:%02d %s", systime.wHour, systime.wMinute, systime.wSecond, _logtext);
 
@@ -100,31 +99,36 @@ void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const char *_log
 	item.mask = LVIF_TEXT | LVIF_IMAGE;
 	item.pszText = szPrintf;
 
-	if(-1 != (m_LogListCount = ::SendMessageA(m_hWndLogListWnd, LVM_INSERTITEMA, 0, (LPARAM)&item))){
+	if(-1 != (m_LogListCount = ::SendMessageA(m_hWndLogListWnd, LVM_INSERTITEMA, 0, (LPARAM)&item))) {
 		ListView_EnsureVisible(m_hWndLogListWnd, m_LogListCount, 0);
 		//++m_LogListCount;
 	}
 
 }
 
-void CPckControlCenter::PrintLogI(const char *_logtext){
+void CPckControlCenter::PrintLogI(const char *_logtext)
+{
 	_InsertLogIntoList(LOG_IMAGE_INFO, _logtext);
 }
 
-void CPckControlCenter::PrintLogW(const char *_logtext){
+void CPckControlCenter::PrintLogW(const char *_logtext)
+{
 	_InsertLogIntoList(LOG_IMAGE_WARNING, _logtext);
 }
 
-void CPckControlCenter::PrintLogE(const char *_logtext){
+void CPckControlCenter::PrintLogE(const char *_logtext)
+{
 	_InsertLogIntoList(LOG_IMAGE_ERROR, _logtext);
 	ShowWindow(GetParent(m_hWndLogListWnd), SW_SHOW);
 }
 
-void CPckControlCenter::PrintLogD(const char *_logtext){
+void CPckControlCenter::PrintLogD(const char *_logtext)
+{
 	_InsertLogIntoList(LOG_IMAGE_DEBUG, _logtext);
 }
 
-void CPckControlCenter::PrintLogN(const char *_logtext) {
+void CPckControlCenter::PrintLogN(const char *_logtext)
+{
 	_InsertLogIntoList(LOG_IMAGE_NOTICE, _logtext);
 }
 
@@ -134,14 +138,14 @@ void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const wchar_t *_
 	LVITEMW	item;
 	SYSTEMTIME systime;
 
-	if (LOG_IMAGE_NOTICE == _loglevel) {
+	if(LOG_IMAGE_NOTICE == _loglevel) {
 		::SendDlgItemMessageW(m_hWndMain, IDC_STATUS, SB_SETTEXTW, 4, (LPARAM)_logtext);
 		::SendDlgItemMessageW(m_hWndMain, IDC_STATUS, SB_SETTIPTEXTW, 4, (LPARAM)_logtext);
 	}
 
 	wchar_t szPrintf[4096];
 
-	GetLocalTime (&systime);
+	GetLocalTime(&systime);
 
 	swprintf_s(szPrintf, L"%02d:%02d:%02d %s", systime.wHour, systime.wMinute, systime.wSecond, _logtext);
 
@@ -154,31 +158,36 @@ void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const wchar_t *_
 	item.mask = LVIF_TEXT | LVIF_IMAGE;
 	item.pszText = szPrintf;
 
-	if(-1 != (m_LogListCount = ::SendMessageW(m_hWndLogListWnd, LVM_INSERTITEMW, 0, (LPARAM)&item))){
+	if(-1 != (m_LogListCount = ::SendMessageW(m_hWndLogListWnd, LVM_INSERTITEMW, 0, (LPARAM)&item))) {
 		ListView_EnsureVisible(m_hWndLogListWnd, m_LogListCount, 0);
 		//++m_LogListCount;
 	}
-	
+
 }
 
-void CPckControlCenter::PrintLogI(const wchar_t *_logtext){
+void CPckControlCenter::PrintLogI(const wchar_t *_logtext)
+{
 	_InsertLogIntoList(LOG_IMAGE_INFO, _logtext);
 }
 
-void CPckControlCenter::PrintLogW(const wchar_t *_logtext){
+void CPckControlCenter::PrintLogW(const wchar_t *_logtext)
+{
 	_InsertLogIntoList(LOG_IMAGE_WARNING, _logtext);
 }
 
-void CPckControlCenter::PrintLogE(const wchar_t *_logtext){
+void CPckControlCenter::PrintLogE(const wchar_t *_logtext)
+{
 	_InsertLogIntoList(LOG_IMAGE_ERROR, _logtext);
 	ShowWindow(GetParent(m_hWndLogListWnd), SW_SHOW);
 }
 
-void CPckControlCenter::PrintLogD(const wchar_t *_logtext){
+void CPckControlCenter::PrintLogD(const wchar_t *_logtext)
+{
 	_InsertLogIntoList(LOG_IMAGE_DEBUG, _logtext);
 }
 
-void CPckControlCenter::PrintLogN(const wchar_t *_logtext){
+void CPckControlCenter::PrintLogN(const wchar_t *_logtext)
+{
 	_InsertLogIntoList(LOG_IMAGE_NOTICE, _logtext);
 }
 
@@ -187,14 +196,15 @@ void CPckControlCenter::PrintLogE(const char *_maintext, const char *_file, cons
 	char szPrintf[8192];
 	sprintf_s(szPrintf, "%s (%s 发生错误在 %s 行数:%d)", _maintext, _file, _func, _line);
 	PrintLogE(szPrintf);
-	if (0 == m_dwLastError) {
+	if(0 == m_dwLastError) {
 		m_dwLastError = GetLastError();
 		if(0 != m_dwLastError)
 			PrintLogE(GetErrorMsg(GetLastError()));
-	} else{
+	} else {
 		PrintLogE(GetErrorMsg(m_dwLastError));
 		m_dwLastError = 0;
 	}
+	assert(FALSE);
 }
 
 void CPckControlCenter::PrintLogE(const wchar_t *_maintext, const char *_file, const char *_func, const long _line)
@@ -221,8 +231,7 @@ void CPckControlCenter::PrintLog(const char chLevel, const char *_maintext)
 {
 	//char szPrintf[8192];
 	//StringCchPrintfA(szPrintf, 8192, "%s", _maintext);
-	switch(chLevel)
-	{
+	switch(chLevel) {
 	case LOG_FLAG_ERROR:
 		PrintLogE(_maintext);
 		break;

@@ -103,13 +103,13 @@ _inline UINT32	TPicDlg::MakeRgbWithAlpha(UINT32 dwBackColor, UINT32 dwSrc)
 		return dwSrc;
 
 	case 0:
-		
+
 		return dwBackColor;
 
 	default:
 
 		CMYRGB cRGB;
-		
+
 		UINT32 r = (dwSrc >> 16) & 0xff;
 		UINT32 g = (dwSrc >> 8) & 0xff;
 		UINT32 b = dwSrc & 0xff;
@@ -330,17 +330,16 @@ BOOL TPicDlg::DetectDIBFormatAndAllocByFormat(UINT16 wWidth, UINT16 wHeight, ...
 	picWidth = wWidth;
 	picHeight = wHeight;
 
-	
+
 
 	va_list	ap;
 	va_start(ap, wHeight);
 
-	if(FMT_DDS == iFormat){
+	if(FMT_DDS == iFormat) {
 
-		D3DFORMAT fmt = va_arg( ap, D3DFORMAT );
+		D3DFORMAT fmt = va_arg(ap, D3DFORMAT);
 
-		switch(fmt)
-		{
+		switch(fmt) {
 		case D3DFMT_DXT1:
 		case D3DFMT_DXT3:
 		case D3DFMT_DXT5:
@@ -394,10 +393,9 @@ BOOL TPicDlg::DetectDIBFormatAndAllocByFormat(UINT16 wWidth, UINT16 wHeight, ...
 		}
 		//stride = bytesPerLine;
 
-	}else{
-		int fmt = va_arg( ap, int );
-		switch(fmt)
-		{
+	} else {
+		int fmt = va_arg(ap, int);
+		switch(fmt) {
 		case FMTTGA_A1R5G5B5:
 			decodedDIBFormat = PixelFormat16bppRGB555;
 			//bytesPerLine = picWidth <<1;	//dds文件一定是4字节对齐的
@@ -419,8 +417,7 @@ BOOL TPicDlg::DetectDIBFormatAndAllocByFormat(UINT16 wWidth, UINT16 wHeight, ...
 	}
 	va_end(ap);
 
-	switch(decodedDIBFormat)
-	{
+	switch(decodedDIBFormat) {
 	case PixelFormat8bppIndexed:
 		bytesPerPixel = 1;
 		bytesPerLine = picWidth;
@@ -429,7 +426,7 @@ BOOL TPicDlg::DetectDIBFormatAndAllocByFormat(UINT16 wWidth, UINT16 wHeight, ...
 	case PixelFormat16bppRGB565:
 	case PixelFormat16bppARGB1555:
 		bytesPerPixel = 2;
-		bytesPerLine = picWidth <<1;
+		bytesPerLine = picWidth << 1;
 		break;
 	case PixelFormat24bppRGB:
 		bytesPerPixel = 3;
@@ -460,7 +457,7 @@ BOOL TPicDlg::DetectDIBFormatAndAllocByFormat(UINT16 wWidth, UINT16 wHeight, ...
 
 	stride = (bytesPerLine & 0x3) ? (bytesPerLine & 0xfffffffc) + 4 : bytesPerLine;
 
-	dwDdsToBmpImageDataSize = stride * wHeight ;//dwPixels * bytesPerPixel;
+	dwDdsToBmpImageDataSize = stride * wHeight;//dwPixels * bytesPerPixel;
 
 	if(NULL == (cleanimage = (char*)malloc(dwDdsToBmpImageDataSize)))
 		return FALSE;
@@ -559,55 +556,38 @@ BOOL TPicDlg::CreateBmpBufferByDds()
 	if(DDS_MAGIC != *((UINT32*)*buf))
 		return FALSE;
 
-	DDS_HEADER *pHeader = (DDS_HEADER*) (((BYTE*)*buf) + 4);
+	DDS_HEADER *pHeader = (DDS_HEADER*)(((BYTE*)*buf) + 4);
 
-    if( pHeader->dwSize != sizeof(DDS_HEADER) || pHeader->ddspf.dwSize != sizeof(DDS_PIXELFORMAT) )
-        return FALSE;
-
-    // Check for DX10 extension
-    bool bDXT10Header = false;
-    if ( (pHeader->ddspf.dwFlags & DDS_FOURCC) && (MAKEFOURCC( 'D', 'X', '1', '0' ) == pHeader->ddspf.dwFourCC) )
-    {
-        // Must be long enough for both headers and magic value
-		//sizeof(DDS_HEADER_DXT10) = 0x14;
-        if( dwSize < (sizeof(DDS_HEADER) + sizeof(UINT32) + 0x14) )
-            return FALSE;
-
-        bDXT10Header = true;
-    }
-
-    // setup the pointers in the process request
-    DDS_HEADER	*ppHeader = pHeader;
-    INT offset = sizeof( UINT32 ) + sizeof( DDS_HEADER )
-                 + (bDXT10Header ? 0x14/*sizeof( DDS_HEADER_DXT10 )*/ : 0);
-    BYTE	*ppBitData = (BYTE*)*buf + offset;
-
-	//UINT iMipCount = pHeader->dwMipMapCount;
-	//if( 0 == iMipCount )
-	//	iMipCount = 1;
-	
-	// For now only support 2D textures, not cubemaps or volumes
-	if (pHeader->dwCubemapFlags != 0 || (pHeader->dwHeaderFlags & DDS_HEADER_FLAGS_VOLUME) )
+	if(pHeader->dwSize != sizeof(DDS_HEADER) || pHeader->ddspf.dwSize != sizeof(DDS_PIXELFORMAT))
 		return FALSE;
 
+	// Check for DX10 extension
+	bool bDXT10Header = false;
+	if((pHeader->ddspf.dwFlags & DDS_FOURCC) && (MAKEFOURCC('D', 'X', '1', '0') == pHeader->ddspf.dwFourCC)) {
+		// Must be long enough for both headers and magic value
+		//sizeof(DDS_HEADER_DXT10) = 0x14;
+		if(dwSize < (sizeof(DDS_HEADER) + sizeof(UINT32) + 0x14))
+			return FALSE;
 
-	D3DFORMAT fmt = GetD3D9Format( pHeader->ddspf );
-	//UINT32	dwPixels;
+		bDXT10Header = true;
+	}
 
-	//Get hG
-	//if(!FormatBmpData(pHeader->dwWidth, pHeader->dwHeight, dwPixels))
+	// setup the pointers in the process request
+	DDS_HEADER	*ppHeader = pHeader;
+	INT offset = sizeof(UINT32) + sizeof(DDS_HEADER)
+		+ (bDXT10Header ? 0x14/*sizeof( DDS_HEADER_DXT10 )*/ : 0);
+	BYTE	*ppBitData = (BYTE*)*buf + offset;
+
+	// For now only support 2D textures, not cubemaps or volumes
+	//if(pHeader->dwCubemapFlags != 0 || (pHeader->dwHeaderFlags & DDS_HEADER_FLAGS_VOLUME))
 	//	return FALSE;
+
+	D3DFORMAT fmt = GetD3D9Format(pHeader->ddspf);
 
 	if(!DetectDIBFormatAndAllocByFormat(pHeader->dwWidth, pHeader->dwHeight, fmt))
 		return FALSE;
 
-	//UINT32	*lpdwBuffer = (UINT32*)((BYTE*)cleanimage + sizeof(BMPHEAD));
-
-	///*BOOL	*/hasAlpha = FALSE;
-	//BYTE	*lpDdsData = ppBitData;
-
-	switch(fmt)
-	{
+	switch(fmt) {
 	case D3DFMT_DXT1:
 
 		memcpy(szDdsFormat, "DXT1\0\0\0\0", 8);//strcpy_s(szDdsFormat, 32, "DXT1\0\0\0\0");
@@ -667,49 +647,12 @@ BOOL TPicDlg::CreateBmpBufferByDds()
 		//hasAlpha = TRUE;
 		memcpy(szDdsFormat, "A2R10G10B10\0", 12);	//strcpy_s(szDdsFormat, 32, "A2R10G10B10");
 		decode_dds_a2r10g10b10(ppBitData);
-
-		//UINT32	*lpwDdsBuffer = (UINT32*)lpDdsData;
-
-		////for(int j = picHeight - 1;j>=0;--j)
-		//for(int j = 0;j<picHeight;++j)
-		//{
-		//	UINT32 *lpdwBufferPtr = lpdwBuffer + picWidth * j;
-		//	for(UINT32 i = 0;i<picWidth;++i)
-		//	{
-		//		*lpdwBufferPtr = MakeRgb(*lpdwBuffer, *lpwDdsBuffer, 
-		//								pHeader->ddspf.dwABitMask, pHeader->ddspf.dwRBitMask, pHeader->ddspf.dwGBitMask, pHeader->ddspf.dwBBitMask,
-		//								2, 10, 10, 10, 
-		//								30, 20, 10, 0,
-		//								TRUE);
-		//		++lpdwBufferPtr;
-		//		++lpwDdsBuffer;
-		//	}
-		//}
-
 		break;
 	case D3DFMT_A2B10G10R10:
 
 		//hasAlpha = TRUE;
 		memcpy(szDdsFormat, "A2B10G10R10\0", 12);	//strcpy_s(szDdsFormat, 32, "A2B10G10R10");
 		decode_dds_a2b10g10r10(ppBitData);
-		//UINT32	*lpwDdsBuffer = (UINT32*)lpDdsData;
-
-		////for(int j = picHeight - 1;j>=0;--j)
-		//for(int j = 0;j<picHeight;++j)
-		//{
-		//	UINT32 *lpdwBufferPtr = lpdwBuffer + picWidth * j;
-		//	for(DWORD i = 0;i<picWidth;++i)
-		//	{
-		//		*lpdwBufferPtr = MakeRgb(*lpdwBuffer, *lpwDdsBuffer, 
-		//								pHeader->ddspf.dwABitMask, pHeader->ddspf.dwRBitMask, pHeader->ddspf.dwGBitMask, pHeader->ddspf.dwBBitMask, 
-		//								2, 10, 10, 10, 
-		//								30, 0, 10, 20,
-		//								hasAlpha);
-		//		++lpdwBufferPtr;
-		//		++lpwDdsBuffer;
-		//	}
-		//}
-
 		break;
 	case D3DFMT_A1R5G5B5:
 
@@ -719,55 +662,33 @@ BOOL TPicDlg::CreateBmpBufferByDds()
 
 		break;
 	case D3DFMT_X1R5G5B5:
-
 		//hasAlpha = FALSE;
 		memcpy(szDdsFormat, "X1R5G5B5\0\0\0\0", 12);	//strcpy_s(szDdsFormat, 32, "X1R5G5B5");
 		decode_dds_x1r5g5b5(ppBitData);
 		break;
 
 	case D3DFMT_R5G6B5:
-
 		//hasAlpha = FALSE;
 		memcpy(szDdsFormat, "R5G6B5\0\0", 8);	//strcpy_s(szDdsFormat, 32, "R5G6B5");
 		decode_dds_r5g6b5(ppBitData);
 
 		break;
 	case D3DFMT_A4R4G4B4:
-
 		memcpy(szDdsFormat, "A4R4G4B4\0\0\0\0", 12);	//strcpy_s(szDdsFormat, 32, "A4R4G4B4");
 		//hasAlpha = TRUE;
 		decode_dds_a4r4g4b4(ppBitData);
 		break;
 
 	case D3DFMT_X4R4G4B4:
-
 		//hasAlpha = FALSE;
 		memcpy(szDdsFormat, "X4R4G4B4\0\0\0\0", 12);	//strcpy_s(szDdsFormat, 32, "X4R4G4B4");
 		decode_dds_x4r4g4b4(ppBitData);
 		break;
 
 	case D3DFMT_A8R3G3B2:
-
 		//hasAlpha = TRUE;
 		memcpy(szDdsFormat, "A8R3G3B2\0\0\0\0", 12);	//strcpy_s(szDdsFormat, 32, "A8R3G3B2");
 		decode_dds_a8r3g3b2(ppBitData);
-			//UINT16	*lpwDdsBuffer = (UINT16*)lpDdsData;
-
-			//for(int j = picHeight - 1;j>=0;--j)
-			//for(int j = 0;j<picHeight;++j)
-			//{
-			//	UINT32 *lpdwBufferPtr = lpdwBuffer + picWidth * j;
-			//	for(UINT32 i = 0;i<picWidth;++i)
-			//	{
-			//		*lpdwBufferPtr = MakeRgb(*lpdwBuffer, *lpwDdsBuffer,
-			//								pHeader->ddspf.dwABitMask, pHeader->ddspf.dwRBitMask, pHeader->ddspf.dwGBitMask, pHeader->ddspf.dwBBitMask, 
-			//								8, 3, 3, 2, 
-			//								8, 5, 2, 0,
-			//								hasAlpha);
-			//		++lpdwBufferPtr;
-			//		++lpwDdsBuffer;
-			//	}
-			//}
 		break;
 
 	default:
@@ -781,7 +702,7 @@ BOOL TPicDlg::CreateBmpBufferByDds()
 
 BOOL TPicDlg::CreateBmpBufferByTga()
 {
-	LPTGAHEAD pHeader = (LPTGAHEAD) *buf;
+	LPTGAHEAD pHeader = (LPTGAHEAD)*buf;
 
 	int fmt = pHeader->byteTgaType;
 	int	nTgaBitsPerPixel, nTgaBitsOfIndexToColorMappedData;
@@ -793,8 +714,7 @@ BOOL TPicDlg::CreateBmpBufferByTga()
 
 	//GetTgaBitsPerPixel(fmt);
 
-	switch(fmt)
-	{
+	switch(fmt) {
 	case FMTTGA_RAWTBL:
 	case FMTTGA_RLETBL:
 
@@ -821,19 +741,15 @@ BOOL TPicDlg::CreateBmpBufferByTga()
 	BYTE	*lpTgaData = (BYTE*)(*buf) + sizeof(TGAHEAD) + pHeader->byteTgaInfoSize;
 
 	//读取颜色表
-	if(!makeTgaColorMappedData(lpTgaData, fmt, (char*&)bufferOfColorMappedData, pHeader->wColorTableSize))
-	{
+	if(!makeTgaColorMappedData(lpTgaData, fmt, (char*&)bufferOfColorMappedData, pHeader->wColorTableSize)) {
 		return FALSE;
 	}
-	
 
 	//开始写bmp数据
-	switch(fmt)
-	{
+	switch(fmt) {
 	case FMTTGA_RAWTBL:
 
-		switch(nTgaBitsPerPixel)
-		{
+		switch(nTgaBitsPerPixel) {
 		case FMTTGA_A1R5G5B5:
 			memcpy(szDdsFormat, "RAWTBL_A1R5G5B5\0", 16);	//strcpy_s(szDdsFormat, 32, "RAWTBL_A1R5G5B5");
 			break;
@@ -844,8 +760,7 @@ BOOL TPicDlg::CreateBmpBufferByTga()
 			memcpy(szDdsFormat, "RAWTBL_A8R8G8B8\0", 16);	//strcpy_s(szDdsFormat, 32, "RAWTBL_A8R8G8B8");
 			break;
 		}
-		switch(nTgaBitsOfIndexToColorMappedData)
-		{
+		switch(nTgaBitsOfIndexToColorMappedData) {
 		case 8:
 
 			decode_tga_ColorMapped8(lpTgaData, bufferOfColorMappedData);
@@ -857,42 +772,11 @@ BOOL TPicDlg::CreateBmpBufferByTga()
 			break;
 
 		}
-		//switch(nTgaBitsOfIndexToColorMappedData)
-		//{
-		//case 8:
-		//	{
-		//		BYTE *lpRgbdata = lpTgaData;
-		//		
-		//		for(UINT32 i = 0;i<dwPixels;++i)
-		//		{
-		//			*lpdwBuffer = *(bufferOfColorMappedData + *lpRgbdata);
-		//			++lpdwBuffer;
-		//			++lpRgbdata;
-		//		}
-		//	}
-		//	break;
-
-		//case 16:
-
-		//	{
-		//		UINT16 *lpRgbdata = (UINT16*)lpTgaData;
-		//		
-		//		for(UINT32 i = 0;i<dwPixels;++i)
-		//		{
-		//			*lpdwBuffer = *(bufferOfColorMappedData + *lpRgbdata);
-		//			++lpdwBuffer;
-		//			++lpRgbdata;
-		//		}
-		//	}
-
-		//	break;
-		//}
 		break;
 
 	case FMTTGA_RAWRGB:
-		
-		switch(nTgaBitsPerPixel)
-		{
+
+		switch(nTgaBitsPerPixel) {
 		case FMTTGA_A1R5G5B5:
 
 			memcpy(szDdsFormat, "RAWRGB_A1R5G5B5\0", 16);	//strcpy_s(szDdsFormat, 32, "RAWRGB_A1R5G5B5");
@@ -904,7 +788,7 @@ BOOL TPicDlg::CreateBmpBufferByTga()
 			break;
 
 		case FMTTGA_A8R8G8B8:
-			
+
 			memcpy(szDdsFormat, "RAWRGB_A8R8G8B8\0", 16);	//strcpy_s(szDdsFormat, 32, "RAWRGB_A8R8G8B8");
 			break;
 		}
@@ -914,105 +798,39 @@ BOOL TPicDlg::CreateBmpBufferByTga()
 		break;
 
 	case FMTTGA_RLETBL:
-		{
+	{
 
-			switch(nTgaBitsPerPixel)
-			{
-			case FMTTGA_A1R5G5B5:
-				memcpy(szDdsFormat, "RLETBL_A1R5G5B5\0", 16);	//strcpy_s(szDdsFormat, 32, "RLETBL_A1R5G5B5");
-				break;
-			case FMTTGA_R8G8B8:
-				memcpy(szDdsFormat, "RLETBL_R8G8B8\0\0\0", 16);	//strcpy_s(szDdsFormat, 32, "RLETBL_R8G8B8");
-				break;
-			case FMTTGA_A8R8G8B8:
-				memcpy(szDdsFormat, "RLETBL_A8R8G8B8\0", 16);	//strcpy_s(szDdsFormat, 32, "RLETBL_A8R8G8B8");
-				break;
-			}
-
-			switch(nTgaBitsOfIndexToColorMappedData)
-			{
-			case 8:
-
-				decode_tga_ColorMapped8REL(lpTgaData, bufferOfColorMappedData);
-				break;
-
-			case 16:
-
-				decode_tga_ColorMapped16REL(lpTgaData, bufferOfColorMappedData);
-				break;
-
-			}
-
-			//BYTE	*lpRgbdata = (BYTE*)lpTgaData;
-			//BYTE	byteRleDataCount;
-
-			//UINT32 i = 0;
-			//while(i < dwPixels)
-			//{
-			//	//检查是否run-length 数据包
-			//	byteRleDataCount = *lpRgbdata & 0x7f;
-
-			//	if( byteRleDataCount != *lpRgbdata)
-			//	{
-			//		++lpRgbdata;
-
-			//		switch(nTgaBitsOfIndexToColorMappedData)
-			//		{
-			//		case 8:
-			//			for(int j = 0;j<byteRleDataCount;++j, ++i)
-			//			{
-			//				*lpdwBuffer = *(bufferOfColorMappedData + *lpRgbdata);
-			//				++lpdwBuffer;
-			//			}
-			//			++lpRgbdata;
-
-			//			break;
-
-			//		case 16:
-			//			for(int j = 0;j<byteRleDataCount;++j, ++i)
-			//			{
-			//				*lpdwBuffer = *(bufferOfColorMappedData + *(WORD*)lpRgbdata);
-			//				++lpdwBuffer;
-			//			}
-			//			lpRgbdata+=2;
-
-			//			break;
-			//		}
-
-			//	}else{
-			//		++lpRgbdata;
-
-			//		switch(nTgaBitsOfIndexToColorMappedData)
-			//		{
-			//		case 8:
-			//			for(int j = 0;j<byteRleDataCount;++j, ++i)
-			//			{
-			//				*lpdwBuffer = *(bufferOfColorMappedData + *lpRgbdata);
-			//				++lpRgbdata;
-			//				++lpdwBuffer;
-			//			}
-			//			break;
-
-			//		case 16:
-			//			for(int j = 0;j<byteRleDataCount;++j, ++i)
-			//			{
-			//				*lpdwBuffer = *(bufferOfColorMappedData + *(WORD*)lpRgbdata);
-			//				lpRgbdata+=2;
-			//				++lpdwBuffer;
-			//			}
-			//			break;
-			//		}
-			//	}
-
-			//}
+		switch(nTgaBitsPerPixel) {
+		case FMTTGA_A1R5G5B5:
+			memcpy(szDdsFormat, "RLETBL_A1R5G5B5\0", 16);	//strcpy_s(szDdsFormat, 32, "RLETBL_A1R5G5B5");
+			break;
+		case FMTTGA_R8G8B8:
+			memcpy(szDdsFormat, "RLETBL_R8G8B8\0\0\0", 16);	//strcpy_s(szDdsFormat, 32, "RLETBL_R8G8B8");
+			break;
+		case FMTTGA_A8R8G8B8:
+			memcpy(szDdsFormat, "RLETBL_A8R8G8B8\0", 16);	//strcpy_s(szDdsFormat, 32, "RLETBL_A8R8G8B8");
+			break;
 		}
 
-		break;
+		switch(nTgaBitsOfIndexToColorMappedData) {
+		case 8:
+
+			decode_tga_ColorMapped8REL(lpTgaData, bufferOfColorMappedData);
+			break;
+
+		case 16:
+
+			decode_tga_ColorMapped16REL(lpTgaData, bufferOfColorMappedData);
+			break;
+
+		}
+	}
+
+	break;
 
 	case FMTTGA_RLERGB:
 
-		switch(nTgaBitsPerPixel)
-		{
+		switch(nTgaBitsPerPixel) {
 		case FMTTGA_A1R5G5B5:
 
 			memcpy(szDdsFormat, "RLERGB_A1R5G5B5\0", 16);	//strcpy_s(szDdsFormat, 32, "RLERGB_A1R5G5B5");
@@ -1032,9 +850,6 @@ BOOL TPicDlg::CreateBmpBufferByTga()
 		break;
 
 	}
-
-	//free(bufferOfColorMappedData);
-
 	return TRUE;
 }
 

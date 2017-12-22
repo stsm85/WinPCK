@@ -20,8 +20,8 @@ CMapViewFileWrite::CMapViewFileWrite(DWORD dwMaxPckSize)
 #endif
 	dwViewSizePck = dwViewSizePkx = 0;
 
-	*m_szPckFileName = 0;
-	*m_tszPckFileName = 0;
+	//*m_szPckFileName = 0;
+	//*m_tszPckFileName = 0;
 
 	*m_szPkxFileName = 0;
 	*m_tszPkxFileName = 0;
@@ -79,6 +79,7 @@ BOOL CMapViewFileWrite::OpenPck(LPCSTR lpszFilename, DWORD dwCreationDisposition
 		uqwFullSize.qwValue = dwPckSize.qwValue + dwPkxSize.qwValue;
 
 	}else{
+		assert(FALSE);
 		return FALSE;
 	}
 
@@ -102,6 +103,7 @@ BOOL CMapViewFileWrite::OpenPck(LPCTSTR lpszFilename, DWORD dwCreationDispositio
 		uqwFullSize.qwValue = dwPckSize.qwValue + dwPkxSize.qwValue;
 
 	}else{
+		assert(FALSE);
 		return FALSE;
 	}
 
@@ -166,16 +168,19 @@ BOOL CMapViewFileWrite::Open(LPCSTR lpszFilename, DWORD dwCreationDisposition)
 		if(isWinNt())
 		{
 			MakeUnlimitedPath(szFilename, lpszFilename, MAX_PATH);
-			if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(szFilename, GENERIC_READ, FILE_SHARE_READ, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL)))
+			if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(szFilename, GENERIC_READ, FILE_SHARE_READ, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL))) {
+				assert(FALSE);
 				return FALSE;
+			}
 		}else{
+			assert(FALSE);
 			return FALSE;
 		}
 
 	}
-#if ENABLE_PCK_PKX_FILE
-	strcpy_s(m_szPckFileName, MAX_PATH, lpszFilename);
-#endif
+//#if ENABLE_PCK_PKX_FILE
+//	strcpy_s(m_szPckFileName, MAX_PATH, lpszFilename);
+//#endif
 	return TRUE;
 }
 
@@ -190,16 +195,19 @@ BOOL CMapViewFileWrite::Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition)
 		if(isWinNt())
 		{
 			MakeUnlimitedPath(szFilename, lpszFilename, MAX_PATH);
-			if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(szFilename, GENERIC_READ, FILE_SHARE_READ, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL)))
+			if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(szFilename, GENERIC_READ, FILE_SHARE_READ, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL))) {
+				assert(FALSE);
 				return FALSE;
+			}
 		}else{
+			assert(FALSE);
 			return FALSE;
 		}
 
 	}
-#if ENABLE_PCK_PKX_FILE
-	wcscpy_s(m_tszPckFileName, MAX_PATH, lpszFilename);
-#endif
+//#if ENABLE_PCK_PKX_FILE
+//	wcscpy_s(m_tszPckFileName, MAX_PATH, lpszFilename);
+//#endif
 	return TRUE;
 }
 
@@ -209,6 +217,7 @@ BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)
 	if(IsPckFile && (uqdwMaxPckSize.qwValue < qwMaxSize)){
 
 		if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READWRITE, uqdwMaxPckSize.dwValueHigh, uqdwMaxPckSize.dwValue, lpszNamespace))){
+			assert(FALSE);
 			return FALSE;
 		}
 
@@ -222,6 +231,7 @@ BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)
 			else{
 			
 				UnMaping();
+				assert(FALSE);
 				return FALSE;
 			}
 		}
@@ -243,6 +253,7 @@ BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)
 		strcat_s(szNamespace_2, 16, "_2");
 
 		if(NULL == (hFileMapping2 = CreateFileMappingA(hFile2, NULL, PAGE_READWRITE, dwPkxSize.dwValueHigh, dwPkxSize.dwValue, szNamespace_2))){
+			assert(FALSE);
 			return FALSE;
 		}
 
@@ -254,6 +265,7 @@ BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)
 		uqwMaxSize.qwValue = qwMaxSize;
 
 		if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READWRITE, uqwMaxSize.dwValueHigh, uqwMaxSize.dwValue, lpszNamespace))){
+			assert(FALSE);
 			return FALSE;
 		}	
 	}

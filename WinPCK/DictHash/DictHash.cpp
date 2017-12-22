@@ -26,9 +26,8 @@
 unsigned int _fastcall JSHash(char *str)
 {
 	unsigned int hash = 1315423911;
- 
-	while (*str)
-	{
+
+	while(*str) {
 		hash ^= ((hash << 5) + (*str++) + (hash >> 2));
 	}
 
@@ -39,8 +38,7 @@ unsigned int _fastcall JSHash(char *str)
 void _fastcall zupbase64cpy(char *_dst, const char *_src, int len)
 {
 
-	for(; len>0; len--)
-	{
+	for(; len > 0; len--) {
 		if('-' == *_src)
 			_src++, *_dst++ = '/';
 		else
@@ -60,16 +58,14 @@ CDictHash::~CDictHash()
 
 	LPZUP_FILENAME_DICT *lpDictHash = lpDictHashTable;
 
-	for(unsigned int i = 0;i<HASH_TABLE_LENGTH;i++)
-	{
-		if(NULL != *lpDictHash)
-		{
+	for(unsigned int i = 0;i < HASH_TABLE_LENGTH;i++) {
+		if(NULL != *lpDictHash) {
 			Dealloc(*lpDictHash);
 		}
 		lpDictHash++;
 	}
 
-	delete [] lpDictHashTable;
+	delete[] lpDictHashTable;
 
 }
 
@@ -85,8 +81,7 @@ LPZUP_FILENAME_DICT CDictHash::add(char *keystr)
 
 	LPZUP_FILENAME_DICT	lpDict = *(lpDictHashTable + key);
 
-	if(NULL == lpDict)
-	{
+	if(NULL == lpDict) {
 		lpDict = *(lpDictHashTable + key) = AllocNode(sizeStuct);
 		lpDict->realstrlength = len;
 		memcpy(lpDict->base64str, szlwrstr, len);
@@ -94,16 +89,14 @@ LPZUP_FILENAME_DICT CDictHash::add(char *keystr)
 		zupbase64cpy(lpDict->realbase64str, keystr, len);
 
 		return lpDict;
-	}else{
+	} else {
 
-		do{
-			if(0 == strcmp(lpDict->base64str, szlwrstr))
-			{
+		do {
+			if(0 == strcmp(lpDict->base64str, szlwrstr)) {
 				return 0;
 			}
-			
-			if(NULL == lpDict->next)
-			{
+
+			if(NULL == lpDict->next) {
 				lpDict->next = AllocNode(sizeStuct);
 				lpDict = lpDict->next;
 				lpDict->realstrlength = len;
@@ -112,11 +105,11 @@ LPZUP_FILENAME_DICT CDictHash::add(char *keystr)
 				zupbase64cpy(lpDict->realbase64str, keystr, len);
 
 				return lpDict;
-			}else{
+			} else {
 				lpDict = lpDict->next;
 			}
 
-		}while(1);
+		} while(1);
 
 	}
 
@@ -128,21 +121,19 @@ LPZUP_FILENAME_DICT CDictHash::find(char *keystr)
 
 	LPZUP_FILENAME_DICT	lpDict = *(lpDictHashTable + key);
 
-	if(NULL == lpDict)
-	{
+	if(NULL == lpDict) {
 		return 0;
-	}else{
-		if(NULL == lpDict->next)
-		{
+	} else {
+		if(NULL == lpDict->next) {
 			return lpDict;
-		}else{
+		} else {
 
-			do{
-				if(0 == strcmp(lpDict->base64str, keystr)){
+			do {
+				if(0 == strcmp(lpDict->base64str, keystr)) {
 					return lpDict;
 				}
 				lpDict = lpDict->next;
-			}while(NULL != lpDict);
+			} while(NULL != lpDict);
 
 			return 0;
 		}
@@ -155,8 +146,7 @@ __inline LPZUP_FILENAME_DICT CDictHash::AllocNode(unsigned int sizeStuct)
 {
 	LPZUP_FILENAME_DICT		lpMallocNode;
 
-	if(NULL == (lpMallocNode = (LPZUP_FILENAME_DICT)malloc(sizeStuct)))
-	{
+	if(NULL == (lpMallocNode = (LPZUP_FILENAME_DICT)malloc(sizeStuct))) {
 		return lpMallocNode;
 	}
 	//³õÊ¼»¯ÄÚ´æ
@@ -173,8 +163,7 @@ __inline void CDictHash::Dealloc(LPZUP_FILENAME_DICT lpDictHash)
 #endif
 	LPZUP_FILENAME_DICT lpTemp = lpDictHash;
 
-	while(NULL != lpDictHash)
-	{
+	while(NULL != lpDictHash) {
 		lpTemp = lpDictHash->next;
 		free(lpDictHash);
 		lpDictHash = lpTemp;

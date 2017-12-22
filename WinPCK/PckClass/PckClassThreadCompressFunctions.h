@@ -149,8 +149,6 @@ VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
 			pThis->putCompressedDataQueue(bufCompressData, &cPckIndexTableComp, &lpfirstFile->samePtr->cFileIndex);
 		}
 #endif
-
-
 		//下一个文件列表
 		lpfirstFile = lpfirstFile->next;
 	}
@@ -167,8 +165,7 @@ VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
 
 	LeaveCriticalSection(&g_mt_threadID);
 
-
-	_endthread();
+	return;
 }
 
 #if PCK_COMPRESS_NEED_ST

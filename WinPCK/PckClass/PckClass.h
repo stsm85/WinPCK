@@ -13,9 +13,7 @@
 #include "MapViewFile.h"
 #include "PckHeader.h"
 #include <stdio.h>
-#ifdef _DEBUG
 #include <assert.h>
-#endif
 
 #if !defined(_PCKCLASS_H_)
 #define _PCKCLASS_H_

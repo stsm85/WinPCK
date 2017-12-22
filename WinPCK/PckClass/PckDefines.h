@@ -128,6 +128,9 @@ typedef unsigned char       BYTE;
 
 #define TEXT_UPDATE_FILE_INFO			"预添加文件数=%d:预期文件大小=%lld, 开始进行作业..."
 
+#define TEXT_PCK_SIZE_INVALID			"无效的PCK文件大小"
+#define TEXT_VERSION_NOT_FOUND			"没找到有效的版本"
+
 
 #define	TEXT_EVENT_WRITE_PCK_DATA_FINISH			"WPckDataF%d"
 #define	TEXT_EVENT_COMPRESS_PCK_DATA_FINISH			"CPckDataF%d"

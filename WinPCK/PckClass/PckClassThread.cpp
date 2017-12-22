@@ -39,7 +39,7 @@ BOOL CPckClass::BeforeSingleOrMultiThreadProcess(LPPCK_ALL_INFOS lpPckAllInfo, C
 	lpWrite = new CMapViewFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
 	//OPEN_ALWAYS，新建新的pck(CREATE_ALWAYS)或更新存在的pck(OPEN_EXISTING)
-	if (!OpenPckAndMappingWrite(lpWrite, szPckFile, dwCreationDisposition, qdwSizeToMap)) {
+	if(!OpenPckAndMappingWrite(lpWrite, szPckFile, dwCreationDisposition, qdwSizeToMap)) {
 
 		delete lpWrite;
 		return FALSE;
@@ -48,8 +48,7 @@ BOOL CPckClass::BeforeSingleOrMultiThreadProcess(LPPCK_ALL_INFOS lpPckAllInfo, C
 	lpPckParams->cVarParams.dwUIProgress = 0;
 
 	//多线程使用参数初始化
-	if (PCK_COMPRESS_NEED_ST < threadnum)
-	{
+	if(PCK_COMPRESS_NEED_ST < threadnum) {
 		mt_lpbThreadRunning = &lpPckParams->cVarParams.bThreadRunning;	//监视线程暂停
 		mt_lpdwCount = &lpPckParams->cVarParams.dwUIProgress;			//dwCount;
 		mt_MaxMemory = lpPckParams->dwMTMaxMemory;						//可用最大缓存;
@@ -75,8 +74,7 @@ void CPckClass::MultiThreadInitialize(VOID CompressThread(VOID*), VOID WriteThre
 	InitializeCriticalSection(&g_dwCompressedflag);
 	InitializeCriticalSection(&g_mt_pckCompressedDataPtrArrayPtr);
 
-	for (int i = 0; i < threadnum; i++)
-	{
+	for(int i = 0; i < threadnum; i++) {
 		_beginthread(CompressThread, 0, this);
 	}
 	_beginthread(WriteThread, 0, this);
@@ -97,8 +95,7 @@ void CPckClass::MultiThreadInitialize(VOID CompressThread(VOID*), VOID WriteThre
 	CloseHandle(mt_evtAllCompressFinish);
 	CloseHandle(mt_evtAllWriteFinish);
 
-	if (!lpPckParams->cVarParams.bThreadRunning)
-	{
+	if(!lpPckParams->cVarParams.bThreadRunning) {
 		PrintLogW(TEXT_USERCANCLE);
 	}
 
@@ -118,18 +115,20 @@ BOOL CPckClass::RenameFilename()
 	//以下是创建一个文件，用来保存压缩后的文件
 	CMapViewFileWrite *lpFileWrite = new CMapViewFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
-	if (!lpFileWrite->OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
+	if(!lpFileWrite->OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
 
 		PrintLogE(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		assert(FALSE);
 		delete lpFileWrite;
 		return FALSE;
 	}
 
 	QWORD dwFileSize = lpFileWrite->GetFileSize() + PCK_RENAME_EXPAND_ADD;
 
-	if (!lpFileWrite->Mapping(m_szMapNameWrite, dwFileSize)) {
+	if(!lpFileWrite->Mapping(m_szMapNameWrite, dwFileSize)) {
 
 		PrintLogE(TEXT_CREATEMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		assert(FALSE);
 		delete lpFileWrite;
 		return FALSE;
 	}
@@ -145,13 +144,11 @@ BOOL CPckClass::RenameFilename()
 	LPPCKINDEXTABLE	lpPckIndexTableSrc = m_lpPckIndexTable;
 
 	//写入索引
-	for (DWORD i = 0; i < lpPckParams->cVarParams.dwUIProgressUpper; ++i)
-	{
+	for(DWORD i = 0; i < lpPckParams->cVarParams.dwUIProgressUpper; ++i) {
 
 		PCKINDEXTABLE_COMPRESS	pckIndexTableTemp;
 
-		if (lpPckIndexTableSrc->bSelected)
-		{
+		if(lpPckIndexTableSrc->bSelected) {
 			--m_PckAllInfo.dwFileCount;
 			++lpPckIndexTableSrc;
 
@@ -167,7 +164,7 @@ BOOL CPckClass::RenameFilename()
 		++lpPckIndexTableSrc;
 
 	}
-	
+
 	AfterProcess(lpFileWrite, m_PckAllInfo, dwAddress, FALSE);
 
 	delete lpFileWrite;
@@ -182,7 +179,7 @@ void CPckClass::detectMaxAndAddMemory(DWORD dwMallocSize)
 {
 	EnterCriticalSection(&g_mt_lpMaxMemory);
 
-	if ((*mt_lpMaxMemory) >= mt_MaxMemory) {
+	if((*mt_lpMaxMemory) >= mt_MaxMemory) {
 		LeaveCriticalSection(&g_mt_lpMaxMemory);
 		{
 			EnterCriticalSection(&g_mt_nMallocBlocked);
@@ -209,13 +206,13 @@ void CPckClass::freeMaxAndSubtractMemory(DWORD dwMallocSize)
 {
 	EnterCriticalSection(&g_mt_lpMaxMemory);
 	(*mt_lpMaxMemory) -= dwMallocSize;
-	if ((*mt_lpMaxMemory) < mt_MaxMemory) {
+	if((*mt_lpMaxMemory) < mt_MaxMemory) {
 		LeaveCriticalSection(&g_mt_lpMaxMemory);
 
 		EnterCriticalSection(&g_mt_nMallocBlocked);
 		int nMallocBlocked = mt_nMallocBlocked;
 		LeaveCriticalSection(&g_mt_nMallocBlocked);
-		for (int i = 0; i<nMallocBlocked; i++)
+		for(int i = 0; i < nMallocBlocked; i++)
 			SetEvent(mt_evtMaxMemory);
 
 	} else {
@@ -226,18 +223,17 @@ void CPckClass::freeMaxAndSubtractMemory(DWORD dwMallocSize)
 BOOL CPckClass::initCompressedDataQueue(int threadnum, DWORD dwFileCount, QWORD dwAddressStartAt)
 {
 	//申请空间,文件名压缩数据 数组
-	if (NULL == (mt_lpPckIndexTable = new PCKINDEXTABLE_COMPRESS[dwFileCount]))
-	{
+	if(NULL == (mt_lpPckIndexTable = new PCKINDEXTABLE_COMPRESS[dwFileCount])) {
 		PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		assert(FALSE);
 		return FALSE;
 	}
 	memset(mt_lpPckIndexTable, 0, sizeof(PCKINDEXTABLE_COMPRESS) * dwFileCount);
 
-	if (PCK_COMPRESS_NEED_ST < threadnum)
-	{
-		if (NULL == (mt_pckCompressedDataPtrArray = (BYTE**)malloc(sizeof(BYTE*) * (dwFileCount + 1))))
-		{
+	if(PCK_COMPRESS_NEED_ST < threadnum) {
+		if(NULL == (mt_pckCompressedDataPtrArray = (BYTE**)malloc(sizeof(BYTE*) * (dwFileCount + 1)))) {
 			PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			assert(FALSE);
 			return FALSE;
 		}
 		memset(mt_pckCompressedDataPtrArray, 0, sizeof(BYTE*) * (dwFileCount + 1));
@@ -263,7 +259,7 @@ BOOL CPckClass::putCompressedDataQueue(LPBYTE lpBuffer, LPPCKINDEXTABLE_COMPRESS
 	EnterCriticalSection(&g_mt_pckCompressedDataPtrArrayPtr);
 	//lpPckIndexTableComped->dwAddressFileDataToWrite = lpPckFileIndexToCompress->dwAddressOffset = mt_dwAddressQueue;
 
-	if (0 == lpPckIndexTableComped->dwAddressOfDuplicateOldDataArea) {
+	if(0 == lpPckIndexTableComped->dwAddressOfDuplicateOldDataArea) {
 		lpPckIndexTableComped->dwAddressFileDataToWrite = lpPckFileIndexToCompress->dwAddressOffset = mt_dwAddressQueue;
 		mt_dwAddressQueue += lpPckFileIndexToCompress->dwFileCipherTextSize;
 		lpPckIndexTableComped->dwAddressAddStep = lpPckFileIndexToCompress->dwFileCipherTextSize;
@@ -272,16 +268,14 @@ BOOL CPckClass::putCompressedDataQueue(LPBYTE lpBuffer, LPPCKINDEXTABLE_COMPRESS
 		lpPckIndexTableComped->dwAddressAddStep = 0;
 	}
 
-	if (!lpPckIndexTableComped->bInvalid)
-	{
+	if(!lpPckIndexTableComped->bInvalid) {
 		FillAndCompressIndexData(lpPckIndexTableComped, lpPckFileIndexToCompress);
 	}
 
 #ifdef _DEBUG
-	if (1 == (int)lpBuffer) {
+	if(1 == (int)lpBuffer) {
 		logOutput(__FUNCTION__, formatString("id(%05d), lpBuffer(0x%08x):0x0000000000000000, lpPckIndexTable(0x%08x), szFile(%s)\r\n", mt_dwCurrentQueuePosPut, (int)lpBuffer, (int)mt_lpPckIndexTablePut, lpPckFileIndexToCompress->szFilename));
-	}
-	else {
+	} else {
 		logOutput(__FUNCTION__, formatString("id(%05d), lpBuffer(0x%08x):0x%016llx, lpPckIndexTable(0x%08x), szFile(%s)\r\n", mt_dwCurrentQueuePosPut, (int)lpBuffer, _byteswap_uint64(*(unsigned __int64*)lpBuffer), (int)mt_lpPckIndexTablePut, lpPckFileIndexToCompress->szFilename));
 	}
 
@@ -305,7 +299,7 @@ BOOL CPckClass::getCompressedDataQueue(LPBYTE &lpBuffer, LPPCKINDEXTABLE_COMPRES
 {
 
 	EnterCriticalSection(&g_mt_pckCompressedDataPtrArrayPtr);
-	if (mt_dwCurrentQueueLength) {
+	if(mt_dwCurrentQueueLength) {
 
 		mt_dwCurrentQueueLength--;
 		lpBuffer = *mt_pckCompressedDataPtrArrayGet;
@@ -317,15 +311,14 @@ BOOL CPckClass::getCompressedDataQueue(LPBYTE &lpBuffer, LPPCKINDEXTABLE_COMPRES
 
 		assert(NULL != lpBuffer);
 
-		if (0 != lpPckIndexTable->dwIndexDataLength) {
+		if(0 != lpPckIndexTable->dwIndexDataLength) {
 			char szFile[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
 			DWORD dwTest = MAX_INDEXTABLE_CLEARTEXT_LENGTH;
 
 			decompress(szFile, &dwTest, lpPckIndexTable->buffer, lpPckIndexTable->dwIndexDataLength);
-			if (1 == (int)lpBuffer) {
+			if(1 == (int)lpBuffer) {
 				logOutput(__FUNCTION__, formatString("id(%05d), lpBuffer(0x%08x):0x0000000000000000, lpPckIndexTable(0x%08x), szFile(%s)\r\n", mt_dwCurrentQueuePosGet, (int)lpBuffer, (int)lpPckIndexTable, szFile));
-			}
-			else {
+			} else {
 				logOutput(__FUNCTION__, formatString("id(%05d), lpBuffer(0x%08x):0x%016llx, lpPckIndexTable(0x%08x), szFile(%s)\r\n", mt_dwCurrentQueuePosGet, (int)lpBuffer, _byteswap_uint64(*(unsigned __int64*)lpBuffer), (int)lpPckIndexTable, szFile));
 			}
 		}
@@ -339,13 +332,13 @@ BOOL CPckClass::getCompressedDataQueue(LPBYTE &lpBuffer, LPPCKINDEXTABLE_COMPRES
 	} else {
 		LeaveCriticalSection(&g_mt_pckCompressedDataPtrArrayPtr);
 		return FALSE;
-	}	
+	}
 }
 
 void CPckClass::uninitCompressedDataQueue(int threadnum)
 {
 	delete[] mt_lpPckIndexTable;
 
-	if (PCK_COMPRESS_NEED_ST < threadnum)
+	if(PCK_COMPRESS_NEED_ST < threadnum)
 		free(mt_pckCompressedDataPtrArray);
 }

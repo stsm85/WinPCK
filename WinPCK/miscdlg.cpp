@@ -48,31 +48,31 @@ BOOL TLogDlg::EvCreate(LPARAM lParam)
 	lvcolumn.cx = rcList.right - 24;
 	//lvcolumn.pszText = TEXT("test");
 	lvcolumn.iSubItem = 0;
-		//lvcolumn.iOrder = 0;
-	ListView_InsertColumn(hWndList, lvcolumn.iSubItem, & lvcolumn);
+	//lvcolumn.iOrder = 0;
+	ListView_InsertColumn(hWndList, lvcolumn.iSubItem, &lvcolumn);
 
 	hSmall = ImageList_Create(16, 16, ILC_COLOR32, 4, 1);
 
 
 
-	hiconItem = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_LOGI)); 
+	hiconItem = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_LOGI));
 	ImageList_AddIcon(hSmall, hiconItem);	//LOGN
 	ImageList_AddIcon(hSmall, hiconItem);	//LOGI
-	DestroyIcon(hiconItem); 
+	DestroyIcon(hiconItem);
 
-	hiconItem = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_LOGW)); 
-	ImageList_AddIcon(hSmall, hiconItem); 
-	DestroyIcon(hiconItem); 
+	hiconItem = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_LOGW));
+	ImageList_AddIcon(hSmall, hiconItem);
+	DestroyIcon(hiconItem);
 
-	hiconItem = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_LOGE)); 
-	ImageList_AddIcon(hSmall, hiconItem); 
-	DestroyIcon(hiconItem); 
+	hiconItem = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_LOGE));
+	ImageList_AddIcon(hSmall, hiconItem);
+	DestroyIcon(hiconItem);
 
-	hiconItem = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_LOGD)); 
-	ImageList_AddIcon(hSmall, hiconItem); 
-	DestroyIcon(hiconItem); 
+	hiconItem = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_LOGD));
+	ImageList_AddIcon(hSmall, hiconItem);
+	DestroyIcon(hiconItem);
 
-	ListView_SetImageList(hWndList, hSmall, LVSIL_SMALL); 
+	ListView_SetImageList(hWndList, hSmall, LVSIL_SMALL);
 
 	//当前exe目录
 	GetModuleFileNameA(NULL, szExePath, MAX_PATH);
@@ -89,8 +89,7 @@ BOOL TLogDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	//char szPrintf[300];
 	//char *lpszFile;
 
-	switch (wID)
-	{
+	switch(wID) {
 	case IDOK:
 		return	TRUE;
 
@@ -104,95 +103,91 @@ BOOL TLogDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		break;
 
 	case ID_MENU_LOG_SAVE_SEL:
-		{
-			LVITEMA item = {0};
+	{
+		LVITEMA item = { 0 };
 
-			item.mask = LVIF_STATE;
-			item.stateMask = LVIS_SELECTED;
+		item.mask = LVIF_STATE;
+		item.stateMask = LVIS_SELECTED;
 
-			FILE *fplog = fopen(pszLogFileName(), "w+");
-			if(!fplog){
+		FILE *fplog = fopen(pszLogFileName(), "w+");
+		if(!fplog) {
 
-				::MessageBoxA(hWnd, "保存日志文件失败", "error", MB_OK);
-				return TRUE;
-			}
-
-			int	nItemCount = ::SendMessageA(hWndList, LVM_GETITEMCOUNT, 0, 0);
-
-			for(item.iItem=0;item.iItem<nItemCount;++item.iItem)
-			{
-				//ListView_GetItem(hWndList, &item);
-				::SendMessageA(hWndList, LVM_GETITEMA, 0, (LPARAM)(LV_ITEMA*)&item);
-				if( item.state & LVIS_SELECTED )
-				{
-					fprintf(fplog, "%s\r\n", pszTargetListLog(item.iItem));
-				}
-			}
-
-			fclose(fplog);
-
+			::MessageBoxA(hWnd, "保存日志文件失败", "error", MB_OK);
+			return TRUE;
 		}
-		break;
+
+		int	nItemCount = ::SendMessageA(hWndList, LVM_GETITEMCOUNT, 0, 0);
+
+		for(item.iItem = 0;item.iItem < nItemCount;++item.iItem) {
+			//ListView_GetItem(hWndList, &item);
+			::SendMessageA(hWndList, LVM_GETITEMA, 0, (LPARAM)(LV_ITEMA*)&item);
+			if(item.state & LVIS_SELECTED) {
+				fprintf(fplog, "%s\r\n", pszTargetListLog(item.iItem));
+			}
+		}
+
+		fclose(fplog);
+
+	}
+	break;
 
 	case ID_MENU_LOG_SAVE_ALL:
-		{
-			LVITEMA item = {0};
+	{
+		LVITEMA item = { 0 };
 
-			FILE *fplog = fopen(pszLogFileName(), "w+");
-			if(!fplog){
+		FILE *fplog = fopen(pszLogFileName(), "w+");
+		if(!fplog) {
 
-				::MessageBoxA(hWnd, "保存日志文件失败", "error", MB_OK);
-				return TRUE;
-			}
-
-			int	nItemCount = ::SendMessageA(hWndList, LVM_GETITEMCOUNT, 0, 0);
-
-			for(int i=0;i<nItemCount;++i)
-			{
-				fprintf(fplog, "%s\r\n", pszTargetListLog(i));
-			}
-
-			fclose(fplog);
-
+			::MessageBoxA(hWnd, "保存日志文件失败", "error", MB_OK);
+			return TRUE;
 		}
-		break;
+
+		int	nItemCount = ::SendMessageA(hWndList, LVM_GETITEMCOUNT, 0, 0);
+
+		for(int i = 0;i < nItemCount;++i) {
+			fprintf(fplog, "%s\r\n", pszTargetListLog(i));
+		}
+
+		fclose(fplog);
+
+	}
+	break;
 
 	case ID_MENU_LOG_COPY:
-		{
-			char *lpszLogText = pszTargetListLog(m_iCurrentHotItem);
-			size_t nLen = strlen(lpszLogText) + 1;
+	{
+		char *lpszLogText = pszTargetListLog(m_iCurrentHotItem);
+		size_t nLen = strlen(lpszLogText) + 1;
 
-			//拷入剪切板
-			if(OpenClipboard(hWnd))
-			{ 
-				HGLOBAL clipbuffer;
-				char *buffer;
-				EmptyClipboard();
-				if(NULL != (clipbuffer = GlobalAlloc(GMEM_DDESHARE, nLen))){
-					buffer = (char *)GlobalLock(clipbuffer);
-					//StringCchCopyA(buffer, nLen, lpszLogText);
-					memcpy(buffer, lpszLogText, nLen);
-					GlobalUnlock(clipbuffer);
+		//拷入剪切板
+		if(OpenClipboard(hWnd)) {
+			HGLOBAL clipbuffer;
+			char *buffer;
+			EmptyClipboard();
+			if(NULL != (clipbuffer = GlobalAlloc(GMEM_DDESHARE, nLen))) {
+				buffer = (char *)GlobalLock(clipbuffer);
+				//StringCchCopyA(buffer, nLen, lpszLogText);
+				memcpy(buffer, lpszLogText, nLen);
+				GlobalUnlock(clipbuffer);
 
-					SetClipboardData(CF_TEXT,clipbuffer);
+				SetClipboardData(CF_TEXT, clipbuffer);
 
-					CloseClipboard();
-					GlobalFree(clipbuffer);
+				CloseClipboard();
+				GlobalFree(clipbuffer);
 
-				}else{
-					CloseClipboard();
+			} else {
+				CloseClipboard();
 
-				}
 			}
 		}
-		break;
+	}
+	break;
 	}
 	return	FALSE;
 }
 
 BOOL TLogDlg::EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight)
 {
-	::SetWindowPos(hWndList, NULL, 0, 0, nWidth, nHeight, SWP_NOZORDER | SWP_NOMOVE); 
+	::SetWindowPos(hWndList, NULL, 0, 0, nWidth, nHeight, SWP_NOZORDER | SWP_NOMOVE);
 	ListView_SetColumnWidth(hWndList, 0, nWidth - 24);
 
 	return TRUE;
@@ -200,12 +195,10 @@ BOOL TLogDlg::EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight)
 
 BOOL TLogDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 {
-	switch(ctlID)
-	{
+	switch(ctlID) {
 	case IDC_LIST_LOG:
 
-		switch(pNmHdr->code)
-		{
+		switch(pNmHdr->code) {
 		case NM_RCLICK:
 
 			HMENU hMenuRClick = GetSubMenu(LoadMenu(TApp::GetInstance(), MAKEINTRESOURCE(IDR_MENU_LOG)), 0);
@@ -245,10 +238,10 @@ char*  TLogDlg::pszLogFileName()
 	SYSTEMTIME systime;
 
 	//创建文件exportlog_2015-05-04_13_22_33.log
-	GetLocalTime (&systime);
+	GetLocalTime(&systime);
 	sprintf_s(logfile, "%sexportlog_%04d-%02d-%02d_%02d_%02d_%02d.log", szExePath, \
-										systime.wYear, systime.wMonth, systime.wDay, \
-										systime.wHour, systime.wMinute, systime.wSecond);
+		systime.wYear, systime.wMonth, systime.wDay, \
+		systime.wHour, systime.wMinute, systime.wSecond);
 	return logfile;
 
 }
@@ -257,7 +250,7 @@ char*  TLogDlg::pszTargetListLog(int iItem)
 {
 	static char szText[8192];
 
-	LVITEMA item = {0};
+	LVITEMA item = { 0 };
 
 	*(szText + 1) = ' ';
 
@@ -267,8 +260,7 @@ char*  TLogDlg::pszTargetListLog(int iItem)
 	item.cchTextMax = 8190;
 	::SendMessageA(hWndList, LVM_GETITEMA, 0, (LPARAM)(LV_ITEMA*)&item);
 
-	switch(item.iImage)
-	{
+	switch(item.iImage) {
 	case LOG_IMAGE_INFO:
 
 		*szText = LOG_FLAG_INFO;
@@ -303,15 +295,14 @@ char*  TLogDlg::pszTargetListLog(int iItem)
 */
 BOOL TInfoDlg::EvCreate(LPARAM lParam)
 {
-	SendDlgItemMessage(IDC_EDIT_INFO, EM_LIMITTEXT , PCK_ADDITIONAL_INFO_SIZE - 1, 0);
+	SendDlgItemMessage(IDC_EDIT_INFO, EM_LIMITTEXT, PCK_ADDITIONAL_INFO_SIZE - 1, 0);
 	SetDlgItemTextA(IDC_EDIT_INFO, dirBuf);
 	return	TRUE;
 }
 
 BOOL TInfoDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
-	switch (wID)
-	{
+	switch(wID) {
 	case IDOK:
 		memset(dirBuf, 0, PCK_ADDITIONAL_INFO_SIZE);
 		GetDlgItemTextA(IDC_EDIT_INFO, dirBuf, PCK_ADDITIONAL_INFO_SIZE);
@@ -330,7 +321,7 @@ BOOL TInfoDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 */
 BOOL TSearchDlg::EvCreate(LPARAM lParam)
 {
-	SendDlgItemMessage(IDC_EDIT_SEARCH, EM_LIMITTEXT , 255, 0);
+	SendDlgItemMessage(IDC_EDIT_SEARCH, EM_LIMITTEXT, 255, 0);
 	SetDlgItemTextA(IDC_EDIT_SEARCH, dirBuf);
 	//SendDlgItemMessage(IDC_EDIT_SEARCH, EM_SETSEL, 0, -1);
 	//::SetFocus(GetDlgItem(IDC_EDIT_SEARCH));
@@ -339,8 +330,7 @@ BOOL TSearchDlg::EvCreate(LPARAM lParam)
 
 BOOL TSearchDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
-	switch (wID)
-	{
+	switch(wID) {
 	case IDOK:
 		GetDlgItemTextA(IDC_EDIT_SEARCH, dirBuf, 256);
 		EndDialog(wID);
@@ -362,14 +352,14 @@ BOOL TCompressOptDlg::EvCreate(LPARAM lParam)
 
 	SendDlgItemMessage(IDC_EDIT_MEM, EM_LIMITTEXT, 4, 0);
 
-	SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETRANGE , FALSE, MAKELONG(1, 12));
-	SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_SETRANGE , FALSE, MAKELONG(1, lpParams->dwMTMaxThread));
+	SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETRANGE, FALSE, MAKELONG(1, 12));
+	SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_SETRANGE, FALSE, MAKELONG(1, lpParams->dwMTMaxThread));
 	SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETPOS, TRUE, (LPARAM)lpParams->dwCompressLevel);
 	SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_SETPOS, TRUE, (LPARAM)lpParams->dwMTThread);
 
 	SetDlgItemTextA(IDC_STATIC_LEVEL, ultoa(lpParams->dwCompressLevel, szStr, 10));
 	SetDlgItemTextA(IDC_STATIC_THREAD, ultoa(lpParams->dwMTThread, szStr, 10));
-	SetDlgItemTextA(IDC_EDIT_MEM, ultoa((lpParams->dwMTMaxMemory)>>20, szStr, 10));
+	SetDlgItemTextA(IDC_EDIT_MEM, ultoa((lpParams->dwMTMaxMemory) >> 20, szStr, 10));
 
 	return	TRUE;
 }
@@ -378,8 +368,7 @@ BOOL TCompressOptDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
 	char	szStr[8];
 
-	switch (wID)
-	{
+	switch(wID) {
 	case IDOK:
 
 		lpParams->dwCompressLevel = SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_GETPOS, 0, 0);
@@ -390,8 +379,8 @@ BOOL TCompressOptDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 		if(0 >= lpParams->dwMTMaxMemory)
 			lpParams->dwMTMaxMemory = MT_MAX_MEMORY;
-		else 
-			(lpParams->dwMTMaxMemory)<<=20;
+		else
+			(lpParams->dwMTMaxMemory) <<= 20;
 
 		EndDialog(wID);
 		return	TRUE;
@@ -408,18 +397,16 @@ BOOL TCompressOptDlg::EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar
 	int		iPos;
 	char	szStr[4];
 
-	switch (nCode) { 
-        case TB_THUMBTRACK: 
+	switch(nCode) {
+	case TB_THUMBTRACK:
 
 		iPos = ::SendMessage(scrollBar, TBM_GETPOS, 0, 0);
 
-		if(scrollBar == GetDlgItem(IDC_SLIDER_LEVEL))
-		{
+		if(scrollBar == GetDlgItem(IDC_SLIDER_LEVEL)) {
 			SetDlgItemTextA(IDC_STATIC_LEVEL, ultoa(iPos, szStr, 10));
 			break;
 		}
-		if(scrollBar == GetDlgItem(IDC_SLIDER_THREAD))
-		{
+		if(scrollBar == GetDlgItem(IDC_SLIDER_THREAD)) {
 			SetDlgItemTextA(IDC_STATIC_THREAD, ultoa(iPos, szStr, 10));
 			break;
 		}
@@ -429,7 +416,7 @@ BOOL TCompressOptDlg::EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar
 	return 0;
 }
 
-TViewDlg::TViewDlg(char **_buf, DWORD &_dwSize, char *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_VIEW, _win) 
+TViewDlg::TViewDlg(char **_buf, DWORD &_dwSize, char *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_VIEW, _win)
 {
 	buf = _buf;
 	dwSize = _dwSize;
@@ -437,11 +424,11 @@ TViewDlg::TViewDlg(char **_buf, DWORD &_dwSize, char *_lpszFile, TWin *_win) : T
 
 	//上限10MB	
 	//*buf = (char*) malloc (dwSize + 2);
-	if(0 != dwSize){
+	if(0 != dwSize) {
 		if(VIEW_TEXT_MAX_BUFFER < dwSize)
 			_dwSize = dwSize = VIEW_TEXT_MAX_BUFFER;
-		*buf = (char*) malloc (dwSize + 2);
-	}else{
+		*buf = (char*)malloc(dwSize + 2);
+	} else {
 		*buf = NULL;
 	}
 
@@ -458,36 +445,34 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 	//窗口文字
 	char szTitle[MAX_PATH];
 
-	if(0 != dwSize){
+	if(0 != dwSize) {
 
 		*(WORD*)(*buf + dwSize) = 0;
 
-		if(0xfeff == *(WORD*)*buf)
-		{
+		if(0xfeff == *(WORD*)*buf) {
 			textType = TEXT_TYPE_UCS2;
-			sprintf_s(szTitle, MAX_PATH, "文本查看 - %s (Unicode)",lpszFile);
+			sprintf_s(szTitle, MAX_PATH, "文本查看 - %s (Unicode)", lpszFile);
 			lpszTextShow = *buf + 2;
 
-		}else if((0xbbef == *(WORD*)*buf) && (0xbf == *(BYTE*)(*buf + 3))){
+		} else if((0xbbef == *(WORD*)*buf) && (0xbf == *(BYTE*)(*buf + 3))) {
 			textType = TEXT_TYPE_UTF8;
-			sprintf_s(szTitle, MAX_PATH, "文本查看 - %s (UTF-8)",lpszFile);
+			sprintf_s(szTitle, MAX_PATH, "文本查看 - %s (UTF-8)", lpszFile);
 			lpszTextShow = *buf + 3;
 
-		}else{
+		} else {
 			textType = DataType(*buf, dwSize);
 
-			switch(textType)
-			{
+			switch(textType) {
 			case TEXT_TYPE_UTF8:
 
 				//textType = TEXT_TYPE_UTF8;
-				sprintf_s(szTitle, MAX_PATH, "文本查看 - %s (UTF-8)",lpszFile);
+				sprintf_s(szTitle, MAX_PATH, "文本查看 - %s (UTF-8)", lpszFile);
 				break;
 
 			case TEXT_TYPE_ANSI:
 
 				//textType = TEXT_TYPE_ANSI;
-				sprintf_s(szTitle, MAX_PATH, "文本查看 - %s",lpszFile);
+				sprintf_s(szTitle, MAX_PATH, "文本查看 - %s", lpszFile);
 				break;
 
 			case TEXT_TYPE_RAW:
@@ -495,7 +480,7 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 				if(VIEW_RAW_MAX_BUFFER < dwSize)
 					dwSize = VIEW_RAW_MAX_BUFFER;
 
-				sprintf_s(szTitle, MAX_PATH, "文本查看 - %s (RAW)",lpszFile);
+				sprintf_s(szTitle, MAX_PATH, "文本查看 - %s (RAW)", lpszFile);
 
 				break;
 
@@ -507,10 +492,10 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 
 
 		SendDlgItemMessage(IDC_RICHEDIT_VIEW, EM_SETTEXTMODE, TM_PLAINTEXT, 0);
-		SendDlgItemMessage(IDC_RICHEDIT_VIEW, EM_EXLIMITTEXT , 0, -1);
+		SendDlgItemMessage(IDC_RICHEDIT_VIEW, EM_EXLIMITTEXT, 0, -1);
 		//SendDlgItemMessage(IDC_RICHEDIT_VIEW, EM_SETSEL, 0, -1);
 
-		switch(textType){
+		switch(textType) {
 		case TEXT_TYPE_UCS2:
 			//SendDlgItemMessageW(IDC_RICHEDIT_VIEW, EM_REPLACESEL, 0, (LPARAM)lpszTextShow);
 			SetDlgItemTextW(IDC_RICHEDIT_VIEW, (wchar_t *)lpszTextShow);
@@ -536,9 +521,9 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 		free(*buf);
 		*buf = NULL;
 
-	}else{
+	} else {
 
-		sprintf_s(szTitle, MAX_PATH, "文本查看 - %s",lpszFile);
+		sprintf_s(szTitle, MAX_PATH, "文本查看 - %s", lpszFile);
 	}
 
 	SetWindowTextA(szTitle);
@@ -552,8 +537,7 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 
 BOOL TViewDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
-	switch (wID)
-	{
+	switch(wID) {
 	case IDOK:
 		EndDialog(wID);
 		return	TRUE;
@@ -572,38 +556,33 @@ int TViewDlg::DataType(const char *_s, size_t size)
 	const u_char *s = (const u_char *)_s;
 	BOOL  isNotUTF8 = FALSE;
 
-	while (*s) {
-		if (*s <= 0x7f) {
-		}
-		else if (*s <= 0xdf) {
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN
-		}
-		else if (*s <= 0xef) {
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-		}
-		else if (*s <= 0xf7) {
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-		}
-		else if (*s <= 0xfb) {
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-		}
-		else if (*s <= 0xfd) {
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-		}
-		++s;
+	while(*s) {
+		if(*s <= 0x7f) {
+		} else if(*s <= 0xdf) {
+			if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN
+		} else if(*s <= 0xef) {
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			} else if(*s <= 0xf7) {
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			} else if(*s <= 0xfb) {
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			} else if(*s <= 0xfd) {
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			}
+			++s;
 	}
 
-	while (*s) {
+	while(*s) {
 		++s;
 	}
 
@@ -612,7 +591,7 @@ int TViewDlg::DataType(const char *_s, size_t size)
 	if(size > ((char*)s - _s))
 		return TEXT_TYPE_RAW;
 	else
-		return isNotUTF8 ? TEXT_TYPE_ANSI : TEXT_TYPE_UTF8; 
+		return isNotUTF8 ? TEXT_TYPE_ANSI : TEXT_TYPE_UTF8;
 
 }
 
@@ -629,21 +608,21 @@ int TViewDlg::DataType(const char *_s, size_t size)
 void TViewDlg::ShowRaw(LPBYTE lpbuf, size_t rawlength)
 {
 	const char	*lpszByte2Raw[0x100] = {
-		"00 ", "01 ", "02 ", "03 ", "04 ", "05 ", "06 ", "07 ", "08 ", "09 ", "0a ", "0b ", "0c ", "0d ", "0e ", "0f ", 
-		"10 ", "11 ", "12 ", "13 ", "14 ", "15 ", "16 ", "17 ", "18 ", "19 ", "1a ", "1b ", "1c ", "1d ", "1e ", "1f ", 
-		"20 ", "21 ", "22 ", "23 ", "24 ", "25 ", "26 ", "27 ", "28 ", "29 ", "2a ", "2b ", "2c ", "2d ", "2e ", "2f ", 
-		"30 ", "31 ", "32 ", "33 ", "34 ", "35 ", "36 ", "37 ", "38 ", "39 ", "3a ", "3b ", "3c ", "3d ", "3e ", "3f ", 
-		"40 ", "41 ", "42 ", "43 ", "44 ", "45 ", "46 ", "47 ", "48 ", "49 ", "4a ", "4b ", "4c ", "4d ", "4e ", "4f ", 
-		"50 ", "51 ", "52 ", "53 ", "54 ", "55 ", "56 ", "57 ", "58 ", "59 ", "5a ", "5b ", "5c ", "5d ", "5e ", "5f ", 
-		"60 ", "61 ", "62 ", "63 ", "64 ", "65 ", "66 ", "67 ", "68 ", "69 ", "6a ", "6b ", "6c ", "6d ", "6e ", "6f ", 
-		"70 ", "71 ", "72 ", "73 ", "74 ", "75 ", "76 ", "77 ", "78 ", "79 ", "7a ", "7b ", "7c ", "7d ", "7e ", "7f ", 
-		"80 ", "81 ", "82 ", "83 ", "84 ", "85 ", "86 ", "87 ", "88 ", "89 ", "8a ", "8b ", "8c ", "8d ", "8e ", "8f ", 
-		"90 ", "91 ", "92 ", "93 ", "94 ", "95 ", "96 ", "97 ", "98 ", "99 ", "9a ", "9b ", "9c ", "9d ", "9e ", "9f ", 
-		"a0 ", "a1 ", "a2 ", "a3 ", "a4 ", "a5 ", "a6 ", "a7 ", "a8 ", "a9 ", "aa ", "ab ", "ac ", "ad ", "ae ", "af ", 
-		"b0 ", "b1 ", "b2 ", "b3 ", "b4 ", "b5 ", "b6 ", "b7 ", "b8 ", "b9 ", "ba ", "bb ", "bc ", "bd ", "be ", "bf ", 
-		"c0 ", "c1 ", "c2 ", "c3 ", "c4 ", "c5 ", "c6 ", "c7 ", "c8 ", "c9 ", "ca ", "cb ", "cc ", "cd ", "ce ", "cf ", 
-		"d0 ", "d1 ", "d2 ", "d3 ", "d4 ", "d5 ", "d6 ", "d7 ", "d8 ", "d9 ", "da ", "db ", "dc ", "dd ", "de ", "df ", 
-		"e0 ", "e1 ", "e2 ", "e3 ", "e4 ", "e5 ", "e6 ", "e7 ", "e8 ", "e9 ", "ea ", "eb ", "ec ", "ed ", "ee ", "ef ", 
+		"00 ", "01 ", "02 ", "03 ", "04 ", "05 ", "06 ", "07 ", "08 ", "09 ", "0a ", "0b ", "0c ", "0d ", "0e ", "0f ",
+		"10 ", "11 ", "12 ", "13 ", "14 ", "15 ", "16 ", "17 ", "18 ", "19 ", "1a ", "1b ", "1c ", "1d ", "1e ", "1f ",
+		"20 ", "21 ", "22 ", "23 ", "24 ", "25 ", "26 ", "27 ", "28 ", "29 ", "2a ", "2b ", "2c ", "2d ", "2e ", "2f ",
+		"30 ", "31 ", "32 ", "33 ", "34 ", "35 ", "36 ", "37 ", "38 ", "39 ", "3a ", "3b ", "3c ", "3d ", "3e ", "3f ",
+		"40 ", "41 ", "42 ", "43 ", "44 ", "45 ", "46 ", "47 ", "48 ", "49 ", "4a ", "4b ", "4c ", "4d ", "4e ", "4f ",
+		"50 ", "51 ", "52 ", "53 ", "54 ", "55 ", "56 ", "57 ", "58 ", "59 ", "5a ", "5b ", "5c ", "5d ", "5e ", "5f ",
+		"60 ", "61 ", "62 ", "63 ", "64 ", "65 ", "66 ", "67 ", "68 ", "69 ", "6a ", "6b ", "6c ", "6d ", "6e ", "6f ",
+		"70 ", "71 ", "72 ", "73 ", "74 ", "75 ", "76 ", "77 ", "78 ", "79 ", "7a ", "7b ", "7c ", "7d ", "7e ", "7f ",
+		"80 ", "81 ", "82 ", "83 ", "84 ", "85 ", "86 ", "87 ", "88 ", "89 ", "8a ", "8b ", "8c ", "8d ", "8e ", "8f ",
+		"90 ", "91 ", "92 ", "93 ", "94 ", "95 ", "96 ", "97 ", "98 ", "99 ", "9a ", "9b ", "9c ", "9d ", "9e ", "9f ",
+		"a0 ", "a1 ", "a2 ", "a3 ", "a4 ", "a5 ", "a6 ", "a7 ", "a8 ", "a9 ", "aa ", "ab ", "ac ", "ad ", "ae ", "af ",
+		"b0 ", "b1 ", "b2 ", "b3 ", "b4 ", "b5 ", "b6 ", "b7 ", "b8 ", "b9 ", "ba ", "bb ", "bc ", "bd ", "be ", "bf ",
+		"c0 ", "c1 ", "c2 ", "c3 ", "c4 ", "c5 ", "c6 ", "c7 ", "c8 ", "c9 ", "ca ", "cb ", "cc ", "cd ", "ce ", "cf ",
+		"d0 ", "d1 ", "d2 ", "d3 ", "d4 ", "d5 ", "d6 ", "d7 ", "d8 ", "d9 ", "da ", "db ", "dc ", "dd ", "de ", "df ",
+		"e0 ", "e1 ", "e2 ", "e3 ", "e4 ", "e5 ", "e6 ", "e7 ", "e8 ", "e9 ", "ea ", "eb ", "ec ", "ed ", "ee ", "ef ",
 		"f0 ", "f1 ", "f2 ", "f3 ", "f4 ", "f5 ", "f6 ", "f7 ", "f8 ", "f9 ", "fa ", "fb ", "fc ", "fd ", "fe ", "ff "
 	};
 
@@ -651,7 +630,7 @@ void TViewDlg::ShowRaw(LPBYTE lpbuf, size_t rawlength)
 	char *buffer;
 
 	DWORD dwDst = ((rawlength >> 4) + 2) * LINE_STRLEN;
-	if(NULL == (buffer = (char*) malloc (dwDst))){
+	if(NULL == (buffer = (char*)malloc(dwDst))) {
 		return;
 	}
 
@@ -668,21 +647,20 @@ void TViewDlg::ShowRaw(LPBYTE lpbuf, size_t rawlength)
 	memcpy(lpbuffer, "Address: +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +a +b +c +d +e +f 0123456789abcdef \r\n", LINE_STRLEN);
 	lpbuffer += LINE_STRLEN;
 
-	for(i=BYTES_PER_LINE;i<nFullLine;i+=BYTES_PER_LINE)
-	{
-		memcpy(raw16, &lpbuf[i-BYTES_PER_LINE] ,BYTES_PER_LINE);
+	for(i = BYTES_PER_LINE;i < nFullLine;i += BYTES_PER_LINE) {
+		memcpy(raw16, &lpbuf[i - BYTES_PER_LINE], BYTES_PER_LINE);
 
 		sprintf(lpbuffer, ADDRESS_FMTSTR, i - BYTES_PER_LINE);
 		lpbuffer += ADDRESS_STRLEN;
 
-		for(int j=0;j<BYTES_PER_LINE;++j){
+		for(int j = 0;j < BYTES_PER_LINE;++j) {
 
 			memcpy(lpbuffer, lpszByte2Raw[raw16[j]], BYTEHEX_STRLEN);
-			lpbuffer+=BYTEHEX_STRLEN;
+			lpbuffer += BYTEHEX_STRLEN;
 
 		}
 
-		for(int j=0;j<BYTES_PER_LINE;j++){
+		for(int j = 0;j < BYTES_PER_LINE;j++) {
 			if(0x20 > raw16[j])
 				raw16[j] = '.';
 		}
@@ -693,22 +671,21 @@ void TViewDlg::ShowRaw(LPBYTE lpbuf, size_t rawlength)
 
 	int nLeftBytes = rawlength & 0xf;
 
-	if(0 != nLeftBytes){
-		memcpy(raw16, &lpbuf[i-BYTES_PER_LINE] ,nLeftBytes);
+	if(0 != nLeftBytes) {
+		memcpy(raw16, &lpbuf[i - BYTES_PER_LINE], nLeftBytes);
 
 		sprintf(lpbuffer, ADDRESS_FMTSTR, i - BYTES_PER_LINE);
 		lpbuffer += ADDRESS_STRLEN;
 
-		for(int j=0;j<BYTES_PER_LINE;++j)
-		{
+		for(int j = 0;j < BYTES_PER_LINE;++j) {
 			if(j < nLeftBytes)
 				memcpy(lpbuffer, lpszByte2Raw[raw16[j]], BYTEHEX_STRLEN);
 			else
 				memcpy(lpbuffer, "   ", BYTEHEX_STRLEN);
-			lpbuffer+=BYTEHEX_STRLEN;
+			lpbuffer += BYTEHEX_STRLEN;
 		}
 
-		for(int j=0;j<nLeftBytes;j++){
+		for(int j = 0;j < nLeftBytes;j++) {
 			if(0x20 > raw16[j])
 				raw16[j] = '.';
 		}
@@ -726,24 +703,24 @@ void TViewDlg::ShowRaw(LPBYTE lpbuf, size_t rawlength)
 	HDC hIC;
 	HFONT hFont;
 	LOGFONTA lf;
-	hIC = CreateICA("DISPLAY", NULL, NULL, NULL) ; // information context
-	lf.lfHeight				= 24;
-	lf.lfWidth				= 0; 
-	lf.lfEscapement			= 0; 
-	lf.lfOrientation		= 0; 
-	lf.lfWeight				= FW_DONTCARE; //default weight
-	lf.lfItalic				= FALSE; 
-	lf.lfUnderline			= FALSE; 
-	lf.lfStrikeOut			= FALSE; 
-	lf.lfCharSet			= DEFAULT_CHARSET; 
-	lf.lfOutPrecision		= OUT_DEFAULT_PRECIS; 
-	lf.lfClipPrecision		= CLIP_DEFAULT_PRECIS; 
-	lf.lfQuality			= DEFAULT_QUALITY; 
-	lf.lfPitchAndFamily		= DEFAULT_PITCH  | FF_DONTCARE;
+	hIC = CreateICA("DISPLAY", NULL, NULL, NULL); // information context
+	lf.lfHeight = 24;
+	lf.lfWidth = 0;
+	lf.lfEscapement = 0;
+	lf.lfOrientation = 0;
+	lf.lfWeight = FW_DONTCARE; //default weight
+	lf.lfItalic = FALSE;
+	lf.lfUnderline = FALSE;
+	lf.lfStrikeOut = FALSE;
+	lf.lfCharSet = DEFAULT_CHARSET;
+	lf.lfOutPrecision = OUT_DEFAULT_PRECIS;
+	lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+	lf.lfQuality = DEFAULT_QUALITY;
+	lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
 	//StringCchCopy(lf.lfFaceName, LF_FACESIZE, TEXT("Fixedsys"));
 	memcpy(lf.lfFaceName, "Fixedsys", 9);
 	hFont = CreateFontIndirectA(&lf);
-	SelectObject (hIC, hFont) ;
+	SelectObject(hIC, hFont);
 	DeleteDC(hIC);
 
 	//HWND hWndEdit = CreateWindowExA(WS_EX_CLIENTEDGE, "EDIT", NULL, WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_WANTRETURN | WS_VISIBLE | WS_CHILD | ES_READONLY, 0, 0, viewrect.right, viewrect.bottom, hWnd, (HMENU)IDC_RICHEDIT_VIEW, TApp::GetInstance(), NULL);
@@ -836,14 +813,14 @@ void TViewDlg::ShowRaw(LPBYTE lpbuf, size_t rawlength)
 //}
 
 
-TAttrDlg::TAttrDlg(void *_lpPckInfo, void *_lpRootInfo, QWORD _qwPckFileSize, char *_lpszPath, BOOL _isSearchMode, TWin *_win) : TDlg(IDD_DIALOG_ATTR, _win) 
+TAttrDlg::TAttrDlg(void *_lpPckInfo, void *_lpRootInfo, QWORD _qwPckFileSize, char *_lpszPath, BOOL _isSearchMode, TWin *_win) : TDlg(IDD_DIALOG_ATTR, _win)
 {
 	lpPckInfo = _lpPckInfo;
 	lpRootInfo = _lpRootInfo;
 	lpszPath = _lpszPath;
 	isSearchMode = _isSearchMode;
 	qwPckFileSize = _qwPckFileSize;
-	
+
 }
 
 //TAttrDlg::~TAttrDlg()
@@ -862,27 +839,26 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 
 
 
-	if(isSearchMode)
-	{
+	if(isSearchMode) {
 		LPPCKINDEXTABLE	lpPckIndex = (LPPCKINDEXTABLE)lpPckInfo;
 		char	szFilename[MAX_PATH_PCK_260];
 
 		memcpy(szFilename, lpPckIndex->cFileIndex.szFilename, MAX_PATH_PCK_260);
 
 		SetDlgItemTextA(IDC_EDIT_ATTR_TYPE, "文件");
-		
-		if(NULL != (lpszFilename = strrchr(szFilename, '\\'))){
+
+		if(NULL != (lpszFilename = strrchr(szFilename, '\\'))) {
 
 			*lpszFilename++ = 0;
 			SetDlgItemTextA(IDC_EDIT_ATTR_PATH, szFilename);
 
-		}else if(NULL != (lpszFilename = strrchr(szFilename, '/'))){
+		} else if(NULL != (lpszFilename = strrchr(szFilename, '/'))) {
 
 			*lpszFilename++ = 0;
 			SetDlgItemTextA(IDC_EDIT_ATTR_PATH, szFilename);
 
-		}else{
-			
+		} else {
+
 			lpszFilename = lpPckIndex->cFileIndex.szFilename;
 			SetDlgItemTextA(IDC_EDIT_ATTR_PATH, "");
 		}
@@ -891,24 +867,23 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 
 		//压缩大小
 		sprintf_s(szPrintf, 64, lpszFileFormat,
-					StrFormatByteSizeA(lpPckIndex->cFileIndex.dwFileCipherTextSize, szPrintfBytesize, 16),
-					lpPckIndex->cFileIndex.dwFileCipherTextSize);
+			StrFormatByteSizeA(lpPckIndex->cFileIndex.dwFileCipherTextSize, szPrintfBytesize, 16),
+			lpPckIndex->cFileIndex.dwFileCipherTextSize);
 
 		SetDlgItemTextA(IDC_EDIT_ATTR_CIPHER, szPrintf);
-		
+
 		//实际大小
 		sprintf_s(szPrintf, 64, lpszFileFormat,
-					StrFormatByteSizeA(lpPckIndex->cFileIndex.dwFileClearTextSize, szPrintfBytesize, 16),
-					lpPckIndex->cFileIndex.dwFileClearTextSize);
+			StrFormatByteSizeA(lpPckIndex->cFileIndex.dwFileClearTextSize, szPrintfBytesize, 16),
+			lpPckIndex->cFileIndex.dwFileClearTextSize);
 
 		SetDlgItemTextA(IDC_EDIT_ATTR_SIZE, szPrintf);
-		
+
 		//压缩率
 		if(0 == lpPckIndex->cFileIndex.dwFileClearTextSize)
 			SetDlgItemTextA(IDC_EDIT_ATTR_CMPR, "-");
-		else
-		{
-			sprintf_s(szPrintf, 64, "%.1f%%", lpPckIndex->cFileIndex.dwFileCipherTextSize * 100/ (double)lpPckIndex->cFileIndex.dwFileClearTextSize);
+		else {
+			sprintf_s(szPrintf, 64, "%.1f%%", lpPckIndex->cFileIndex.dwFileCipherTextSize * 100 / (double)lpPckIndex->cFileIndex.dwFileClearTextSize);
 			SetDlgItemTextA(IDC_EDIT_ATTR_CMPR, szPrintf);
 		}
 
@@ -920,7 +895,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 		sprintf_s(szPrintf, 64, "%llu (0x%016llX)", lpPckIndex->cFileIndex.dwAddressOffset, lpPckIndex->cFileIndex.dwAddressOffset);
 		SetDlgItemTextA(IDC_EDIT_ATTR_ADDR, szPrintf);
 
-	}else{
+	} else {
 
 		LPPCK_PATH_NODE	lpPckNode = (LPPCK_PATH_NODE)lpPckInfo;
 
@@ -933,16 +908,16 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 
 			//压缩大小
 			sprintf_s(szPrintf, 64, lpszFileFormat,
-						StrFormatByteSizeA(lpPckNode->lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szPrintfBytesize, 16),
-						lpPckNode->lpPckIndexTable->cFileIndex.dwFileCipherTextSize);
+				StrFormatByteSizeA(lpPckNode->lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szPrintfBytesize, 16),
+				lpPckNode->lpPckIndexTable->cFileIndex.dwFileCipherTextSize);
 
 			SetDlgItemTextA(IDC_EDIT_ATTR_CIPHER, szPrintf);
 
 
 			//实际大小
 			sprintf_s(szPrintf, 64, lpszFileFormat,
-						StrFormatByteSizeA(lpPckNode->lpPckIndexTable->cFileIndex.dwFileClearTextSize, szPrintfBytesize, 16),
-						lpPckNode->lpPckIndexTable->cFileIndex.dwFileClearTextSize);
+				StrFormatByteSizeA(lpPckNode->lpPckIndexTable->cFileIndex.dwFileClearTextSize, szPrintfBytesize, 16),
+				lpPckNode->lpPckIndexTable->cFileIndex.dwFileClearTextSize);
 
 			SetDlgItemTextA(IDC_EDIT_ATTR_SIZE, szPrintf);
 
@@ -951,8 +926,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 			//压缩率
 			if(0 == lpPckNode->lpPckIndexTable->cFileIndex.dwFileClearTextSize)
 				SetDlgItemTextA(IDC_EDIT_ATTR_CMPR, "-");
-			else
-			{
+			else {
 				sprintf_s(szPrintf, 64, "%.1f%%", lpPckNode->lpPckIndexTable->cFileIndex.dwFileCipherTextSize / (double)lpPckNode->lpPckIndexTable->cFileIndex.dwFileClearTextSize * 100);
 				SetDlgItemTextA(IDC_EDIT_ATTR_CMPR, szPrintf);
 			}
@@ -963,21 +937,21 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 			//偏移地址
 			sprintf_s(szPrintf, 64, "%llu (0x%016llX)", lpPckNode->lpPckIndexTable->cFileIndex.dwAddressOffset, lpPckNode->lpPckIndexTable->cFileIndex.dwAddressOffset);
 			SetDlgItemTextA(IDC_EDIT_ATTR_ADDR, szPrintf);
-		}else{
+		} else {
 
 			SetDlgItemTextA(IDC_EDIT_ATTR_TYPE, "文件夹");
 
 			//压缩大小
 			sprintf_s(szPrintf, 64, lpszFormat,
-						StrFormatByteSize64A(lpPckNode->child->qdwDirCipherTextSize, szPrintfBytesize, 16),
-						lpPckNode->child->qdwDirCipherTextSize);
+				StrFormatByteSize64A(lpPckNode->child->qdwDirCipherTextSize, szPrintfBytesize, 16),
+				lpPckNode->child->qdwDirCipherTextSize);
 			SetDlgItemTextA(IDC_EDIT_ATTR_CIPHER, szPrintf);
 
-			
+
 			//实际大小
 			sprintf_s(szPrintf, 64, lpszFormat,
-						StrFormatByteSize64A(lpPckNode->child->qdwDirClearTextSize, szPrintfBytesize, 16),
-						lpPckNode->child->qdwDirClearTextSize);
+				StrFormatByteSize64A(lpPckNode->child->qdwDirClearTextSize, szPrintfBytesize, 16),
+				lpPckNode->child->qdwDirClearTextSize);
 
 			SetDlgItemTextA(IDC_EDIT_ATTR_SIZE, szPrintf);
 
@@ -1001,15 +975,15 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 	LPPCK_PATH_NODE	lpRootNode = (LPPCK_PATH_NODE)lpRootInfo;
 	//文件总大小
 	sprintf_s(szPrintf, 64, lpszFormat,
-				StrFormatByteSize64A(lpRootNode->child->qdwDirClearTextSize, szPrintfBytesize, 16),
-				lpRootNode->child->qdwDirClearTextSize);
+		StrFormatByteSize64A(lpRootNode->child->qdwDirClearTextSize, szPrintfBytesize, 16),
+		lpRootNode->child->qdwDirClearTextSize);
 
 	SetDlgItemTextA(IDC_EDIT_ATTR_ALLSIZE, szPrintf);
 
 	//压缩包大小
 	sprintf_s(szPrintf, 64, lpszFormat,
-				StrFormatByteSize64A(lpRootNode->child->qdwDirCipherTextSize, szPrintfBytesize, 16),
-				lpRootNode->child->qdwDirCipherTextSize);
+		StrFormatByteSize64A(lpRootNode->child->qdwDirCipherTextSize, szPrintfBytesize, 16),
+		lpRootNode->child->qdwDirCipherTextSize);
 	SetDlgItemTextA(IDC_EDIT_ATTR_PCKSIZE, szPrintf);
 
 	//压缩率
@@ -1019,14 +993,14 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 	//冗余数据量
 	//int dwDirt = dwPckFileSize - lpRootNode->child->dwDirCipherTextSize;
 	sprintf_s(szPrintf, 64, lpszFormat,
-				StrFormatByteSize64A(qwPckFileSize, szPrintfBytesize, 16),
-				qwPckFileSize);
+		StrFormatByteSize64A(qwPckFileSize, szPrintfBytesize, 16),
+		qwPckFileSize);
 	SetDlgItemTextA(IDC_EDIT_ATTR_DIRT, szPrintf);
 
 
 	//窗口文字
 	char	szTitle[MAX_PATH];
-	sprintf_s(szTitle, MAX_PATH, "%s 属性",lpszFilename);
+	sprintf_s(szTitle, MAX_PATH, "%s 属性", lpszFilename);
 	SetWindowTextA(szTitle);
 
 	Show();
@@ -1036,8 +1010,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 
 BOOL TAttrDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
-	switch (wID)
-	{
+	switch(wID) {
 	case IDOK:
 		EndDialog(wID);
 		return	TRUE;
@@ -1073,15 +1046,15 @@ TPicDlg::TPicDlg(char **_buf, UINT32 _dwSize, int _iFormat, char *_lpszFile, TWi
 	//if(isDds = _isDds)
 	if(FMT_RAW != (iFormat = _iFormat))	//dds,tga
 	{
-		*buf = (char*) malloc (dwSize);
-	}else{							//bmp,jpg,png..
+		*buf = (char*)malloc(dwSize);
+	} else {							//bmp,jpg,png..
 		*buf = (char*)(hGlobal = GlobalAlloc(GMEM_FIXED, dwSize));
 	}
 
-	GdiplusStartup( &g_pGdiPlusToken, &g_oGdiPlusStartupInput, NULL );
+	GdiplusStartup(&g_pGdiPlusToken, &g_oGdiPlusStartupInput, NULL);
 
 	//hbEditBack	=	CreateSolidBrush(RGB(233,248,247));
-	
+
 
 }
 
@@ -1096,17 +1069,17 @@ TPicDlg::~TPicDlg()
 	if(NULL != s)
 		s->Release();
 
-	if(FMT_RAW != iFormat){
-		if(NULL != *buf){
+	if(FMT_RAW != iFormat) {
+		if(NULL != *buf) {
 			free(*buf);
 		}
-	}else{
+	} else {
 
 		if(NULL != hGlobal)
 			GlobalFree(hGlobal);
 	}
 
-	if(NULL != cleanimage){
+	if(NULL != cleanimage) {
 		free(cleanimage);
 	}
 
@@ -1115,7 +1088,7 @@ TPicDlg::~TPicDlg()
 	DeleteObject(MemBitmap);
 	DeleteDC(MemDC);
 
-	GdiplusShutdown( g_pGdiPlusToken );
+	GdiplusShutdown(g_pGdiPlusToken);
 }
 
 //BOOL TPicDlg::EvClose()
@@ -1136,29 +1109,25 @@ TPicDlg::~TPicDlg()
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 {
-	UINT num= 0;
-	UINT size= 0;
+	UINT num = 0;
+	UINT size = 0;
 
-	ImageCodecInfo* pImageCodecInfo= NULL;
+	ImageCodecInfo* pImageCodecInfo = NULL;
 
 	GetImageEncodersSize(&num, &size);
-	if(size== 0)
-	{
+	if(size == 0) {
 		return -1;
 	}
-	pImageCodecInfo= (ImageCodecInfo*)(malloc(size));
-	if(pImageCodecInfo== NULL)
-	{
+	pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
+	if(pImageCodecInfo == NULL) {
 		return -1;
 	}
 
 	GetImageEncoders(num, size, pImageCodecInfo);
 
-	for(UINT j=0; j< num; ++j)
-	{
-		if(wcscmp(pImageCodecInfo[j].MimeType, format)== 0)
-		{
-			*pClsid= pImageCodecInfo[j].Clsid;
+	for(UINT j = 0; j < num; ++j) {
+		if(wcscmp(pImageCodecInfo[j].MimeType, format) == 0) {
+			*pClsid = pImageCodecInfo[j].Clsid;
 			free(pImageCodecInfo);
 			return j;
 		}
@@ -1170,8 +1139,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 
 BOOL TPicDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
-	switch (wID)
-	{
+	switch(wID) {
 	case IDOK:
 	case IDCANCEL:
 
@@ -1186,18 +1154,17 @@ BOOL TPicDlg::SaveFile(WCHAR * lpszFileName)
 {
 	OPENFILENAMEW ofn;
 	//TCHAR szStrPrintf[260];
-	
-	ZeroMemory(& ofn, sizeof (OPENFILENAMEW));
-	ofn.lStructSize       = sizeof (OPENFILENAMEW) ;
-	ofn.hwndOwner         = hWnd;
-	ofn.lpstrFilter       = TEXT_SAVE_FILTER;
-	//ofn.lpstrFilter       = AtoW(TEXT_SAVE_FILTER);
-	ofn.lpstrFile         = lpszFileName ;
-	ofn.nMaxFile          = MAX_PATH ;
-	ofn.Flags             = OFN_OVERWRITEPROMPT | OFN_EXPLORER | OFN_ENABLESIZING;
 
-	if(!GetSaveFileNameW( & ofn ))
-	{
+	ZeroMemory(&ofn, sizeof(OPENFILENAMEW));
+	ofn.lStructSize = sizeof(OPENFILENAMEW);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFilter = TEXT_SAVE_FILTER;
+	//ofn.lpstrFilter       = AtoW(TEXT_SAVE_FILTER);
+	ofn.lpstrFile = lpszFileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_OVERWRITEPROMPT | OFN_EXPLORER | OFN_ENABLESIZING;
+
+	if(!GetSaveFileNameW(&ofn)) {
 		return FALSE;
 	}
 	return TRUE;
@@ -1214,13 +1181,12 @@ BOOL TPicDlg::EvCreate(LPARAM lParam)
 
 	//读dds header
 
-	switch(iFormat)
-	{
+	switch(iFormat) {
 	case FMT_DDS:
 
-		if(!CreateBmpBufferByDds())
-		{
+		if(!CreateBmpBufferByDds()) {
 			MessageBoxA(TEXT_SHOWPIC_ERROR, NULL, MB_OK | MB_ICONERROR);
+			assert(FALSE);
 			EndDialog(IDCANCEL);
 			return FALSE;
 		}
@@ -1229,14 +1195,14 @@ BOOL TPicDlg::EvCreate(LPARAM lParam)
 		*buf = NULL;
 
 		lpmyImage = new Bitmap(picWidth, picHeight, stride, decodedDIBFormat, (BYTE*)cleanimage);
-		
+
 		break;
 
 	case FMT_TGA:
 
-		if(!CreateBmpBufferByTga())
-		{
+		if(!CreateBmpBufferByTga()) {
 			MessageBoxA(TEXT_SHOWPIC_ERROR, NULL, MB_OK | MB_ICONERROR);
+			assert(FALSE);
 			EndDialog(IDCANCEL);
 			return FALSE;
 		}
@@ -1249,10 +1215,10 @@ BOOL TPicDlg::EvCreate(LPARAM lParam)
 
 	case FMT_RAW:	//bmp,jpg,png..
 
-		CreateStreamOnHGlobal(hGlobal,false,&s);
-		if (!s)
-		{
+		CreateStreamOnHGlobal(hGlobal, false, &s);
+		if(!s) {
 			MessageBoxA(TEXT_SHOWPIC_ERROR, NULL, MB_OK | MB_ICONERROR);
+			assert(FALSE);
 			EndDialog(IDCANCEL);
 			return FALSE;
 		}
@@ -1286,41 +1252,37 @@ BOOL TPicDlg::EvCreate(LPARAM lParam)
 	GetClientRect(hWnd, &rectWin);
 
 
-	if(rectWin.right < picWidth || rectWin.bottom < picHeight)
-	{
+	if(rectWin.right < picWidth || rectWin.bottom < picHeight) {
 
-		if(rectWin.right < picWidth)
-		{
+		if(rectWin.right < picWidth) {
 			ShowScrollBar(hWnd, SB_HORZ, TRUE);
 			SetScrollRange(hWnd, SB_HORZ, 0, picWidth - rectWin.right, TRUE);
-		}else{
+		} else {
 
 			ShowScrollBar(hWnd, SB_HORZ, FALSE);
 		}
 
 		GetClientRect(hWnd, &rectWin);
 
-		if(rectWin.bottom < picHeight)
-		{
+		if(rectWin.bottom < picHeight) {
 			ShowScrollBar(hWnd, SB_VERT, TRUE);
 			SetScrollRange(hWnd, SB_VERT, 0, picHeight - rectWin.bottom, TRUE);
 
 			GetClientRect(hWnd, &rectWin);
 
 
-			if(rectWin.right < picWidth)
-			{
+			if(rectWin.right < picWidth) {
 				ShowScrollBar(hWnd, SB_HORZ, TRUE);
 				SetScrollRange(hWnd, SB_HORZ, 0, picWidth - rectWin.right, TRUE);
-			}else{
+			} else {
 				ShowScrollBar(hWnd, SB_HORZ, FALSE);
 			}
 
-		}else{
+		} else {
 			ShowScrollBar(hWnd, SB_VERT, FALSE);
 		}
 
-	}else{
+	} else {
 
 		::SetWindowPos(hWnd, NULL, 0, 0, picWidth + 20, picHeight + 50, SWP_NOZORDER | SWP_NOMOVE);
 	}
@@ -1332,8 +1294,8 @@ BOOL TPicDlg::EvCreate(LPARAM lParam)
 	//窗口文字
 	if(FMT_RAW != iFormat)
 		sprintf_s(szTitle, MAX_PATH, "图片查看 - %s, %dx%d, %s", lpszFile, picWidth, picHeight, szDdsFormat);
-	else{
-		sprintf_s(szTitle, MAX_PATH, "图片查看 - %s, %dx%d",lpszFile, picWidth, picHeight);
+	else {
+		sprintf_s(szTitle, MAX_PATH, "图片查看 - %s, %dx%d", lpszFile, picWidth, picHeight);
 
 		if(NULL != lpmyImage)
 			delete lpmyImage;
@@ -1350,7 +1312,7 @@ BOOL TPicDlg::EvCreate(LPARAM lParam)
 	}
 
 	SetWindowTextA(szTitle);
-					
+
 	//显示窗口
 	Show();
 
@@ -1362,42 +1324,38 @@ BOOL TPicDlg::EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar)
 	int nCurPos;
 	//RECT	rect;
 
-	switch(uMsg)
-	{
+	switch(uMsg) {
 	case WM_HSCROLL:
 
-		nCurPos=GetScrollPos(hWnd, SB_HORZ);
+		nCurPos = GetScrollPos(hWnd, SB_HORZ);
 
-		switch(nCode)
-		{
+		switch(nCode) {
 		case SB_LINEUP:
-				if(nCurPos>0)
-				{
-					nCurPos-=1;
-					//ScrollWindow(hWnd, 1, 0, 0, 0);
-				}
-				break;
+			if(nCurPos > 0) {
+				nCurPos -= 1;
+				//ScrollWindow(hWnd, 1, 0, 0, 0);
+			}
+			break;
 		case SB_LINEDOWN:
-				if(nCurPos<20)
-				{
-					nCurPos+=1;
-					//ScrollWindow(hWnd, -1, 0, 0, 0);
-				}
-				break;
+			if(nCurPos < 20) {
+				nCurPos += 1;
+				//ScrollWindow(hWnd, -1, 0, 0, 0);
+			}
+			break;
 		case SB_PAGEUP:
-				nCurPos-=4;
-				//ScrollWindow(hWnd, 4, 0, 0, 0);
-				break;
+			nCurPos -= 4;
+			//ScrollWindow(hWnd, 4, 0, 0, 0);
+			break;
 		case SB_PAGEDOWN:
-				nCurPos+=4;
-				//ScrollWindow(hWnd, -4, 0, 0, 0);
-				break;
+			nCurPos += 4;
+			//ScrollWindow(hWnd, -4, 0, 0, 0);
+			break;
 		case SB_THUMBTRACK:
-				//ScrollWindow(hWnd, nCurPos - nPos, 0, 0, 0);
-				nCurPos=nPos;
-				break;
+			//ScrollWindow(hWnd, nCurPos - nPos, 0, 0, 0);
+			nCurPos = nPos;
+			break;
 		default:
-				break;            
+			break;
 		}
 		SetScrollPos(hWnd, SB_HORZ, nCurPos, TRUE);
 
@@ -1410,40 +1368,37 @@ BOOL TPicDlg::EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar)
 
 	case WM_VSCROLL:
 
-		nCurPos=GetScrollPos(hWnd, SB_VERT);
+		nCurPos = GetScrollPos(hWnd, SB_VERT);
 
-		switch(nCode)
-		{
+		switch(nCode) {
 		case SB_LINEUP:
-				if(nCurPos>0)
-				{
-					nCurPos-=1;
-					//ScrollWindow(hWnd, 0, 1, 0, 0);
-				}
-				break;
+			if(nCurPos > 0) {
+				nCurPos -= 1;
+				//ScrollWindow(hWnd, 0, 1, 0, 0);
+			}
+			break;
 		case SB_LINEDOWN:
-				if(nCurPos<20)
-				{
-					nCurPos+=1;
-					//ScrollWindow(hWnd, 0,-1, 0, 0);
-				}
-				break;
+			if(nCurPos < 20) {
+				nCurPos += 1;
+				//ScrollWindow(hWnd, 0,-1, 0, 0);
+			}
+			break;
 		case SB_PAGEUP:
-				nCurPos-=4;
-				//ScrollWindow(hWnd, 0, 4, 0, 0);
-				break;
+			nCurPos -= 4;
+			//ScrollWindow(hWnd, 0, 4, 0, 0);
+			break;
 		case SB_PAGEDOWN:
-				nCurPos+=4;
-				//ScrollWindow(hWnd, 0, -4, 0, 0);
-				break;
+			nCurPos += 4;
+			//ScrollWindow(hWnd, 0, -4, 0, 0);
+			break;
 		case SB_THUMBTRACK:
-				//ScrollWindow(hWnd, 0, nCurPos - nPos, 0, 0);
-				nCurPos=nPos;
-				break;
+			//ScrollWindow(hWnd, 0, nCurPos - nPos, 0, 0);
+			nCurPos = nPos;
+			break;
 		default:
-				break;            
+			break;
 		}
-		SetScrollPos(hWnd, SB_VERT,nCurPos, TRUE);
+		SetScrollPos(hWnd, SB_VERT, nCurPos, TRUE);
 
 		y = 0 - nCurPos;
 
@@ -1463,67 +1418,61 @@ BOOL TPicDlg::EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight)
 	//{
 		//delete lpoGraph;
 		//lpoGraph = new Graphics(GetDlgItem(IDC_STATIC_PIC));
-		
-		int nCurPos = 0;
 
-		if(nWidth < picWidth || nHeight < picHeight)
-		{
+	int nCurPos = 0;
 
-			if(nWidth < picWidth)
-			{
-				ShowScrollBar(hWnd, SB_HORZ, TRUE);
+	if(nWidth < picWidth || nHeight < picHeight) {
 
-				nCurPos = GetScrollPos(hWnd, SB_HORZ);
+		if(nWidth < picWidth) {
+			ShowScrollBar(hWnd, SB_HORZ, TRUE);
 
-				if(nCurPos > picWidth - nWidth)
-				{
-					nCurPos = picWidth - nWidth;
-					x = 0 - nCurPos;
-				}
+			nCurPos = GetScrollPos(hWnd, SB_HORZ);
 
-				SetScrollRange(hWnd, SB_HORZ, 0, picWidth - nWidth, TRUE);
-			}else{
-				x = 0;
-				ShowScrollBar(hWnd, SB_HORZ, FALSE);
+			if(nCurPos > picWidth - nWidth) {
+				nCurPos = picWidth - nWidth;
+				x = 0 - nCurPos;
 			}
 
-			if(nHeight < picHeight)
-			{
-				ShowScrollBar(hWnd, SB_VERT, TRUE);
-
-				nCurPos = GetScrollPos(hWnd, SB_VERT);
-
-				if(nCurPos > picHeight - nHeight)
-				{
-					nCurPos = picHeight - nHeight;
-					y = 0 - nCurPos;
-				}
-
-				SetScrollRange(hWnd, SB_VERT, 0, picHeight - nHeight, TRUE);
-
-			}else{
-				y = 0;
-				ShowScrollBar(hWnd, SB_VERT, FALSE);
-			}
-
-		}else{
-			x = y = 0;
-			ShowScrollBar(hWnd, SB_VERT, FALSE);
+			SetScrollRange(hWnd, SB_HORZ, 0, picWidth - nWidth, TRUE);
+		} else {
+			x = 0;
 			ShowScrollBar(hWnd, SB_HORZ, FALSE);
-
 		}
 
-		//EvPaint();
-	//}
-	
+		if(nHeight < picHeight) {
+			ShowScrollBar(hWnd, SB_VERT, TRUE);
+
+			nCurPos = GetScrollPos(hWnd, SB_VERT);
+
+			if(nCurPos > picHeight - nHeight) {
+				nCurPos = picHeight - nHeight;
+				y = 0 - nCurPos;
+			}
+
+			SetScrollRange(hWnd, SB_VERT, 0, picHeight - nHeight, TRUE);
+
+		} else {
+			y = 0;
+			ShowScrollBar(hWnd, SB_VERT, FALSE);
+		}
+
+	} else {
+		x = y = 0;
+		ShowScrollBar(hWnd, SB_VERT, FALSE);
+		ShowScrollBar(hWnd, SB_HORZ, FALSE);
+
+	}
+
+	//EvPaint();
+//}
+
 	return	FALSE;
-	
+
 }
 
 BOOL TPicDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 {
-	switch(uMsg)
-	{
+	switch(uMsg) {
 	case WM_LBUTTONUP:
 		//ReleaseCapture();
 		isMouseDown = FALSE;
@@ -1539,19 +1488,22 @@ BOOL TPicDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 
 	case WM_LBUTTONDBLCLK:
 		//导出
-		if(0 != iFormat)
-		{	
+		if(0 != iFormat) {
 			WCHAR	szFilename[MAX_PATH];
 			::GetCurrentDirectoryW(MAX_PATH, szFilename);
+
+			WCHAR *lpTail = szFilename + wcslen(szFilename) - 1;
+			if('\\' == *lpTail) {
+				*lpTail = 0;
+			}
 
 			wcscat_s(szFilename, MAX_PATH, L"\\");
 			wcscat_s(szFilename, MAX_PATH, AtoW(lpszFile));
 
 			//*(DWORD*)strrchr(szFilename, '.') = *(DWORD*)".png";//0x706D622E;	//.bmp
 			memcpy(wcsrchr(szFilename, L'.'), L".png\0\0", 12);
-				
-			if(SaveFile(szFilename))
-			{
+
+			if(SaveFile(szFilename)) {
 				//PrepareToSavePng(szFilename);
 				CLSID pngClsid;
 				GetEncoderClsid(L"image/png", &pngClsid);
@@ -1576,7 +1528,7 @@ BOOL TPicDlg::EvMouseMove(UINT fwKeys, POINTS pos)
 			m_isSearchWindow = TRUE;
 			*/
 
-	if(isMouseDown){
+	if(isMouseDown) {
 		POINT	pointLast = pointMouse;
 		GetCursorPos(&pointMouse);
 
@@ -1589,30 +1541,28 @@ BOOL TPicDlg::EvMouseMove(UINT fwKeys, POINTS pos)
 
 		int nCurPos, nCurPosMax;
 
-		if(rectWin.right < picWidth)
-		{
+		if(rectWin.right < picWidth) {
 			GetScrollRange(hWnd, SB_HORZ, &nCurPos, &nCurPosMax);
 
 			nCurPos = GetScrollPos(hWnd, SB_HORZ);
 			nCurPos += xOffset;
 
-			if(0 >nCurPos)nCurPos = 0;
+			if(0 > nCurPos)nCurPos = 0;
 			if(nCurPosMax < nCurPos)nCurPos = nCurPosMax;
-		
+
 			SetScrollPos(hWnd, SB_HORZ, nCurPos, TRUE);
 
 			x = 0 - nCurPos;
 
 		}
 
-		if(rectWin.bottom < picHeight)
-		{
+		if(rectWin.bottom < picHeight) {
 			GetScrollRange(hWnd, SB_VERT, &nCurPos, &nCurPosMax);
 
 			nCurPos = GetScrollPos(hWnd, SB_VERT);
 			nCurPos += yOffset;
 
-			if(0 >nCurPos)nCurPos = 0;
+			if(0 > nCurPos)nCurPos = 0;
 			if(nCurPosMax < nCurPos)nCurPos = nCurPosMax;
 
 			SetScrollPos(hWnd, SB_VERT, nCurPos, TRUE);
@@ -1655,12 +1605,12 @@ void TPicDlg::DrawBlockOnDlg()
 	//CBitmap MemBitmap;//定义一个位图对象
 	HBITMAP MemBitmapTemp;
 	//随后建立与屏幕显示兼容的内存显示设备  
-	MemDC = CreateCompatibleDC(NULL); 
-	MemDCTemp = CreateCompatibleDC(NULL); 
+	MemDC = CreateCompatibleDC(NULL);
+	MemDCTemp = CreateCompatibleDC(NULL);
 	//这时还不能绘图，因为没有地方画 ^_^ 
 	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小 
-	MemBitmap = CreateCompatibleBitmap(pDC, picWidth, picHeight); 
-	MemBitmapTemp = CreateCompatibleBitmap(pDC, 24, 8); 
+	MemBitmap = CreateCompatibleBitmap(pDC, picWidth, picHeight);
+	MemBitmapTemp = CreateCompatibleBitmap(pDC, 24, 8);
 
 	ReleaseDC(hWnd, pDC);
 
@@ -1671,24 +1621,24 @@ void TPicDlg::DrawBlockOnDlg()
 
 	//先用背景色将位图清除干净，这里我用的是白色作为背景 
 	//你也可以用自己应该用的颜色 
-	SetBkColor(MemDCTemp, RGB(204,204,204));
-	RECT thisrect = {0, 0, 24, 8};
+	SetBkColor(MemDCTemp, RGB(204, 204, 204));
+	RECT thisrect = { 0, 0, 24, 8 };
 	ExtTextOut(MemDCTemp, 0, 0, ETO_OPAQUE, &thisrect, NULL, 0, NULL);
 
 	thisrect.left += 8;
-	SetBkColor(MemDCTemp, RGB(255,255,255));
+	SetBkColor(MemDCTemp, RGB(255, 255, 255));
 	ExtTextOut(MemDCTemp, 0, 0, ETO_OPAQUE, &thisrect, NULL, 0, NULL);
 
 	thisrect.left += 8;
-	SetBkColor(MemDCTemp, RGB(204,204,204));
+	SetBkColor(MemDCTemp, RGB(204, 204, 204));
 	ExtTextOut(MemDCTemp, 0, 0, ETO_OPAQUE, &thisrect, NULL, 0, NULL);
 
-	for(int j=0;j<picHeight;j+=8){
-		for(int i = 0;i<picWidth;i+=16){
+	for(int j = 0;j < picHeight;j += 8) {
+		for(int i = 0;i < picWidth;i += 16) {
 			if(j & 8)
-				BitBlt(MemDC, i, j, i + 16, j + 8, MemDCTemp, 0, 0, SRCCOPY); 
+				BitBlt(MemDC, i, j, i + 16, j + 8, MemDCTemp, 0, 0, SRCCOPY);
 			else
-				BitBlt(MemDC, i, j, i + 16, j + 8, MemDCTemp, 8, 0, SRCCOPY); 
+				BitBlt(MemDC, i, j, i + 16, j + 8, MemDCTemp, 8, 0, SRCCOPY);
 		}
 	}
 	//MemBitmap.DeleteObject(); 
@@ -1697,7 +1647,7 @@ void TPicDlg::DrawBlockOnDlg()
 	DeleteObject(MemBitmapTemp);
 	//MemDC.DeleteDC();
 	DeleteDC(MemDCTemp);
-	
+
 }
 
 BOOL TPicDlg::EvPaint(void)
@@ -1714,7 +1664,7 @@ BOOL TPicDlg::EvPaint(void)
 	//BitBlt(pDC, 0, 0, picWidth, picHeight, MemDC, -x, -y, SRCCOPY);
 
 	ReleaseDC(hWnd, pDC);
-	EndPaint(hWnd, &ps); 
+	EndPaint(hWnd, &ps);
 
 	return TRUE;
 }

@@ -55,7 +55,7 @@ CPckClass::~CPckClass()
 	DeAllocMultiNodes(m_RootNode.child);
 
 	if(NULL != m_lpPckIndexTable)
-		free(m_lpPckIndexTable);	
+		free(m_lpPckIndexTable);
 }
 
 BOOL CPckClass::Init(LPCTSTR	szFile)
@@ -64,11 +64,10 @@ BOOL CPckClass::Init(LPCTSTR	szFile)
 
 	lstrcpy(m_PckAllInfo.szFilename, szFile);
 
-	if(MountPckFile(m_PckAllInfo.szFilename))
-	{
+	if(MountPckFile(m_PckAllInfo.szFilename)) {
 		BuildDirTree();
 		return m_ReadCompleted = TRUE;
-	}else{
+	} else {
 		return m_ReadCompleted = FALSE;
 	}
 }
@@ -114,14 +113,12 @@ BOOL CPckClass::SetAdditionalInfo()
 
 	CMapViewFileWrite	*lpcWritefile = new CMapViewFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
-	if(NULL == strstr(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO))
-	{
-		strcpy(m_PckAllInfo.szAdditionalInfo,	PCK_ADDITIONAL_INFO
-															PCK_ADDITIONAL_INFO_STSM);
+	if(NULL == strstr(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO)) {
+		strcpy(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO
+			PCK_ADDITIONAL_INFO_STSM);
 	}
 
-	if(!lpcWritefile->OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING))
-	{
+	if(!lpcWritefile->OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
 		PrintLogE(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		delete lpcWritefile;
 		return FALSE;
@@ -130,8 +127,7 @@ BOOL CPckClass::SetAdditionalInfo()
 	lpcWritefile->SetFilePointer(-((QWORD)(m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)), FILE_END);
 
 	if(!lpcWritefile->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&m_PckAllInfo), \
-								m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize))
-	{
+		m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)) {
 		PrintLogE(TEXT_WRITEFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 
 		delete lpcWritefile;

@@ -13,7 +13,7 @@ protected:
 	TLogDlg			*logdlg;
 
 public:
-	TInstDlg(LPSTR cmdLine);
+	TInstDlg(LPTSTR cmdLine);
 	virtual ~TInstDlg();
 
 	virtual BOOL	EvCreate(LPARAM lParam);
@@ -40,7 +40,6 @@ public:
 	//virtual BOOL	
 #if 0
 	virtual BOOL	EvNcDestroy(void);
-	virtual BOOL	EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
 
 	//BOOL	RunAsAdmin(BOOL is_imme);
@@ -51,9 +50,17 @@ public:
 //用户变量
 protected:
 
+#ifdef _USE_CUSTOMDRAW_
+	typedef enum { R_NOTHINGS = 0, R_NORMAL, R_SELECT, R_SEL_NOFOCUS } redrawmode;
+	redrawmode redraw;
+	HICON				hIconList[3];
+	HBRUSH				hBrushs[HB_COUNT];
+
+#endif
+
 	TCHAR	m_MyFileName[MAX_PATH];
 	TCHAR	m_Filename[MAX_PATH], m_CurrentPath[MAX_PATH];
-	
+
 
 	CPckControlCenter	*m_lpPckCenter;
 	LPPCK_PATH_NODE		m_currentNodeOnShow;	/*m_lpPckNode, */
@@ -64,7 +71,7 @@ protected:
 	char	m_szStrToSearch[256];
 
 	///addmode
-	TCHAR	(*m_lpszFilePath)[MAX_PATH];
+	TCHAR(*m_lpszFilePath)[MAX_PATH];
 	DWORD	m_DropFileCount;
 
 
@@ -73,7 +80,8 @@ protected:
 
 	HCURSOR	m_hCursorOld, m_hCursorAllow, m_hCursorNo;
 
-	struct {
+	struct
+	{
 		char	szPaths[MAX_PATH];
 		char*	lpszDirNames[127];
 		int		nDirCount;
@@ -87,12 +95,12 @@ protected:
 	TCHAR		szTimerProcessedFormatString[64];
 
 
-//用户函数
+	//用户函数
 protected:
 
 	//winmain.cpp
-	VOID SetStatusBarText(int iPart, LPCSTR lpszText );
-	VOID SetStatusBarText(int iPart, LPCWSTR lpszText );
+	VOID SetStatusBarText(int iPart, LPCSTR lpszText);
+	VOID SetStatusBarText(int iPart, LPCWSTR lpszText);
 	void InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMask, CONST INT iImage, CONST LPVOID lParam, CONST INT nColCount, ...);
 	BOOL InitListView(CONST HWND hWndListView, LPTSTR *lpszText, int *icx, int *ifmt);
 	BOOL IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath = FALSE);
@@ -131,7 +139,7 @@ protected:
 	BOOL OpenSingleFile(TCHAR * lpszFileName);
 	BOOL OpenFiles(/*TCHAR &((*lpszFilePathArray)[MAX_PATH])*/LPVOID &lpszFilePathArray, DWORD &dwFileCount);
 	DWORD SaveFile(TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD nFilterIndex = 1);
-	BOOL BrowseForFolderByPath(TCHAR * );
+	BOOL BrowseForFolderByPath(TCHAR *);
 	static int CALLBACK TInstDlg::BFFCallBack(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
 	void AddSetupReg();
 	void DeleteSetupReg();
@@ -141,13 +149,16 @@ protected:
 	void DbClickListView(int itemIndex);	//进入列表中的itemIndex项（进入目录或预览文件）
 	void PopupRightMenu(int itemIndex);		//listview上右击出菜单
 
+	void UnpackAllFiles();					//解压所有文件
+	void UnpackSelectedFiles();				//解压选中的文件
+
 
 };
 
 class TInstApp : public TApp
 {
 public:
-	TInstApp(HINSTANCE _hI, LPSTR _cmdLine, int _nCmdShow);
+	TInstApp(HINSTANCE _hI, LPTSTR _cmdLine, int _nCmdShow);
 	virtual ~TInstApp();
 
 	void InitWindow(void);

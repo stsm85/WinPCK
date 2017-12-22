@@ -1,6 +1,4 @@
-#ifdef _USE_T_INI_
-static char *tini_id = 
-	"@(#)Copyright (C) 1996-2010 H.Shirouzu		tini.cpp	Ver0.97";
+
 /* ========================================================================
 	Project  Name			: Win32 Lightweight  Class Library Test
 	Module Name				: Registry Class
@@ -9,11 +7,14 @@ static char *tini_id =
 	Copyright				: H.Shirouzu
 	Reference				: 
 	======================================================================== */
+#include "tlib.h"
+#ifdef _USE_T_INI_
+static char *tini_id =
+"@(#)Copyright (C) 1996-2010 H.Shirouzu		tini.cpp	Ver0.97";
 
 #include <stdio.h>
 #include <io.h>
 #include <mbstring.h>
-#include "tlib.h"
 #include "tini.h"
 
 TInifile::TInifile(const char *_ini_file)

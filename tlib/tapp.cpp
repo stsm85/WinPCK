@@ -15,7 +15,7 @@ TApp *TApp::tapp = NULL;
 #define MAX_TAPPWIN_HASH	1009
 #define ENGLISH_TEST		0
 
-TApp::TApp(HINSTANCE _hI, LPSTR _cmdLine, int _nCmdShow)
+TApp::TApp(HINSTANCE _hI, LPTSTR _cmdLine, int _nCmdShow)
 {
 	hI				= _hI;
 	cmdLine			= _cmdLine;

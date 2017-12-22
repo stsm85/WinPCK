@@ -15,9 +15,10 @@
 #define _GLOBALS_H_
 
 #include <windows.h>
+#include <assert.h>
 
 //****** some defines *******
-//#define _USE_CUSTOMDRAW_
+#define _USE_CUSTOMDRAW_
 
 
 #define	THIS_NAME			"WinPCK "

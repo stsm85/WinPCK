@@ -1,6 +1,4 @@
-#ifdef _USE_T_LIST_
-static char *tlist_id = 
-	"@(#)Copyright (C) 1996-2009 H.Shirouzu		tlist.cpp	Ver0.97";
+
 /* ========================================================================
 	Project  Name			: Win32 Lightweight  Class Library Test
 	Module Name				: List Class
@@ -11,6 +9,10 @@ static char *tlist_id =
 	======================================================================== */
 
 #include "tlib.h"
+#ifdef _USE_T_LIST_
+static char *tlist_id =
+"@(#)Copyright (C) 1996-2009 H.Shirouzu		tlist.cpp	Ver0.97";
+
 #include "tlist.h"
 /*
 	TList class

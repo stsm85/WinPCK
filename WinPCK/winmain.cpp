@@ -28,19 +28,15 @@ BOOL GetWndPath(HWND hWnd, TCHAR * szPath);
 /*
 	WinMain
 */
-int WINAPI WinMain(HINSTANCE hI, HINSTANCE, LPSTR cmdLine, int nCmdShow)
+int WINAPI _tWinMain(HINSTANCE hI, HINSTANCE, LPTSTR cmdLine, int nCmdShow)
 {
 	return	TInstApp(hI, cmdLine, nCmdShow).Run();
 }
 
 
-TInstApp::TInstApp(HINSTANCE _hI, LPSTR _cmdLine, int _nCmdShow) : TApp(_hI, _cmdLine, _nCmdShow)
-{
-}
+TInstApp::TInstApp(HINSTANCE _hI, LPTSTR _cmdLine, int _nCmdShow) : TApp(_hI, _cmdLine, _nCmdShow) {}
 
-TInstApp::~TInstApp()
-{
-}
+TInstApp::~TInstApp() {}
 
 void TInstApp::InitWindow(void)
 {
@@ -54,47 +50,14 @@ void TInstApp::InitWindow(void)
 	maindlg->InitRichEdit2();
 	maindlg->Create();
 
-
-
 }
 
-TInstDlg::TInstDlg(LPSTR cmdLine) : TDlg(IDD_MAIN)//, staticText(this)
+TInstDlg::TInstDlg(LPTSTR cmdLine) : TDlg(IDD_MAIN)//, staticText(this)
 {
-	//char	cEndChar;//, cFilename[MAX_PATH];
-	//char	*lpcmdLine = cmdLine;
-
-	////strcpy(cmdLine, "I:\\1.pck I:\\2.pck");
-	////strcpy(cmdLine, "\"I:\\复件 1.pck\" \"I:\\复件 2.pck\"");
-	////strcpy(cmdLine, "I:\\1aaaa.pck");
-
-	//*m_Filename = 0;
-
-	//if('\"' == *lpcmdLine)
-	//{
-	//	cEndChar = '\"';
-	//	lpcmdLine++;
-	//}
-	//else
-	//	cEndChar = ' ';
-
-	//char	*lpcmdLinePtr = lpcmdLine;
-
-	//while(*lpcmdLinePtr && (cEndChar != *lpcmdLinePtr))
-	//{
-	//	lpcmdLinePtr++;
-	//}
-	//*lpcmdLinePtr = 0;
-
-	//DWORD dwAttr = GetFileAttributesA(lpcmdLine);
-
-	//if(0 == (FILE_ATTRIBUTE_DIRECTORY & dwAttr))
-	//	MultiByteToWideChar(CP_ACP, 0, lpcmdLine, -1, m_Filename, MAX_PATH);
 
 }
 
-TInstDlg::~TInstDlg()
-{
-}
+TInstDlg::~TInstDlg() {}
 
 /*
 	儊僀儞僟僀傾儘僌梡 WM_INITDIALOG 張棟儖乕僠儞
@@ -116,20 +79,6 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 	//界面和数据初始化
 
 	OleInitialize(0);
-
-	//TSetPrivilege(SE_DEBUG_NAME, TRUE);
-	//TSetPrivilege(SE_BACKUP_NAME, TRUE);
-	//TSetPrivilege(SE_SYSTEM_ENVIRONMENT_NAME, TRUE);
-	//TSetPrivilege(SE_CREATE_TOKEN_NAME, TRUE);
-	//TSetPrivilege(SE_LOCK_MEMORY_NAME, TRUE);
-	//TSetPrivilege(SE_SECURITY_NAME, TRUE);
-	//TSetPrivilege(SE_RESTORE_NAME, TRUE);
-	//TSetPrivilege(SE_CREATE_SYMBOLIC_LINK_NAME, TRUE);
-	//TSetPrivilege(SE_AUDIT_NAME, TRUE);
-	//TSetPrivilege(SE_UNDOCK_NAME, TRUE);
-	//TSetPrivilege(SE_CREATE_GLOBAL_NAME, TRUE);
-	//TSetPrivilege(SE_SYSTEM_PROFILE_NAME, TRUE);
-	//TSetPrivilege(SE_LOAD_DRIVER_NAME, TRUE);
 
 	SetWindowTextA(THIS_MAIN_CAPTION);
 
@@ -155,13 +104,12 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 BOOL TInstDlg::EvClose()
 {
 
-	if (bGoingToExit)return FALSE;
+	if(bGoingToExit)return FALSE;
 
 	SetStatusBarText(0, GetLoadStr(IDS_STRING_EXITING));
 
-	if (lpPckParams->cVarParams.bThreadRunning)
-	{
-		if (IDNO == MessageBox(GetLoadStr(IDS_STRING_ISEXIT), GetLoadStr(IDS_STRING_ISEXITTITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))return FALSE;
+	if(lpPckParams->cVarParams.bThreadRunning) {
+		if(IDNO == MessageBox(GetLoadStr(IDS_STRING_ISEXIT), GetLoadStr(IDS_STRING_ISEXITTITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))return FALSE;
 
 		bGoingToExit = TRUE;
 		lpPckParams->cVarParams.bThreadRunning = FALSE;
@@ -177,13 +125,11 @@ BOOL TInstDlg::EvClose()
 
 
 #ifdef _USE_CUSTOMDRAW_
-	for (int i = 0; i < HB_COUNT; i++)
-	{
+	for(int i = 0; i < HB_COUNT; i++) {
 		DeleteObject(hBrushs[i]);
 	}
 
-	for (UINT i = 0; i < 2; i++)
-	{
+	for(UINT i = 0; i < 2; i++) {
 		DestroyIcon(hIconList[i]);
 	}
 #endif
@@ -195,13 +141,12 @@ BOOL TInstDlg::EvClose()
 
 	::PostQuitMessage(0);
 	return FALSE;
-	}
+}
 
 
 BOOL TInstDlg::EvTimer(WPARAM timerID, TIMERPROC proc)
 {
-	switch (timerID)
-	{
+	switch(timerID) {
 	case WM_TIMER_PROGRESS_100:
 		RefreshProgress();
 		break;
@@ -214,191 +159,98 @@ BOOL TInstDlg::EvTimer(WPARAM timerID, TIMERPROC proc)
 BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
 
-	switch (wID) {
+	switch(wID) {
 	case IDOK:
-
 		return	TRUE;
-
 	case IDCANCEL:
-
 		return	TRUE;
-
-		//case IDC_BUTTON_OPEN:
 	case ID_OPEN_PCK:
 	case ID_MENU_OPEN:
-
 		OpenPckFile();
-
 		break;
-
-		//case IDC_BUTTON_UNPACK_ALL:
 	case ID_MENU_UNPACK_ALL:
-
-		if (m_lpPckCenter->IsValidPck())
-		{
-			if (lpPckParams->cVarParams.bThreadRunning)
-			{
-				lpPckParams->cVarParams.bThreadRunning = FALSE;
-				//::EnableWindow((HWND)hwndCtl, FALSE);
-				EnableButton(wID, FALSE);
-			}
-			else {
-				if (BrowseForFolderByPath(m_CurrentPath))
-				{
-					//mt_MaxMemoryCount = 0;
-					lpPckParams->cVarParams.dwMTMemoryUsed = 0;
-					SetCurrentDirectory(m_CurrentPath);
-					_beginthread(ToExtractAllFiles, 0, this);
-				}
-			}
-		}
+		UnpackAllFiles();
 		break;
-
-		//case ID_MENU_UNPACK_SELECTED_R:
-		//		if(bThreadRunning)break;
-
 	case ID_MENU_UNPACK_SELECTED:
-		if (m_lpPckCenter->IsValidPck())
-		{
-			if (lpPckParams->cVarParams.bThreadRunning)
-			{
-				lpPckParams->cVarParams.bThreadRunning = FALSE;
-				//::EnableWindow((HWND)hwndCtl, FALSE);
-				EnableButton(wID, FALSE);
-			}
-			else {
-				if (BrowseForFolderByPath(m_CurrentPath))
-				{
-					//mt_MaxMemoryCount = 0;
-					lpPckParams->cVarParams.dwMTMemoryUsed = 0;
-					SetCurrentDirectory(m_CurrentPath);
-					_beginthread(ToExtractSelectedFiles, 0, this);
-				}
-			}
-		}
+		UnpackSelectedFiles();
 		break;
-
-		//case IDC_BUTTON_CLOSE:
 	case ID_CLOSE_PCK:
 	case ID_MENU_CLOSE:
-		if (lpPckParams->cVarParams.bThreadRunning)
+		if(lpPckParams->cVarParams.bThreadRunning)
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
-
 		ListView_DeleteAllItems(GetDlgItem(IDC_LIST));
-
 		m_lpPckCenter->Close();
 		break;
-
-		//case IDC_BUTTON_INFO:
 	case ID_MENU_INFO:
-
-		if (m_lpPckCenter->IsValidPck())
-		{
+		if(m_lpPckCenter->IsValidPck()) {
 			TInfoDlg	dlg(m_lpPckCenter->GetAdditionalInfo(), this);
-			if (dlg.Exec() == TRUE)
-			{
+			if(dlg.Exec() == TRUE) {
 				m_lpPckCenter->SetAdditionalInfo();
 			}
 		}
-
 		break;
-		//case IDC_BUTTON_SEARCH:
 	case ID_MENU_SEARCH:
-
-		if (m_lpPckCenter->IsValidPck())
-		{
+		if(m_lpPckCenter->IsValidPck()) {
 			TSearchDlg	dlg(m_szStrToSearch, this);
-			if (dlg.Exec() == TRUE)
-			{
+			if(dlg.Exec() == TRUE) {
 				SearchPckFiles();
 			}
 		}
-
 		break;
-
-		//case IDC_BUTTON_NEW:
 	case ID_CREATE_NEWPCK:
 	case ID_MENU_NEW:
-
-		if (lpPckParams->cVarParams.bThreadRunning)
-		{
+		if(lpPckParams->cVarParams.bThreadRunning) {
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
 			EnableButton(wID, FALSE);
-		}
-		else {
-			//mt_MaxMemoryCount = mt_MaxMemory;
-			//lpPckParams->cVarParams.dwMTMemoryUsed = lpPckParams->dwMTMaxMemory;
-
+		} else {
 			_beginthread(CreateNewPckFile, 0, this);
 		}
 		break;
-
-		//case IDC_BUTTON_ADD:
 	case ID_ADD_FILE_TO_PCK:
 	case ID_MENU_ADD:
-
-		if (lpPckParams->cVarParams.bThreadRunning)
-		{
+		if(lpPckParams->cVarParams.bThreadRunning) {
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
 			EnableButton(wID, FALSE);
-		}
-		else {
+		} else {
 			AddFiles();
 		}
-
 		break;
-
-		//case IDC_BUTTON_REBUILD:
 	case ID_MENU_REBUILD:
-		if (lpPckParams->cVarParams.bThreadRunning)
-		{
+		if(lpPckParams->cVarParams.bThreadRunning) {
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
 			EnableButton(wID, FALSE);
-		}
-		else {
+		} else {
 
 			lpPckParams->cVarParams.dwMTMemoryUsed = 0;
 			_beginthread(RebuildPckFile, 0, this);
 		}
-
 		break;
-
 	case ID_MENU_COMPRESS_OPT:
-	{
-		TCompressOptDlg	dlg(lpPckParams, this);
-		DWORD dwCompressLevel = lpPckParams->dwCompressLevel;
-		dlg.Exec();
-		if (dwCompressLevel != lpPckParams->dwCompressLevel)
-			if (lpPckParams->lpPckControlCenter->IsValidPck())
-				lpPckParams->lpPckControlCenter->ResetCompressor();
-
-	}
-	break;
-
+		{
+			TCompressOptDlg	dlg(lpPckParams, this);
+			DWORD dwCompressLevel = lpPckParams->dwCompressLevel;
+			dlg.Exec();
+			if(dwCompressLevel != lpPckParams->dwCompressLevel)
+				if(lpPckParams->lpPckControlCenter->IsValidPck())
+					lpPckParams->lpPckControlCenter->ResetCompressor();
+		}
+		break;
 	case ID_LISTVIEW_RENAME:
 	case ID_MENU_RENAME:
-	{
-
-		if (lpPckParams->cVarParams.bThreadRunning)break;
-		HWND	hList = GetDlgItem(IDC_LIST);
-		::SetWindowLong(hList, GWL_STYLE, ::GetWindowLong(hList, GWL_STYLE) | LVS_EDITLABELS);
-		ListView_EditLabel(hList, m_lpPckCenter->GetListCurrentHotItem());
-
-	}
+		{
+			if(lpPckParams->cVarParams.bThreadRunning)break;
+			HWND	hList = GetDlgItem(IDC_LIST);
+			::SetWindowLong(hList, GWL_STYLE, ::GetWindowLong(hList, GWL_STYLE) | LVS_EDITLABELS);
+			ListView_EditLabel(hList, m_lpPckCenter->GetListCurrentHotItem());
+		}
 	break;
-
 	case ID_LISTVIEW_DELETE:
 	case ID_MENU_DELETE:
-
-		if (lpPckParams->cVarParams.bThreadRunning)break;
-
-		if (IDNO == MessageBox(GetLoadStr(IDS_STRING_ISDELETE), GetLoadStr(IDS_STRING_ISDELETETITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))break;
-		//mt_MaxMemoryCount = 0;
+		if(lpPckParams->cVarParams.bThreadRunning)break;
+		if(IDNO == MessageBox(GetLoadStr(IDS_STRING_ISDELETE), GetLoadStr(IDS_STRING_ISDELETETITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))break;
 		lpPckParams->cVarParams.dwMTMemoryUsed = 0;
 		_beginthread(DeleteFileFromPckFile, 0, this);
-
 		break;
-
 	case ID_LISTVIEW_SELECT_ALL:
 	case ID_MENU_SELECTALL:
 	{
@@ -411,8 +263,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 		int	nItemCount = ListView_GetItemCount(hList);
 
-		for (item.iItem = 1; item.iItem < nItemCount; item.iItem++)
-		{
+		for(item.iItem = 1; item.iItem < nItemCount; item.iItem++) {
 			ListView_SetItem(hList, &item);
 		}
 	}
@@ -430,8 +281,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 		int	nItemCount = ListView_GetItemCount(hList);
 
-		for (item.iItem = 1; item.iItem < nItemCount; item.iItem++)
-		{
+		for(item.iItem = 1; item.iItem < nItemCount; item.iItem++) {
 			ListView_GetItem(hList, &item);
 			item.state = LVIS_SELECTED == item.state ? 0 : LVIS_SELECTED;
 			ListView_SetItem(hList, &item);
@@ -442,11 +292,10 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	case ID_LISTVIEW_ATTR:
 	case ID_MENU_ATTR:
 
-		if (lpPckParams->cVarParams.bThreadRunning)
+		if(lpPckParams->cVarParams.bThreadRunning)
 			break;
 
 		ViewFileAttribute();
-
 		break;
 
 	case ID_MENU_EXIT:
@@ -455,27 +304,18 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 	case ID_MENU_VIEW:
 
-		if (lpPckParams->cVarParams.bThreadRunning)
+		if(lpPckParams->cVarParams.bThreadRunning)
 			break;
 
 		ViewFile();
-
 		break;
 	case ID_MENU_SETUP:
-
 		AddSetupReg();
-
 		break;
-
 	case ID_MENU_UNSETUP:
-
 		DeleteSetupReg();
 		break;
-
 	case ID_MENU_ABOUT:
-	{
-
-		//BrowseForFolderByPath(m_Filename);
 		MessageBoxA(THIS_MAIN_CAPTION
 			"\r\n"
 			THIS_DESC
@@ -486,29 +326,20 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 			"关于 "
 			THIS_NAME,
 			MB_OK | MB_ICONASTERISK);
-	}
-	break;
-
+		break;
 	case ID_MENU_LOG:
-
 		logdlg->Show();
 		break;
 
 	case ID_LISTVIEW_ENTER:
-
 		DbClickListView(m_lpPckCenter->GetListCurrentHotItem());
 		break;
-
 	case ID_LISTVIEW_BACK:
-
 		DbClickListView(0);
 		break;
-
 	case ID_LISTVIEW_POPMENU:
-
 		PopupRightMenu(m_lpPckCenter->GetListCurrentHotItem());
 		break;
-
 	}
 	return	FALSE;
 }
@@ -542,16 +373,14 @@ VOID TInstDlg::SetStatusBarText(int	iPart, LPCWSTR	lpszText)
 void TInstDlg::InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMask, CONST INT iImage, CONST LPVOID lParam, CONST INT nColCount, ...)
 {
 
-	if (0 == nColCount)return;
+	if(0 == nColCount)return;
 
 	LVITEMA	item;
 
 	ZeroMemory(&item, sizeof(LVITEMA));
 
-
 	va_list	ap;
 	va_start(ap, nColCount);
-
 
 	item.iItem = iIndex;			//从0开始
 	item.iImage = iImage;
@@ -565,8 +394,7 @@ void TInstDlg::InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMa
 
 	item.mask = LVIF_TEXT;
 
-	for (item.iSubItem = 1; item.iSubItem < nColCount; item.iSubItem++)
-	{
+	for(item.iSubItem = 1; item.iSubItem < nColCount; item.iSubItem++) {
 		//item.iItem = iIndex;			//从0开始
 		//item.iSubItem = i;
 		item.pszText = va_arg(ap, char*);
@@ -596,15 +424,14 @@ BOOL TInstDlg::InitListView(CONST HWND hWndListView, LPTSTR *lpszText, int *icx,
 	int *lpifmt = ifmt;
 
 	lvcolumn.iSubItem = -1;
-	while (-1 != *(lpicx))
-	{
+	while(-1 != *(lpicx)) {
 		lvcolumn.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 		lvcolumn.fmt = *(lpifmt++);
 		lvcolumn.cx = *(lpicx++);
 		lvcolumn.pszText = *(lpszText++);
 		lvcolumn.iSubItem++;
 		//lvcolumn.iOrder = 0;
-		if (ListView_InsertColumn(hWndListView, lvcolumn.iSubItem, &lvcolumn) == -1)
+		if(ListView_InsertColumn(hWndListView, lvcolumn.iSubItem, &lvcolumn) == -1)
 			return FALSE;
 	}
 
@@ -635,35 +462,31 @@ BOOL TInstDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 	LPPCK_PATH_NODE		lpNodeToShow;
 	LPPCKINDEXTABLE		lpIndexToShow;
 
-	switch (ctlID)
-	{
+	switch(ctlID) {
 	case IDC_LIST:
 		//Debug(L"lv:LVN_FIRST-%d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
 
 		int iCurrentHotItem = ((LPNMLISTVIEW)pNmHdr)->iItem;
 
-		switch (pNmHdr->code)
-		{
+		switch(pNmHdr->code) {
 
 		case LVN_ITEMCHANGED:
 		case NM_CLICK:
 
-			if (-1 != iCurrentHotItem) {
+			if(-1 != iCurrentHotItem) {
 				m_lpPckCenter->SetListCurrentHotItem(iCurrentHotItem);
 			}
 			break;
 
 		case NM_RCLICK:
-			if (-1 != iCurrentHotItem)
-			{
+			if(-1 != iCurrentHotItem) {
 				PopupRightMenu(iCurrentHotItem);
 			}
 
 			break;
 		case NM_DBLCLK:
 
-			if (-1 != iCurrentHotItem)
-			{
+			if(-1 != iCurrentHotItem) {
 				DbClickListView(iCurrentHotItem);
 			}
 
@@ -679,33 +502,29 @@ BOOL TInstDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 
 		case LVN_BEGINLABELEDIT:
 
-			if (NULL == ((NMLVDISPINFO*)pNmHdr)->item.lParam)return TRUE;
+			if(NULL == ((NMLVDISPINFO*)pNmHdr)->item.lParam)return TRUE;
 			//isSearchMode = 2 == ((NMLVDISPINFO*) pNmHdr)->item.iImage ? TRUE : FALSE;
 
 			size_t nLen, nAllowMaxLength;
 
-			if (m_lpPckCenter->GetListInSearchMode())
-			{
+			if(m_lpPckCenter->GetListInSearchMode()) {
 				lpIndexToShow = (LPPCKINDEXTABLE)((NMLVDISPINFO*)pNmHdr)->item.lParam;
 				StringCchLengthA(lpIndexToShow->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
 				nAllowMaxLength = MAX_PATH_PCK_260 - 2;
-			}
-			else {
+			} else {
 
 				lpNodeToShow = (LPPCK_PATH_NODE)((NMLVDISPINFO*)pNmHdr)->item.lParam;
-				if (NULL == lpNodeToShow->child)
-				{
+				if(NULL == lpNodeToShow->child) {
 					StringCchLengthA(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
 					nAllowMaxLength = MAX_PATH_PCK_260 - nLen + strlen(lpNodeToShow->szName) - 2;
-				}
-				else {
+				} else {
 					nAllowMaxLength = MAX_PATH_PCK_260 - 2;
 				}
 			}
 
 			HWND	hEdit;
 
-			if (NULL == (hEdit = ListView_GetEditControl(pNmHdr->hwndFrom)))return TRUE;
+			if(NULL == (hEdit = ListView_GetEditControl(pNmHdr->hwndFrom)))return TRUE;
 
 			::SendMessage(hEdit, EM_LIMITTEXT, nAllowMaxLength, 0);
 
@@ -718,41 +537,34 @@ BOOL TInstDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 			char	szEditedText[MAX_PATH_PCK_260];
 			memset(szEditedText, 0, MAX_PATH_PCK_260);
 
-			if (NULL != ((NMLVDISPINFO*)pNmHdr)->item.pszText)
-			{
-				if (0 == *((NMLVDISPINFO*)pNmHdr)->item.pszText)return FALSE;
+			if(NULL != ((NMLVDISPINFO*)pNmHdr)->item.pszText) {
+				if(0 == *((NMLVDISPINFO*)pNmHdr)->item.pszText)return FALSE;
 
 				//isSearchMode = 2 == ((NMLVDISPINFO*) pNmHdr)->item.iImage ? TRUE : FALSE;
 
 				WideCharToMultiByte(CP_ACP, 0, ((NMLVDISPINFO*)pNmHdr)->item.pszText, -1, szEditedText, MAX_PATH_PCK_260, "_", 0);
 
-				if (m_lpPckCenter->GetListInSearchMode())
-				{
+				if(m_lpPckCenter->GetListInSearchMode()) {
 					lpIndexToShow = (LPPCKINDEXTABLE)((NMLVDISPINFO*)pNmHdr)->item.lParam;
 
-					if (0 == strcmp(lpIndexToShow->cFileIndex.szFilename, szEditedText))
+					if(0 == strcmp(lpIndexToShow->cFileIndex.szFilename, szEditedText))
 						return FALSE;
-				}
-				else {
+				} else {
 					lpNodeToShow = (LPPCK_PATH_NODE)((NMLVDISPINFO*)pNmHdr)->item.lParam;
 
-					if (0 == strcmp(lpNodeToShow->szName, szEditedText))
+					if(0 == strcmp(lpNodeToShow->szName, szEditedText))
 						return FALSE;
 				}
 
 				char*	lpszInvalid;
-				if (m_lpPckCenter->GetListInSearchMode())
-				{
+				if(m_lpPckCenter->GetListInSearchMode()) {
 					lpszInvalid = (char*)TEXT_INVALID_PATHCHAR + 2;
-				}
-				else {
+				} else {
 					lpszInvalid = TEXT_INVALID_PATHCHAR;
 				}
 
-				while (0 != *lpszInvalid)
-				{
-					if (NULL != strchr(szEditedText, *lpszInvalid))
-					{
+				while(0 != *lpszInvalid) {
+					if(NULL != strchr(szEditedText, *lpszInvalid)) {
 						char szPrintf[64];
 						StringCchPrintfA(szPrintf, 64, GetLoadStrA(IDS_STRING_INVALIDFILENAME), lpszInvalid);
 						MessageBoxA(szPrintf, "提示", MB_OK | MB_ICONASTERISK);
@@ -763,19 +575,15 @@ BOOL TInstDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 				}
 
 				//size_t	nBytesAllowToWrite;
-				if (m_lpPckCenter->GetListInSearchMode())
-				{
+				if(m_lpPckCenter->GetListInSearchMode()) {
 					m_lpPckCenter->RenameIndex(lpIndexToShow, szEditedText);
 					//lpszInvalid = lpIndexToShow->cFileIndex.szFilename;
 					//nBytesAllowToWrite = MAX_PATH_PCK;
-				}
-				else {
-					if (NULL == lpNodeToShow->child)
+				} else {
+					if(NULL == lpNodeToShow->child)
 						m_lpPckCenter->RenameIndex(lpNodeToShow, szEditedText);
-					else
-					{
-						if (!m_lpPckCenter->RenameNode(lpNodeToShow, szEditedText))
-						{
+					else {
+						if(!m_lpPckCenter->RenameNode(lpNodeToShow, szEditedText)) {
 							MessageBox(GetLoadStr(IDS_STRING_RENAMEERROR), GetLoadStr(IDS_STRING_ERROR), MB_OK | MB_ICONERROR);
 							OpenPckFile(m_Filename, TRUE);
 							return FALSE;
@@ -799,12 +607,10 @@ BOOL TInstDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 
 BOOL TInstDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 {
-	switch (uMsg)
-	{
+	switch(uMsg) {
 	case WM_LBUTTONUP:
 
-		if (m_isSearchWindow)
-		{
+		if(m_isSearchWindow) {
 			TCHAR szPath[MAX_PATH];
 
 			//DoMouseUp();
@@ -813,12 +619,9 @@ BOOL TInstDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 
 			m_isSearchWindow = FALSE;
 
-			if (IsValidWndAndGetPath(szPath, TRUE))
-			{
-				if (m_lpPckCenter->IsValidPck())
-				{
-					if (!lpPckParams->cVarParams.bThreadRunning)
-					{
+			if(IsValidWndAndGetPath(szPath, TRUE)) {
+				if(m_lpPckCenter->IsValidPck()) {
+					if(!lpPckParams->cVarParams.bThreadRunning) {
 						//mt_MaxMemoryCount = 0;
 						lpPckParams->cVarParams.dwMTMemoryUsed = 0;
 						SetCurrentDirectory(szPath);
@@ -834,9 +637,9 @@ BOOL TInstDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 
 BOOL TInstDlg::EvMouseMove(UINT fwKeys, POINTS pos)
 {
-	if (m_isSearchWindow) {
+	if(m_isSearchWindow) {
 
-		if (IsValidWndAndGetPath(0, FALSE))
+		if(IsValidWndAndGetPath(0, FALSE))
 			SetCursor(m_hCursorAllow);
 		else
 			SetCursor(m_hCursorNo);
@@ -904,19 +707,16 @@ BOOL TInstDlg::IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath)
 	//OutputDebugString(sRootClass);
 	//OutputDebugString(TEXT("\r\n"));
 
-	if ((0 == lstrcmp(sRootClass, SHELL_LISTVIEW_ROOT_CLASS2)) || \
+	if((0 == lstrcmp(sRootClass, SHELL_LISTVIEW_ROOT_CLASS2)) || \
 		(0 == lstrcmp(sRootClass, SHELL_LISTVIEW_ROOT_CLASS1))/* || \
-		(GetClassName(hWndParent, sParentClass, MAX_PATH), 0 == lstrcmp(sParentClass, SHELL_LISTVIEW_PARENT_CLASS))*/)
-	{
-		if (isGetPath) {
+		(GetClassName(hWndParent, sParentClass, MAX_PATH), 0 == lstrcmp(sParentClass, SHELL_LISTVIEW_PARENT_CLASS))*/) {
+		if(isGetPath) {
 			return GetWndPath(hRootHwnd, szPath);
-		}
-		else {
+		} else {
 			return TRUE;
 		}
 
-	}
-	else {
+	} else {
 		//GetClassName(hWndParent, sParentClass, MAX_PATH);
 
 		//if(0 == lstrcmp(sParentClass, SHELL_LISTVIEW_PARENT_CLASS)) {
@@ -937,12 +737,11 @@ BOOL TInstDlg::IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath)
 ////////////////////////////////////////////DrawItem////////////////////////////////////////////////
 BOOL TInstDlg::EvMeasureItem(UINT ctlID, MEASUREITEMSTRUCT *lpMis)
 {
-	switch (ctlID)
-	{
+	switch(ctlID) {
 	case IDC_LIST:
 
 		//lpMI = (LPMEASUREITEMSTRUCT)lParam; 
-		if (lpMis->CtlType == ODT_HEADER) {
+		if(lpMis->CtlType == ODT_HEADER) {
 			//lpMis->itemWidth = 0 ; 
 			lpMis->itemHeight = 17;		//icon=16x16
 		}
@@ -994,8 +793,7 @@ BOOL TInstDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
 	iColumnCount = Header_GetItemCount(hWndHeader);////////////////此处有待优化
 
 	/////////////////////////////////////////////////////
-	if (lpDis->CtlType == ODT_LISTVIEW)
-	{
+	if(lpDis->CtlType == ODT_LISTVIEW) {
 
 		//if(ctlID == IDC_LIST_ICON) {
 		//	Debug((WCHAR*)lpDis->itemData);
@@ -1009,26 +807,21 @@ BOOL TInstDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
 
 		//lpNodeToShow = (LPPCK_PATH_NODE)item.lParam;
 
-
-		if (lpDis->itemState & ODS_SELECTED)
-		{
+		if(lpDis->itemState & ODS_SELECTED) {
 			//if( lpDis->hwndItem == GetFocus() )
 			redraw = R_SELECT;
 			//else
 			//	redraw=R_SEL_NOFOCUS;
-		}
-		else
+		} else
 			redraw = R_NORMAL;
-
 
 		rcfillrect.right++;
 		rcfillrect.bottom--;
 
-
 		SetBkMode(hdc, TRANSPARENT);
 
 		//rcfillrect.right-=20;
-		if (R_NORMAL == redraw)
+		if(R_NORMAL == redraw)
 			FillRect(hdc, &rcfillrect, hBrushs[item.iItem & 1]);
 		else
 			FillRect(hdc, &rcfillrect, hBrushs[redraw]);
@@ -1041,15 +834,12 @@ BOOL TInstDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
 		item.cchTextMax = 256;
 		item.pszText = szStrPrintf;
 
-
-		for (item.iSubItem = 0; item.iSubItem < iColumnCount; item.iSubItem++)
-		{
+		for(item.iSubItem = 0; item.iSubItem < iColumnCount; item.iSubItem++) {
 
 			rcfillrect.right = rcfillrect.left + ListView_GetColumnWidth(lpDis->hwndItem, item.iSubItem);	//2.984
 
 /*			column.mask = LVCF_WIDTH | LVCF_FMT;
 			ListView_GetColumn(lpDis->hwndItem, item.iSubItem, &column);
-
 			rcfillrect.right = rcfillrect.left + column.cx;	*/									//3.015
 
 			rc = rcfillrect;
@@ -1058,7 +848,7 @@ BOOL TInstDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
 			//修正位置
 			//if(1 == lpDis->CtlID)
 			//{
-			if (0 == item.iSubItem)
+			if(0 == item.iSubItem)
 				rc.left += 16;
 			//}
 			//int count = SendMessage(lpDis->hwndItem, LVM_GETITEMTEXT, (WPARAM)lpDis->itemID, (LPARAM)(LV_ITEM *)&item);
@@ -1079,31 +869,27 @@ BOOL TInstDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
 BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 {
 
-	if (lpPckParams->cVarParams.bThreadRunning)goto END_DROP;
+	if(lpPckParams->cVarParams.bThreadRunning)goto END_DROP;
 
 	TCHAR(*lpszFilePathPtr)[MAX_PATH];
 	TCHAR	szFirstFile[MAX_PATH];
 
 	m_DropFileCount = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
 
-	if (0 == m_DropFileCount)goto END_DROP;
+	if(0 == m_DropFileCount)goto END_DROP;
 
-	if (1 == m_DropFileCount)
-	{
-		if (!m_lpPckCenter->IsValidPck())
-		{
+	if(1 == m_DropFileCount) {
+		if(!m_lpPckCenter->IsValidPck()) {
 			size_t	nFirstFileLength;
 			DragQueryFile(hDrop, 0, szFirstFile, MAX_PATH);
 			StringCchLength(szFirstFile, MAX_PATH, &nFirstFileLength);
 
-			if (7 <= nFirstFileLength)
-			{
-				if (0 == lstrcmpi(szFirstFile + nFirstFileLength - 4, TEXT(".pck"))) {
+			if(7 <= nFirstFileLength) {
+				if(0 == lstrcmpi(szFirstFile + nFirstFileLength - 4, TEXT(".pck"))) {
 
 					OpenPckFile(szFirstFile);
 					goto END_DROP;
-				}
-				else if (0 == lstrcmpi(szFirstFile + nFirstFileLength - 4, TEXT(".zup"))) {
+				} else if(0 == lstrcmpi(szFirstFile + nFirstFileLength - 4, TEXT(".zup"))) {
 
 					OpenPckFile(szFirstFile);
 					goto END_DROP;
@@ -1112,21 +898,19 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 		}
 	}
 
-	if (IDCANCEL == MessageBoxA("确定添加这些文件吗？", "询问", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2))
+	if(IDCANCEL == MessageBoxA("确定添加这些文件吗？", "询问", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2))
 		goto END_DROP;
 
 	DragAcceptFiles(hWnd, FALSE);
 
-	if (NULL == (m_lpszFilePath = (TCHAR(*)[MAX_PATH]) malloc(sizeof(TCHAR) * MAX_PATH * m_DropFileCount)))
-	{
+	if(NULL == (m_lpszFilePath = (TCHAR(*)[MAX_PATH]) malloc(sizeof(TCHAR) * MAX_PATH * m_DropFileCount))) {
 		m_lpPckCenter->PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		goto END_DROP;
 	}
 
 	lpszFilePathPtr = m_lpszFilePath;
 
-	for (DWORD i = 0; i < m_DropFileCount; i++)
-	{
+	for(DWORD i = 0; i < m_DropFileCount; i++) {
 
 		DragQueryFile(hDrop, i, *lpszFilePathPtr, MAX_PATH);
 
@@ -1140,25 +924,23 @@ END_DROP:
 	DragFinish(hDrop);
 	DragAcceptFiles(hWnd, TRUE);
 	return	TRUE;
-	}
+}
 
 BOOL TInstDlg::EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	char szPrintf[256];
 
-	switch (uMsg)
-	{
+	switch(uMsg) {
 	case WM_FRESH_MAIN_CAPTION:
 
-		if (wParam) {
+		if(wParam) {
 #ifdef UNICODE
 			sprintf_s(szPrintf, "%s - %s", THIS_MAIN_CAPTION, WtoA(m_lpPckCenter->GetCurrentVersionName()));
 #else
 			sprintf_s(szPrintf, "%s - %s", THIS_MAIN_CAPTION, m_lpPckCenter->GetCurrentVersionName());
 #endif
 			SetWindowTextA(szPrintf);
-		}
-		else {
+		} else {
 			SetWindowTextA(THIS_MAIN_CAPTION);
 		}
 
@@ -1167,7 +949,7 @@ BOOL TInstDlg::EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 
 	return FALSE;
-	}
+}
 
 //DWORD ShowErrorMsg ( CONST DWORD dwError )
 //{

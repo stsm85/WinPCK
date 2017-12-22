@@ -12,6 +12,12 @@
 #include <windows.h>
 #include <assert.h>
 
+#define TEST_T 1
+
+#if _MSC_VER >= 1400
+#pragma warning ( disable : 4996 )
+#endif
+
 #define ENABLE_PCK_PKX_FILE 1
 
 #if !defined(_MAPVIEWFILE_H_)
@@ -41,13 +47,13 @@ typedef union _QWORD{
 #define PATH_LOCAL_PREFIX_LEN		4
 #define PATH_UNC_PREFIX_LEN			7
 
-#ifdef UNICODE
-#define tcscpy_s	wcscpy_s
-#define	tcslen		wcslen
-#else
-#define tcscpy_s	strcpy_s
-#define	tcslen		strlen
-#endif
+//#ifdef UNICODE
+//#define tcscpy_s	wcscpy_s
+//#define	tcslen		wcslen
+//#else
+//#define tcscpy_s	strcpy_s
+//#define	tcslen		strlen
+//#endif
 
 class CMapViewFile
 {
@@ -78,8 +84,8 @@ protected:
 
 	
 	BOOL isWinNt();
-	void MakeUnlimitedPath(WCHAR *_dst, LPCWSTR	_src, size_t size);
-	void MakeUnlimitedPath(char *_dst, LPCSTR _src, size_t size);
+	void MakeUnlimitedPath(LPWSTR _dst, LPCWSTR	_src, size_t size);
+	void MakeUnlimitedPath(LPSTR _dst, LPCSTR _src, size_t size);
 
 #if ENABLE_PCK_PKX_FILE
 	void GetPkxName(LPSTR dst, LPCSTR src);
@@ -116,8 +122,8 @@ protected:
 
 	DWORD	dwViewSizePck, dwViewSizePkx;
 
-	char	m_szPckFileName[MAX_PATH];
-	wchar_t	m_tszPckFileName[MAX_PATH];
+	//char	m_szPckFileName[MAX_PATH];
+	//wchar_t	m_tszPckFileName[MAX_PATH];
 
 	char	m_szPkxFileName[MAX_PATH];
 	wchar_t	m_tszPkxFileName[MAX_PATH];

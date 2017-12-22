@@ -11,7 +11,6 @@
 
 #include "ZupClass.h"
 
-
 BOOL CZupClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 {
 	PrintLogE(TEXT_NOTSUPPORT);
@@ -32,7 +31,7 @@ BOOL CZupClass::RecompressPckFile(LPTSTR szRecompressPckFile)
 }
 
 //更新pck文件//有bug
-BOOL CZupClass::UpdatePckFile(LPTSTR szPckFile, TCHAR (*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert)
+BOOL CZupClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert)
 {
 	PrintLogE(TEXT_NOTSUPPORT);
 	return FALSE;
@@ -44,7 +43,3 @@ BOOL CZupClass::RenameFilename()
 	PrintLogE(TEXT_NOTSUPPORT);
 	return FALSE;
 }
-
-
-
-

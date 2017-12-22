@@ -41,8 +41,7 @@ LPCTSTR	CPckControlCenter::GetSaveDlgFilterString()
 
 BOOL CPckControlCenter::isSupportAddFileToPck()
 {
-	switch(m_emunFileFormat)
-	{
+	switch(m_emunFileFormat) {
 	case FMTPCK_PCK:
 		return TRUE;
 		break;

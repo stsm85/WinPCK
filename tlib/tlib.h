@@ -16,8 +16,12 @@
 #define STRICT
 #endif
 
+#ifdef _USE_T_CRYPT_
 /* for crypto api */
+#if _WIN32_WINNT < 0x0600
 #define _WIN32_WINNT 0x0600
+#endif
+#endif
 
 /* for new version VC */
 #if _MSC_VER >= 1400
@@ -480,7 +484,7 @@ protected:
 	TWinHashTbl	*hash;
 	LPCTSTR		defaultClass;
 
-	LPSTR		cmdLine;
+	LPTSTR		cmdLine;
 	int			nCmdShow;
 	TWin		*mainWnd;
 	TWin		*preWnd;
@@ -490,7 +494,7 @@ protected:
 	virtual BOOL	InitApp(void);
 
 public:
-	TApp(HINSTANCE _hI, LPSTR _cmdLine, int _nCmdShow);
+	TApp(HINSTANCE _hI, LPTSTR _cmdLine, int _nCmdShow);
 	virtual ~TApp();
 	virtual void	InitWindow() = 0;
 	virtual int		Run();

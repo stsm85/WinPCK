@@ -17,10 +17,10 @@
 
 typedef enum _FMTPCK
 {
-	FMTPCK_PCK					= 0,
-	FMTPCK_ZUP					= 1,
-	FMTPCK_CUP					= 2,
-	FMTPCK_UNKNOWN				= 0x7fffffff
+	FMTPCK_PCK = 0,
+	FMTPCK_ZUP = 1,
+	FMTPCK_CUP = 2,
+	FMTPCK_UNKNOWN = 0x7fffffff
 }FMTPCK;
 
 typedef enum _PCKVER
@@ -50,7 +50,8 @@ typedef struct _PCK_KEYS
 	DWORD		dwMaxSinglePckSize;
 }PCK_KEYS, *LPPCK_KEYS;
 
-typedef struct _PCK_VERSION_FUNC {
+typedef struct _PCK_VERSION_FUNC
+{
 
 	const		PCK_KEYS*	cPckXorKeys;
 	//头的size
@@ -62,13 +63,13 @@ typedef struct _PCK_VERSION_FUNC {
 	//读取头
 	//读取尾
 	//读取fileindex
-	BOOL (*PickIndexData)(void*, void*);
+	BOOL(*PickIndexData)(void*, void*);
 	//填入头
-	LPVOID (*FillHeadData)(void*);
+	LPVOID(*FillHeadData)(void*);
 	//填入尾
-	LPVOID (*FillTailData)(void*);
+	LPVOID(*FillTailData)(void*);
 	//填入fileindex
-	LPVOID (*FillIndexData)(void*, void*);
+	LPVOID(*FillIndexData)(void*, void*);
 }PCK_VERSION_FUNC, *LPPCK_VERSION_FUNC;
 
 //****** structures ******* 
@@ -77,30 +78,34 @@ typedef struct _PCK_VERSION_FUNC {
 /*
 ** PCKHEAD PCK文件的文件头结构
 ** size = 12
-** 
+**
 ** dwHeadCheckHead
 ** 与文件所属的游戏相关，不同游戏的值不同
-** 
+**
 ** dwPckSize
 ** 整个pck文件的大小
-** 
+**
 ** dwHeadCheckTail
 ** 当文件版本＝2.0.2时可用，当版本＝2.0.3时，合并到dwPckSize
 ** 中作为高位使用
-** 
+**
 */
 
-typedef struct _PCK_HEAD_V2020 {
+typedef struct _PCK_HEAD_V2020
+{
 	DWORD		dwHeadCheckHead;
 	DWORD		dwPckSize;
 	DWORD		dwHeadCheckTail;
 }PCKHEAD_V2020, *LPPCKHEAD_V2020;
 
-typedef struct _PCK_HEAD_V2030 {
+typedef struct _PCK_HEAD_V2030
+{
 	DWORD		dwHeadCheckHead;
-	union {
+	union
+	{
 		QWORD		dwPckSize;
-		struct {
+		struct
+		{
 			DWORD		dwPckSizeLow;
 			DWORD		dwHeadCheckTail;
 		};
@@ -110,16 +115,17 @@ typedef struct _PCK_HEAD_V2030 {
 /*
 ** PCKTAIL PCK文件的文件尾（最后8字节）结构
 ** size = 8
-** 
+**
 ** dwFileCount
 ** 文件中压缩的文件数量
-** 
+**
 ** dwVersion
 ** pck文件的版本
-** 
+**
 */
 
-typedef struct _PCK_TAIL_V2020 {
+typedef struct _PCK_TAIL_V2020
+{
 	DWORD		dwIndexTableCheckHead;
 	DWORD		dwVersion0;
 	DWORD		dwCryptedFileIndexesAddr;
@@ -130,11 +136,14 @@ typedef struct _PCK_TAIL_V2020 {
 	DWORD		dwVersion;
 }PCKTAIL_V2020, *LPPCKTAIL_V2020;
 
-typedef struct _PCK_TAIL_V2030 {
+typedef struct _PCK_TAIL_V2030
+{
 	DWORD		dwIndexTableCheckHead;
-	union {
+	union
+	{
 		QWORD		dwCryptedFileIndexesAddr;
-	struct {
+		struct
+		{
 			DWORD		dwVersion0;
 			DWORD		dwCryptedFileIndexesAddrHigh;
 		};
@@ -146,7 +155,8 @@ typedef struct _PCK_TAIL_V2030 {
 	DWORD		dwVersion;
 }PCKTAIL_V2030, *LPPCKTAIL_V2030;
 
-typedef struct _PCK_TAIL_V2031 {
+typedef struct _PCK_TAIL_V2031
+{
 	DWORD		dwIndexTableCheckHead;
 	DWORD		dwVersion0;
 	QWORD		dwCryptedFileIndexesAddr;
@@ -157,7 +167,8 @@ typedef struct _PCK_TAIL_V2031 {
 	DWORD		dwVersion;
 }PCKTAIL_V2031, *LPPCKTAIL_V2031;
 
-typedef struct _PCK_FILE_INDEX_V2020 {
+typedef struct _PCK_FILE_INDEX_V2020
+{
 	char		szFilename[MAX_PATH_PCK_256];
 	DWORD		dwUnknown1;
 	DWORD		dwAddressOffset;
@@ -166,7 +177,8 @@ typedef struct _PCK_FILE_INDEX_V2020 {
 	DWORD		dwUnknown2;
 }PCKFILEINDEX_V2020, *LPPCKFILEINDEX_V2020;
 
-typedef struct _PCK_FILE_INDEX_V2030 {
+typedef struct _PCK_FILE_INDEX_V2030
+{
 	char		szFilename[MAX_PATH_PCK_256];
 	DWORD		dwUnknown1;
 	QWORD		dwAddressOffset;
@@ -175,7 +187,8 @@ typedef struct _PCK_FILE_INDEX_V2030 {
 	DWORD		dwUnknown2;
 }PCKFILEINDEX_V2030, *LPPCKFILEINDEX_V2030;
 
-typedef struct _PCK_FILE_INDEX_V2031 {
+typedef struct _PCK_FILE_INDEX_V2031
+{
 	char		szFilename[MAX_PATH_PCK_260];
 	DWORD		dwUnknown1;
 	QWORD		dwAddressOffset;
@@ -184,7 +197,8 @@ typedef struct _PCK_FILE_INDEX_V2031 {
 	DWORD		dwUnknown2;
 }PCKFILEINDEX_V2031, *LPPCKFILEINDEX_V2031;
 
-typedef struct _PCK_FILE_INDEX {
+typedef struct _PCK_FILE_INDEX
+{
 	char		szFilename[MAX_PATH_PCK_260];
 	QWORD		dwAddressOffset;
 	DWORD		dwFileClearTextSize;
@@ -192,7 +206,8 @@ typedef struct _PCK_FILE_INDEX {
 }PCKFILEINDEX, *LPPCKFILEINDEX;
 #pragma pack(pop)
 
-typedef struct _PCK_INDEX_TABLE {
+typedef struct _PCK_INDEX_TABLE
+{
 	PCKFILEINDEX	cFileIndex;
 	BOOL			bSelected;			//界面上被选择时置1，一般如删除节点时使用
 	BOOL			isRecompressed;		//压缩重建时使用
@@ -200,7 +215,8 @@ typedef struct _PCK_INDEX_TABLE {
 }PCKINDEXTABLE, *LPPCKINDEXTABLE;
 
 
-typedef struct _PCK_PATH_NODE {
+typedef struct _PCK_PATH_NODE
+{
 	char			szName[MAX_PATH_PCK_260];
 	DWORD			dwFilesCount;
 	DWORD			dwDirsCount;
@@ -214,7 +230,8 @@ typedef struct _PCK_PATH_NODE {
 }PCK_PATH_NODE, *LPPCK_PATH_NODE;
 
 
-typedef struct _FILES_TO_COMPRESS {
+typedef struct _FILES_TO_COMPRESS
+{
 	DWORD			dwCompressedflag;
 	DWORD			dwFileSize;
 	char			*lpszFileTitle;
@@ -226,7 +243,8 @@ typedef struct _FILES_TO_COMPRESS {
 }FILES_TO_COMPRESS, *LPFILES_TO_COMPRESS;
 
 
-typedef struct _PCK_INDEX_TABLE_COMPRESS {
+typedef struct _PCK_INDEX_TABLE_COMPRESS
+{
 	DWORD			dwIndexValueHead;
 	DWORD			dwIndexValueTail;
 	BYTE			buffer[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
@@ -240,7 +258,8 @@ typedef struct _PCK_INDEX_TABLE_COMPRESS {
 }PCKINDEXTABLE_COMPRESS, *LPPCKINDEXTABLE_COMPRESS;
 
 
-typedef struct _PCK_ALL_INFOS {
+typedef struct _PCK_ALL_INFOS
+{
 	QWORD			qwPckSize;
 	DWORD			dwFileCount;
 	QWORD			dwAddressName;
@@ -252,7 +271,8 @@ typedef struct _PCK_ALL_INFOS {
 
 }PCK_ALL_INFOS, *LPPCK_ALL_INFOS;
 
-typedef struct _PCK_WRITING_VARS {
+typedef struct _PCK_WRITING_VARS
+{
 
 	QWORD	dwAddress;		//压缩算法中使用的参数，当前写入地址或文件大小
 	void*	lpFileRead;

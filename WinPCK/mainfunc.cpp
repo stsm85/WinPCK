@@ -27,7 +27,7 @@ LPPCK_PATH_NODE	TInstDlg::GetLastShowNode()
 
 	char	**lpCurrentDir = m_PathDirs.lpszDirNames;
 
-	for(int i=0;i<m_PathDirs.nDirCount;i++) {
+	for(int i = 0;i < m_PathDirs.nDirCount;i++) {
 
 		if(0 == **lpCurrentDir)return lpCurrentNode;
 
@@ -63,28 +63,24 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 	TCHAR	szString[64];
 	int		iListTopView;
 
-	if(0 != *lpszFileToOpen && lpszFileToOpen != m_Filename)
-	{
+	if(0 != *lpszFileToOpen && lpszFileToOpen != m_Filename) {
 		StringCchCopy(m_Filename, MAX_PATH, lpszFileToOpen);
 	}
 
-	if(!isReOpen)
-	{
+	if(!isReOpen) {
 		memset(&m_PathDirs, 0, sizeof(m_PathDirs));
 		*m_PathDirs.lpszDirNames = m_PathDirs.szPaths;
-	}else{
+	} else {
 		//记录位置
 		iListTopView = ListView_GetTopIndex(GetDlgItem(IDC_LIST));
 	}
 
-	if(0 != *lpszFileToOpen || OpenSingleFile(m_Filename))
-	{
-		t1=GetTickCount();
+	if(0 != *lpszFileToOpen || OpenSingleFile(m_Filename)) {
+		t1 = GetTickCount();
 
 		//转换文件名格式 
-		if(m_lpPckCenter->Open(m_Filename))
-		{
-			t2=GetTickCount() - t1;
+		if(m_lpPckCenter->Open(m_Filename)) {
+			t2 = GetTickCount() - t1;
 			StringCchPrintf(szString, 64, GetLoadStr(IDS_STRING_OPENOK), t2);
 			SetStatusBarText(4, szString);
 
@@ -95,19 +91,17 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 			SetStatusBarText(1, szString);
 
 			StringCchPrintf(szString, 64, GetLoadStr(IDS_STRING_OPENFILECOUNT), m_lpPckCenter->GetPckFileCount());
-			SetStatusBarText(2, szString);	
+			SetStatusBarText(2, szString);
 
-			if(isReOpen)
-			{
+			if(isReOpen) {
 				ShowPckFiles(GetLastShowNode());
 				ListView_EnsureVisible(GetDlgItem(IDC_LIST), iListTopView, NULL);
 				ListView_EnsureVisible(GetDlgItem(IDC_LIST), iListTopView + ListView_GetCountPerPage(GetDlgItem(IDC_LIST)) - 1, NULL);
-			}
-			else
+			} else
 				ShowPckFiles(m_lpPckCenter->m_lpPckRootNode->child);
 
 			return TRUE;
-		}else{
+		} else {
 			SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 			m_lpPckCenter->Close();
 			return FALSE;
@@ -158,23 +152,21 @@ VOID TInstDlg::SearchPckFiles()
 
 	m_currentNodeOnShow = m_lpPckCenter->m_lpPckRootNode->child;
 
-	InsertList(hList, 0, LVIF_PARAM | LVIF_IMAGE, 0, m_lpPckCenter->m_lpPckRootNode, 1, 
-					"..");
+	InsertList(hList, 0, LVIF_PARAM | LVIF_IMAGE, 0, m_lpPckCenter->m_lpPckRootNode, 1,
+		"..");
 
-	for(DWORD i = 0;i<dwFileCount;i++)
-	{
-		if(NULL != strstr(lpPckIndexTable->cFileIndex.szFilename, m_szStrToSearch))
-		{
-			if (0 == lpPckIndexTable->cFileIndex.dwFileClearTextSize)
+	for(DWORD i = 0;i < dwFileCount;i++) {
+		if(NULL != strstr(lpPckIndexTable->cFileIndex.szFilename, m_szStrToSearch)) {
+			if(0 == lpPckIndexTable->cFileIndex.dwFileClearTextSize)
 				strcpy(szCompressionRatio, "-");
 			else
 				sprintf_s(szCompressionRatio, CHAR_NUM_LEN, "%.1f%%", lpPckIndexTable->cFileIndex.dwFileCipherTextSize / (double)lpPckIndexTable->cFileIndex.dwFileClearTextSize * 100.0);
-			
-			InsertList(hList, iListIndex, LVIF_PARAM | LVIF_IMAGE, 1, lpPckIndexTable, 4, 
-						lpPckIndexTable->cFileIndex.szFilename,
-						ultoa(lpPckIndexTable->cFileIndex.dwFileClearTextSize, szClearTextSize, 10),
-						ultoa(lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szCipherTextSize, 10),	
-						szCompressionRatio);
+
+			InsertList(hList, iListIndex, LVIF_PARAM | LVIF_IMAGE, 1, lpPckIndexTable, 4,
+				lpPckIndexTable->cFileIndex.szFilename,
+				StrFormatByteSizeA(lpPckIndexTable->cFileIndex.dwFileClearTextSize, szClearTextSize, CHAR_NUM_LEN),
+				StrFormatByteSizeA(lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szCipherTextSize, CHAR_NUM_LEN),
+				szCompressionRatio);
 
 			iListIndex++;
 		}
@@ -215,14 +207,12 @@ VOID TInstDlg::ShowPckFiles(LPPCK_PATH_NODE		lpNodeToShow)
 
 	int i = 0;
 
-	while(NULL != lpNodeToShowPtr && 0 != *lpNodeToShowPtr->szName)
-	{
+	while(NULL != lpNodeToShowPtr && 0 != *lpNodeToShowPtr->szName) {
 		//这里先显示文件夹
-		if(NULL == lpNodeToShowPtr->lpPckIndexTable)
-		{
-			if (NULL != lpNodeToShowPtr->child) {
+		if(NULL == lpNodeToShowPtr->lpPckIndexTable) {
+			if(NULL != lpNodeToShowPtr->child) {
 
-				if (0 == lpNodeToShowPtr->child->qdwDirClearTextSize)
+				if(0 == lpNodeToShowPtr->child->qdwDirClearTextSize)
 					strcpy(szCompressionRatio, "-");
 				else
 					sprintf_s(szCompressionRatio, CHAR_NUM_LEN, "%.1f%%", lpNodeToShowPtr->child->qdwDirCipherTextSize / (double)lpNodeToShowPtr->child->qdwDirClearTextSize * 100.0);
@@ -241,27 +231,25 @@ VOID TInstDlg::ShowPckFiles(LPPCK_PATH_NODE		lpNodeToShow)
 	}
 
 	lpNodeToShowPtr = lpNodeToShow;
-	while(NULL != lpNodeToShowPtr && 0 != *lpNodeToShowPtr->szName)
-	{
-		if(NULL != lpNodeToShowPtr->lpPckIndexTable)
-		{
+	while(NULL != lpNodeToShowPtr && 0 != *lpNodeToShowPtr->szName) {
+		if(NULL != lpNodeToShowPtr->lpPckIndexTable) {
 			lpPckIndexTable = lpNodeToShowPtr->lpPckIndexTable;
-			
-			if (0 == lpPckIndexTable->cFileIndex.dwFileClearTextSize)
+
+			if(0 == lpPckIndexTable->cFileIndex.dwFileClearTextSize)
 				strcpy(szCompressionRatio, "-");
 			else
 				sprintf_s(szCompressionRatio, CHAR_NUM_LEN, "%.1f%%", lpPckIndexTable->cFileIndex.dwFileCipherTextSize / (double)lpPckIndexTable->cFileIndex.dwFileClearTextSize * 100.0);
 
-			InsertList(hList, i, LVIF_PARAM | LVIF_IMAGE, 1, lpNodeToShowPtr, 4, 
-						lpNodeToShowPtr->szName,
-						StrFormatByteSizeA(lpPckIndexTable->cFileIndex.dwFileClearTextSize, szClearTextSize, CHAR_NUM_LEN),
-						StrFormatByteSizeA(lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szCipherTextSize, CHAR_NUM_LEN),
-						szCompressionRatio);
+			InsertList(hList, i, LVIF_PARAM | LVIF_IMAGE, 1, lpNodeToShowPtr, 4,
+				lpNodeToShowPtr->szName,
+				StrFormatByteSizeA(lpPckIndexTable->cFileIndex.dwFileClearTextSize, szClearTextSize, CHAR_NUM_LEN),
+				StrFormatByteSizeA(lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szCipherTextSize, CHAR_NUM_LEN),
+				szCompressionRatio);
 			i++;
 		}
 
 		lpNodeToShowPtr = lpNodeToShowPtr->next;
-		
+
 	}
 
 	::SendMessage(hList, WM_SETREDRAW, TRUE, 0);

@@ -17,8 +17,7 @@ void* CPckClass::AllocNodes(size_t	sizeStuct)
 {
 	void*		lpMallocNode;
 
-	if(NULL == (lpMallocNode = /*(LPPCK_PATH_NODE)*/malloc(sizeStuct)))
-	{
+	if(NULL == (lpMallocNode = /*(LPPCK_PATH_NODE)*/malloc(sizeStuct))) {
 		PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return lpMallocNode;
 	}
@@ -36,8 +35,7 @@ BOOL CPckClass::AllocIndexTableAndInit(LPPCKINDEXTABLE &lpPckIndexTable, DWORD d
 	DWORD take = GetTickCount();
 #endif
 	//ÉêÇë¿Õ¼ä
-	if(NULL == (lpPckIndexTable = (LPPCKINDEXTABLE) malloc (sizeof(PCKINDEXTABLE) * dwFileCount)))
-	{
+	if(NULL == (lpPckIndexTable = (LPPCKINDEXTABLE)malloc(sizeof(PCKINDEXTABLE) * dwFileCount))) {
 		PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
@@ -56,7 +54,7 @@ VOID CPckClass::DeallocateFileinfo()
 {
 	LPFILES_TO_COMPRESS Fileinfo;
 
-	while(m_firstFile != NULL){
+	while(m_firstFile != NULL) {
 		Fileinfo = m_firstFile->next;
 		free(m_firstFile);
 		m_firstFile = Fileinfo;
@@ -68,9 +66,9 @@ LPFILES_TO_COMPRESS CPckClass::AllocateFileinfo()
 {
 	LPFILES_TO_COMPRESS pFileToCompress;
 
-	pFileToCompress = (LPFILES_TO_COMPRESS) malloc(sizeof(FILES_TO_COMPRESS));
+	pFileToCompress = (LPFILES_TO_COMPRESS)malloc(sizeof(FILES_TO_COMPRESS));
 
-	if(pFileToCompress != NULL){
+	if(pFileToCompress != NULL) {
 		memset(pFileToCompress, 0, sizeof(FILES_TO_COMPRESS));
 	}
 
@@ -83,12 +81,10 @@ VOID CPckClass::DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode)
 	LPPCK_PATH_NODE		lpThisNodePtr = lpThisNode;
 	//BOOL				bFinish = FALSE;
 
-	while(NULL != lpThisNode)
-	{
+	while(NULL != lpThisNode) {
 
 		lpThisNodePtr = lpThisNode;
-		if(NULL != lpThisNodePtr->child)
-		{
+		if(NULL != lpThisNodePtr->child) {
 			DeAllocMultiNodes(lpThisNodePtr->child);
 		}
 		lpThisNode = lpThisNodePtr->next;
@@ -103,12 +99,10 @@ VOID CPckClass::DeleteNode(LPPCK_PATH_NODE lpNode)
 {
 	lpNode = lpNode->child->next;
 
-	while(NULL != lpNode)
-	{
-		if(NULL == lpNode->child)
-		{
+	while(NULL != lpNode) {
+		if(NULL == lpNode->child) {
 			lpNode->lpPckIndexTable->bSelected = TRUE;
-		}else{
+		} else {
 			DeleteNode(lpNode);
 		}
 
