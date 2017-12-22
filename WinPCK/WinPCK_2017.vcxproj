@@ -434,7 +434,7 @@
       <DebugInformationFormat>
       </DebugInformationFormat>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -463,7 +463,7 @@
     <ClCompile>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>__NO_LTL_LIB;WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -471,7 +471,7 @@
       <DebugInformationFormat>
       </DebugInformationFormat>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FloatingPointModel>Fast</FloatingPointModel>

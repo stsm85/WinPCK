@@ -246,7 +246,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StringPooling>false</StringPooling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
       <UseProcessorExtensions>SSE3</UseProcessorExtensions>
       <Optimization>Full</Optimization>
@@ -273,7 +273,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StringPooling>false</StringPooling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
       <UseProcessorExtensions>SSE3</UseProcessorExtensions>
       <Optimization>Full</Optimization>

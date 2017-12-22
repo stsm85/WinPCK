@@ -67,6 +67,9 @@ void TInstDlg::initCommctrls()
 	//SetStatusBarText(2, TEXT("数量: 9999999"));
 	//SetStatusBarText(3, TEXT("进度: 9999999/9999999 100.0% 缓存:100.0%"));
 
+	//快捷键
+	hAccel = LoadAccelerators(TApp::GetInstance(), MAKEINTRESOURCE(IDR_ACCELERATOR1));
+
 }
 
 void TInstDlg::initParams()
