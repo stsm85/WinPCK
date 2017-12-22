@@ -379,7 +379,9 @@ LONG WINAPI Local_UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *info)
 	::SetFilePointer(hFile, 0, 0, FILE_END);
 	::GetLocalTime(&tm);
 	context = info->ContextRecord;
-
+#pragma warning(push)
+#pragma warning(disable: 4477)
+#pragma warning(disable: 4313)
 	len = sprintf(buf,
 #ifdef _WIN64
 		"------ %s -----\r\n"
@@ -411,8 +413,8 @@ LONG WINAPI Local_UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *info)
 		, context->Esi, context->Edi, context->Ebp, context->Esp
 #endif
 		);
-	::WriteFile(hFile, buf, len, &len, 0);
 
+	::WriteFile(hFile, buf, len, &len, 0);
 
 #ifdef _WIN64
 		esp = (char *)context->Rsp;
@@ -430,6 +432,7 @@ LONG WINAPI Local_UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *info)
 							((j+1)%(32/sizeof(DWORD_PTR))) ? " " : "\r\n");
 		::WriteFile(hFile, buf, len, &len, 0);
 	}
+#pragma warning(pop)
 
 	len = sprintf(buf, "------------------------\r\n\r\n");
 	::WriteFile(hFile, buf, len, &len, 0);

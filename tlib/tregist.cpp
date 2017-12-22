@@ -1,3 +1,4 @@
+#ifdef _USE_T_REG_
 static char *tregist_id = 
 	"@(#)Copyright (C) 1996-2010 H.Shirouzu		tregist.cpp	Ver0.97";
 /* ========================================================================
@@ -11,8 +12,6 @@ static char *tregist_id =
 #include <stdio.h>
 #include "tlib.h"
 #include "tregist.h"
-
-#ifdef _USE_T_REG_
 
 TRegistry::TRegistry(LPCTSTR company, LPTSTR appName)
 {
@@ -198,7 +197,6 @@ BOOL TRegistry::EnumKey(DWORD cnt, LPTSTR buf, int size)
 	return	::RegEnumKeyEx(hKey[openCnt -1], cnt, buf, (DWORD *)&size, 0, 0, 0, 0)
 			== ERROR_SUCCESS;
 }
-
 
 BOOL TRegistry::EnumValue(DWORD cnt, LPTSTR buf, int size, DWORD *type)
 {

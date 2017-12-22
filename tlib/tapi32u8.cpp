@@ -1,3 +1,4 @@
+#ifdef _USE_T_U8FUNC_
 static char *tap32u8_id = 
 	"@(#)Copyright (C) 1996-2010 H.Shirouzu		tap32u8.cpp	Ver0.99";
 /* ========================================================================
@@ -16,8 +17,6 @@ static char *tap32u8_id =
 #include <mbstring.h>
 #include <stdlib.h>
 #include <stddef.h>
-
-#ifdef _USE_T_U8FUNC_
 
 /*=========================================================================
 	UCS2(W) - UTF-8(U8) - ANSI(A) ‘ŠŒÝ•ÏŠ·

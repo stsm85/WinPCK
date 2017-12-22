@@ -468,8 +468,10 @@ protected:
 public:
 	TWinHashTbl(int _hashNum) : THashTbl(_hashNum) {}
 	~TWinHashTbl() {}
-
+#pragma warning(push)
+#pragma warning(disable: 4302)
 	u_int	MakeHashId(HWND hWnd) { return (u_int)hWnd * 0xf3f77d13; }
+#pragma warning(pop)
 };
 
 class TApp {

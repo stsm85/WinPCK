@@ -1,3 +1,4 @@
+#ifdef _USE_T_LIST_
 static char *tlist_id = 
 	"@(#)Copyright (C) 1996-2009 H.Shirouzu		tlist.cpp	Ver0.97";
 /* ========================================================================
@@ -14,8 +15,6 @@ static char *tlist_id =
 /*
 	TList class
 */
-
-#ifdef _USE_T_LIST_
 
 TList::TList(void)
 {
