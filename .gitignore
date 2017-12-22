@@ -39,3 +39,9 @@
 *.ipch
 *.iobj
 *.ipdb
+
+*.aps
+.vs/*
+build/*
+Debug/*
+
