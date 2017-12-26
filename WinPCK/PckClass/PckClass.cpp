@@ -14,6 +14,7 @@
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4146 )
+#pragma warning ( disable : 4267 )
 
 void CPckClass::CPckClassInit()
 {

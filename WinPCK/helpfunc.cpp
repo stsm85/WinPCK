@@ -19,7 +19,7 @@
 #include "winmain.h"
 #include "miscdlg.h"
 #include <shlobj.h>
-#include <strsafe.h>
+//#include <strsafe.h>
 #include <process.h>
 
 inline LONG RecurseDeleteKey(HKEY hRegKey, LPCTSTR lpszKey);
@@ -97,7 +97,7 @@ void TInstDlg::DbClickListView(int itemIndex)
 			if(NULL != lpNodeToShow->child) {
 				char **lpCurrentDir = m_PathDirs.lpszDirNames + m_PathDirs.nDirCount;
 
-				StringCchCopyA(*lpCurrentDir, MAX_PATH - (*lpCurrentDir - *m_PathDirs.lpszDirNames), lpNodeToShow->szName);
+				strcpy_s(*lpCurrentDir, MAX_PATH - (*lpCurrentDir - *m_PathDirs.lpszDirNames), lpNodeToShow->szName);
 
 				*(lpCurrentDir + 1) = *lpCurrentDir + strlen(*lpCurrentDir) + 1;
 
@@ -344,7 +344,7 @@ BOOL TInstDlg::OpenSingleFile(TCHAR * lpszFileName)
 	}
 
 	if(NULL != ofn.lpstrInitialDir)
-		StringCchCopy(lpszFileName, MAX_PATH, szStrPrintf);
+		_tcscpy_s(lpszFileName, MAX_PATH, szStrPrintf);
 
 	return TRUE;
 
@@ -365,7 +365,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 		return FALSE;
 	}
 
-	StringCchCopy(szBuffer, MAX_BUFFER_SIZE_OFN, TEXT(""));
+	_tcscpy_s(szBuffer, MAX_BUFFER_SIZE_OFN, TEXT(""));
 
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
@@ -415,7 +415,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 
 		while(0 != *szBufferPart) {
 
-			StringCchLength(szBufferPart, MAX_PATH, &stStringLength);
+			stStringLength = _tcsnlen(szBufferPart, MAX_PATH);
 			szBufferPart += stStringLength + 1;
 
 			*(++szFilenamePtrArrayPtr) = szBufferPart;
@@ -428,6 +428,8 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 
 		if(NULL == (lpszFilePathArray = /*(TCHAR(*)[MAX_PATH])*/ malloc(sizeof(TCHAR) * MAX_PATH * dwFileCount))) {
 			m_lpPckCenter->PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			free(szFilenamePtrArray);
+			free(szBuffer);
 			return	FALSE;
 		}
 
@@ -436,7 +438,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 		szFilenamePtrArrayPtr = szFilenamePtrArray;
 
 		while(0 != *szFilenamePtrArrayPtr) {
-			StringCchPrintf(*lpszFilePathArrayPtr, MAX_PATH, TEXT("%s\\%s"), szBuffer, *szFilenamePtrArrayPtr);
+			_stprintf_s(*lpszFilePathArrayPtr, MAX_PATH, TEXT("%s\\%s"), szBuffer, *szFilenamePtrArrayPtr);
 
 			lpszFilePathArrayPtr++;
 			szFilenamePtrArrayPtr++;
@@ -449,10 +451,11 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 
 		if(NULL == (lpszFilePathArray = /*(TCHAR(*)[MAX_PATH])*/ malloc(sizeof(TCHAR) * MAX_PATH))) {
 			m_lpPckCenter->PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			free(szBuffer);
 			return	FALSE;
 		}
 
-		StringCchCopy((TCHAR*)lpszFilePathArray, MAX_PATH, szBuffer);
+		_tcscpy_s((TCHAR*)lpszFilePathArray, MAX_PATH, szBuffer);
 
 	}
 
@@ -462,7 +465,6 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 
 	return TRUE;
 }
-
 
 DWORD TInstDlg::SaveFile(TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD nFilterIndex)
 {
@@ -545,13 +547,13 @@ void TInstDlg::AddSetupReg()
 	TCHAR	szStringIcon[MAX_PATH];
 	TCHAR	szStringExec[MAX_PATH];
 
-	StringCchCopy(szStringIcon, MAX_PATH, m_MyFileName);
-	StringCchCat(szStringIcon, MAX_PATH, TEXT(",0"));
+	_tcscpy_s(szStringIcon, m_MyFileName);
+	_tcscat_s(szStringIcon, TEXT(",0"));
 
 
-	StringCchCopy(szStringExec, MAX_PATH, TEXT("\""));
-	StringCchCat(szStringExec, MAX_PATH, m_MyFileName);
-	StringCchCat(szStringExec, MAX_PATH, TEXT("\" \"%1\""));
+	_tcscpy_s(szStringExec, TEXT("\""));
+	_tcscat_s(szStringExec, m_MyFileName);
+	_tcscat_s(szStringExec, TEXT("\" \"%1\""));
 
 	//DWORD	dwDataLength;
 	//m_MyFileName
@@ -565,11 +567,8 @@ void TInstDlg::AddSetupReg()
 		//存在
 		//1.如果程序包含patcher.exe，新加
 		//result = RegQueryValueEx(hRegKey, NULL, NULL, &dwType, reinterpret_cast<LPBYTE>(szString), &dwDataLength)
-
 		//2.否则替换
-
 		//3.修改打开方式索引
-
 		RegCloseKey(hRegKey);
 
 		RecurseDeleteKey(HKEY_CLASSES_ROOT, TEXT(".pck"));
@@ -682,9 +681,9 @@ void TInstDlg::RefreshProgress()
 	SendDlgItemMessage(IDC_PROGRESS, PBM_SETPOS, (WPARAM)iNewPos, (LPARAM)0);
 
 	if(lpPckParams->cVarParams.dwUIProgress == lpPckParams->cVarParams.dwUIProgressUpper)
-		StringCchPrintf(szString, MAX_PATH, szTimerProcessedFormatString, lpPckParams->cVarParams.dwUIProgress, lpPckParams->cVarParams.dwUIProgressUpper);
+		_stprintf_s(szString, szTimerProcessedFormatString, lpPckParams->cVarParams.dwUIProgress, lpPckParams->cVarParams.dwUIProgressUpper);
 	else
-		StringCchPrintf(szString, MAX_PATH, szTimerProcessingFormatString, lpPckParams->cVarParams.dwUIProgress, lpPckParams->cVarParams.dwUIProgressUpper, lpPckParams->cVarParams.dwUIProgress * 100.0 / lpPckParams->cVarParams.dwUIProgressUpper, (lpPckParams->cVarParams.dwMTMemoryUsed >> 10) * 100.0 / (lpPckParams->dwMTMaxMemory >> 10));
+		_stprintf_s(szString, szTimerProcessingFormatString, lpPckParams->cVarParams.dwUIProgress, lpPckParams->cVarParams.dwUIProgressUpper, lpPckParams->cVarParams.dwUIProgress * 100.0 / lpPckParams->cVarParams.dwUIProgressUpper, (lpPckParams->cVarParams.dwMTMemoryUsed >> 10) * 100.0 / (lpPckParams->dwMTMaxMemory >> 10));
 
 	SetStatusBarText(3, szString);
 

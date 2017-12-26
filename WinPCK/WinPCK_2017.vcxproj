@@ -200,21 +200,6 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\VC-LTL\ltlvcrtWinXp.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" Label="PropertySheets">
@@ -738,7 +723,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -757,7 +742,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -1044,8 +1029,7 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1142,6 +1126,7 @@
     <ClCompile Include=".\DictHash\DictHash.cpp" />
     <ClCompile Include=".\dds\DDSTextureLoader.cpp" />
     <ClCompile Include="BuildDIB.cpp" />
+    <ClCompile Include="listViewFunc.cpp" />
     <ClCompile Include="MapViewFile\MapViewFile.cpp" />
     <ClCompile Include="MapViewFile\MapViewFileRead.cpp" />
     <ClCompile Include="MapViewFile\MapViewFileWrite.cpp" />
@@ -1234,12 +1219,18 @@
       <StructMemberAlignment Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">1Byte</StructMemberAlignment>
       <StructMemberAlignment Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">1Byte</StructMemberAlignment>
     </ClCompile>
-    <ClCompile Include="miscdlg.cpp" />
     <ClCompile Include=".\PckClass\PckClass.cpp" />
     <ClCompile Include=".\PckClass\PckClassExtract.cpp" />
     <ClCompile Include="PckClass\PckClassMainFunction.cpp" />
     <ClCompile Include=".\PckClass\PckClassThread.cpp" />
+    <ClCompile Include="tAttrDlg.cpp" />
+    <ClCompile Include="tCompressOptDlg.cpp" />
     <ClCompile Include="threadproc.cpp" />
+    <ClCompile Include="tInfoDlg.cpp" />
+    <ClCompile Include="tLogDlg.cpp" />
+    <ClCompile Include="tPicDlg.cpp" />
+    <ClCompile Include="tSearchDlg.cpp" />
+    <ClCompile Include="tViewDlg.cpp" />
     <ClCompile Include="winmain.cpp" />
     <ClCompile Include=".\ZupClass\ZupClass.cpp" />
     <ClCompile Include=".\ZupClass\ZupClassExtract.cpp" />

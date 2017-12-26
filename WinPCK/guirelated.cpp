@@ -23,29 +23,8 @@ int initArgumentException(int code);
 
 void TInstDlg::initCommctrls()
 {
-	//初始化listview
-	//LPTSTR	lpszID_LIST[] =	{TEXT("文件名"), TEXT("实标大小"), TEXT("压缩大小"), TEXT("压缩率")/*, TEXT("未知2")*/};
-	LPTSTR	lpszID_LIST[] = { GetLoadStr(IDS_STRING_LISTHEAD1), GetLoadStr(IDS_STRING_LISTHEAD2), GetLoadStr(IDS_STRING_LISTHEAD3), GetLoadStr(IDS_STRING_LISTHEAD4) };
-	int		iID_LIST_cx[] = { 558, 80, 80, 60, -1 };
-	int		ifmt[] = { LVCFMT_LEFT, LVCFMT_RIGHT, LVCFMT_RIGHT, LVCFMT_RIGHT };
-	InitListView(GetDlgItem(IDC_LIST), lpszID_LIST, iID_LIST_cx, ifmt);
-
-#ifdef _USE_CUSTOMDRAW_
-	//ListView所用的画刷
-	COLORREF		colorHB[] = { FILL_COLOR_GREEN,
-									FILL_COLOR_GRAY,
-									FILL_COLOR_SELECTED/*,
-									FILL_COLOR_NOFOCUS*/ };
-	for(int i = 0;i < HB_COUNT;i++) {
-		hBrushs[i] = CreateSolidBrush(colorHB[i]);
-	}
-
-	//ListView所用的图标
-	hIconList[0] = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_DIR));
-	hIconList[1] = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_FILE));
-	hIconList[2] = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_FILE));
-
-#endif
+	//ListView 初始化
+	ListView_Init();
 
 	//设置进度条的范围
 	SendDlgItemMessage(IDC_PROGRESS, PBM_SETRANGE, (WPARAM)0, MAKELPARAM(0, 1024));

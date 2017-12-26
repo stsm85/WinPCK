@@ -20,7 +20,7 @@
 #include "winmain.h"
 #include <process.h>
 #include <shlobj.h>
-#include <strsafe.h>
+#include <tchar.h>
 
 
 BOOL GetWndPath(HWND hWnd, TCHAR * szPath);
@@ -53,9 +53,7 @@ void TInstApp::InitWindow(void)
 }
 
 TInstDlg::TInstDlg(LPTSTR cmdLine) : TDlg(IDD_MAIN)//, staticText(this)
-{
-
-}
+{}
 
 TInstDlg::~TInstDlg() {}
 
@@ -74,28 +72,22 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 	::SetClassLong(hWnd, GCL_HICON,
 		(LONG_PTR)::LoadIcon(TApp::GetInstance(), (LPCTSTR)IDI_ICON_APP));
 	MoveWindow((cx - xsize) / 2, (cy - ysize) / 2, xsize, ysize, TRUE);
-	Show();
 
 	//界面和数据初始化
-
 	OleInitialize(0);
-
 	SetWindowTextA(THIS_MAIN_CAPTION);
-
 	//初始化公共控件
 	initCommctrls();
-
 	//初始化数据
 	initParams();
-
 	//初始化工具栏
 	initToolbar();
-
 	//初始化日志窗口
 	InitLogWindow();
-
 	//初始化浏览路径
 	initArgument();
+	//显示窗口
+	Show();
 
 	return	TRUE;
 }
@@ -120,23 +112,9 @@ BOOL TInstDlg::EvClose()
 
 	OleUninitialize();
 
-	ImageList_Destroy(m_imageList);
+	ListView_Uninit();
 
-
-
-#ifdef _USE_CUSTOMDRAW_
-	for(int i = 0; i < HB_COUNT; i++) {
-		DeleteObject(hBrushs[i]);
-	}
-
-	for(UINT i = 0; i < 2; i++) {
-		DestroyIcon(hIconList[i]);
-	}
-#endif
-
-	//DeleteClass();
 	delete m_lpPckCenter;
-
 	delete logdlg;
 
 	::PostQuitMessage(0);
@@ -226,23 +204,23 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		}
 		break;
 	case ID_MENU_COMPRESS_OPT:
-		{
-			TCompressOptDlg	dlg(lpPckParams, this);
-			DWORD dwCompressLevel = lpPckParams->dwCompressLevel;
-			dlg.Exec();
-			if(dwCompressLevel != lpPckParams->dwCompressLevel)
-				if(lpPckParams->lpPckControlCenter->IsValidPck())
-					lpPckParams->lpPckControlCenter->ResetCompressor();
-		}
-		break;
+	{
+		TCompressOptDlg	dlg(lpPckParams, this);
+		DWORD dwCompressLevel = lpPckParams->dwCompressLevel;
+		dlg.Exec();
+		if(dwCompressLevel != lpPckParams->dwCompressLevel)
+			if(lpPckParams->lpPckControlCenter->IsValidPck())
+				lpPckParams->lpPckControlCenter->ResetCompressor();
+	}
+	break;
 	case ID_LISTVIEW_RENAME:
 	case ID_MENU_RENAME:
-		{
-			if(lpPckParams->cVarParams.bThreadRunning)break;
-			HWND	hList = GetDlgItem(IDC_LIST);
-			::SetWindowLong(hList, GWL_STYLE, ::GetWindowLong(hList, GWL_STYLE) | LVS_EDITLABELS);
-			ListView_EditLabel(hList, m_lpPckCenter->GetListCurrentHotItem());
-		}
+	{
+		if(lpPckParams->cVarParams.bThreadRunning)break;
+		HWND	hList = GetDlgItem(IDC_LIST);
+		::SetWindowLong(hList, GWL_STYLE, ::GetWindowLong(hList, GWL_STYLE) | LVS_EDITLABELS);
+		ListView_EditLabel(hList, m_lpPckCenter->GetListCurrentHotItem());
+	}
 	break;
 	case ID_LISTVIEW_DELETE:
 	case ID_MENU_DELETE:
@@ -370,236 +348,13 @@ VOID TInstDlg::SetStatusBarText(int	iPart, LPCWSTR	lpszText)
 //
 //}
 
-void TInstDlg::InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMask, CONST INT iImage, CONST LPVOID lParam, CONST INT nColCount, ...)
-{
-
-	if(0 == nColCount)return;
-
-	LVITEMA	item;
-
-	ZeroMemory(&item, sizeof(LVITEMA));
-
-	va_list	ap;
-	va_start(ap, nColCount);
-
-	item.iItem = iIndex;			//从0开始
-	item.iImage = iImage;
-	item.iSubItem = 0;
-	item.mask = LVIF_TEXT | uiMask;
-	item.pszText = va_arg(ap, char*);
-	item.lParam = (LPARAM)lParam;
-
-	//ListView_InsertItem(hWndList,&item);
-	::SendMessageA(hWndList, LVM_INSERTITEMA, 0, (LPARAM)&item);
-
-	item.mask = LVIF_TEXT;
-
-	for(item.iSubItem = 1; item.iSubItem < nColCount; item.iSubItem++) {
-		//item.iItem = iIndex;			//从0开始
-		//item.iSubItem = i;
-		item.pszText = va_arg(ap, char*);
-
-		//item.pszText = _ultow(i, szID, 10);
-		//ListView_SetItem(hWndList,&item);
-		::SendMessageA(hWndList, LVM_SETITEMA, 0, (LPARAM)&item);
-	}
-
-	va_end(ap);
-}
-
-BOOL TInstDlg::InitListView(CONST HWND hWndListView, LPTSTR *lpszText, int *icx, int *ifmt)
-{
-
-#ifndef _USE_CUSTOMDRAW_
-	HICON hiconItem;     // icon for list-view items 
-#endif
-
-	HIMAGELIST hSmall;   // image list for other views 
-	LVCOLUMN lvcolumn;
-
-	//full row select
-	ListView_SetExtendedListViewStyle(hWndListView, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-
-	int *lpicx = icx;
-	int *lpifmt = ifmt;
-
-	lvcolumn.iSubItem = -1;
-	while(-1 != *(lpicx)) {
-		lvcolumn.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-		lvcolumn.fmt = *(lpifmt++);
-		lvcolumn.cx = *(lpicx++);
-		lvcolumn.pszText = *(lpszText++);
-		lvcolumn.iSubItem++;
-		//lvcolumn.iOrder = 0;
-		if(ListView_InsertColumn(hWndListView, lvcolumn.iSubItem, &lvcolumn) == -1)
-			return FALSE;
-	}
-
-#ifdef _USE_CUSTOMDRAW_
-	hSmall = ImageList_Create(16, 16, ILC_COLOR32, 1, 0);
-
-#else
-	hSmall = ImageList_Create(16, 16, ILC_COLOR32, 1, 2);
-
-	hiconItem = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_DIR));
-	ImageList_AddIcon(hSmall, hiconItem);
-	DestroyIcon(hiconItem);
-
-	hiconItem = LoadIcon(TApp::GetInstance(), MAKEINTRESOURCE(IDI_ICON_FILE));
-	ImageList_AddIcon(hSmall, hiconItem);
-	//ImageList_AddIcon(hSmall, hiconItem); 
-	DestroyIcon(hiconItem);
-#endif
-	ListView_SetImageList(hWndListView, hSmall, LVSIL_SMALL);
-
-	return TRUE;
-}
 
 
 BOOL TInstDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 {
-
-	LPPCK_PATH_NODE		lpNodeToShow;
-	LPPCKINDEXTABLE		lpIndexToShow;
-
 	switch(ctlID) {
 	case IDC_LIST:
-		//Debug(L"lv:LVN_FIRST-%d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
-
-		int iCurrentHotItem = ((LPNMLISTVIEW)pNmHdr)->iItem;
-
-		switch(pNmHdr->code) {
-
-		case LVN_ITEMCHANGED:
-		case NM_CLICK:
-
-			if(-1 != iCurrentHotItem) {
-				m_lpPckCenter->SetListCurrentHotItem(iCurrentHotItem);
-			}
-			break;
-
-		case NM_RCLICK:
-			if(-1 != iCurrentHotItem) {
-				PopupRightMenu(iCurrentHotItem);
-			}
-
-			break;
-		case NM_DBLCLK:
-
-			if(-1 != iCurrentHotItem) {
-				DbClickListView(iCurrentHotItem);
-			}
-
-			break;
-
-		case LVN_BEGINDRAG:
-
-			SetCapture();
-			SetCursor(m_hCursorAllow);
-			m_isSearchWindow = TRUE;
-
-			break;
-
-		case LVN_BEGINLABELEDIT:
-
-			if(NULL == ((NMLVDISPINFO*)pNmHdr)->item.lParam)return TRUE;
-			//isSearchMode = 2 == ((NMLVDISPINFO*) pNmHdr)->item.iImage ? TRUE : FALSE;
-
-			size_t nLen, nAllowMaxLength;
-
-			if(m_lpPckCenter->GetListInSearchMode()) {
-				lpIndexToShow = (LPPCKINDEXTABLE)((NMLVDISPINFO*)pNmHdr)->item.lParam;
-				StringCchLengthA(lpIndexToShow->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
-				nAllowMaxLength = MAX_PATH_PCK_260 - 2;
-			} else {
-
-				lpNodeToShow = (LPPCK_PATH_NODE)((NMLVDISPINFO*)pNmHdr)->item.lParam;
-				if(NULL == lpNodeToShow->child) {
-					StringCchLengthA(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
-					nAllowMaxLength = MAX_PATH_PCK_260 - nLen + strlen(lpNodeToShow->szName) - 2;
-				} else {
-					nAllowMaxLength = MAX_PATH_PCK_260 - 2;
-				}
-			}
-
-			HWND	hEdit;
-
-			if(NULL == (hEdit = ListView_GetEditControl(pNmHdr->hwndFrom)))return TRUE;
-
-			::SendMessage(hEdit, EM_LIMITTEXT, nAllowMaxLength, 0);
-
-			break;
-
-		case LVN_ENDLABELEDIT:
-
-			::SetWindowLong(pNmHdr->hwndFrom, GWL_STYLE, ::GetWindowLong(pNmHdr->hwndFrom, GWL_STYLE) & (LVS_EDITLABELS ^ 0xffffffff));
-
-			char	szEditedText[MAX_PATH_PCK_260];
-			memset(szEditedText, 0, MAX_PATH_PCK_260);
-
-			if(NULL != ((NMLVDISPINFO*)pNmHdr)->item.pszText) {
-				if(0 == *((NMLVDISPINFO*)pNmHdr)->item.pszText)return FALSE;
-
-				//isSearchMode = 2 == ((NMLVDISPINFO*) pNmHdr)->item.iImage ? TRUE : FALSE;
-
-				WideCharToMultiByte(CP_ACP, 0, ((NMLVDISPINFO*)pNmHdr)->item.pszText, -1, szEditedText, MAX_PATH_PCK_260, "_", 0);
-
-				if(m_lpPckCenter->GetListInSearchMode()) {
-					lpIndexToShow = (LPPCKINDEXTABLE)((NMLVDISPINFO*)pNmHdr)->item.lParam;
-
-					if(0 == strcmp(lpIndexToShow->cFileIndex.szFilename, szEditedText))
-						return FALSE;
-				} else {
-					lpNodeToShow = (LPPCK_PATH_NODE)((NMLVDISPINFO*)pNmHdr)->item.lParam;
-
-					if(0 == strcmp(lpNodeToShow->szName, szEditedText))
-						return FALSE;
-				}
-
-				char*	lpszInvalid;
-				if(m_lpPckCenter->GetListInSearchMode()) {
-					lpszInvalid = (char*)TEXT_INVALID_PATHCHAR + 2;
-				} else {
-					lpszInvalid = TEXT_INVALID_PATHCHAR;
-				}
-
-				while(0 != *lpszInvalid) {
-					if(NULL != strchr(szEditedText, *lpszInvalid)) {
-						char szPrintf[64];
-						StringCchPrintfA(szPrintf, 64, GetLoadStrA(IDS_STRING_INVALIDFILENAME), lpszInvalid);
-						MessageBoxA(szPrintf, "提示", MB_OK | MB_ICONASTERISK);
-						return FALSE;
-					}
-
-					lpszInvalid++;
-				}
-
-				//size_t	nBytesAllowToWrite;
-				if(m_lpPckCenter->GetListInSearchMode()) {
-					m_lpPckCenter->RenameIndex(lpIndexToShow, szEditedText);
-					//lpszInvalid = lpIndexToShow->cFileIndex.szFilename;
-					//nBytesAllowToWrite = MAX_PATH_PCK;
-				} else {
-					if(NULL == lpNodeToShow->child)
-						m_lpPckCenter->RenameIndex(lpNodeToShow, szEditedText);
-					else {
-						if(!m_lpPckCenter->RenameNode(lpNodeToShow, szEditedText)) {
-							MessageBox(GetLoadStr(IDS_STRING_RENAMEERROR), GetLoadStr(IDS_STRING_ERROR), MB_OK | MB_ICONERROR);
-							OpenPckFile(m_Filename, TRUE);
-							return FALSE;
-						}
-					}
-				}
-
-				//调用修改
-				//mt_MaxMemoryCount = 0;
-				lpPckParams->cVarParams.dwMTMemoryUsed = 0;
-				_beginthread(RenamePckFile, 0, this);
-
-				return TRUE;
-			}
-			break;
-		}
+		EvNotifyListView(pNmHdr);
 		break;
 	}
 	return FALSE;
@@ -746,12 +501,6 @@ BOOL TInstDlg::EvMeasureItem(UINT ctlID, MEASUREITEMSTRUCT *lpMis)
 			lpMis->itemHeight = 17;		//icon=16x16
 		}
 		break;
-
-		//case IDC_CUSTOM1:
-		//	if(lpMis->CtlType == ODT_MENU) {
-		//		lpMis->itemHeight=50;
-		//	}
-		//	break;
 	}
 
 	return FALSE;
@@ -759,107 +508,12 @@ BOOL TInstDlg::EvMeasureItem(UINT ctlID, MEASUREITEMSTRUCT *lpMis)
 
 BOOL TInstDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
 {
-	//HWND						hWndListView;
-	HWND						hWndHeader;
-	RECT						rc, rcfillrect;
-	HDC							hdc;
-	LVITEM						item;
-	//LVCOLUMN					column;
-	int							iColumnCount;
-	TCHAR						szStrPrintf[MAX_PATH];
+	switch(ctlID) {
+	case IDC_LIST:
 
-	//LPPCK_PATH_NODE				lpNodeToShow = NULL;
-
-	/////////////////一些变量的初始化//////////////////
-
-	//LPDRAWITEMSTRUCT lpDis = (LPDRAWITEMSTRUCT)lParam; 
-
-	//lpDis->CtlID;					控件ID
-	//lpDis->CtlType;				控件类型，ODT_LISTVIEW;ODT_HEADER;ODT_TAB;
-	//lpDis->hDC;					控件HDC
-	//lpDis->hwndItem;				控件HWND
-	//lpDis->itemAction;			动作类型？？？
-	//lpDis->itemData;				DATA，listview第0个subitem的字串
-	//lpDis->itemID;				ListView第多少行的数据
-	//lpDis->itemState;				状态，ODS_SELECTED（选中）ODS_FOCUS（）ODS_CHECKED（）
-	//lpDis->rcItem;
-
-	//hWndListView = lpDis->hwndItem;
-	hWndHeader = ListView_GetHeader(lpDis->hwndItem);
-	rcfillrect = lpDis->rcItem;
-	hdc = lpDis->hDC;
-
-	/////////////得到 ListView Header 的数量/////////////////
-	iColumnCount = Header_GetItemCount(hWndHeader);////////////////此处有待优化
-
-	/////////////////////////////////////////////////////
-	if(lpDis->CtlType == ODT_LISTVIEW) {
-
-		//if(ctlID == IDC_LIST_ICON) {
-		//	Debug((WCHAR*)lpDis->itemData);
-		//}
-
-		item.mask = /* | LVIF_STATE |*/ /*LVIF_PARAM | */LVIF_IMAGE;
-		item.iItem = lpDis->itemID;
-		item.iSubItem = 0;
-		//item.stateMask = 0x000c;		// get all state flags
-		ListView_GetItem(lpDis->hwndItem, &item);
-
-		//lpNodeToShow = (LPPCK_PATH_NODE)item.lParam;
-
-		if(lpDis->itemState & ODS_SELECTED) {
-			//if( lpDis->hwndItem == GetFocus() )
-			redraw = R_SELECT;
-			//else
-			//	redraw=R_SEL_NOFOCUS;
-		} else
-			redraw = R_NORMAL;
-
-		rcfillrect.right++;
-		rcfillrect.bottom--;
-
-		SetBkMode(hdc, TRANSPARENT);
-
-		//rcfillrect.right-=20;
-		if(R_NORMAL == redraw)
-			FillRect(hdc, &rcfillrect, hBrushs[item.iItem & 1]);
-		else
-			FillRect(hdc, &rcfillrect, hBrushs[redraw]);
-
-		//rcfillrect.right+=20;
-		DrawIconEx(hdc, rcfillrect.left + 4, rcfillrect.top, hIconList[item.iImage], 16, 16, 0, 0, DI_NORMAL);
-
-		rcfillrect.left += 6;
-
-		item.cchTextMax = 256;
-		item.pszText = szStrPrintf;
-
-		for(item.iSubItem = 0; item.iSubItem < iColumnCount; item.iSubItem++) {
-
-			rcfillrect.right = rcfillrect.left + ListView_GetColumnWidth(lpDis->hwndItem, item.iSubItem);	//2.984
-
-/*			column.mask = LVCF_WIDTH | LVCF_FMT;
-			ListView_GetColumn(lpDis->hwndItem, item.iSubItem, &column);
-			rcfillrect.right = rcfillrect.left + column.cx;	*/									//3.015
-
-			rc = rcfillrect;
-			rc.right -= 5;
-
-			//修正位置
-			//if(1 == lpDis->CtlID)
-			//{
-			if(0 == item.iSubItem)
-				rc.left += 16;
-			//}
-			//int count = SendMessage(lpDis->hwndItem, LVM_GETITEMTEXT, (WPARAM)lpDis->itemID, (LPARAM)(LV_ITEM *)&item);
-			//rcfillrect.right-=20;
-			DrawText(hdc, szStrPrintf, ::SendMessage(lpDis->hwndItem, LVM_GETITEMTEXT, (WPARAM)lpDis->itemID, (LPARAM)&item), &rc, DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_END_ELLIPSIS | DT_NOPREFIX);
-			//rcfillrect.right+=20;
-			rcfillrect.left = rcfillrect.right;
-		}
-
+		return EvDrawItemListView(lpDis);
+		break;
 	}
-
 	return FALSE;
 }
 #endif
@@ -882,7 +536,7 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 		if(!m_lpPckCenter->IsValidPck()) {
 			size_t	nFirstFileLength;
 			DragQueryFile(hDrop, 0, szFirstFile, MAX_PATH);
-			StringCchLength(szFirstFile, MAX_PATH, &nFirstFileLength);
+			nFirstFileLength = _tcsnlen(szFirstFile, MAX_PATH);
 
 			if(7 <= nFirstFileLength) {
 				if(0 == lstrcmpi(szFirstFile + nFirstFileLength - 4, TEXT(".pck"))) {

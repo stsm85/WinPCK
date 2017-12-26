@@ -212,6 +212,8 @@ typedef struct _PCK_INDEX_TABLE
 	BOOL			bSelected;			//界面上被选择时置1，一般如删除节点时使用
 	BOOL			isRecompressed;		//压缩重建时使用
 	BOOL			isInvalid;
+	//float			fCompressRatio;		//a/b*100
+	//char			szCompressionRatio[CHAR_NUM_LEN];
 }PCKINDEXTABLE, *LPPCKINDEXTABLE;
 
 
@@ -223,10 +225,10 @@ typedef struct _PCK_PATH_NODE
 	QWORD			qdwDirClearTextSize;
 	QWORD			qdwDirCipherTextSize;
 	LPPCKINDEXTABLE	lpPckIndexTable;
-	_PCK_PATH_NODE	*parentfirst;
-	_PCK_PATH_NODE	*parent;
-	_PCK_PATH_NODE	*child;
-	_PCK_PATH_NODE	*next;
+	_PCK_PATH_NODE	*parentfirst;		//非根目录下的..目录使用，指向..目录在上级目录的节点
+	_PCK_PATH_NODE	*parent;			//非根目录下的..目录使用，指向本目录在上级目录的节点
+	_PCK_PATH_NODE	*child;				//普通目录指向下级目录的..目录的节点
+	_PCK_PATH_NODE	*next;				//本级目录指向下一项的节点
 }PCK_PATH_NODE, *LPPCK_PATH_NODE;
 
 

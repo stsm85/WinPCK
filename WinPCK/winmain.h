@@ -50,14 +50,6 @@ public:
 //用户变量
 protected:
 
-#ifdef _USE_CUSTOMDRAW_
-	typedef enum { R_NOTHINGS = 0, R_NORMAL, R_SELECT, R_SEL_NOFOCUS } redrawmode;
-	redrawmode redraw;
-	HICON				hIconList[3];
-	HBRUSH				hBrushs[HB_COUNT];
-
-#endif
-
 	TCHAR	m_MyFileName[MAX_PATH];
 	TCHAR	m_Filename[MAX_PATH], m_CurrentPath[MAX_PATH];
 
@@ -151,6 +143,19 @@ protected:
 
 	void UnpackAllFiles();					//解压所有文件
 	void UnpackSelectedFiles();				//解压选中的文件
+
+
+	//listViewFunc.cpp
+	BOOL EvNotifyListView(NMHDR *pNmHdr);
+	BOOL EvDrawItemListView(DRAWITEMSTRUCT *lpDis);
+
+	BOOL ListView_BeginLabelEdit(HWND hWndList, LPARAM lParam);
+	BOOL ListView_EndLabelEdit(NMLVDISPINFO* pNmHdr);
+
+	void ListView_Init();
+	void ListView_Uninit();
+
+	void ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlistview, DWORD * pdwSortStatus);
 
 
 };

@@ -60,9 +60,6 @@
     <ClCompile Include="winmain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="miscdlg.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="helpfunc.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -203,6 +200,30 @@
     </ClCompile>
     <ClCompile Include="PckClass\PckClassThreadRecompress.cpp">
       <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="listViewFunc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tLogDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tInfoDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tSearchDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tCompressOptDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tViewDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tAttrDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tPicDlg.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
