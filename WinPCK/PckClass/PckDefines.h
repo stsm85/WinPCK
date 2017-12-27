@@ -31,6 +31,8 @@ typedef unsigned char       BYTE;
 #define	PCK_VERSION_ZXNEW	3
 #define	PCK_VERSION_NUMS	4
 
+//数字转字符时使用的字符串长度
+#define CHAR_NUM_LEN 12
 
 #define	MAX_INDEXTABLE_CLEARTEXT_LENGTH	0x120
 #define MAX_TAIL_LENGTH					300

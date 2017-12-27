@@ -68,24 +68,6 @@
 #define SE_CREATE_SYMBOLIC_LINK_NAME  TEXT("SeCreateSymbolicLinkPrivilege")
 #endif
 
-#ifdef _USE_CUSTOMDRAW_
 
-#define	HB_GREEN					0
-#define	HB_GRAY						1
-#define	HB_SELECTED					2
-//#define	HB_NOFOCUS					3
-#define	HB_COUNT					3
-
-//ListView Colors
-#define FILL_COLOR_SELECTED			RGB(200,240,180)
-//#define FRAME_COLOR_SELECTED		RGB(000,000,000)
-//#define FILL_COLOR_NOFOCUS			RGB(200,240,255)
-//#define FRAME_COLOR_NOFOCUS			RGB(100,100,100)
-//#define FILL_COLOR_RED				RGB(255,220,220)
-//#define FILL_COLOR_YELLOW			RGB(255,255,200)
-#define FILL_COLOR_GRAY				RGB(237,238,250)
-#define FILL_COLOR_GREEN			RGB(232,254,255)
-
-#endif
 
 #endif

@@ -38,7 +38,6 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 	LPCSTR	lpszFileFormat = "%s (%u 字节)";
 
 
-
 	if(isSearchMode) {
 		LPPCKINDEXTABLE	lpPckIndex = (LPPCKINDEXTABLE)lpPckInfo;
 		char	szFilename[MAX_PATH_PCK_260];
@@ -157,7 +156,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 
 
 			//压缩率
-			sprintf_s(szPrintf, 64, "%.1f%%", lpPckNode->child->qdwDirCipherTextSize / (double)lpPckNode->child->qdwDirClearTextSize * 100.0);
+			sprintf_s(szPrintf, 64, "%.1f%%", lpPckNode->child->qdwDirCipherTextSize / (float)lpPckNode->child->qdwDirClearTextSize * 100.0);
 			SetDlgItemTextA(IDC_EDIT_ATTR_CMPR, szPrintf);
 
 			//包含
@@ -187,7 +186,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 	SetDlgItemTextA(IDC_EDIT_ATTR_PCKSIZE, szPrintf);
 
 	//压缩率
-	sprintf_s(szPrintf, 64, "%.1f%%", lpRootNode->child->qdwDirCipherTextSize / (double)lpRootNode->child->qdwDirClearTextSize * 100.0);
+	sprintf_s(szPrintf, 64, "%.1f%%", lpRootNode->child->qdwDirCipherTextSize / (float)lpRootNode->child->qdwDirClearTextSize * 100.0);
 	SetDlgItemTextA(IDC_EDIT_ATTR_PCKCMPR, szPrintf);
 
 	//冗余数据量
@@ -212,9 +211,6 @@ BOOL TAttrDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
 	switch(wID) {
 	case IDOK:
-		EndDialog(wID);
-		return	TRUE;
-
 	case IDCANCEL:
 		EndDialog(wID);
 		return	TRUE;

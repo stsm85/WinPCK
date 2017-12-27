@@ -9,17 +9,6 @@
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
-// GetDragPath.cpp: WinPCK 界面线程部分
-// 取 ShellWindow 路径
-//
-// 此程序由 李秋枫/stsm/liqf 编写
-//
-// 此代码预计将会开源，任何基于此代码的修改发布请保留原作者信息
-// 
-// 2012.4.10
-//////////////////////////////////////////////////////////////////////
-
 #include <exdisp.h>
 #include <atlbase.h>
 
@@ -39,14 +28,11 @@ inline char hexchar2char(TCHAR ch)
 void decodeandcopy(TCHAR *dst, TCHAR *src)
 {
 	int len = lstrlen(src);
-
 	while(*src) {
-
 		if('/' == *src) {
 
 			*dst++ = '\\';
 			src++;
-
 		} else if('%' == *src) {
 
 			if(*(src + 1) && *(src + 2)) {
@@ -60,24 +46,14 @@ void decodeandcopy(TCHAR *dst, TCHAR *src)
 				ch1 += hexchar2char(*src++);
 
 				*dst++ = ch1;
-
 			} else {
-
 				*dst++ = *src++;
 			}
 		} else {
-
 			*dst++ = *src++;
-
 		}
-
-
 	}
-
 	*dst = 0;
-
-
-
 }
 
 

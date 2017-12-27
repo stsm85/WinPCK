@@ -42,6 +42,73 @@ void CMapViewFile::MakeUnlimitedPath(LPSTR _dst, LPCSTR _src, size_t size)
 
 }
 
+/*****************************************************************************
+BOOL FileExists(CONST TCHAR szName[MAX_PATH_EX])
+szName	: (IN) string
+
+Return Value:
+returns TRUE if szName exists and is not a directory; FALSE otherwise
+*****************************************************************************/
+BOOL CMapViewFile::FileExists(LPCSTR szName)
+{
+	DWORD dwResult = GetFileAttributesA(szName);
+	return (dwResult != INVALID_FILE_ATTRIBUTES && !(dwResult & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+BOOL CMapViewFile::FileExists(LPCWSTR szName)
+{
+	DWORD dwResult = GetFileAttributesW(szName);
+	return (dwResult != INVALID_FILE_ATTRIBUTES && !(dwResult & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
+{
+	if(FileExists(lpszFilename)) {
+		char szFilename[MAX_PATH];
+		if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(lpszFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
+			if(isWinNt()) {
+				MakeUnlimitedPath(szFilename, lpszFilename, MAX_PATH);
+				if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(szFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
+					assert(FALSE);
+					return FALSE;
+				}
+			} else {
+				assert(FALSE);
+				return FALSE;
+			}
+
+		}
+	} else {
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL CMapViewFile::Open(HANDLE &hFile, LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
+{
+	if(FileExists(lpszFilename)) {
+		WCHAR szFilename[MAX_PATH];
+
+		if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(lpszFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
+			if(isWinNt()) {
+				MakeUnlimitedPath(szFilename, lpszFilename, MAX_PATH);
+				if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(szFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
+					assert(FALSE);
+					return FALSE;
+				}
+			} else {
+				assert(FALSE);
+				return FALSE;
+			}
+
+		}
+	} else {
+		return FALSE;
+	}
+
+	return TRUE;
+}
 
 #if ENABLE_PCK_PKX_FILE
 

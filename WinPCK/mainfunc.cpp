@@ -63,6 +63,8 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 	TCHAR	szString[64];
 	int		iListTopView;
 
+	m_currentNodeOnShow = NULL;
+
 	if(0 != *lpszFileToOpen && lpszFileToOpen != m_Filename) {
 		_tcscpy_s(m_Filename, MAX_PATH, lpszFileToOpen);
 	}

@@ -57,7 +57,7 @@ void TInstDlg::UnpackSelectedFiles()
 	}
 }
 
-void TInstDlg::DbClickListView(int itemIndex)
+void TInstDlg::DbClickListView(const int itemIndex)
 {
 
 	LVITEM						item;
@@ -118,7 +118,7 @@ void TInstDlg::DbClickListView(int itemIndex)
 	}
 }
 
-void TInstDlg::PopupRightMenu(int itemIndex)
+void TInstDlg::PopupRightMenu(const int itemIndex)
 {
 
 	LVITEM						item;

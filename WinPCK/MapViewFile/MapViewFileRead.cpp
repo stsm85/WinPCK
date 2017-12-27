@@ -98,47 +98,12 @@ BOOL CMapViewFileRead::OpenPck(LPCWSTR lpszFilename)
 
 BOOL CMapViewFileRead::Open(LPCSTR lpszFilename)
 {
-	char szFilename[MAX_PATH];
-
-	if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(lpszFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL)))
-	{
-		if(isWinNt())
-		{
-			MakeUnlimitedPath(szFilename, lpszFilename, MAX_PATH);
-			if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(szFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL)))
-				return FALSE;
-		}else{
-			assert(FALSE);
-			return FALSE;
-		}
-	}
-//#if ENABLE_PCK_PKX_FILE
-//	strcpy_s(m_szPckFileName, MAX_PATH, lpszFilename);
-//#endif
-	return TRUE;
+	return CMapViewFile::Open(hFile, lpszFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN);
 }
 
 BOOL CMapViewFileRead::Open(LPCWSTR lpszFilename)
 {
-	WCHAR szFilename[MAX_PATH];
-
-	if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(lpszFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL)))
-	{
-		if(isWinNt())
-		{
-			MakeUnlimitedPath(szFilename, lpszFilename, MAX_PATH);
-			if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(szFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL)))
-				return FALSE;
-		}else{
-			assert(FALSE);
-			return FALSE;
-		}
-
-	}
-//#if ENABLE_PCK_PKX_FILE
-//	wcscpy_s(m_tszPckFileName, MAX_PATH, lpszFilename);
-//#endif
-	return TRUE;
+	return CMapViewFile::Open(hFile, lpszFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN);
 }
 
 BOOL CMapViewFileRead::Mapping(LPCSTR lpszNamespace)

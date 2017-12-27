@@ -74,12 +74,13 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 	MoveWindow((cx - xsize) / 2, (cy - ysize) / 2, xsize, ysize, TRUE);
 
 	//界面和数据初始化
-	OleInitialize(0);
 	SetWindowTextA(THIS_MAIN_CAPTION);
-	//初始化公共控件
-	initCommctrls();
 	//初始化数据
 	initParams();
+
+	OleInitialize(0);
+	//初始化公共控件
+	initCommctrls();
 	//初始化工具栏
 	initToolbar();
 	//初始化日志窗口
@@ -428,6 +429,10 @@ BOOL TInstDlg::EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight)
 	return TRUE;
 }
 
+/*
+	szPath 存放获取的目标窗口路径
+	isGetPath 是否需要获取目标窗口路径
+*/
 BOOL TInstDlg::IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath)
 {
 
@@ -443,25 +448,25 @@ BOOL TInstDlg::IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath)
 	//hWndParent = GetAncestor(hwndFoundWindow, GA_PARENT);
 	hRootHwnd = GetAncestor(hwndFoundWindow, GA_ROOT);
 
-	//HWND	hWndDesk = GetShellWindow();
-
-	//if(hWndDesk == hRootHwnd) {
-	//	if(isGetPath) {
-	//		if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, szPath))) {
-	//			return TRUE;
-	//		}else{
-	//			return FALSE;
-	//		}
-	//	}else{
-	//		return TRUE;
-	//	}
-	//}
+	if(GetShellWindow() == hRootHwnd) {
+		if(isGetPath) {
+			if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, szPath))) {
+				return TRUE;
+			}else{
+				return FALSE;
+			}
+		}else{
+			return TRUE;
+		}
+	}
 
 	GetClassName(hRootHwnd, sRootClass, MAX_PATH);
+#ifdef _DEBUG
+	OutputDebugStringA("sRootClass:");
+	OutputDebugString(sRootClass);
+	OutputDebugString(TEXT("\r\n"));
 
-	//OutputDebugString(sRootClass);
-	//OutputDebugString(TEXT("\r\n"));
-
+#endif
 	if((0 == lstrcmp(sRootClass, SHELL_LISTVIEW_ROOT_CLASS2)) || \
 		(0 == lstrcmp(sRootClass, SHELL_LISTVIEW_ROOT_CLASS1))/* || \
 		(GetClassName(hWndParent, sParentClass, MAX_PATH), 0 == lstrcmp(sParentClass, SHELL_LISTVIEW_PARENT_CLASS))*/) {

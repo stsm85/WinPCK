@@ -189,8 +189,18 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 	PCK_ALL_INFOS	pckAllInfo;
 	//OPEN_ALWAYS，新建新的pck(CREATE_ALWAYS)或更新存在的pck(OPEN_EXISTING)
-	BeforeSingleOrMultiThreadProcess(&pckAllInfo, mt_lpFileWrite, szPckFile, OPEN_ALWAYS, mt_CompressTotalFileSize, threadnum);
-	initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress = m_PckAllInfo.dwAddressName);
+	if(!BeforeSingleOrMultiThreadProcess(&pckAllInfo, mt_lpFileWrite, szPckFile, OPEN_ALWAYS, mt_CompressTotalFileSize, threadnum)) {
+		DeallocateFileinfo();
+		//PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
+		assert(FALSE);
+		return FALSE;
+	}
+	if(!initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress = m_PckAllInfo.dwAddressName)) {
+		DeallocateFileinfo();
+		//PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
+		assert(FALSE);
+		return FALSE;
+	}
 
 	if(PCK_COMPRESS_NEED_ST < threadnum) {
 

@@ -303,8 +303,6 @@ PCHAR*  CommandLineToArgvA(
 #endif
 void TInstDlg::initArgument()
 {
-	//LPTSTR* argv;
-
 	__try {
 
 		//≥ı ºªØ‰Ø¿¿¬∑æ∂

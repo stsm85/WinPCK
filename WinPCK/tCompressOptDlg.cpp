@@ -12,6 +12,8 @@
 #include "globals.h"
 #include "miscdlg.h"
 
+#define MAX_COMPRESS_LEVEL	12
+
 /*
 Ñ¹ËõÑ¡Ïî
 */
@@ -21,7 +23,7 @@ BOOL TCompressOptDlg::EvCreate(LPARAM lParam)
 
 	SendDlgItemMessage(IDC_EDIT_MEM, EM_LIMITTEXT, 4, 0);
 
-	SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETRANGE, FALSE, MAKELONG(1, 12));
+	SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETRANGE, FALSE, MAKELONG(1, MAX_COMPRESS_LEVEL));
 	SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_SETRANGE, FALSE, MAKELONG(1, lpParams->dwMTMaxThread));
 	SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETPOS, TRUE, (LPARAM)lpParams->dwCompressLevel);
 	SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_SETPOS, TRUE, (LPARAM)lpParams->dwMTThread);

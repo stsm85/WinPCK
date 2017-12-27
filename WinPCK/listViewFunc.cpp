@@ -11,34 +11,51 @@
 
 #include "tlib.h"
 #include "resource.h"
-//#include "globals.h"
 #include "winmain.h"
-#include <strsafe.h>
 #include <process.h>
 #include <CommCtrl.h>
+
+#define MAX_COLUMN_COUNT		64
 
 #define SORT_FLAG_ASCENDING		0x00010000
 #define SORT_FLAG_DESCENDING	0x00020000
 #define SORT_FLAG_SEARCHMODE	0x00040000
 
 #ifdef _USE_CUSTOMDRAW_
+
+#define	HB_GREEN					0
+#define	HB_GRAY						1
+#define	HB_SELECTED					2
+//#define	HB_NOFOCUS					3
+#define	HB_COUNT					3
+
+//ListView Colors
+#define FILL_COLOR_SELECTED			RGB(200,240,180)
+//#define FRAME_COLOR_SELECTED		RGB(000,000,000)
+//#define FILL_COLOR_NOFOCUS			RGB(200,240,255)
+//#define FRAME_COLOR_NOFOCUS			RGB(100,100,100)
+//#define FILL_COLOR_RED				RGB(255,220,220)
+//#define FILL_COLOR_YELLOW			RGB(255,255,200)
+#define FILL_COLOR_GRAY				RGB(237,238,250)
+#define FILL_COLOR_GREEN			RGB(232,254,255)
+
 typedef enum { R_NOTHINGS = 0, R_NORMAL, R_SELECT, R_SEL_NOFOCUS } redrawmode;
 redrawmode redraw;
 HICON				hIconList[2];
 HBRUSH				hBrushs[HB_COUNT];
-int					*fmtTextAlign;
+int					fmtTextAlign[MAX_COLUMN_COUNT];
 #endif
 
 DWORD dwSortStatus = 0;
 
-BOOL TInstDlg::EvNotifyListView(NMHDR *pNmHdr)
+BOOL TInstDlg::EvNotifyListView(const NMHDR *pNmHdr)
 {
 	int iCurrentHotItem = ((LPNMLISTVIEW)pNmHdr)->iItem;
 	//Debug(L"lv:LVN_FIRST-%d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
 
 	switch(pNmHdr->code) {
 	case LVN_COLUMNCLICK:
-		ProcessColumnClick(((LPNMLISTVIEW)pNmHdr)->hdr.hwndFrom, (LPNMLISTVIEW)pNmHdr, &dwSortStatus);
+		ProcessColumnClick(((LPNMLISTVIEW)pNmHdr)->hdr.hwndFrom, (LPNMLISTVIEW)pNmHdr, dwSortStatus);
 		break;
 	case LVN_ITEMCHANGED:
 	case NM_CLICK:
@@ -74,24 +91,30 @@ BOOL TInstDlg::EvNotifyListView(NMHDR *pNmHdr)
 
 void TInstDlg::ListView_Init()
 {
-	//LPTSTR	lpszID_LIST[] =	{TEXT("文件名"), TEXT("实标大小"), TEXT("压缩大小"), TEXT("压缩率")/*, TEXT("未知2")*/};
-	LPTSTR	lpszID_LIST[] = { GetLoadStr(IDS_STRING_LISTHEAD1), GetLoadStr(IDS_STRING_LISTHEAD2), GetLoadStr(IDS_STRING_LISTHEAD3), GetLoadStr(IDS_STRING_LISTHEAD4) };
-	int		iID_LIST_cx[] = { 558, 80, 80, 60, -1 };
-	int		ifmt[] = { LVCFMT_LEFT, LVCFMT_RIGHT, LVCFMT_RIGHT, LVCFMT_RIGHT };
+	//const LPTSTR	lpszID_LIST[] =	{TEXT("文件名"), TEXT("实标大小"), TEXT("压缩大小"), TEXT("压缩率")/*, TEXT("未知2")*/};
+	const LPTSTR	lpszID_LIST[] = { 
+		GetLoadStr(IDS_STRING_LISTHEAD1), 
+		GetLoadStr(IDS_STRING_LISTHEAD2), 
+		GetLoadStr(IDS_STRING_LISTHEAD3), 
+		GetLoadStr(IDS_STRING_LISTHEAD4) };
+	const int		iID_LIST_cx[] = { 558, 80, 80, 60, -1 };
+	const int		ifmt[] = { LVCFMT_LEFT, LVCFMT_RIGHT, LVCFMT_RIGHT, LVCFMT_RIGHT };
 	InitListView(GetDlgItem(IDC_LIST), lpszID_LIST, iID_LIST_cx, ifmt);
 
 #ifdef _USE_CUSTOMDRAW_
 	//ListView所用的画刷
-	COLORREF		colorHB[] = { FILL_COLOR_GREEN,
+	const COLORREF		colorHB[] = { 
+		FILL_COLOR_GREEN,
 		FILL_COLOR_GRAY,
 		FILL_COLOR_SELECTED/*,
-						   FILL_COLOR_NOFOCUS*/ };
+		FILL_COLOR_NOFOCUS*/ };
+
 	for(int i = 0;i < HB_COUNT;i++) {
 		hBrushs[i] = CreateSolidBrush(colorHB[i]);
 	}
 
 	int colCount = sizeof(ifmt) / sizeof(int);
-	fmtTextAlign = new int[colCount];
+
 	for(int i = 0;i < colCount;i++) {
 
 		switch(ifmt[i]) {
@@ -129,7 +152,6 @@ void TInstDlg::ListView_Uninit()
 		DestroyIcon(hIconList[i]);
 	}
 
-	delete[] fmtTextAlign;
 #endif
 }
 
@@ -242,36 +264,36 @@ int CALLBACK ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSo
 		return -iResult;
 }
 
-void TInstDlg::ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlistview, DWORD * pdwSortStatus)
+void TInstDlg::ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlistview, DWORD& dwSortStatus)
 {
 
-	int iLastSort = (*pdwSortStatus) & 0xffff;
-	int iSortFlag = (*pdwSortStatus) & 0xffff0000;
+	int iLastSort = dwSortStatus & 0xffff;
+	int iSortFlag = dwSortStatus & 0xffff0000;
 
 	if(pnmlistview->iSubItem != iLastSort) {
-		(*pdwSortStatus) = (pnmlistview->iSubItem) | SORT_FLAG_ASCENDING;
+		dwSortStatus = (pnmlistview->iSubItem) | SORT_FLAG_ASCENDING;
 	} else {
-		if(0 != (SORT_FLAG_ASCENDING & ((*pdwSortStatus)))) {
-			(*pdwSortStatus) = (SORT_FLAG_DESCENDING | iLastSort);
+		if(0 != (SORT_FLAG_ASCENDING & dwSortStatus)) {
+			dwSortStatus = (SORT_FLAG_DESCENDING | iLastSort);
 		} else {
-			(*pdwSortStatus) = (SORT_FLAG_ASCENDING | iLastSort);
+			dwSortStatus = (SORT_FLAG_ASCENDING | iLastSort);
 		}
 	}
 
 	if(m_lpPckCenter->GetListInSearchMode()) {
 
-		(*pdwSortStatus) |= SORT_FLAG_SEARCHMODE;
+		dwSortStatus |= SORT_FLAG_SEARCHMODE;
 	} else {
-		(*pdwSortStatus) &= (~SORT_FLAG_SEARCHMODE);
+		dwSortStatus &= (~SORT_FLAG_SEARCHMODE);
 	}
 
-	ListView_SortItems(pnmlistview->hdr.hwndFrom, ListViewCompareProc, (LPARAM)pdwSortStatus);
+	ListView_SortItems(pnmlistview->hdr.hwndFrom, ListViewCompareProc, (LPARAM)&dwSortStatus);
 
 	HWND hwndHeader = ListView_GetHeader(hWndList);
 	HDITEM hditem;
 	memset(&hditem, 0, sizeof(HDITEM));
 	hditem.mask = HDI_FORMAT;
-	hditem.fmt = ((*pdwSortStatus) & SORT_FLAG_ASCENDING ? HDF_SORTUP : HDF_SORTDOWN) | HDF_STRING;
+	hditem.fmt = (dwSortStatus & SORT_FLAG_ASCENDING ? HDF_SORTUP : HDF_SORTDOWN) | HDF_STRING;
 	Header_SetItem(hwndHeader, pnmlistview->iSubItem, &hditem);
 
 	UINT columnCount = Header_GetItemCount(hwndHeader);
@@ -282,7 +304,7 @@ void TInstDlg::ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlis
 	}
 }
 
-BOOL TInstDlg::ListView_BeginLabelEdit(HWND hWndList, LPARAM lParam)
+BOOL TInstDlg::ListView_BeginLabelEdit(const HWND hWndList, LPARAM lParam)
 {
 	LPPCK_PATH_NODE		lpNodeToShow;
 	LPPCKINDEXTABLE		lpIndexToShow;
@@ -294,13 +316,15 @@ BOOL TInstDlg::ListView_BeginLabelEdit(HWND hWndList, LPARAM lParam)
 
 	if(m_lpPckCenter->GetListInSearchMode()) {
 		lpIndexToShow = (LPPCKINDEXTABLE)lParam;
-		StringCchLengthA(lpIndexToShow->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
+		nLen = strnlen(lpIndexToShow->cFileIndex.szFilename, MAX_PATH_PCK_260);
+		//StringCchLengthA(lpIndexToShow->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
 		nAllowMaxLength = MAX_PATH_PCK_260 - 2;
 	} else {
 
 		lpNodeToShow = (LPPCK_PATH_NODE)lParam;
 		if(NULL == lpNodeToShow->child) {
-			StringCchLengthA(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
+			nLen = strnlen(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260);
+			//StringCchLengthA(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
 			nAllowMaxLength = MAX_PATH_PCK_260 - nLen + strlen(lpNodeToShow->szName) - 2;
 		} else {
 			nAllowMaxLength = MAX_PATH_PCK_260 - 2;
@@ -314,7 +338,7 @@ BOOL TInstDlg::ListView_BeginLabelEdit(HWND hWndList, LPARAM lParam)
 	return FALSE;
 }
 
-BOOL TInstDlg::ListView_EndLabelEdit(NMLVDISPINFO* pNmHdr)
+BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 {
 	LPPCK_PATH_NODE		lpNodeToShow;
 	LPPCKINDEXTABLE		lpIndexToShow;
@@ -353,7 +377,7 @@ BOOL TInstDlg::ListView_EndLabelEdit(NMLVDISPINFO* pNmHdr)
 		while(0 != *lpszInvalid) {
 			if(NULL != strchr(szEditedText, *lpszInvalid)) {
 				char szPrintf[64];
-				StringCchPrintfA(szPrintf, 64, GetLoadStrA(IDS_STRING_INVALIDFILENAME), lpszInvalid);
+				sprintf_s(szPrintf, 64, GetLoadStrA(IDS_STRING_INVALIDFILENAME), lpszInvalid);
 				MessageBoxA(szPrintf, "提示", MB_OK | MB_ICONASTERISK);
 				return FALSE;
 			}
@@ -388,7 +412,7 @@ BOOL TInstDlg::ListView_EndLabelEdit(NMLVDISPINFO* pNmHdr)
 	return FALSE;
 }
 
-BOOL TInstDlg::EvDrawItemListView(DRAWITEMSTRUCT *lpDis)
+BOOL TInstDlg::EvDrawItemListView(const DRAWITEMSTRUCT *lpDis)
 {
 	HWND						hWndHeader;
 	RECT						rc, rcfillrect;
@@ -479,6 +503,7 @@ BOOL TInstDlg::EvDrawItemListView(DRAWITEMSTRUCT *lpDis)
 			//}
 			//int count = SendMessage(lpDis->hwndItem, LVM_GETITEMTEXT, (WPARAM)lpDis->itemID, (LPARAM)(LV_ITEM *)&item);
 			//rcfillrect.right-=20;
+
 			DrawText(hdc, szStrPrintf, ::SendMessage(lpDis->hwndItem, LVM_GETITEMTEXT, (WPARAM)lpDis->itemID, (LPARAM)&item), &rc, DT_SINGLELINE | fmtTextAlign[item.iSubItem] | DT_VCENTER | DT_END_ELLIPSIS | DT_NOPREFIX);
 			//rcfillrect.right+=20;
 			rcfillrect.left = rcfillrect.right;
@@ -525,7 +550,7 @@ void TInstDlg::InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMa
 	va_end(ap);
 }
 
-BOOL TInstDlg::InitListView(CONST HWND hWndListView, LPTSTR *lpszText, int *icx, int *ifmt)
+BOOL TInstDlg::InitListView(CONST HWND hWndListView, const LPTSTR *lpszText, const int *icx, const int *ifmt)
 {
 
 #ifndef _USE_CUSTOMDRAW_
@@ -538,8 +563,8 @@ BOOL TInstDlg::InitListView(CONST HWND hWndListView, LPTSTR *lpszText, int *icx,
 	//full row select
 	ListView_SetExtendedListViewStyle(hWndListView, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
-	int *lpicx = icx;
-	int *lpifmt = ifmt;
+	const int *lpicx = icx;
+	const int *lpifmt = ifmt;
 
 	lvcolumn.iSubItem = -1;
 	while(-1 != *(lpicx)) {

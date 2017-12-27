@@ -16,9 +16,6 @@
 #pragma warning ( disable : 4005 )
 #pragma warning ( disable : 4995 )
 
-//
-#define CHAR_NUM_LEN 12
-
 //使用压缩程序单线程版本
 #define PCK_COMPRESS_NEED_ST	0
 

@@ -212,8 +212,6 @@ typedef struct _PCK_INDEX_TABLE
 	BOOL			bSelected;			//界面上被选择时置1，一般如删除节点时使用
 	BOOL			isRecompressed;		//压缩重建时使用
 	BOOL			isInvalid;
-	//float			fCompressRatio;		//a/b*100
-	//char			szCompressionRatio[CHAR_NUM_LEN];
 }PCKINDEXTABLE, *LPPCKINDEXTABLE;
 
 

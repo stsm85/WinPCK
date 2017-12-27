@@ -3,7 +3,6 @@
 #include "miscdlg.h"
 
 
-
 class TInstDlg : public TDlg
 {
 protected:
@@ -93,8 +92,6 @@ protected:
 	//winmain.cpp
 	VOID SetStatusBarText(int iPart, LPCSTR lpszText);
 	VOID SetStatusBarText(int iPart, LPCWSTR lpszText);
-	void InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMask, CONST INT iImage, CONST LPVOID lParam, CONST INT nColCount, ...);
-	BOOL InitListView(CONST HWND hWndListView, LPTSTR *lpszText, int *icx, int *ifmt);
 	BOOL IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath = FALSE);
 	void RefreshProgress();
 
@@ -138,24 +135,27 @@ protected:
 
 	void InitLogWindow();
 
-	void DbClickListView(int itemIndex);	//进入列表中的itemIndex项（进入目录或预览文件）
-	void PopupRightMenu(int itemIndex);		//listview上右击出菜单
+	void DbClickListView(const int itemIndex);	//进入列表中的itemIndex项（进入目录或预览文件）
+	void PopupRightMenu(const int itemIndex);		//listview上右击出菜单
 
 	void UnpackAllFiles();					//解压所有文件
 	void UnpackSelectedFiles();				//解压选中的文件
 
 
 	//listViewFunc.cpp
-	BOOL EvNotifyListView(NMHDR *pNmHdr);
-	BOOL EvDrawItemListView(DRAWITEMSTRUCT *lpDis);
+	BOOL EvNotifyListView(const NMHDR *pNmHdr);
+	BOOL EvDrawItemListView(const DRAWITEMSTRUCT *lpDis);
 
-	BOOL ListView_BeginLabelEdit(HWND hWndList, LPARAM lParam);
-	BOOL ListView_EndLabelEdit(NMLVDISPINFO* pNmHdr);
+	void InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMask, CONST INT iImage, CONST LPVOID lParam, CONST INT nColCount, ...);
+	BOOL InitListView(CONST HWND hWndListView, const LPTSTR *lpszText, const int *icx, const int *ifmt);
+
+	BOOL ListView_BeginLabelEdit(const HWND hWndList, LPARAM lParam);
+	BOOL ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr);
 
 	void ListView_Init();
 	void ListView_Uninit();
 
-	void ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlistview, DWORD * pdwSortStatus);
+	void ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlistview, DWORD& dwSortStatus);
 
 
 };

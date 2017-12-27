@@ -220,7 +220,7 @@ VOID CPckClass::RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString)
 BOOL CPckClass::GetCurrentNodeString(char *szCurrentNodePathString, LPPCK_PATH_NODE lpNode)
 {
 
-	if(NULL == lpNode->parentfirst) {
+	if((NULL == lpNode) || (NULL == lpNode->parentfirst)) {
 		*szCurrentNodePathString = 0;
 		//return TRUE;
 	} else {
@@ -346,6 +346,9 @@ LPPCK_PATH_NODE CPckClass::FindFileNode(LPPCK_PATH_NODE lpBaseNode, char* lpszFi
 
 	char			*lpszFilename = lpszFile;
 	char			*lpszToFind;
+
+	if(NULL == lpChildNode->szName)
+		return NULL;
 
 	do {
 		do {

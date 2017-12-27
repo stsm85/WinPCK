@@ -159,56 +159,12 @@ void CMapViewFileWrite::OpenPkx(LPCWSTR lpszFilename, DWORD dwCreationDispositio
 
 BOOL CMapViewFileWrite::Open(LPCSTR lpszFilename, DWORD dwCreationDisposition)
 {
-	char szFilename[MAX_PATH];
-
-	//IsPckFile = IsPckFilename(lpszFilename);
-
-	if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(lpszFilename, GENERIC_WRITE | GENERIC_READ, NULL, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL)))
-	{
-		if(isWinNt())
-		{
-			MakeUnlimitedPath(szFilename, lpszFilename, MAX_PATH);
-			if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(szFilename, GENERIC_READ, FILE_SHARE_READ, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL))) {
-				assert(FALSE);
-				return FALSE;
-			}
-		}else{
-			assert(FALSE);
-			return FALSE;
-		}
-
-	}
-//#if ENABLE_PCK_PKX_FILE
-//	strcpy_s(m_szPckFileName, MAX_PATH, lpszFilename);
-//#endif
-	return TRUE;
+	return CMapViewFile::Open(hFile, lpszFilename, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL);
 }
 
 BOOL CMapViewFileWrite::Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition)
 {
-	WCHAR szFilename[MAX_PATH];
-
-	//IsPckFile = IsPckFilename(lpszFilename);
-
-	if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(lpszFilename, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL)))
-	{
-		if(isWinNt())
-		{
-			MakeUnlimitedPath(szFilename, lpszFilename, MAX_PATH);
-			if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(szFilename, GENERIC_READ, FILE_SHARE_READ, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL))) {
-				assert(FALSE);
-				return FALSE;
-			}
-		}else{
-			assert(FALSE);
-			return FALSE;
-		}
-
-	}
-//#if ENABLE_PCK_PKX_FILE
-//	wcscpy_s(m_tszPckFileName, MAX_PATH, lpszFilename);
-//#endif
-	return TRUE;
+	return CMapViewFile::Open(hFile, lpszFilename, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL);
 }
 
 BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)

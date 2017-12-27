@@ -61,6 +61,11 @@ public:
 	CMapViewFile();
 	virtual ~CMapViewFile();
 
+	BOOL FileExists(LPCSTR szName);
+	BOOL FileExists(LPCWSTR szName);
+
+	BOOL	Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes);
+	BOOL	Open(HANDLE &hFile, LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes);
 
 	LPBYTE	View(QWORD dwAddress, DWORD dwSize = 0);
 	virtual LPBYTE	ReView(QWORD dwAddress, DWORD dwSize = 0);
