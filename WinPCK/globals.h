@@ -22,11 +22,12 @@
 
 
 #define	THIS_NAME			"WinPCK "
-#define	THIS_VERSION		"v1.22.8 "
+#define	THIS_VERSION		"v1.22.9 "
 #define	THIS_DESC			"完美世界系列游戏PCK文件包综合查看器 " 
 #define	THIS_AUTHOR			"程序编写: stsm/liqf/李秋枫\r\n" \
 							"E-Mail: stsm85@126.com "
-#define THIS_UESDLIB		"使用开源库：\r\n" \
+#define THIS_UESDLIB		"本软件开源，源代码地址：\r\nhttps://github.com/stsm85\r\n\r\n" \
+							"使用开源库：\r\n" \
 							"VC LTL(Copyright (C) Chuyu-Team)\r\n" \
 							"libdeflate(Copyright (C) 2016 Eric Biggers)\r\n" \
 							"zlib(Copyright (C) 1995-2011 Mark Adler)\r\n" \
