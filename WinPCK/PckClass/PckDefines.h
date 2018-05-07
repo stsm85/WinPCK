@@ -29,7 +29,9 @@ typedef unsigned char       BYTE;
 #define	PCK_VERSION_SDS		1
 #define	PCK_VERSION_XAJH	2
 #define	PCK_VERSION_ZXNEW	3
-#define	PCK_VERSION_NUMS	4
+#define PCK_VERSION_SM		4
+#define	PCK_VERSION_NUMS	5
+
 
 //数字转字符时使用的字符串长度
 #define CHAR_NUM_LEN 12

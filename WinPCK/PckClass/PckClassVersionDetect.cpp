@@ -25,18 +25,93 @@
  ** 0xA8937462 -> 0xffffffffA8937462
  **
 */
+
+/*
+诛仙 v202版本文件构造
+           00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
+00000000h: EF 23 CA 4D 57 01 00 00 B7 89 A0 56 31 37 32 39 ; ?蔒W...穳燰1729
+00000010h: 20 30 0D 0A 41 74 93 A8 70 36 A4 F1 78 DA 4B 2F ;  0..At摠p6ゑx贙/
+00000020h: 4A 2C 2E 4E 2D 8E 29 4B 2D 2A CE CC CF D3 2B 2E ; J,.N-?K-*翁嫌+.
+00000030h: 67 18 71 80 07 88 39 A0 18 04 00 CB 3F 07 8F EE ; g.q�.??..?.忣
+00000040h: FE FD FD 02 00 02 00 76 74 93 A8 00 00 00 00 41 ; ?...vt摠....A
+00000050h: 6E 67 65 6C 69 63 61 20 46 69 6C 65 20 50 61 63 ; ngelica File Pac
+00000060h: 6B 61 67 65 0D 0A 43 72 65 61 74 65 20 62 79 20 ; kage..Create by
+00000070h: 57 69 6E 50 43 4B 00 00 00 00 00 00 00 00 00 00 ; WinPCK..........
+00000080h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000090h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000a0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000b0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000c0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000d0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000e0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000f0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000100h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000110h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000120h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000130h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000140h: 00 00 00 00 00 00 00 00 00 00 00 EF BE 0D F0 01 ; ...........锞.?
+00000150h: 00 00 00 02 00 02 00                            ; .......
+
+最后280字节：0x3f~0x156
+           00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
+00000030h: xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx EE ; g.q�.??..?.忣
+00000040h: FE FD FD 02 00 02 00 76 74 93 A8 00 00 00 00 41 ; ?...vt摠....A
+00000050h: 6E 67 65 6C 69 63 61 20 46 69 6C 65 20 50 61 63 ; ngelica File Pac
+00000060h: 6B 61 67 65 0D 0A 43 72 65 61 74 65 20 62 79 20 ; kage..Create by
+00000070h: 57 69 6E 50 43 4B 00 00 00 00 00 00 00 00 00 00 ; WinPCK..........
+00000080h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000090h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000a0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000b0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000c0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000d0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000e0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+000000f0h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000100h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000110h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000120h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000130h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ; ................
+00000140h: 00 00 00 00 00 00 00 00 00 00 00 EF BE 0D F0 01 ; ...........锞.?
+00000150h: 00 00 00 02 00 02 00                            ; .......
+
+0xAAAAAAAA: 0x00~0x03	
+0xBBBBBBBB: 0x08~0x0b	
+0xCCCCCCCC: 0x3f~0x42	dwIndexTableCheckHead
+0xEEEEEEEE: 计算存放文件名及文件数据的列表（数组）地址的开始位置，从最后280字节开头的第8个字节开始，找到0xa8937476, 与0xA8937462进行xor,->0x14，取出数据：
+
+xxxxxxxxxx 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
+00000010h: xx xx xx xx 41 74 93 A8 70 36 A4 F1 78 DA 4B 2F ;  0..At摠p6ゑx贙/
+00000020h: 4A 2C 2E 4E 2D 8E 29 4B 2D 2A CE CC CF D3 2B 2E ; J,.N-?K-*翁嫌+.
+00000030h: 67 18 71 80 07 88 39 A0 18 04 00 CB 3F 07 8F
+将0x14~0x17的值 0xA8937441与0xGGGGGGGG（0xA8937462）计算->0x23=35，这个地址是这个文件压缩的索引的大小
+将0x18~0x1b的值 0xf1a43670与0xHHHHHHHH（0xF1A43653）计算->0x23=35，这个地址是这个文件压缩的索引的大小
+
+00000010h: xx xx xx xx xx xx xx xx xx xx xx xx 78 DA 4B 2F ;  0..At摠p6ゑx贙/
+00000020h: 4A 2C 2E 4E 2D 8E 29 4B 2D 2A CE CC CF D3 2B 2E ; J,.N-?K-*翁嫌+.
+00000030h: 67 18 71 80 07 88 39 A0 18 04 00 CB 3F 07 8F xx ; g.q�.??..?.忣
+
+0xFFFFFFFF: 0x14b~0x14e
+
+
+
+*/
 const PCK_KEYS CPckClass::cPckKeys[PCK_VERSION_NUMS] = \
-{ { PCK_VERSION_ZX, TEXT("诛仙"), PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0xFDFDFEEE, 0x00000000A8937462, 0xF00DBEEF, 0xA8937462, 0xF1A43653, 0x7fffff00 }, \
-{PCK_VERSION_SDS, TEXT("圣斗士"), PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0x7b2a7820, 0x0000000062a4f9e1, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0x7fffff00}, \
-{PCK_VERSION_XAJH, TEXT("笑傲江湖"), PCK_V2030, 0x20003, 0x5edb34f0, 0x00000000, 0x7b2a7820, 0x49ab7f1d33c3eddb, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0xffffff00}, \
-{PCK_VERSION_ZXNEW, TEXT("诛仙3·十年"), PCK_V2031, 0x20003, 0x4DCA23EF, 0x00000000, 0xFDFDFEEE, 0xffffffffA8937462, 0xF00DBEEF, 0xA8937462, 0xF1A43653, 0x7fffff00}, \
+/*		ID				名称				版本ID		版本值	0xAAAAAAAA	0xBBBBBBBB	0xCCCCCCCC	0xDDDDDDDDEEEEEEEE	0xFFFFFFFF	0xGGGGGGGG	0xHHHHHHHH	分块大小	
+		id				name				VersionId	Version	HeadVerifyKey1			TailVerifyKey1					TailVerifyKey2			IndexCompressedFilenameDataLengthCryptKey2
+																			HeadVerifyKey2			IndexesEntryAddressCryptKey		IndexCompressedFilenameDataLengthCryptKey1*/
+{	{ PCK_VERSION_ZX,	TEXT("诛仙"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0xFDFDFEEE, 0x00000000A8937462, 0xF00DBEEF, 0xA8937462, 0xF1A43653, 0x7fffff00}, \
+	{PCK_VERSION_SDS,	TEXT("圣斗士"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0x7b2a7820, 0x0000000062a4f9e1, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0x7fffff00}, \
+	{PCK_VERSION_XAJH,	TEXT("笑傲江湖"),	PCK_V2030, 0x20003, 0x5edb34f0, 0x00000000, 0x7b2a7820, 0x49ab7f1d33c3eddb, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0xffffff00}, \
+	{PCK_VERSION_ZXNEW, TEXT("诛仙3·十年"),PCK_V2031, 0x20003, 0x4DCA23EF, 0x00000000, 0xFDFDFEEE, 0xffffffffA8937462, 0xF00DBEEF, 0xA8937462, 0xF1A43653, 0x7fffff00}, \
+	{PCK_VERSION_SM,	TEXT("神魔"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x00000000, 0xA508BDC4, 0x0000000021c31a3f, 0x853567C8, 0x21c31a3f, 0x185c2025, 0x7fffff00}, \
 };
 
 const PCK_VERSION_FUNC CPckClass::cPckVersionFunc[PCK_VERSION_NUMS] = \
-{ { &cPckKeys[PCK_VERSION_ZX], sizeof(PCKHEAD_V2020), sizeof(PCKTAIL_V2020), sizeof(PCKFILEINDEX_V2020), PickIndexData_V2020, FillHeadData_V2020, FillTailData_V2020, FillIndexData_V2020 }, \
-{&cPckKeys[PCK_VERSION_SDS], sizeof(PCKHEAD_V2020), sizeof(PCKTAIL_V2020), sizeof(PCKFILEINDEX_V2020), PickIndexData_V2020, FillHeadData_V2020, FillTailData_V2020, FillIndexData_V2020}, \
-{&cPckKeys[PCK_VERSION_XAJH], sizeof(PCKHEAD_V2030), sizeof(PCKTAIL_V2030), sizeof(PCKFILEINDEX_V2030), PickIndexData_V2030, FillHeadData_V2030, FillTailData_V2030, FillIndexData_V2030}, \
-{&cPckKeys[PCK_VERSION_ZXNEW], sizeof(PCKHEAD_V2031), sizeof(PCKTAIL_V2031), sizeof(PCKFILEINDEX_V2031), PickIndexData_V2031, FillHeadData_V2030, FillTailData_V2031, FillIndexData_V2031}, \
+{	{ &cPckKeys[PCK_VERSION_ZX],	sizeof(PCKHEAD_V2020), sizeof(PCKTAIL_V2020), sizeof(PCKFILEINDEX_V2020), PickIndexData_V2020, FillHeadData_V2020, FillTailData_V2020, FillIndexData_V2020}, \
+	{&cPckKeys[PCK_VERSION_SDS],	sizeof(PCKHEAD_V2020), sizeof(PCKTAIL_V2020), sizeof(PCKFILEINDEX_V2020), PickIndexData_V2020, FillHeadData_V2020, FillTailData_V2020, FillIndexData_V2020}, \
+	{&cPckKeys[PCK_VERSION_XAJH],	sizeof(PCKHEAD_V2030), sizeof(PCKTAIL_V2030), sizeof(PCKFILEINDEX_V2030), PickIndexData_V2030, FillHeadData_V2030, FillTailData_V2030, FillIndexData_V2030}, \
+	{&cPckKeys[PCK_VERSION_ZXNEW],	sizeof(PCKHEAD_V2031), sizeof(PCKTAIL_V2031), sizeof(PCKFILEINDEX_V2031), PickIndexData_V2031, FillHeadData_V2030, FillTailData_V2031, FillIndexData_V2031}, \
+	{&cPckKeys[PCK_VERSION_SM],		sizeof(PCKHEAD_V2020), sizeof(PCKTAIL_V2020), sizeof(PCKFILEINDEX_V2020), PickIndexData_V2020, FillHeadData_V2020, FillTailData_V2020, FillIndexData_V2020}, \
 };
 
 //生成界面保存文件时的Filter文本
