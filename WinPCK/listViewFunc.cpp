@@ -52,7 +52,7 @@ BOOL TInstDlg::EvNotifyListView(const NMHDR *pNmHdr)
 {
 	int iCurrentHotItem = ((LPNMLISTVIEW)pNmHdr)->iItem;
 #ifdef _DEBUG
-	Debug(L"D ListView:LVN_FIRST-%d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
+	Debug(L"D ListView:LVN_FIRST %d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
 #endif
 	switch(pNmHdr->code) {
 	case LVN_COLUMNCLICK:

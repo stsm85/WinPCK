@@ -1223,6 +1223,7 @@
     <ClCompile Include=".\PckClass\PckClassExtract.cpp" />
     <ClCompile Include="PckClass\PckClassMainFunction.cpp" />
     <ClCompile Include=".\PckClass\PckClassThread.cpp" />
+    <ClCompile Include="Raw2HexString.cpp" />
     <ClCompile Include="tAttrDlg.cpp" />
     <ClCompile Include="tCompressOptDlg.cpp" />
     <ClCompile Include="threadproc.cpp" />
@@ -1269,6 +1270,7 @@
     <ClInclude Include="miscpicdlg.h" />
     <ClInclude Include=".\PckClass\PckClass.h" />
     <ClInclude Include=".\PckClass\PckHeader.h" />
+    <ClInclude Include="Raw2HexString.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="winmain.h" />
     <ClInclude Include=".\ZupClass\ZupClass.h" />

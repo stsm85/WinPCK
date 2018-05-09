@@ -70,6 +70,8 @@ typedef unsigned char       BYTE;
 #define LOG_IMAGE_WARNING				2
 #define LOG_IMAGE_ERROR					3
 #define LOG_IMAGE_DEBUG					4
+#define LOG_IMAGE_EMPTY					5
+
 
 //LOG INFO STRING
 #define TEXT_LOG_OPENFILE				"打开文件 %s"

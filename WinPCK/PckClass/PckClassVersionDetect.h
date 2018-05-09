@@ -11,7 +11,7 @@
 
 //检测pck的版本并写入到iDetectedPckID，同时读取文件头和尾
 BOOL	DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo);
-//void	PrintInvalidVersionDebugInfo();
+void	PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile);
 
 TCHAR		szSaveDlgFilterString[1024];
 

@@ -17,6 +17,7 @@
 #pragma warning ( disable : 4146 )
 
 #include "PckClassVersionDetectFunctionDefinitions.h"
+#include "Raw2HexString.h"
 
 /*
  **	IndexesEntryAddressCryptKey >= 0x80000000 ->0xffffffff80000000
@@ -154,66 +155,72 @@ void CPckClass::SetPckVersion(int verID)
 	else
 		PrintLogW(TEXT_INVALID_VERSION);
 }
-//
-//void CPckClass::PrintInvalidVersionDebugInfo()
-//{
-//
-//	if(NULL == (m_lpThisPckKey = lpPckParams->lpPckVersion->findKeyById(&m_PckAllInfo))){
-//
-//		m_lpThisPckKey = lpPckParams->lpPckVersion->getInitialKey();
-//
-//		//打印详细原因：
-//		char szPrintf[1024];
-//
-//	#ifdef PCKV202
-//		StringCchPrintfA(szPrintf, 1024, "调试信息："
-//						"HEAD->dwHeadCheckHead = 0x%08x, "
-//						"HEAD->dwPckSize = 0x%08x, "
-//						"HEAD->dwHeadCheckTail = 0x%08x, "
-//						"TAIL->dwFileCount = 0x%08x, "
-//						"TAIL->dwVersion = 0x%08x, "
-//						"INDEX->dwIndexTableCheckHead = 0x%08x, "
-//						"INDEX->dwCryptDataAddr = 0x%08x, "
-//						"INDEX->dwIndexTableCheckTail = 0x%08x",\
-//						m_PckAllInfo.PckHead.dwHeadCheckHead, \
-//						m_PckAllInfo.PckHead.dwPckSize, \
-//						m_PckAllInfo.PckHead.dwHeadCheckTail, \
-//						m_PckAllInfo.PckTail.dwFileCount, \
-//						m_PckAllInfo.PckTail.dwVersion, \
-//						m_PckAllInfo.PckIndexAddr.dwIndexTableCheckHead, \
-//						m_PckAllInfo.PckIndexAddr.dwCryptDataAddr, \
-//						m_PckAllInfo.PckIndexAddr.dwIndexTableCheckTail);
-//
-//
-//
-//	#elif defined PCKV203
-//		StringCchPrintfA(szPrintf, 1024, "调试信息："
-//						"HEAD->dwHeadCheckHead = 0x%08x, "
-//						"HEAD->dwPckSize = 0x%016llx, "
-//						"TAIL->dwFileCount = 0x%08x, "
-//						"TAIL->dwVersion = 0x%08x, "
-//						"INDEX->dwIndexTableCheckHead = 0x%08x, "
-//						"INDEX->dwCryptDataAddr = 0x%016llx, "
-//						"INDEX->dwIndexTableCheckTail = 0x%08x", \
-//						m_PckAllInfo.PckHead.dwHeadCheckHead, \
-//						m_PckAllInfo.PckHead.dwPckSize, \
-//						m_PckAllInfo.PckTail.dwFileCount, \
-//						m_PckAllInfo.PckTail.dwVersion, \
-//						m_PckAllInfo.PckIndexAddr.dwIndexTableCheckHead, \
-//						m_PckAllInfo.PckIndexAddr.dwCryptDataAddr, \
-//						m_PckAllInfo.PckIndexAddr.dwIndexTableCheckTail);
-//
-//
-//	#endif
-//
-//		PrintLogE(TEXT_UNKNOWN_PCK_FILE);
-//		PrintLogD(szPrintf);
-//		
-//		delete lpcReadfile;
-//		return FALSE;
-//	}
-//
-//}
+
+
+#define PRINT_HEAD_SIZE		0x20
+#define PRINT_TAIL_SIZE		0x2000
+ 
+void CPckClass::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
+{
+	//打印详细原因：
+	//hex 一行长度89 数据一共402行，大小0x8BC2
+	char szPrintf[0xc000];
+
+	BYTE buf[PRINT_HEAD_SIZE + PRINT_TAIL_SIZE + 0x10];
+
+	//读取文件头
+	CMapViewFileRead *lpRead = new CMapViewFileRead();
+
+	if(!lpRead->OpenPck(lpszPckFile)) {
+		PrintLogE(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
+		goto dect_err;
+	}
+
+	if(lpRead->GetFileSize() <= (PRINT_TAIL_SIZE + PRINT_HEAD_SIZE)) {
+
+		if(!lpRead->Read(buf, lpRead->GetFileSize())) {
+			PrintLogE(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			goto dect_err;
+		}
+
+		CRaw2HexString cHexStr(buf, lpRead->GetFileSize());
+
+		sprintf_s(szPrintf, "文件信息：\n文件大小：%d\n文件概要数据：\n", lpRead->GetFileSize());
+		strcat_s(szPrintf, cHexStr.GetHexString());
+
+
+	} else {
+
+		if(!lpRead->Read(buf, PRINT_HEAD_SIZE)) {
+			PrintLogE(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			goto dect_err;
+		}
+
+		QWORD qwWhereToMove = (lpRead->GetFileSize() - PRINT_TAIL_SIZE) & 0xffffffffffffff00;
+		QWORD qwBytesToRead = lpRead->GetFileSize() - qwWhereToMove;
+
+		lpRead->SetFilePointer(qwWhereToMove, FILE_BEGIN);
+
+		if(!lpRead->Read(buf + PRINT_HEAD_SIZE, qwBytesToRead)) {
+			PrintLogE(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			goto dect_err;
+		}
+
+		CRaw2HexString cHexStrHead(buf, PRINT_HEAD_SIZE);
+		CRaw2HexString cHexStrTail(buf + PRINT_HEAD_SIZE, qwBytesToRead, qwWhereToMove);
+
+		sprintf_s(szPrintf, "文件信息：\n文件大小：%d\n文件概要数据：\n", lpRead->GetFileSize());
+
+		strcat_s(szPrintf, cHexStrHead.GetHexString());
+		strcat_s(szPrintf, "......\n");
+		strcat_s(szPrintf, cHexStrTail.GetHexString());
+	}
+
+	PrintLogD(szPrintf);
+dect_err:
+	delete lpRead;
+
+}
 
 
 //读取文件头和尾确定pck文件版本，返回版本ID
@@ -312,8 +319,9 @@ BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
 	return TRUE;
 
 dect_err:
-	iDetectedPckID = -1;
+	pckAllInfo->lpSaveAsPckVerFunc = NULL;
 	delete lpRead;
+	PrintInvalidVersionDebugInfo(lpszPckFile);
 	return FALSE;
 }
 

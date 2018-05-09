@@ -155,7 +155,11 @@ private:
 	void	DeleteRestoreData();
 
 	//log日志相关功能 
-	void	_InsertLogIntoList(const int, const char *);
+	//template<typename T>
+	void	PreInsertLogToList(const int, const WCHAR *);
+	void	PreInsertLogToList(const int, const char *);
+
+	//void	_InsertLogIntoList(const int, const char *);
 	void	_InsertLogIntoList(const int, const wchar_t *);
 
 public:

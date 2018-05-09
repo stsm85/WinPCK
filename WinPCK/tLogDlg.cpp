@@ -60,6 +60,7 @@ BOOL TLogDlg::EvCreate(LPARAM lParam)
 	ImageList_AddIcon(hSmall, hiconItem);
 	DestroyIcon(hiconItem);
 
+
 	ListView_SetImageList(hWndList, hSmall, LVSIL_SMALL);
 
 	//µ±Ç°exeÄ¿Â¼

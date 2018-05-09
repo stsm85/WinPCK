@@ -225,6 +225,9 @@
     <ClCompile Include="tPicDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Raw2HexString.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc">
@@ -327,6 +330,9 @@
     </ClInclude>
     <ClInclude Include="PckClass\PckClassThreadCompressFunctions.h">
       <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="Raw2HexString.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

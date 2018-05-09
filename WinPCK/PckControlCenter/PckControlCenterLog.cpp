@@ -19,6 +19,7 @@
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4244 )
 
+#if 0
 char *GetErrorMsg(CONST DWORD dwError)
 {
 	static char szMessage[1024] = "错误原因：";
@@ -58,84 +59,70 @@ char *GetErrorMsg(CONST DWORD dwError)
 	SetLastError(0);
 	return szMessage;
 }
+#endif
 
+WCHAR *GetErrorMsg(CONST DWORD dwError)
+{
+	static WCHAR szMessage[1024] = L"错误原因：";
+
+	size_t len = wcslen(L"错误原因：");
+	WCHAR *lpszMessage = szMessage + len;
+	// retrieve a message from the system message table
+	//switch(dwError) {
+	//case 2:
+	//	strcpy(lpszMessage, "系统找不到指定的文件。");
+	//	break;
+	//case 3:
+	//	strcpy(lpszMessage, "系统找不到指定的路径。");
+	//	break;
+	//case 4:
+	//	strcpy(lpszMessage, "系统无法打开文件。");
+	//	break;
+	//case 5:
+	//	strcpy(lpszMessage, "拒绝访问。");
+	//	break;
+	//case 32:
+	//	strcpy(lpszMessage, "另一个程序正在使用此文件，进程无法访问。");
+	//	break;
+	//default:
+		if(!FormatMessageW(
+			FORMAT_MESSAGE_FROM_SYSTEM |
+			FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			dwError,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+			lpszMessage,
+			1024 - len,
+			NULL)) {
+			wcscpy(lpszMessage, L"未知错误");
+		}
+	//}
+	SetLastError(0);
+	return szMessage;
+}
 
 inline char *UCS2toA(const WCHAR *src, int max_len = -1)
 {
-	static char dst[8192];
+	static char dst[0x10000];
 	::WideCharToMultiByte(CP_ACP, 0, src, max_len, dst, 8192, "_", 0);
 	return dst;
 }
 
-void CPckControlCenter::SetLogListWnd(HWND _hWndList)
+inline WCHAR *AtoUCS2(const char *src, int max_len = -1)
 {
-	m_hWndLogListWnd = _hWndList;
+	static WCHAR dst[0x10000];
+	::MultiByteToWideChar(CP_ACP, 0, src, max_len, dst, 8192);
+	return dst;
 }
 
-
-void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const char *_logtext)
+void CPckControlCenter::PreInsertLogToList(const int _loglevel, const char *_logtext)
 {
-
-	LVITEMA	item;
-	SYSTEMTIME systime;
-
-	if(LOG_IMAGE_NOTICE == _loglevel) {
-		::SendDlgItemMessageA(m_hWndMain, IDC_STATUS, SB_SETTEXTA, 4, (LPARAM)_logtext);
-		::SendDlgItemMessageA(m_hWndMain, IDC_STATUS, SB_SETTIPTEXTA, 4, (LPARAM)_logtext);
-	}
-
-	char szPrintf[4096];
-
-	GetLocalTime(&systime);
-
-	sprintf_s(szPrintf, "%02d:%02d:%02d %s", systime.wHour, systime.wMinute, systime.wSecond, _logtext);
-
-
-	ZeroMemory(&item, sizeof(LVITEMA));
-
-	item.iItem = INT_MAX;			//从0开始
-	item.iImage = _loglevel;
-	//item.iSubItem = 0;
-	item.mask = LVIF_TEXT | LVIF_IMAGE;
-	item.pszText = szPrintf;
-
-	if(-1 != (m_LogListCount = ::SendMessageA(m_hWndLogListWnd, LVM_INSERTITEMA, 0, (LPARAM)&item))) {
-		ListView_EnsureVisible(m_hWndLogListWnd, m_LogListCount, 0);
-		//++m_LogListCount;
-	}
-
+	PreInsertLogToList(_loglevel, AtoUCS2(_logtext));
 }
 
-void CPckControlCenter::PrintLogI(const char *_logtext)
-{
-	_InsertLogIntoList(LOG_IMAGE_INFO, _logtext);
-}
-
-void CPckControlCenter::PrintLogW(const char *_logtext)
-{
-	_InsertLogIntoList(LOG_IMAGE_WARNING, _logtext);
-}
-
-void CPckControlCenter::PrintLogE(const char *_logtext)
-{
-	_InsertLogIntoList(LOG_IMAGE_ERROR, _logtext);
-	ShowWindow(GetParent(m_hWndLogListWnd), SW_SHOW);
-}
-
-void CPckControlCenter::PrintLogD(const char *_logtext)
-{
-	_InsertLogIntoList(LOG_IMAGE_DEBUG, _logtext);
-}
-
-void CPckControlCenter::PrintLogN(const char *_logtext)
-{
-	_InsertLogIntoList(LOG_IMAGE_NOTICE, _logtext);
-}
-
-void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const wchar_t *_logtext)
+void CPckControlCenter::PreInsertLogToList(const int _loglevel, const WCHAR *_logtext)
 {
 
-	LVITEMW	item;
 	SYSTEMTIME systime;
 
 	if(LOG_IMAGE_NOTICE == _loglevel) {
@@ -144,10 +131,120 @@ void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const wchar_t *_
 	}
 
 	wchar_t szPrintf[4096];
-
 	GetLocalTime(&systime);
 
-	swprintf_s(szPrintf, L"%02d:%02d:%02d %s", systime.wHour, systime.wMinute, systime.wSecond, _logtext);
+	size_t nTextLen = wcslen(_logtext);
+	swprintf_s(szPrintf, L"%02d:%02d:%02d ", systime.wHour, systime.wMinute, systime.wSecond);
+
+	size_t nLenOfPrefix = wcslen(szPrintf);
+	wchar_t *lpPointToPaestString = szPrintf + nLenOfPrefix;
+
+	//查找\n 如果存在，\n后的内容换行（用新的列）显示
+	const wchar_t *lpString2Show = _logtext, *lpString2Search = _logtext, *lpStringTail = _logtext + nTextLen;
+	int loglevel = _loglevel;
+	while(0 != *lpString2Search) {
+
+		if('\n' == *lpString2Search) {
+			memcpy(lpPointToPaestString, lpString2Show, (lpString2Search - lpString2Show) * 2);
+			*(lpPointToPaestString + (lpString2Search - lpString2Show)) = 0;
+			_InsertLogIntoList(loglevel, szPrintf);
+			lpString2Show = lpString2Search + 1;
+			wcsnset(szPrintf, ' ', nLenOfPrefix);
+			loglevel = LOG_IMAGE_EMPTY;
+		}
+
+		lpString2Search++;
+	}
+	if(0 != *lpString2Show) {
+		memcpy(lpPointToPaestString, lpString2Show, (lpString2Search - lpString2Show) * 2);
+		*(lpPointToPaestString + (lpString2Search - lpString2Show)) = 0;
+		_InsertLogIntoList(loglevel, szPrintf);
+	}
+}
+
+void CPckControlCenter::SetLogListWnd(HWND _hWndList)
+{
+	m_hWndLogListWnd = _hWndList;
+}
+
+#if 0
+void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const char *_logtext)
+{
+	//PreInsertLogToList(_loglevel, AtoUCS2(_logtext));
+	_InsertLogIntoList(_loglevel, AtoUCS2(_logtext));
+	//LVITEMA	item;
+	//SYSTEMTIME systime;
+
+	//if(LOG_IMAGE_NOTICE == _loglevel) {
+	//	::SendDlgItemMessageA(m_hWndMain, IDC_STATUS, SB_SETTEXTA, 4, (LPARAM)_logtext);
+	//	::SendDlgItemMessageA(m_hWndMain, IDC_STATUS, SB_SETTIPTEXTA, 4, (LPARAM)_logtext);
+	//}
+
+	//char szPrintf[4096];
+
+	//GetLocalTime(&systime);
+
+	//sprintf_s(szPrintf, "%02d:%02d:%02d %s", systime.wHour, systime.wMinute, systime.wSecond, _logtext);
+
+
+	//ZeroMemory(&item, sizeof(LVITEMA));
+
+	//item.iItem = INT_MAX;			//从0开始
+	//item.iImage = _loglevel;
+	////item.iSubItem = 0;
+	//item.mask = LVIF_TEXT | LVIF_IMAGE;
+	//item.pszText = szPrintf;
+
+	//if(-1 != (m_LogListCount = ::SendMessageA(m_hWndLogListWnd, LVM_INSERTITEMA, 0, (LPARAM)&item))) {
+	//	ListView_EnsureVisible(m_hWndLogListWnd, m_LogListCount, 0);
+	//	//++m_LogListCount;
+	//}
+
+}
+#endif
+
+void CPckControlCenter::PrintLogI(const char *_logtext)
+{
+	PreInsertLogToList(LOG_IMAGE_INFO, _logtext);
+}
+
+void CPckControlCenter::PrintLogW(const char *_logtext)
+{
+	PreInsertLogToList(LOG_IMAGE_WARNING, _logtext);
+}
+
+void CPckControlCenter::PrintLogE(const char *_logtext)
+{
+	PreInsertLogToList(LOG_IMAGE_ERROR, _logtext);
+	ShowWindow(GetParent(m_hWndLogListWnd), SW_SHOW);
+}
+
+void CPckControlCenter::PrintLogD(const char *_logtext)
+{
+	PreInsertLogToList(LOG_IMAGE_DEBUG, _logtext);
+}
+
+void CPckControlCenter::PrintLogN(const char *_logtext)
+{
+	PreInsertLogToList(LOG_IMAGE_NOTICE, _logtext);
+}
+
+void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const wchar_t *_logtext)
+{
+
+	LVITEMW	item;
+	//SYSTEMTIME systime;
+
+	//if(LOG_IMAGE_NOTICE == _loglevel) {
+	//	::SendDlgItemMessageW(m_hWndMain, IDC_STATUS, SB_SETTEXTW, 4, (LPARAM)_logtext);
+	//	::SendDlgItemMessageW(m_hWndMain, IDC_STATUS, SB_SETTIPTEXTW, 4, (LPARAM)_logtext);
+	//}
+
+	//wchar_t szPrintf[4096];
+
+	//GetLocalTime(&systime);
+
+	//swprintf_s(szPrintf, L"%02d:%02d:%02d %s", systime.wHour, systime.wMinute, systime.wSecond, _logtext);
 
 
 	ZeroMemory(&item, sizeof(LVITEMW));
@@ -156,7 +253,7 @@ void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const wchar_t *_
 	item.iImage = _loglevel;
 	//item.iSubItem = 0;
 	item.mask = LVIF_TEXT | LVIF_IMAGE;
-	item.pszText = szPrintf;
+	item.pszText = (wchar_t *)_logtext;
 
 	if(-1 != (m_LogListCount = ::SendMessageW(m_hWndLogListWnd, LVM_INSERTITEMW, 0, (LPARAM)&item))) {
 		ListView_EnsureVisible(m_hWndLogListWnd, m_LogListCount, 0);
@@ -167,34 +264,40 @@ void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const wchar_t *_
 
 void CPckControlCenter::PrintLogI(const wchar_t *_logtext)
 {
-	_InsertLogIntoList(LOG_IMAGE_INFO, _logtext);
+	PreInsertLogToList(LOG_IMAGE_INFO, _logtext);
 }
 
 void CPckControlCenter::PrintLogW(const wchar_t *_logtext)
 {
-	_InsertLogIntoList(LOG_IMAGE_WARNING, _logtext);
+	PreInsertLogToList(LOG_IMAGE_WARNING, _logtext);
 }
 
 void CPckControlCenter::PrintLogE(const wchar_t *_logtext)
 {
-	_InsertLogIntoList(LOG_IMAGE_ERROR, _logtext);
+	PreInsertLogToList(LOG_IMAGE_ERROR, _logtext);
 	ShowWindow(GetParent(m_hWndLogListWnd), SW_SHOW);
 }
 
 void CPckControlCenter::PrintLogD(const wchar_t *_logtext)
 {
-	_InsertLogIntoList(LOG_IMAGE_DEBUG, _logtext);
+	PreInsertLogToList(LOG_IMAGE_DEBUG, _logtext);
 }
 
 void CPckControlCenter::PrintLogN(const wchar_t *_logtext)
 {
-	_InsertLogIntoList(LOG_IMAGE_NOTICE, _logtext);
+	PreInsertLogToList(LOG_IMAGE_NOTICE, _logtext);
 }
 
 void CPckControlCenter::PrintLogE(const char *_maintext, const char *_file, const char *_func, const long _line)
 {
-	char szPrintf[8192];
-	sprintf_s(szPrintf, "%s (%s 发生错误在 %s 行数:%d)", _maintext, _file, _func, _line);
+	m_dwLastError = GetLastError();
+	PrintLogE(AtoUCS2(_maintext), _file, _func, _line);
+}
+
+void CPckControlCenter::PrintLogE(const wchar_t *_maintext, const char *_file, const char *_func, const long _line)
+{
+	wchar_t szPrintf[8192];
+	swprintf_s(szPrintf, L"%s (%S 发生错误在 %S 行数:%d)", _maintext, _file, _func, _line);
 	PrintLogE(szPrintf);
 	if(0 == m_dwLastError) {
 		m_dwLastError = GetLastError();
@@ -205,12 +308,7 @@ void CPckControlCenter::PrintLogE(const char *_maintext, const char *_file, cons
 		m_dwLastError = 0;
 	}
 	assert(FALSE);
-}
 
-void CPckControlCenter::PrintLogE(const wchar_t *_maintext, const char *_file, const char *_func, const long _line)
-{
-	m_dwLastError = GetLastError();
-	PrintLogE(UCS2toA(_maintext), _file, _func, _line);
 }
 
 void CPckControlCenter::PrintLogE(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line)
@@ -229,8 +327,6 @@ void CPckControlCenter::PrintLogE(const char *_fmt, const wchar_t *_maintext, co
 
 void CPckControlCenter::PrintLog(const char chLevel, const char *_maintext)
 {
-	//char szPrintf[8192];
-	//StringCchPrintfA(szPrintf, 8192, "%s", _maintext);
 	switch(chLevel) {
 	case LOG_FLAG_ERROR:
 		PrintLogE(_maintext);
