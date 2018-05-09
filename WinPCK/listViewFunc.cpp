@@ -51,8 +51,9 @@ DWORD dwSortStatus = 0;
 BOOL TInstDlg::EvNotifyListView(const NMHDR *pNmHdr)
 {
 	int iCurrentHotItem = ((LPNMLISTVIEW)pNmHdr)->iItem;
-	//Debug(L"lv:LVN_FIRST-%d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
-
+#ifdef _DEBUG
+	Debug(L"D ListView:LVN_FIRST-%d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
+#endif
 	switch(pNmHdr->code) {
 	case LVN_COLUMNCLICK:
 		ProcessColumnClick(((LPNMLISTVIEW)pNmHdr)->hdr.hwndFrom, (LPNMLISTVIEW)pNmHdr, dwSortStatus);
@@ -83,6 +84,65 @@ BOOL TInstDlg::EvNotifyListView(const NMHDR *pNmHdr)
 		break;
 	case LVN_ENDLABELEDIT:
 		return ListView_EndLabelEdit((NMLVDISPINFO*)pNmHdr);
+		break;
+	case NM_RETURN:
+		break;
+	case LVN_KEYDOWN:
+#ifdef _DEBUG
+		NMLVKEYDOWN * tcode;
+		tcode = (NMLVKEYDOWN*)pNmHdr;
+		Debug(L"D ListView wVKey:%d(%c),flags:%x\r\n", tcode->wVKey, tcode->wVKey, ::GetKeyState(VK_CONTROL));
+#endif
+		BOOL bCtrl = ::GetKeyState(VK_CONTROL) & 0x80;
+		//BOOL bShift = ::GetKeyState(VK_SHIFT) & 0x80;  
+		BOOL bAlt = ::GetKeyState(VK_MENU) & 0x80; 
+
+		if(bCtrl) {
+			switch(((NMLVKEYDOWN*)pNmHdr)->wVKey) {
+			//case 'I':
+			//	break;
+			//case 'W':
+			//	break;
+			//case 'N':
+			//	break;
+			//case 'O':
+			//	break;
+			case 'A':
+				SendMessage(WM_COMMAND, ID_MENU_SELECTALL, 0);
+				break;
+			case 'R':
+				SendMessage(WM_COMMAND, ID_MENU_SELECTORP, 0);
+				break;
+			default:
+				break;
+			}
+		} else if(bAlt) {
+			switch(((NMLVKEYDOWN*)pNmHdr)->wVKey) {
+			case VK_RETURN:
+				SendMessage(WM_COMMAND, MAKELONG(ID_MENU_ATTR, 0), 0);
+				break;
+			default:
+				break;
+			}
+		} else {
+			switch(((NMLVKEYDOWN*)pNmHdr)->wVKey) {
+			case VK_BACK:
+				DbClickListView(0);
+				break;
+			case VK_APPS:
+				PopupRightMenu(m_lpPckCenter->GetListCurrentHotItem());
+				break;
+			case VK_F2:
+				SendMessage(WM_COMMAND, ID_MENU_RENAME, 0);
+				break;
+			case VK_DELETE:
+				SendMessage(WM_COMMAND, ID_MENU_DELETE, 0);
+				break;
+			default:
+				break;
+			}
+		}
+
 		break;
 	}
 	return FALSE;

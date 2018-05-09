@@ -214,7 +214,6 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 				lpPckParams->lpPckControlCenter->ResetCompressor();
 	}
 	break;
-	case ID_LISTVIEW_RENAME:
 	case ID_MENU_RENAME:
 	{
 		if(lpPckParams->cVarParams.bThreadRunning)break;
@@ -223,14 +222,12 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		ListView_EditLabel(hList, m_lpPckCenter->GetListCurrentHotItem());
 	}
 	break;
-	case ID_LISTVIEW_DELETE:
 	case ID_MENU_DELETE:
 		if(lpPckParams->cVarParams.bThreadRunning)break;
 		if(IDNO == MessageBox(GetLoadStr(IDS_STRING_ISDELETE), GetLoadStr(IDS_STRING_ISDELETETITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))break;
 		lpPckParams->cVarParams.dwMTMemoryUsed = 0;
 		_beginthread(DeleteFileFromPckFile, 0, this);
 		break;
-	case ID_LISTVIEW_SELECT_ALL:
 	case ID_MENU_SELECTALL:
 	{
 		LVITEM item = { 0 };
@@ -248,7 +245,6 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	}
 	break;
 
-	case ID_LISTVIEW_SELECT_REV:
 	case ID_MENU_SELECTORP:
 	{
 		LVITEM item = { 0 };
@@ -268,7 +264,6 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	}
 	break;
 
-	case ID_LISTVIEW_ATTR:
 	case ID_MENU_ATTR:
 
 		if(lpPckParams->cVarParams.bThreadRunning)
@@ -313,12 +308,12 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	case ID_LISTVIEW_ENTER:
 		DbClickListView(m_lpPckCenter->GetListCurrentHotItem());
 		break;
-	case ID_LISTVIEW_BACK:
-		DbClickListView(0);
-		break;
-	case ID_LISTVIEW_POPMENU:
-		PopupRightMenu(m_lpPckCenter->GetListCurrentHotItem());
-		break;
+	//case ID_LISTVIEW_BACK:
+	//	DbClickListView(0);
+	//	break;
+	//case ID_LISTVIEW_POPMENU:
+	//	PopupRightMenu(m_lpPckCenter->GetListCurrentHotItem());
+	//	break;
 	}
 	return	FALSE;
 }
