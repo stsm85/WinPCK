@@ -68,23 +68,6 @@ WCHAR *GetErrorMsg(CONST DWORD dwError)
 	size_t len = wcslen(L"错误原因：");
 	WCHAR *lpszMessage = szMessage + len;
 	// retrieve a message from the system message table
-	//switch(dwError) {
-	//case 2:
-	//	strcpy(lpszMessage, "系统找不到指定的文件。");
-	//	break;
-	//case 3:
-	//	strcpy(lpszMessage, "系统找不到指定的路径。");
-	//	break;
-	//case 4:
-	//	strcpy(lpszMessage, "系统无法打开文件。");
-	//	break;
-	//case 5:
-	//	strcpy(lpszMessage, "拒绝访问。");
-	//	break;
-	//case 32:
-	//	strcpy(lpszMessage, "另一个程序正在使用此文件，进程无法访问。");
-	//	break;
-	//default:
 		if(!FormatMessageW(
 			FORMAT_MESSAGE_FROM_SYSTEM |
 			FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -96,7 +79,6 @@ WCHAR *GetErrorMsg(CONST DWORD dwError)
 			NULL)) {
 			wcscpy(lpszMessage, L"未知错误");
 		}
-	//}
 	SetLastError(0);
 	return szMessage;
 }
@@ -123,21 +105,13 @@ void CPckControlCenter::PreInsertLogToList(const int _loglevel, const char *_log
 void CPckControlCenter::PreInsertLogToList(const int _loglevel, const WCHAR *_logtext)
 {
 
-	SYSTEMTIME systime;
-
 	if(LOG_IMAGE_NOTICE == _loglevel) {
 		::SendDlgItemMessageW(m_hWndMain, IDC_STATUS, SB_SETTEXTW, 4, (LPARAM)_logtext);
 		::SendDlgItemMessageW(m_hWndMain, IDC_STATUS, SB_SETTIPTEXTW, 4, (LPARAM)_logtext);
 	}
 
 	wchar_t szPrintf[8192];
-	//GetLocalTime(&systime);
-
 	size_t nTextLen = wcslen(_logtext);
-	//swprintf_s(szPrintf, L"%02d:%02d:%02d ", systime.wHour, systime.wMinute, systime.wSecond);
-
-	//size_t nLenOfPrefix = wcslen(szPrintf);
-	//wchar_t *lpPointToPaestString = szPrintf + nLenOfPrefix;
 
 	//查找\n 如果存在，\n后的内容换行（用新的列）显示
 	const wchar_t *lpString2Show = _logtext, *lpString2Search = _logtext, *lpStringTail = _logtext + nTextLen;
@@ -207,20 +181,6 @@ void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const wchar_t *_
 {
 
 	LVITEMW	item;
-	//
-
-	//if(LOG_IMAGE_NOTICE == _loglevel) {
-	//	::SendDlgItemMessageW(m_hWndMain, IDC_STATUS, SB_SETTEXTW, 4, (LPARAM)_logtext);
-	//	::SendDlgItemMessageW(m_hWndMain, IDC_STATUS, SB_SETTIPTEXTW, 4, (LPARAM)_logtext);
-	//}
-
-	//wchar_t szPrintf[4096];
-
-	//
-
-	//swprintf_s(szPrintf, L"%02d:%02d:%02d %s", systime.wHour, systime.wMinute, systime.wSecond, _logtext);
-
-
 	wchar_t szPrintf[8192 + 9];
 	//size_t nLenOfPrefix = wcslen(szPrintf);
 	wchar_t *lpPointToPaestString = szPrintf + LEN_OF_PREFIX;
