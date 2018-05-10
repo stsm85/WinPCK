@@ -302,11 +302,22 @@ BOOL CPckClass::RecompressPckFile(LPTSTR szRecompressPckFile)
 
 	if(!OpenPckAndMappingRead(lpFileRead, m_PckAllInfo.szFilename, m_szMapNameRead)) {
 		delete lpFileRead;
+		assert(FALSE);
 		return FALSE;
 	}
 
-	BeforeSingleOrMultiThreadProcess(&pckAllInfo, lpFileWrite, szRecompressPckFile, CREATE_ALWAYS, dwTotalFileSizeAfterRebuild, threadnum);
-	initCompressedDataQueue(threadnum, dwFileCount, PCK_DATA_START_AT);
+	if(!BeforeSingleOrMultiThreadProcess(&pckAllInfo, lpFileWrite, szRecompressPckFile, CREATE_ALWAYS, dwTotalFileSizeAfterRebuild, threadnum)) {
+		delete lpFileRead;
+		assert(FALSE);
+		return FALSE;
+	}
+
+	if(!initCompressedDataQueue(threadnum, dwFileCount, PCK_DATA_START_AT)) {
+		delete lpFileRead;
+		delete lpFileWrite;
+		assert(FALSE);
+		return FALSE;
+	}
 
 	if(PCK_COMPRESS_NEED_ST < threadnum) {
 

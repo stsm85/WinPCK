@@ -159,8 +159,20 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	//if (PCK_SPACE_DETECT_SIZE >= mt_CompressTotalFileSize)mt_CompressTotalFileSize = PCK_STEP_ADD_SIZE;
 
 	PCK_ALL_INFOS	pckAllInfo;
-	BeforeSingleOrMultiThreadProcess(&pckAllInfo, mt_lpFileWrite, szPckFile, CREATE_ALWAYS, mt_CompressTotalFileSize, threadnum);
-	initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress);
+	if(!BeforeSingleOrMultiThreadProcess(&pckAllInfo, mt_lpFileWrite, szPckFile, CREATE_ALWAYS, mt_CompressTotalFileSize, threadnum))
+	{
+		DeallocateFileinfo();
+		assert(FALSE);
+		return FALSE;
+	}
+
+	if(!initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress))
+	{
+		delete mt_lpFileWrite;
+		DeallocateFileinfo();
+		assert(FALSE);
+		return FALSE;
+	}
 
 	if(PCK_COMPRESS_NEED_ST < threadnum) {
 

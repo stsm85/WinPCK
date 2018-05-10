@@ -63,7 +63,8 @@ BOOL CMapViewFile::FileExists(LPCWSTR szName)
 
 BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
 {
-	if(FileExists(lpszFilename)) {
+	if(FileExists(lpszFilename) || 
+		((OPEN_EXISTING != dwCreationDisposition) && (TRUNCATE_EXISTING != dwCreationDisposition))) {
 		char szFilename[MAX_PATH];
 		if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(lpszFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
 			if(isWinNt()) {
@@ -87,7 +88,8 @@ BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAcces
 
 BOOL CMapViewFile::Open(HANDLE &hFile, LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
 {
-	if(FileExists(lpszFilename)) {
+	if(FileExists(lpszFilename) ||
+		((OPEN_EXISTING != dwCreationDisposition) && (TRUNCATE_EXISTING != dwCreationDisposition)))  {
 		WCHAR szFilename[MAX_PATH];
 
 		if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(lpszFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {

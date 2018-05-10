@@ -158,13 +158,13 @@ void CPckClass::SetPckVersion(int verID)
 
 
 #define PRINT_HEAD_SIZE		0x20
-#define PRINT_TAIL_SIZE		0x2000
+#define PRINT_TAIL_SIZE		0x580
  
 void CPckClass::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 {
 	//打印详细原因：
 	//hex 一行长度89 数据一共402行，大小0x8BC2
-	char szPrintf[0xc000];
+	char szPrintf[8192];
 
 	BYTE buf[PRINT_HEAD_SIZE + PRINT_TAIL_SIZE + 0x10];
 
@@ -185,7 +185,7 @@ void CPckClass::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 
 		CRaw2HexString cHexStr(buf, lpRead->GetFileSize());
 
-		sprintf_s(szPrintf, "文件信息：\n文件大小：%d\n文件概要数据：\n", lpRead->GetFileSize());
+		sprintf_s(szPrintf, "文件信息：\n文件大小：%lld\n文件概要数据：\n", lpRead->GetFileSize());
 		strcat_s(szPrintf, cHexStr.GetHexString());
 
 
@@ -196,7 +196,7 @@ void CPckClass::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 			goto dect_err;
 		}
 
-		QWORD qwWhereToMove = (lpRead->GetFileSize() - PRINT_TAIL_SIZE) & 0xffffffffffffff00;
+		QWORD qwWhereToMove = (lpRead->GetFileSize() - PRINT_TAIL_SIZE) & 0xfffffffffffffff0;
 		QWORD qwBytesToRead = lpRead->GetFileSize() - qwWhereToMove;
 
 		lpRead->SetFilePointer(qwWhereToMove, FILE_BEGIN);
@@ -209,8 +209,12 @@ void CPckClass::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 		CRaw2HexString cHexStrHead(buf, PRINT_HEAD_SIZE);
 		CRaw2HexString cHexStrTail(buf + PRINT_HEAD_SIZE, qwBytesToRead, qwWhereToMove);
 
-		sprintf_s(szPrintf, "文件信息：\n文件大小：%d\n文件概要数据：\n", lpRead->GetFileSize());
-
+		sprintf_s(szPrintf, "文件信息：\n文件大小：%lld\n文件概要数据：\n", lpRead->GetFileSize());
+#if _DEBUG
+		size_t len1 = strlen(cHexStrHead.GetHexString());
+		size_t len2 = strlen(cHexStrTail.GetHexString());
+		size_t lens = len1 + len2 + strlen(szPrintf) + strlen("......\n");
+#endif
 		strcat_s(szPrintf, cHexStrHead.GetHexString());
 		strcat_s(szPrintf, "......\n");
 		strcat_s(szPrintf, cHexStrTail.GetHexString());
@@ -221,7 +225,8 @@ dect_err:
 	delete lpRead;
 
 }
-
+#undef PRINT_HEAD_SIZE
+#undef PRINT_TAIL_SIZE
 
 //读取文件头和尾确定pck文件版本，返回版本ID
 BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)

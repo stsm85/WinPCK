@@ -196,6 +196,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 		return FALSE;
 	}
 	if(!initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress = m_PckAllInfo.dwAddressName)) {
+		delete mt_lpFileWrite;
 		DeallocateFileinfo();
 		//PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
 		assert(FALSE);
