@@ -134,7 +134,7 @@ BOOL TLogDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		int	nItemCount = ::SendMessageA(hWndList, LVM_GETITEMCOUNT, 0, 0);
 
 		for(int i = 0;i < nItemCount;++i) {
-			fprintf(fplog, "%s\r\n", pszTargetListLog(i));
+			fprintf(fplog, "%s\n", pszTargetListLog(i));
 		}
 
 		fclose(fplog);
@@ -265,15 +265,13 @@ char*  TLogDlg::pszTargetListLog(int iItem)
 		*szText = LOG_FLAG_ERROR;
 		break;
 
-#ifdef _DEBUG
 	case LOG_IMAGE_DEBUG:
 
 		*szText = LOG_FLAG_DEBUG;
 		break;
-#endif
 
 	default:
-		*szText = 0;
+		*szText = ' ';
 	}
 	return szText;
 }
