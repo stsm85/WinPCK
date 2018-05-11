@@ -357,13 +357,17 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 	_tcscpy(lpszFileTitle, TEXT("Rebuild_"));
 	_tcscat_s(szFilenameToSave, wcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 
+	//弹出选项对话框
 	BOOL(CPckControlCenter::*RebuildOrRecompressPckFile)(LPTSTR);
+	//调用对话框
+	TCHAR szScriptFile[MAX_PATH];
+	BOOL  bNeedRecompress;
+	TRebuildOptDlg	dlg(pThis->lpPckParams, szScriptFile, &bNeedRecompress, pThis);
+	DWORD dwCompressLevel = pThis->lpPckParams->dwCompressLevel;
+	if(IDCANCEL == dlg.Exec())
+		return;
 
-	if(IDYES == ::MessageBoxA(pThis->hWnd, "是否使用数据重压缩？\r\n是 － 重压缩数据\r\n否 － 直接重建", "整理重建", MB_YESNO)) {
-		RebuildOrRecompressPckFile = &CPckControlCenter::RecompressPckFile;
-	} else {
-		RebuildOrRecompressPckFile = &CPckControlCenter::RebuildPckFile;
-	}
+	RebuildOrRecompressPckFile = bNeedRecompress ? &CPckControlCenter::RecompressPckFile : &CPckControlCenter::RebuildPckFile;
 
 	//选择保存的文件名
 	int nSelectFilter = pThis->SaveFile(szFilenameToSave, pThis->m_lpPckCenter->GetSaveDlgFilterString(), pThis->m_lpPckCenter->GetPckVersion());

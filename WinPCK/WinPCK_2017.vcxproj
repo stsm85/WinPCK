@@ -1230,6 +1230,7 @@
     <ClCompile Include="tInfoDlg.cpp" />
     <ClCompile Include="tLogDlg.cpp" />
     <ClCompile Include="tPicDlg.cpp" />
+    <ClCompile Include="tRebuildOptDlg.cpp" />
     <ClCompile Include="tSearchDlg.cpp" />
     <ClCompile Include="tViewDlg.cpp" />
     <ClCompile Include="winmain.cpp" />

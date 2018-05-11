@@ -34,24 +34,6 @@ CMapViewFileWrite::CMapViewFileWrite()
 }
 #endif
 
-//CMapViewFileWrite::CMapViewFileWrite(DWORD dwMaxPckSize)
-//{
-//
-//#if ENABLE_PCK_PKX_FILE
-//	dwViewSizePck = dwViewSizePkx = 0;
-//
-//	*m_szPckFileName = 0;
-//	*m_tszPckFileName = 0;
-//
-//	*m_szPkxFileName = 0;
-//	*m_tszPkxFileName = 0;
-//
-//	m_Max_PckFile_Size = 0;
-//#endif
-//
-//	isWriteMode = TRUE;
-//}
-
 CMapViewFileWrite::~CMapViewFileWrite()
 {
 }

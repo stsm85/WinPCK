@@ -228,6 +228,9 @@
     <ClCompile Include="Raw2HexString.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="tRebuildOptDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc">

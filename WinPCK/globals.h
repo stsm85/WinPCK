@@ -65,6 +65,8 @@
 #define	MAX_BUFFER_SIZE_OFN			0xFFFFF
 #define	MT_MAX_MEMORY				0x80000000	//2048MB
 
+#define MAX_COMPRESS_LEVEL	12
+
 #ifndef SE_CREATE_SYMBOLIC_LINK_NAME
 #define SE_CREATE_SYMBOLIC_LINK_NAME  TEXT("SeCreateSymbolicLinkPrivilege")
 #endif

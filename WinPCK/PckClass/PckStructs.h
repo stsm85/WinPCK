@@ -206,12 +206,15 @@ typedef struct _PCK_FILE_INDEX
 }PCKFILEINDEX, *LPPCKFILEINDEX;
 #pragma pack(pop)
 
+
 typedef struct _PCK_INDEX_TABLE
 {
 	PCKFILEINDEX	cFileIndex;
-	BOOL			bSelected;			//界面上被选择时置1，一般如删除节点时使用
+	BOOL			bSelected;			//界面上被选择时置1，一般如界面操作删除、重命名节点时使用
 	BOOL			isRecompressed;		//压缩重建时使用
-	BOOL			isInvalid;
+	BOOL			isInvalid;			//添加文件时，如果文件名重复，则被覆盖的文件设置为TRUE
+	BOOL			isProtected;		//文件设置保护，不允许删除
+	BOOL			isToDeDelete;		//设置为TRUE后，文件会被删除
 }PCKINDEXTABLE, *LPPCKINDEXTABLE;
 
 

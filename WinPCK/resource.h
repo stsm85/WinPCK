@@ -82,6 +82,7 @@
 #define IDS_STRING_LISTHEAD2            183
 #define IDS_STRING_LISTHEAD3            184
 #define IDS_STRING_LISTHEAD4            185
+#define IDD_DIALOG_REBUILD_OPT          185
 #define IDS_STRING_ISDELETE             186
 #define IDS_STRING_ISDELETETITLE        187
 #define IDS_STRING_INVALIDFILENAME      188
@@ -118,6 +119,10 @@
 #define IDC_LIST_LOG                    1036
 #define IDC_EDIT1                       1037
 #define IDC_EDIT_VIEW                   1037
+#define IDC_EDIT_SCRIPT                 1037
+#define IDC_CHECK1                      1038
+#define IDC_CHECK_RECPMPRESS            1038
+#define IDC_BUTTON_OPEN                 1039
 #define ID_MENU_COMPRESS_OPT            40000
 #define ID_MENU_OPEN                    40001
 #define ID_MENU_CLOSE                   40002
@@ -169,9 +174,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        185
+#define _APS_NEXT_RESOURCE_VALUE        187
 #define _APS_NEXT_COMMAND_VALUE         40048
-#define _APS_NEXT_CONTROL_VALUE         1038
+#define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

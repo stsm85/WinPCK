@@ -195,15 +195,6 @@ protected:
 	BOOL		CreateBmpBufferByDds();
 	BOOL		CreateBmpBufferByTga();
 
-//_inline VOID	CalcRgbs(CMYRGB cRGB[]);
-//UINT32	MakeRgb(UINT32 dwBackColor, UINT32 dwSource, 
-//						UINT32 dwABitMask, UINT32 dwRBitMask, UINT32 dwGBitMask, UINT32 dwBBitMask, 
-//						BYTE abit, BYTE rbit, BYTE gbit, BYTE bbit, 
-//						BYTE ashift, BYTE rshift, BYTE gshift, BYTE bshift,
-//						BOOL hasAlpha);
-//_inline UINT32	MakeRgbWithAlpha(UINT32 dwBackColor, UINT32 dwSrc);
-//_inline UINT64	MakeRgbWithAlphaSSE2(UINT32 *dwBackColor, UINT32 *dwSrc);
-
 	//void	MakeRgbWithAlphaAll(BOOL hasAlpha);
 
 	BOOL	SaveFile(WCHAR * lpszFileName);
@@ -211,8 +202,7 @@ protected:
 	//BOOL	PrepareToSavePng(char *lpFile);
 
 	//void	FlipBitmap();
-
-
+	
 	//DDS decoder
 	PixelFormat	decodedDIBFormat;
 
@@ -269,5 +259,26 @@ public:
 
 };
 
+
+class TRebuildOptDlg : public TDlg
+{
+protected:
+
+	LPPCK_RUNTIME_PARAMS	lpParams;
+	TCHAR					*lpszScriptFile;
+	BOOL					*lpNeedRecompress;
+
+public:
+	TRebuildOptDlg(LPPCK_RUNTIME_PARAMS in, TCHAR *_lpszScriptFile, BOOL *_lpNeedRecompress, TWin *_win) : \
+		TDlg(IDD_DIALOG_REBUILD_OPT, _win), \
+		lpParams(in), \
+		lpszScriptFile(_lpszScriptFile), \
+		lpNeedRecompress(_lpNeedRecompress) {}
+
+
+	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
+	virtual BOOL	EvCreate(LPARAM lParam);
+	virtual BOOL	EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar);
+};
 
 #endif

@@ -207,13 +207,9 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	case ID_MENU_COMPRESS_OPT:
 	{
 		TCompressOptDlg	dlg(lpPckParams, this);
-		DWORD dwCompressLevel = lpPckParams->dwCompressLevel;
 		dlg.Exec();
-		if(dwCompressLevel != lpPckParams->dwCompressLevel)
-			if(lpPckParams->lpPckControlCenter->IsValidPck())
-				lpPckParams->lpPckControlCenter->ResetCompressor();
 	}
-	break;
+		break;
 	case ID_MENU_RENAME:
 	{
 		if(lpPckParams->cVarParams.bThreadRunning)break;
