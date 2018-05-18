@@ -104,7 +104,7 @@ const PCK_KEYS CPckClass::cPckKeys[PCK_VERSION_NUMS] = \
 	{PCK_VERSION_SDS,	TEXT("圣斗士"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0x7b2a7820, 0x0000000062a4f9e1, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0x7fffff00}, \
 	{PCK_VERSION_XAJH,	TEXT("笑傲江湖"),	PCK_V2030, 0x20003, 0x5edb34f0, 0x00000000, 0x7b2a7820, 0x49ab7f1d33c3eddb, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0xffffff00}, \
 	{PCK_VERSION_ZXNEW, TEXT("诛仙3·十年"),PCK_V2031, 0x20003, 0x4DCA23EF, 0x00000000, 0xFDFDFEEE, 0xffffffffA8937462, 0xF00DBEEF, 0xA8937462, 0xF1A43653, 0x7fffff00}, \
-	{PCK_VERSION_SM,	TEXT("神魔"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x00000000, 0xA508BDC4, 0x0000000021c31a3f, 0x853567C8, 0x21c31a3f, 0x185c2025, 0x7fffff00}, \
+	{PCK_VERSION_SM,	TEXT("神魔"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0xA508BDC4, 0x0000000021c31a3f, 0x853567C8, 0x21c31a3f, 0x185c2025, 0x7fffff00}, \
 };
 
 const PCK_VERSION_FUNC CPckClass::cPckVersionFunc[PCK_VERSION_NUMS] = \
@@ -277,11 +277,12 @@ BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
 		}
 	} else {
 
+		//当版本为202时，TailVerifyKey2的值可能为HeadVerifyKey2 或者 0，此例已在游戏：神魔的pck文件上出现。
 		for(int i = 0;i < PCK_VERSION_NUMS;i++) {
 			if((cPckKeys[i].Version == dwTailVals[3]) &&
 				(cPckKeys[i].TailVerifyKey2 == dwTailVals[1]) &&
 				(cPckKeys[i].HeadVerifyKey1 == cPckHead.dwHeadCheckHead) &&
-				(cPckKeys[i].HeadVerifyKey2 == cPckHead.dwHeadCheckTail)) {
+				((cPckKeys[i].HeadVerifyKey2 == cPckHead.dwHeadCheckTail) || (0 == cPckHead.dwHeadCheckTail))) {
 
 				iDetectedPckID = i;
 				break;
