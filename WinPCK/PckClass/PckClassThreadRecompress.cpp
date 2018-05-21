@@ -21,7 +21,7 @@ VOID CPckClass::CompressThreadRecompress(VOID* pParam)
 	DWORD				dwMaxMallocSource = 0, dwMaxMallocDecompress = 0;
 
 	//开始
-	LPPCKINDEXTABLE					lpPckIndexTablePtrSrc = pThis->m_lpPckIndexTable;		//源文件的文件索信息
+	LPPCKINDEXTABLE					lpPckIndexTablePtrSrc = pThis->m_lpPckIndexTable;		//源文件的文件索引信息
 	PCKINDEXTABLE_COMPRESS			cPckIndexTableDst;
 
 	DWORD	dwFileCount = pThis->m_PckAllInfo.dwFileCount;

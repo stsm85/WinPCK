@@ -14,8 +14,9 @@
 #include <assert.h>
 #include "miscdlg.h"
 #include <stdio.h>
+#include <tchar.h>
 
-TPicDlg::TPicDlg(char **_buf, UINT32 _dwSize, int _iFormat, char *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_PIC, _win)
+TPicDlg::TPicDlg(char **_buf, UINT32 _dwSize, int _iFormat, const TCHAR *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_PIC, _win)
 {
 	s = NULL;
 	lpoGraph = NULL;
@@ -283,10 +284,14 @@ BOOL TPicDlg::EvCreate(LPARAM lParam)
 	lpoGraph = NULL;
 
 	//窗口文字
-	if(FMT_RAW != iFormat)
-		sprintf_s(szTitle, MAX_PATH, "图片查看 - %s, %dx%d, %s", lpszFile, picWidth, picHeight, szDdsFormat);
-	else {
-		sprintf_s(szTitle, MAX_PATH, "图片查看 - %s, %dx%d", lpszFile, picWidth, picHeight);
+	if(FMT_RAW != iFormat) {
+#ifdef UNICODE
+		_stprintf_s(szTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d, %S"), lpszFile, picWidth, picHeight, szDdsFormat);
+#else
+		_stprintf_s(szTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d, %s"), lpszFile, picWidth, picHeight, szDdsFormat);
+#endif
+	} else {
+		_stprintf_s(szTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d"), lpszFile, picWidth, picHeight);
 
 		if(NULL != lpmyImage)
 			delete lpmyImage;
@@ -302,7 +307,7 @@ BOOL TPicDlg::EvCreate(LPARAM lParam)
 
 	}
 
-	SetWindowTextA(szTitle);
+	SetWindowText(szTitle);
 
 	//显示窗口
 	Show();
@@ -489,7 +494,11 @@ BOOL TPicDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 			}
 
 			wcscat_s(szFilename, MAX_PATH, L"\\");
+#ifdef UNICODE
+			wcscat_s(szFilename, MAX_PATH, lpszFile);
+#else
 			wcscat_s(szFilename, MAX_PATH, AtoW(lpszFile));
+#endif
 
 			//*(DWORD*)strrchr(szFilename, '.') = *(DWORD*)".png";//0x706D622E;	//.bmp
 			memcpy(wcsrchr(szFilename, L'.'), L".png\0\0", 12);

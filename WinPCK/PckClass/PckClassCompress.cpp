@@ -140,7 +140,7 @@ int CPckClass::decompress_part(void *dest, unsigned long  *destLen, const void *
 			lpReason = "ÆäËû´íÎó";
 		}
 		assert(FALSE);
-		PrintLogE(TEXT_UNCOMPRESSDATA_FAIL_REASON, lpReason, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_UNCOMPRESSDATA_FAIL_REASON, lpReason, __FILE__, __FUNCTION__, __LINE__);
 		return rtn;
 	} else {
 		return Z_OK;

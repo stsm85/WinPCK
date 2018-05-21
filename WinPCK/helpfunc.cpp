@@ -18,9 +18,11 @@
 //#include "globals.h"
 #include "winmain.h"
 #include "miscdlg.h"
-#include <shlobj.h>
+//#include <shlobj.h>
 //#include <strsafe.h>
 #include <process.h>
+#include "CharsCodeConv.h"
+#include "OpenSaveDlg.h"
 
 inline LONG RecurseDeleteKey(HKEY hRegKey, LPCTSTR lpszKey);
 inline void CreateAndSetDefaultValue(LPCTSTR pszValueName, LPCTSTR pszValue);
@@ -32,7 +34,7 @@ void TInstDlg::UnpackAllFiles()
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
 			EnableButton(ID_MENU_UNPACK_ALL, FALSE);
 		} else {
-			if(BrowseForFolderByPath(m_CurrentPath)) {
+			if(BrowseForFolderByPath(hWnd, m_CurrentPath)) {
 				lpPckParams->cVarParams.dwMTMemoryUsed = 0;
 				SetCurrentDirectory(m_CurrentPath);
 				_beginthread(ToExtractAllFiles, 0, this);
@@ -48,7 +50,7 @@ void TInstDlg::UnpackSelectedFiles()
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
 			EnableButton(ID_MENU_UNPACK_SELECTED, FALSE);
 		} else {
-			if(BrowseForFolderByPath(m_CurrentPath)) {
+			if(BrowseForFolderByPath(hWnd, m_CurrentPath)) {
 				lpPckParams->cVarParams.dwMTMemoryUsed = 0;
 				SetCurrentDirectory(m_CurrentPath);
 				_beginthread(ToExtractSelectedFiles, 0, this);
@@ -95,11 +97,11 @@ void TInstDlg::DbClickListView(const int itemIndex)
 		if(NULL == lpNodeToShow->parentfirst) {
 			//进入目录中(下一级)
 			if(NULL != lpNodeToShow->child) {
-				char **lpCurrentDir = m_PathDirs.lpszDirNames + m_PathDirs.nDirCount;
+				TCHAR **lpCurrentDir = m_PathDirs.lpszDirNames + m_PathDirs.nDirCount;
 
-				strcpy_s(*lpCurrentDir, MAX_PATH - (*lpCurrentDir - *m_PathDirs.lpszDirNames), lpNodeToShow->szName);
+				_tcscpy_s(*lpCurrentDir, MAX_PATH - (*lpCurrentDir - *m_PathDirs.lpszDirNames), lpNodeToShow->szName);
 
-				*(lpCurrentDir + 1) = *lpCurrentDir + strlen(*lpCurrentDir) + 1;
+				*(lpCurrentDir + 1) = *lpCurrentDir + _tcslen(*lpCurrentDir) + 1;
 
 				m_PathDirs.nDirCount++;
 			}
@@ -108,8 +110,8 @@ void TInstDlg::DbClickListView(const int itemIndex)
 		} else {
 			//上一级
 			m_PathDirs.nDirCount--;
-			char **lpCurrentDir = m_PathDirs.lpszDirNames + m_PathDirs.nDirCount;
-			memset(*lpCurrentDir, 0, strlen(*lpCurrentDir));
+			TCHAR **lpCurrentDir = m_PathDirs.lpszDirNames + m_PathDirs.nDirCount;
+			memset(*lpCurrentDir, 0, _tcslen(*lpCurrentDir) * sizeof(TCHAR));
 
 			ShowPckFiles(lpNodeToShow->parentfirst);
 		}
@@ -230,29 +232,38 @@ VOID TInstDlg::ViewFile()
 	TDlg *dlg;
 	//BOOL	isDds;
 
-	char	*lpszFileExt = strrchr(lpPckFileIndexToShow->cFileIndex.szFilename, '.');
-	char	*lpszFileTitle;
+	const char	*lpszFileExt = strrchr(lpPckFileIndexToShow->cFileIndex.szFilename, '.');
+	const TCHAR	*lpszFileTitle;
 	//BOOL ((CPckControlCenter::*GetSingleFileData)(LPVOID, LPVOID, char *, size_t)) = *(m_lpPckCenter->GetSingleFileData);
 
 	if(m_lpPckCenter->GetListInSearchMode()) {
-		if(NULL == (lpszFileTitle = strrchr(lpPckFileIndexToShow->cFileIndex.szFilename, '\\')))
-			if(NULL == (lpszFileTitle = strrchr(lpPckFileIndexToShow->cFileIndex.szFilename, '/')))
-				lpszFileTitle = lpPckFileIndexToShow->cFileIndex.szFilename - 1;
+		if(NULL == (lpszFileTitle = _tcsrchr(lpPckFileIndexToShow->cFileIndex.sztFilename, '\\')))
+			if(NULL == (lpszFileTitle = _tcsrchr(lpPckFileIndexToShow->cFileIndex.sztFilename, '/')))
+				lpszFileTitle = lpPckFileIndexToShow->cFileIndex.sztFilename - 1;
 
 		//把前面的'\\'或'/'去掉
 		lpszFileTitle++;
-	} else
+	} else {
+//#ifdef UNICODE
+//		CUcs2Ansi cU2A;
+//		lpszFileTitle = cU2A.GetString(((LPPCK_PATH_NODE)item.lParam)->szName);
+//#else
 		lpszFileTitle = ((LPPCK_PATH_NODE)item.lParam)->szName;
+//#endif
+	}
+		
 
 	if(NULL != lpszFileExt) {
+		char szExt[8];
+		strcpy_s(szExt, lpszFileExt);
 		//转化lpszFileExt为小写,当strlen(lpszFileExt) > 6 时报错，修改
-		if(4 == strnlen_s(lpszFileExt, 6)) {
-			_strlwr_s(lpszFileExt, 6);
+		if(4 == strnlen_s(szExt, 6)) {
+			_strlwr_s(szExt, 6);
 
-			if(NULL != strstr(GetLoadStrA(IDS_STRING_FILE_EXT_PIC), lpszFileExt)) {
-				if(0 == strcmpi(lpszFileExt, ".dds"))
+			if(NULL != strstr(GetLoadStrA(IDS_STRING_FILE_EXT_PIC), szExt)) {
+				if(0 == strcmpi(szExt, ".dds"))
 					dlg = new TPicDlg(&buf, dwFilesizeToView, FMT_DDS, lpszFileTitle, this);
-				else if(0 == strcmpi(lpszFileExt, ".tga"))
+				else if(0 == strcmpi(szExt, ".tga"))
 					dlg = new TPicDlg(&buf, dwFilesizeToView, FMT_TGA, lpszFileTitle, this);
 				else
 					dlg = new TPicDlg(&buf, dwFilesizeToView, FMT_RAW, lpszFileTitle, this);
@@ -269,7 +280,7 @@ VOID TInstDlg::ViewFile()
 
 	if(0 != dwFilesizeToView) {
 		if(NULL == buf) {
-			m_lpPckCenter->PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			delete dlg;
 			return;
 		}
@@ -310,49 +321,8 @@ BOOL TInstDlg::AddFiles()
 }
 
 
-
-
-/******************************************************
-只打开一个文件
-******************************************************/
-
-BOOL TInstDlg::OpenSingleFile(TCHAR * lpszFileName)
-{
-	OPENFILENAME ofn;
-	TCHAR szStrPrintf[MAX_PATH];
-	*szStrPrintf = 0;
-
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-
-	if('\\' == *(lpszFileName + lstrlen(lpszFileName) - 1)) {
-		ofn.lpstrInitialDir = lpszFileName;
-		ofn.lpstrFile = szStrPrintf;
-	} else {
-		ofn.lpstrFile = lpszFileName;
-	}
-
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = hWnd;
-	ofn.lpstrFilter = TEXT_FILE_FILTER;
-	//ofn.lpstrFile         = lpszFileName;
-	//ofn.lpstrInitialDir   = lpszFileName;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING/* | OFN_ALLOWMULTISELECT*/;
-
-	if(!GetOpenFileName(&ofn)) {
-		return FALSE;
-	}
-
-	if(NULL != ofn.lpstrInitialDir)
-		_tcscpy_s(lpszFileName, MAX_PATH, szStrPrintf);
-
-	return TRUE;
-
-}
-
 BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 {
-
 
 	OPENFILENAME ofn;
 	TCHAR * szBuffer, *szBufferPart;
@@ -361,7 +331,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 
 	szBuffer = (TCHAR *)malloc(MAX_BUFFER_SIZE_OFN * sizeof(TCHAR));
 	if(szBuffer == NULL) {
-		m_lpPckCenter->PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
@@ -395,7 +365,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 
 		TCHAR		**szFilenamePtrArray, **szFilenamePtrArrayPtr;
 		if(NULL == (szFilenamePtrArray = (TCHAR**)malloc(MAX_BUFFER_SIZE_OFN * sizeof(TCHAR**)))) {
-			m_lpPckCenter->PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			free(szBuffer);
 			return FALSE;
 
@@ -427,7 +397,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 		*szFilenamePtrArrayPtr = 0;
 
 		if(NULL == (lpszFilePathArray = /*(TCHAR(*)[MAX_PATH])*/ malloc(sizeof(TCHAR) * MAX_PATH * dwFileCount))) {
-			m_lpPckCenter->PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			free(szFilenamePtrArray);
 			free(szBuffer);
 			return	FALSE;
@@ -450,7 +420,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 		dwFileCount = 1;
 
 		if(NULL == (lpszFilePathArray = /*(TCHAR(*)[MAX_PATH])*/ malloc(sizeof(TCHAR) * MAX_PATH))) {
-			m_lpPckCenter->PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			free(szBuffer);
 			return	FALSE;
 		}
@@ -464,75 +434,6 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 	free(szBuffer);
 
 	return TRUE;
-}
-
-DWORD TInstDlg::SaveFile(TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD nFilterIndex)
-{
-	OPENFILENAME ofn;
-	//TCHAR szStrPrintf[260];
-
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = hWnd;
-	//ofn.lpstrFilter       = TEXT_FILE_FILTER;
-	ofn.lpstrFilter = lpstrFilter;
-	ofn.lpstrFile = lpszFileName;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_OVERWRITEPROMPT | OFN_EXPLORER | OFN_ENABLESIZING;
-	ofn.lpstrDefExt = TEXT("pck");
-	ofn.nFilterIndex = nFilterIndex;
-
-	if(!GetSaveFileName(&ofn)) {
-		return FALSE;
-	}
-	return ofn.nFilterIndex;
-
-}
-
-BOOL TInstDlg::BrowseForFolderByPath(TCHAR * lpszPathName)
-{
-
-	BROWSEINFO					cBI;
-	ITEMIDLIST					idl;
-	LPITEMIDLIST				pidl = &idl;
-
-	cBI.hwndOwner = hWnd;
-	cBI.pidlRoot = 0;
-	cBI.lpszTitle = TEXT("请选择目录");
-	cBI.lpfn = BFFCALLBACK(&BFFCallBack);
-
-	cBI.lParam = (LPARAM)lpszPathName;
-
-	cBI.pszDisplayName = lpszPathName;
-
-	cBI.ulFlags = BIF_NEWDIALOGSTYLE | BIF_RETURNONLYFSDIRS;
-	//OleInitialize(0);
-	pidl = SHBrowseForFolder(&cBI);
-	//OleUninitialize();
-	if(NULL != pidl) {
-		SHGetPathFromIDList(pidl, lpszPathName);
-		CoTaskMemFree((VOID*)pidl);
-		return TRUE;
-	}
-	return FALSE;
-}
-
-int CALLBACK TInstDlg::BFFCallBack(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
-{
-	//TCHAR szPath[MAX_PATH];
-	//TCHAR szExePath[MAX_PATH];
-
-	//ITEMIDLIST					idl;
-	//LPITEMIDLIST				pidl = &idl;
-	//BOOL bTemp;
-
-	switch(uMsg) {
-	case BFFM_INITIALIZED:
-		::SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
-		break;
-	}
-
-	return 0;
 }
 
 void TInstDlg::AddSetupReg()

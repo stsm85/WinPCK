@@ -67,9 +67,12 @@ public:
 	virtual BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath);
 
 	//重建pck文件
-	virtual BOOL	RebuildPckFile(LPTSTR szRebuildPckFile);
-	virtual BOOL	RecompressPckFile(LPTSTR szRecompressPckFile);
+	virtual BOOL	RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress);
+protected:
+	BOOL	RebuildPckFile(LPTSTR szRebuildPckFile);
+	BOOL	RecompressPckFile(LPTSTR szRecompressPckFile);
 
+public:
 	//更新pck文件
 	virtual BOOL	UpdatePckFile(LPTSTR szPckFile, TCHAR (*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert);
 
@@ -103,7 +106,6 @@ protected:
 	BOOL	MountPckFile(LPCTSTR	szFile);
 
 	//PckClassFunction.cpp
-	char*	UCS2toA(LPCWSTR src, int max_len = -1);
 	BOOL	OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace);
 	BOOL	OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
 	BOOL	OpenPckAndMappingWrite(CMapViewFileWrite *lpWrite, LPCTSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
@@ -126,6 +128,7 @@ protected:
 	BOOL WritePckIndexTable(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, DWORD &dwFileCount, QWORD &dwAddress);
 	void AfterWriteThreadFailProcess(BOOL *lpbThreadRunning, HANDLE hevtAllCompressFinish, DWORD &dwFileCount, DWORD dwFileHasBeenWritten, QWORD &dwAddressFinal, QWORD dwAddress, BYTE **bufferPtrToWrite);
 	LPBYTE OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace);
+	LPBYTE OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
 	LPPCKINDEXTABLE_COMPRESS FillAndCompressIndexData(LPPCKINDEXTABLE_COMPRESS lpPckIndexTableComped, LPPCKFILEINDEX lpPckFileIndexToCompress);
 
 
@@ -149,7 +152,7 @@ protected:
 	//PckClassExtract.cpp
 
 	BOOL	StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpMapAddress);
-	BOOL	DecompressFile(char	*lpszFilename, LPPCKINDEXTABLE lpPckFileIndexTable, LPVOID lpvoidFileRead);
+	BOOL	DecompressFile(LPCTSTR lpszFilename, LPPCKINDEXTABLE lpPckFileIndexTable, LPVOID lpvoidFileRead);
 
 
 	//PckClassThread.cpp
@@ -186,27 +189,29 @@ protected:
 	//virtual void test();
 
 	//打印日志
-	void PrintLogI(const char *_text);
-	void PrintLogW(const char *_text);
-	void PrintLogE(const char *_text);
-	void PrintLogD(const char *_text);
-	void PrintLogN(const char *_text);
+#define define_define_one_PrintLog(_loglvchar)	\
+	void PrintLog##_loglvchar(const char *_text, ...);\
+	void PrintLog##_loglvchar(const wchar_t *_text, ...);\
+	void PrintLog##_loglvchar(const char *_text, va_list ap);\
+	void PrintLog##_loglvchar(const wchar_t *_text, va_list ap);
 
-	void PrintLogI(const wchar_t *_text);
-	void PrintLogW(const wchar_t *_text);
-	void PrintLogE(const wchar_t *_text);
-	void PrintLogD(const wchar_t *_text);
-	void PrintLogN(const wchar_t *_text);
+	define_define_one_PrintLog(I)
+	define_define_one_PrintLog(W)
+	define_define_one_PrintLog(E)
+	define_define_one_PrintLog(D)
+	define_define_one_PrintLog(N)
 
-	void PrintLogE(const char *_maintext, const char *_file, const char *_func, const long _line);
-	void PrintLogE(const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
-	void PrintLogE(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line);
-	void PrintLogE(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
+#undef define_define_one_PrintLog
 
-	void PrintLog(const char chLevel, const char *_maintext);
-	void PrintLog(const char chLevel, const wchar_t *_maintext);
-	void PrintLog(const char chLevel, const  char *_fmt, const char *_maintext);
-	void PrintLog(const char chLevel, const char *_fmt, const wchar_t *_maintext);
+	void PrintLogEL(const char *_maintext, const char *_file, const char *_func, const long _line);
+	void PrintLogEL(const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
+	void PrintLogEL(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line);
+	void PrintLogEL(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
+
+	void PrintLog(const char chLevel, const char *_fmt, va_list ap);
+	void PrintLog(const char chLevel, const wchar_t *_fmt, va_list ap);
+	void PrintLog(const char chLevel, const char *_fmt, ...);
+	void PrintLog(const char chLevel, const wchar_t *_fmt, ...);
 
 	//
 	#include "PckClassVersionDetect.h"
@@ -216,6 +221,17 @@ protected:
 
 	//数据压缩算法
 	#include "PckClassCompress.h"
+
+
+	//PckClassRebuildFilter.cpp
+public:
+	BOOL	ParseScript(LPCTSTR lpszScriptFile);
+
+protected:
+	void	ResetRebuildFilterInIndexList();
+	BOOL	ApplyScript2IndexList(VOID *pfirstFileOp);
+	//BOOL	LocationFileIndex(VOID *pFileOp);
+
 
 //变量
 public:

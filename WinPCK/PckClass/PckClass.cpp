@@ -64,6 +64,7 @@ BOOL CPckClass::Init(LPCTSTR	szFile)
 	////test();
 
 	lstrcpy(m_PckAllInfo.szFilename, szFile);
+	m_PckAllInfo.lpszFileTitle = _tcsrchr(m_PckAllInfo.szFilename, TEXT('\\')) + 1;
 
 	if(MountPckFile(m_PckAllInfo.szFilename)) {
 		BuildDirTree();
@@ -120,7 +121,7 @@ BOOL CPckClass::SetAdditionalInfo()
 	}
 
 	if(!lpcWritefile->OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
-		PrintLogE(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		delete lpcWritefile;
 		return FALSE;
 	}
@@ -129,7 +130,7 @@ BOOL CPckClass::SetAdditionalInfo()
 
 	if(!lpcWritefile->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&m_PckAllInfo), \
 		m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)) {
-		PrintLogE(TEXT_WRITEFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_WRITEFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 
 		delete lpcWritefile;
 		return FALSE;

@@ -302,19 +302,19 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>$(IncludePath);$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>$(IncludePath);$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>$(IncludePath);$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>$(IncludePath);$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
     <GenerateManifest>true</GenerateManifest>
@@ -338,17 +338,17 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>$(IncludePath);$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>$(IncludePath);$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(IncludePath);$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath);$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;$(SolutionDir)VC-LTL</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -1130,6 +1130,9 @@
     <ClCompile Include="MapViewFile\MapViewFile.cpp" />
     <ClCompile Include="MapViewFile\MapViewFileRead.cpp" />
     <ClCompile Include="MapViewFile\MapViewFileWrite.cpp" />
+    <ClCompile Include="MiscFuncs\CharsCodeConv.cpp" />
+    <ClCompile Include="MiscFuncs\OpenSaveDlg.cpp" />
+    <ClCompile Include="MiscFuncs\Raw2HexString.cpp" />
     <ClCompile Include="PckClass\PckClassAllocFunctions.cpp" />
     <ClCompile Include="PckClass\PckClassCompress.cpp" />
     <ClCompile Include="PckClass\PckClassExceptionRestore.cpp" />
@@ -1137,6 +1140,7 @@
     <ClCompile Include="PckClass\PckClassHelpFunction.cpp" />
     <ClCompile Include="PckClass\PckClassMount.cpp" />
     <ClCompile Include="PckClass\PckClassReader.cpp" />
+    <ClCompile Include="PckClass\PckClassRebuildFilter.cpp" />
     <ClCompile Include="PckClass\PckClassThreadAddFile.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">true</ExcludedFromBuild>
@@ -1223,7 +1227,6 @@
     <ClCompile Include=".\PckClass\PckClassExtract.cpp" />
     <ClCompile Include="PckClass\PckClassMainFunction.cpp" />
     <ClCompile Include=".\PckClass\PckClassThread.cpp" />
-    <ClCompile Include="Raw2HexString.cpp" />
     <ClCompile Include="tAttrDlg.cpp" />
     <ClCompile Include="tCompressOptDlg.cpp" />
     <ClCompile Include="threadproc.cpp" />
@@ -1255,6 +1258,9 @@
     <ClInclude Include=".\dds\DDSTextureLoader.h" />
     <ClInclude Include=".\dds\dxgiformat.h" />
     <ClInclude Include="MapViewFile\MapViewFile.h" />
+    <ClInclude Include="MiscFuncs\CharsCodeConv.h" />
+    <ClInclude Include="MiscFuncs\OpenSaveDlg.h" />
+    <ClInclude Include="MiscFuncs\Raw2HexString.h" />
     <ClInclude Include="PckClass\PckClassCompress.h" />
     <ClInclude Include="PckClass\PckClassExceptionRestore.h" />
     <ClInclude Include="PckClass\PckClassReader.h" />
@@ -1271,7 +1277,6 @@
     <ClInclude Include="miscpicdlg.h" />
     <ClInclude Include=".\PckClass\PckClass.h" />
     <ClInclude Include=".\PckClass\PckHeader.h" />
-    <ClInclude Include="Raw2HexString.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="winmain.h" />
     <ClInclude Include=".\ZupClass\ZupClass.h" />

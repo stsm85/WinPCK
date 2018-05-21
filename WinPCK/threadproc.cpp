@@ -20,6 +20,7 @@
 #include "globals.h"
 #include "winmain.h"
 #include <process.h>
+#include "OpenSaveDlg.h"
 
 
 //VOID EnumAndDeleteIndex(LPPCK_PATH_NODE lpNode);
@@ -167,7 +168,7 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 		}
 
 		//选择保存的文件名
-		int nSelectFilter = pThis->SaveFile(szFilenameToSave, pThis->m_lpPckCenter->GetSaveDlgFilterString());
+		int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, pThis->m_lpPckCenter->GetSaveDlgFilterString());
 		if(!nSelectFilter) {
 			//pThis->DeleteClass();
 			pThis->m_lpPckCenter->Close();
@@ -358,19 +359,18 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 	_tcscat_s(szFilenameToSave, wcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 
 	//弹出选项对话框
-	BOOL(CPckControlCenter::*RebuildOrRecompressPckFile)(LPTSTR);
+	//BOOL(CPckControlCenter::*RebuildOrRecompressPckFile)(LPTSTR);
 	//调用对话框
-	TCHAR szScriptFile[MAX_PATH];
 	BOOL  bNeedRecompress;
-	TRebuildOptDlg	dlg(pThis->lpPckParams, szScriptFile, &bNeedRecompress, pThis);
+	TRebuildOptDlg	dlg(pThis->lpPckParams, &bNeedRecompress, pThis);
 	DWORD dwCompressLevel = pThis->lpPckParams->dwCompressLevel;
 	if(IDCANCEL == dlg.Exec())
 		return;
 
-	RebuildOrRecompressPckFile = bNeedRecompress ? &CPckControlCenter::RecompressPckFile : &CPckControlCenter::RebuildPckFile;
+	//RebuildOrRecompressPckFile = bNeedRecompress ? &CPckControlCenter::RecompressPckFile : &CPckControlCenter::RebuildPckFile;
 
 	//选择保存的文件名
-	int nSelectFilter = pThis->SaveFile(szFilenameToSave, pThis->m_lpPckCenter->GetSaveDlgFilterString(), pThis->m_lpPckCenter->GetPckVersion());
+	int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, pThis->m_lpPckCenter->GetSaveDlgFilterString(), pThis->m_lpPckCenter->GetPckVersion());
 	if(!nSelectFilter) {
 		return;
 	}
@@ -390,7 +390,7 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, 100, NULL);
 
-	if((pThis->m_lpPckCenter->*RebuildOrRecompressPckFile)(szFilenameToSave)) {
+	if(pThis->m_lpPckCenter->RebuildPckFile(szFilenameToSave, bNeedRecompress)) {
 		if(*lpbThreadRunning) {
 			//计时结束
 			t2 = GetTickCount() - t1;
@@ -442,7 +442,7 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 	double		t1, t2;//计算时间
 
 	//选择目录
-	if(!pThis->BrowseForFolderByPath(pThis->m_CurrentPath))
+	if(!BrowseForFolderByPath(pThis->hWnd, pThis->m_CurrentPath))
 		return;
 
 	_tcscpy_s(szPathToCompress, pThis->m_CurrentPath);
@@ -453,7 +453,7 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 		pThis->m_lpPckCenter->New();
 
 	//选择保存的文件名
-	int nSelectFilter = pThis->SaveFile(szFilenameToSave, pThis->m_lpPckCenter->GetSaveDlgFilterString());
+	int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, pThis->m_lpPckCenter->GetSaveDlgFilterString());
 	if(!nSelectFilter)
 		return;
 

@@ -120,9 +120,10 @@
 #define IDC_EDIT1                       1037
 #define IDC_EDIT_VIEW                   1037
 #define IDC_EDIT_SCRIPT                 1037
-#define IDC_CHECK1                      1038
 #define IDC_CHECK_RECPMPRESS            1038
 #define IDC_BUTTON_OPEN                 1039
+#define IDC_EDIT2                       1040
+#define IDC_EDIT_RESULT                 1040
 #define ID_MENU_COMPRESS_OPT            40000
 #define ID_MENU_OPEN                    40001
 #define ID_MENU_CLOSE                   40002
@@ -176,7 +177,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        187
 #define _APS_NEXT_COMMAND_VALUE         40048
-#define _APS_NEXT_CONTROL_VALUE         1040
+#define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

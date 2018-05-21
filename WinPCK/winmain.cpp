@@ -554,7 +554,7 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 	DragAcceptFiles(hWnd, FALSE);
 
 	if(NULL == (m_lpszFilePath = (TCHAR(*)[MAX_PATH]) malloc(sizeof(TCHAR) * MAX_PATH * m_DropFileCount))) {
-		m_lpPckCenter->PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		goto END_DROP;
 	}
 

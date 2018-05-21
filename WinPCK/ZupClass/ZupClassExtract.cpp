@@ -35,7 +35,7 @@ BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFi
 		char	*_cipherbuf = (char*)malloc(dwFileLengthDecompress1);
 
 		if(NULL == _cipherbuf) {
-			PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			return FALSE;
 		}
 

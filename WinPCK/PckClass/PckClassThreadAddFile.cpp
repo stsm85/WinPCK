@@ -71,7 +71,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	if(NULL == m_firstFile)m_firstFile = AllocateFileinfo();
 	if(NULL == m_firstFile) {
 
-		PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		free(lpszFilePath);
 		assert(FALSE);
 		return FALSE;
@@ -94,7 +94,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 			if(!lpcFileRead->Open(szPathMbsc)) {
 				DeallocateFileinfo();
 				free(lpszFilePath);
-				PrintLogE(TEXT_OPENNAME_FAIL, *lpszFilePathPtr, __FILE__, __FUNCTION__, __LINE__);
+				PrintLogEL(TEXT_OPENNAME_FAIL, *lpszFilePathPtr, __FILE__, __FUNCTION__, __LINE__);
 
 				delete lpcFileRead;
 				assert(FALSE);

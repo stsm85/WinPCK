@@ -25,8 +25,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,22,9,3
- PRODUCTVERSION 1,22,9,3
+ FILEVERSION 1,23,0,1
+ PRODUCTVERSION 1,23,0,1
  FILEFLAGSMASK 0x37L
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -42,12 +42,12 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "FileDescription", "WinPCK"
-            VALUE "FileVersion", "1.22.9.3"
+            VALUE "FileVersion", "1.23.0.1"
             VALUE "InternalName", "WinPCK"
             VALUE "LegalCopyright", "Copyright (C) 2012-2018 stsm"
             VALUE "OriginalFilename", "WinPCK.exe"
             VALUE "ProductName", "WinPCK"
-            VALUE "ProductVersion", "1.22.9.3"
+            VALUE "ProductVersion", "1.23.0.1"
             VALUE "SpecialBuild", "WinPCK by stsm"
         END
     END
@@ -188,19 +188,21 @@ END
 
 IDD_DIALOG_REBUILD_OPT DIALOGEX 0, 0, 317, 159
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
 CAPTION "重建选项"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "确定",IDOK,265,142,50,14
+    DEFPUSHBUTTON   "确定",IDOK,265,142,50,14,WS_DISABLED
     PUSHBUTTON      "取消",IDCANCEL,210,142,50,14
     CONTROL         "",IDC_SLIDER_LEVEL,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,54,7,213,17
     LTEXT           "压缩等级：",IDC_STATIC,8,9,41,11
-    CONTROL         "使用数据重压缩",IDC_CHECK_RECPMPRESS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,142,149,11
-    EDITTEXT        IDC_EDIT_SCRIPT,8,49,272,15,ES_AUTOHSCROLL
-    PUSHBUTTON      "浏览...",IDC_BUTTON_OPEN,285,49,30,15,WS_DISABLED
-    LTEXT           "脚本定义：\nfile (文件名，用于检查当前文件名)\nprotect 受保护文件\ndel 删除的文件\nrd 删除的目录\n\n就先这几个吧",IDC_STATIC,8,75,293,61,WS_DISABLED
-    LTEXT           "重建文件过滤脚本：",IDC_STATIC,8,36,102,8,WS_DISABLED
+    CONTROL         "使用数据重压缩",IDC_CHECK_RECPMPRESS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,142,90,11
+    EDITTEXT        IDC_EDIT_SCRIPT,8,48,272,15,ES_AUTOHSCROLL
+    PUSHBUTTON      "浏览...",IDC_BUTTON_OPEN,283,48,32,15
+    LTEXT           "脚本定义：\nchkfile 文件名(用于检查当前文件名)\nprotect 受保护文件\ndelete 删除的文件\nrmdir 删除的目录\n\n具体示例见：Documents\\test_script.txt",IDC_STATIC,8,75,149,59
+    LTEXT           "重建文件过滤脚本：",IDC_STATIC,8,34,102,8
     LTEXT           "9",IDC_STATIC_LEVEL,277,9,17,8
+    EDITTEXT        IDC_EDIT_RESULT,107,144,101,12,ES_RIGHT | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
 END
 
 

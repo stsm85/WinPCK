@@ -18,13 +18,7 @@ BOOL CZupClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 }
 
 //重建pck文件
-BOOL CZupClass::RebuildPckFile(LPTSTR szRebuildPckFile)
-{
-	PrintLogE(TEXT_NOTSUPPORT);
-	return FALSE;
-}
-
-BOOL CZupClass::RecompressPckFile(LPTSTR szRecompressPckFile)
+BOOL CZupClass::RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress)
 {
 	PrintLogE(TEXT_NOTSUPPORT);
 	return FALSE;

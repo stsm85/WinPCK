@@ -14,25 +14,18 @@
 #pragma warning ( disable : 4267 )
 #pragma warning ( disable : 4996 )
 
-char* CPckClass::UCS2toA(LPCWSTR src, int max_len)
-{
-	static char dst[8192];
-	::WideCharToMultiByte(CP_ACP, 0, src, max_len, dst, 8192, "_", 0);
-	return dst;
-}
-
 BOOL CPckClass::OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace)
 {
 
 	if(!(lpRead->OpenPck(lpFileName))) {
 
-		PrintLogE(TEXT_OPENNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_OPENNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
 	if(!(lpRead->Mapping(lpszMapNamespace))) {
 
-		PrintLogE(TEXT_CREATEMAPNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_CREATEMAPNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 
 	}
@@ -45,13 +38,13 @@ BOOL CPckClass::OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCWSTR lpFileNa
 
 	if(!(lpRead->OpenPck(lpFileName))) {
 
-		PrintLogE(TEXT_OPENNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_OPENNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
 	if(!(lpRead->Mapping(lpszMapNamespace))) {
 
-		PrintLogE(TEXT_CREATEMAPNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_CREATEMAPNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 
 	}
@@ -67,15 +60,23 @@ LPBYTE CPckClass::OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCSTR lpF
 		return NULL;
 }
 
+LPBYTE CPckClass::OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace)
+{
+	if(OpenPckAndMappingRead(lpRead, lpFileName, lpszMapNamespace))
+		return lpRead->View(0, 0);
+	else
+		return NULL;
+}
+
 BOOL CPckClass::OpenPckAndMappingWrite(CMapViewFileWrite *lpWrite, LPCTSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap)
 {
 	if(!lpWrite->OpenPck(lpFileName, dwCreationDisposition)) {
-		PrintLogE(TEXT_OPENWRITENAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_OPENWRITENAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
 	if(!lpWrite->Mapping(m_szMapNameWrite, qdwSizeToMap)) {
-		PrintLogE(TEXT_CREATEMAPNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_CREATEMAPNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
@@ -98,7 +99,7 @@ void CPckClass::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllIn
 	//дpckTail
 	if(NULL == (lpBufferToWrite = lpWrite->View(dwAddress, m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize))) {
 
-		PrintLogE(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		lpWrite->SetFilePointer(dwAddress, FILE_BEGIN);
 		dwAddress += lpWrite->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&PckAllInfo), \
 			m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize);
@@ -117,7 +118,7 @@ void CPckClass::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllIn
 
 	if(NULL == (lpBufferToWrite = lpWrite->View(0, m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize))) {
 
-		PrintLogE(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		lpWrite->SetFilePointer(0, FILE_BEGIN);
 		lpWrite->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(&PckAllInfo), \
 			m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize);
@@ -186,7 +187,7 @@ BOOL CPckClass::WritePckIndex(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRE
 	assert(lpPckIndexTablePtr->dwIndexValueHead != 0);
 
 	if(NULL == (lpBufferToWrite = lpWrite->View(dwAddress, dwNumberOfBytesToMap))) {
-		PrintLogE(TEXT_WRITE_PCK_INDEX, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_WRITE_PCK_INDEX, __FILE__, __FUNCTION__, __LINE__);
 		assert(FALSE);
 		return FALSE;
 	}

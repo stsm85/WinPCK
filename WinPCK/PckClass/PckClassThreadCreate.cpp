@@ -3,6 +3,7 @@
 #define COMPRESSSINGLETHREADFUNC CreatePckFileSingleThread
 #define TARGET_PCK_MODE_COMPRESS PCK_MODE_COMPRESS_CREATE
 #include "PckClassThreadCompressFunctions.h"
+#include "CharsCodeConv.h"
 
 
 VOID CPckClass::WriteThread(VOID* pParam)
@@ -102,8 +103,8 @@ VOID CPckClass::WriteThread(VOID* pParam)
 BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 {
 	char		szLogString[LOG_BUFFER];
-
-	sprintf_s(szLogString, TEXT_LOG_CREATE, UCS2toA(szPckFile));
+	CUcs2Ansi cU2A;
+	sprintf_s(szLogString, TEXT_LOG_CREATE, cU2A.GetString(szPckFile));
 	PrintLogI(szLogString);
 
 	DWORD		dwFileCount = 0;									//文件数量, 原pck文件中的文件数
@@ -133,7 +134,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 
 	if(NULL == (m_firstFile = AllocateFileinfo())) {
 
-		PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 	lpfirstFile = m_firstFile;

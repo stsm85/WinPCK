@@ -97,13 +97,17 @@ public:
 	BOOL						ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount);
 	BOOL						ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount);
 
+	//重置PCK的压缩参数
+	void	ResetCompressor();
+
+	
 
 	//新建pck文件
 	BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath);
 
 	//重建pck文件
-	BOOL	RebuildPckFile(LPTSTR szRebuildPckFile);
-	BOOL	RecompressPckFile(LPTSTR szRecompressPckFile);
+	BOOL	ParseScript(LPCTSTR lpszScriptFile);
+	BOOL	RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress);
 
 	//更新pck文件
 	BOOL	UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert);
@@ -121,32 +125,33 @@ public:
 	//log日志相关功能 
 	void	SetLogListWnd(HWND _hWndList);
 
+#define define_define_one_PrintLog(_loglvchar)	\
+	void PrintLog##_loglvchar(const char *_text, ...);\
+	void PrintLog##_loglvchar(const wchar_t *_text, ...);\
+	void PrintLog##_loglvchar(const char *_text, va_list ap);\
+	void PrintLog##_loglvchar(const wchar_t *_text, va_list ap);
 
-	void	PrintLogE(const char *);
-	void	PrintLogW(const char *);
-	void	PrintLogI(const char *);
-	void	PrintLogD(const char *);
-	void	PrintLogN(const char *);
+	define_define_one_PrintLog(I)
+	define_define_one_PrintLog(W)
+	define_define_one_PrintLog(E)
+	define_define_one_PrintLog(D)
+	define_define_one_PrintLog(N)
 
-	void	PrintLogE(const wchar_t *);
-	void	PrintLogW(const wchar_t *);
-	void	PrintLogI(const wchar_t *);
-	void	PrintLogD(const wchar_t *);
-	void	PrintLogN(const wchar_t *);
+#undef define_define_one_PrintLog
 
 	//__FILE__, __FUNCTION__, __LINE__
-	void	PrintLogE(const char *_maintext, const char *_file, const char *_func, const long _line);
-	void	PrintLogE(const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
-	void	PrintLogE(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line);
-	void	PrintLogE(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
+	void	PrintLogEL(const char *_maintext, const char *_file, const char *_func, const long _line);
+	void	PrintLogEL(const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
+	void	PrintLogEL(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line);
+	void	PrintLogEL(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
 
-	void	PrintLog(const char chLevel, const char *_maintext);
-	void	PrintLog(const char chLevel, const wchar_t *_maintext);
-	void	PrintLog(const char chLevel, const char *_fmt, const char *_maintext);
-	void	PrintLog(const char chLevel, const char *_fmt, const wchar_t *_maintext);
 
-	//重置PCK的压缩参数
-	void	ResetCompressor();
+	void	PrintLog(const char chLevel, const char *_fmt, va_list ap);
+	void	PrintLog(const char chLevel, const wchar_t *_fmt, va_list ap);
+	void	PrintLog(const char chLevel, const char *_fmt, ...);
+	void	PrintLog(const char chLevel, const wchar_t *_fmt, ...);
+
+
 
 private:
 

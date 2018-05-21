@@ -117,7 +117,7 @@ BOOL CPckClass::RenameFilename()
 
 	if(!lpFileWrite->OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
 
-		PrintLogE(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		assert(FALSE);
 		delete lpFileWrite;
 		return FALSE;
@@ -127,7 +127,7 @@ BOOL CPckClass::RenameFilename()
 
 	if(!lpFileWrite->Mapping(m_szMapNameWrite, dwFileSize)) {
 
-		PrintLogE(TEXT_CREATEMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_CREATEMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		assert(FALSE);
 		delete lpFileWrite;
 		return FALSE;
@@ -224,7 +224,7 @@ BOOL CPckClass::initCompressedDataQueue(int threadnum, DWORD dwFileCount, QWORD 
 {
 	//申请空间,文件名压缩数据 数组
 	if(NULL == (mt_lpPckIndexTable = new PCKINDEXTABLE_COMPRESS[dwFileCount])) {
-		PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		assert(FALSE);
 		return FALSE;
 	}
@@ -232,7 +232,7 @@ BOOL CPckClass::initCompressedDataQueue(int threadnum, DWORD dwFileCount, QWORD 
 
 	if(PCK_COMPRESS_NEED_ST < threadnum) {
 		if(NULL == (mt_pckCompressedDataPtrArray = (BYTE**)malloc(sizeof(BYTE*) * (dwFileCount + 1)))) {
-			PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			assert(FALSE);
 			return FALSE;
 		}

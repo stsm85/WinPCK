@@ -93,7 +93,7 @@ xxxxxxxxxx 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
 
 0xFFFFFFFF: 0x14b~0x14e
 
-
+其中 78 DA ** ** ** ** ** ** 是zlib的校验头，通常以78 01(1), 78 5e(2-5),78 9c(6), 78 da(7-12)开头
 
 */
 const PCK_KEYS CPckClass::cPckKeys[PCK_VERSION_NUMS] = \
@@ -172,14 +172,14 @@ void CPckClass::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 	CMapViewFileRead *lpRead = new CMapViewFileRead();
 
 	if(!lpRead->OpenPck(lpszPckFile)) {
-		PrintLogE(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
 	if(lpRead->GetFileSize() <= (PRINT_TAIL_SIZE + PRINT_HEAD_SIZE)) {
 
 		if(!lpRead->Read(buf, lpRead->GetFileSize())) {
-			PrintLogE(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			goto dect_err;
 		}
 
@@ -192,7 +192,7 @@ void CPckClass::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 	} else {
 
 		if(!lpRead->Read(buf, PRINT_HEAD_SIZE)) {
-			PrintLogE(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			goto dect_err;
 		}
 
@@ -202,7 +202,7 @@ void CPckClass::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 		lpRead->SetFilePointer(qwWhereToMove, FILE_BEGIN);
 
 		if(!lpRead->Read(buf + PRINT_HEAD_SIZE, qwBytesToRead)) {
-			PrintLogE(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			goto dect_err;
 		}
 
@@ -239,26 +239,26 @@ BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
 	CMapViewFileRead *lpRead = new CMapViewFileRead();
 
 	if(!lpRead->OpenPck(lpszPckFile)) {
-		PrintLogE(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
 	if(!lpRead->Read(&cPckHead, sizeof(PCKHEAD_V2020))) {
-		PrintLogE(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
 	//判断是不是64位的文件大小
 	if(!lpRead->SetPckPackSize((0x100 < cPckHead.dwHeadCheckTail) ? cPckHead.dwPckSize : ((PCKHEAD_V2030*)&cPckHead)->dwPckSize)) {
 
-		PrintLogE(TEXT_PCK_SIZE_INVALID, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_PCK_SIZE_INVALID, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
 	lpRead->SetFilePointer(-((QWORD)(sizeof(DWORD) * 4)), FILE_END);
 
 	if(!lpRead->Read(&dwTailVals, sizeof(DWORD) * 4)) {
-		PrintLogE(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
@@ -292,7 +292,7 @@ BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
 
 	//读取PCKINDEXADDR，验证
 	if(-1 == iDetectedPckID) {
-		PrintLogE(TEXT_VERSION_NOT_FOUND, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_VERSION_NOT_FOUND, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
@@ -315,7 +315,7 @@ BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
 	}
 
 	if(!isFoundVer) {
-		PrintLogE(TEXT_VERSION_NOT_FOUND, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_VERSION_NOT_FOUND, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 

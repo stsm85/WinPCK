@@ -41,9 +41,9 @@ public:
 	virtual BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath/*, int level, int threadnum, int &nMaxMemory, DWORD &dwCount, DWORD &dwAllCount, BOOL	&bThreadRunning*/);
 
 	//重建pck文件
-	virtual BOOL	RebuildPckFile(LPTSTR szRebuildPckFile);
-	virtual BOOL	RecompressPckFile(LPTSTR szRecompressPckFile);
+	virtual BOOL	RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress);
 
+public:
 	//更新pck文件//有bug
 	virtual BOOL	UpdatePckFile(LPTSTR szPckFile, TCHAR (*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert);
 

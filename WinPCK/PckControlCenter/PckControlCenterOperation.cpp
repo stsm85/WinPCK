@@ -191,15 +191,9 @@ BOOL	CPckControlCenter::RenameFilename()
 }
 
 //重建pck文件
-BOOL	CPckControlCenter::RebuildPckFile(LPTSTR szRebuildPckFile)
+BOOL	CPckControlCenter::RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress)
 {
-	return m_lpClassPck->RebuildPckFile(szRebuildPckFile);
-}
-
-//重建pck文件并重压缩数据
-BOOL	CPckControlCenter::RecompressPckFile(LPTSTR szRecompressPckFile)
-{
-	return m_lpClassPck->RecompressPckFile(szRecompressPckFile);
+	return m_lpClassPck->RebuildPckFile(szRebuildPckFile, bUseRecompress);
 }
 
 //新建pck文件--
@@ -234,3 +228,8 @@ void	CPckControlCenter::ResetCompressor()
 	m_lpClassPck->init_compressor();
 }
 
+//重建时的文件过滤
+BOOL	CPckControlCenter::ParseScript(LPCTSTR lpszScriptFile)
+{
+	return m_lpClassPck->ParseScript(lpszScriptFile);
+}

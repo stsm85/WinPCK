@@ -4,7 +4,7 @@
 		PCKTAIL_V##_ver PckTail_v##_ver; \
 		lpRead->SetFilePointer(-((QWORD)(sizeof(PCKTAIL_V##_ver))), FILE_END); \
 		if (!lpRead->Read(&PckTail_v##_ver, sizeof(PCKTAIL_V##_ver))) { \
-			PrintLogE(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__); \
+			PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__); \
 			goto dect_err; \
 		} \
 		for (int i = 0; i < PCK_VERSION_NUMS; ++i) { \

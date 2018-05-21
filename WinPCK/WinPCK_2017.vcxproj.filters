@@ -55,6 +55,12 @@
     <Filter Include="头文件\tlib">
       <UniqueIdentifier>{f8ac42b8-a202-4f12-8caf-a6bf5dbb4071}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\MiscFuncs">
+      <UniqueIdentifier>{79d1a900-c835-40ad-ba1e-00ec234f8731}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\MiscFuncs">
+      <UniqueIdentifier>{489345cc-453c-4390-9568-149e5e7158f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="winmain.cpp">
@@ -225,11 +231,20 @@
     <ClCompile Include="tPicDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Raw2HexString.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="tRebuildOptDlg.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassRebuildFilter.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="MiscFuncs\Raw2HexString.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="MiscFuncs\CharsCodeConv.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="MiscFuncs\OpenSaveDlg.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -334,8 +349,14 @@
     <ClInclude Include="PckClass\PckClassThreadCompressFunctions.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
-    <ClInclude Include="Raw2HexString.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="MiscFuncs\Raw2HexString.h">
+      <Filter>头文件\MiscFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="MiscFuncs\CharsCodeConv.h">
+      <Filter>头文件\MiscFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="MiscFuncs\OpenSaveDlg.h">
+      <Filter>头文件\MiscFuncs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

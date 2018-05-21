@@ -15,6 +15,7 @@
 #include <commctrl.h>
 #include "resource.h"
 #include <assert.h>
+#include "CharsCodeConv.h"
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4244 )
@@ -83,23 +84,10 @@ WCHAR *GetErrorMsg(CONST DWORD dwError)
 	return szMessage;
 }
 
-inline char *UCS2toA(const WCHAR *src, int max_len = -1)
-{
-	static char dst[8192];
-	::WideCharToMultiByte(CP_ACP, 0, src, max_len, dst, 8192, "_", 0);
-	return dst;
-}
-
-inline WCHAR *AtoUCS2(const char *src, int max_len = -1)
-{
-	static WCHAR dst[8192];
-	::MultiByteToWideChar(CP_ACP, 0, src, max_len, dst, 8192);
-	return dst;
-}
-
 void CPckControlCenter::PreInsertLogToList(const int _loglevel, const char *_logtext)
 {
-	PreInsertLogToList(_loglevel, AtoUCS2(_logtext));
+	CAnsi2Ucs cA2U;
+	PreInsertLogToList(_loglevel, cA2U.GetString(_logtext));
 }
 
 void CPckControlCenter::PreInsertLogToList(const int _loglevel, const WCHAR *_logtext)
@@ -108,6 +96,8 @@ void CPckControlCenter::PreInsertLogToList(const int _loglevel, const WCHAR *_lo
 	if(LOG_IMAGE_NOTICE == _loglevel) {
 		::SendDlgItemMessageW(m_hWndMain, IDC_STATUS, SB_SETTEXTW, 4, (LPARAM)_logtext);
 		::SendDlgItemMessageW(m_hWndMain, IDC_STATUS, SB_SETTIPTEXTW, 4, (LPARAM)_logtext);
+	} else if(LOG_IMAGE_ERROR == _loglevel) {
+		ShowWindow(GetParent(m_hWndLogListWnd), SW_SHOW);
 	}
 
 	wchar_t szPrintf[8192];
@@ -211,98 +201,116 @@ void CPckControlCenter::_InsertLogIntoList(const int _loglevel, const wchar_t *_
 }
 #undef LEN_OF_PREFIX
 
-void CPckControlCenter::PrintLogI(const char *_logtext)
-{
-	PreInsertLogToList(LOG_IMAGE_INFO, _logtext);
+#define define_one_PrintLog(_loglvchar, _loglevel)	\
+void CPckControlCenter::PrintLog##_loglvchar(const char *_text, ...)\
+{\
+	va_list	ap;\
+	va_start(ap, _text);\
+	PrintLog##_loglvchar(_text, ap);\
+	va_end(ap);\
+}\
+void CPckControlCenter::PrintLog##_loglvchar(const wchar_t *_text, ...)\
+{\
+	va_list	ap;\
+	va_start(ap, _text);\
+	PrintLog##_loglvchar(_text, ap);\
+	va_end(ap);\
+}\
+void CPckControlCenter::PrintLog##_loglvchar(const char *_text, va_list ap)\
+{\
+	char _maintext[8192];\
+	_vsnprintf(_maintext, sizeof(_maintext), _text, ap);\
+	PreInsertLogToList(_loglevel, _maintext);\
+}\
+void CPckControlCenter::PrintLog##_loglvchar(const wchar_t *_text, va_list ap)\
+{\
+	wchar_t _maintext[8192];\
+	_vsnwprintf(_maintext, sizeof(_maintext), _text, ap);\
+	PreInsertLogToList(_loglevel, _maintext);\
 }
 
-void CPckControlCenter::PrintLogW(const char *_logtext)
-{
-	PreInsertLogToList(LOG_IMAGE_WARNING, _logtext);
-}
+define_one_PrintLog(I, LOG_IMAGE_INFO)
+define_one_PrintLog(W, LOG_IMAGE_WARNING)
+define_one_PrintLog(E, LOG_IMAGE_ERROR)
+define_one_PrintLog(D, LOG_IMAGE_DEBUG)
+define_one_PrintLog(N, LOG_IMAGE_NOTICE)
 
-void CPckControlCenter::PrintLogE(const char *_logtext)
+void CPckControlCenter::PrintLogEL(const char *_maintext, const char *_file, const char *_func, const long _line)
 {
-	PreInsertLogToList(LOG_IMAGE_ERROR, _logtext);
-	ShowWindow(GetParent(m_hWndLogListWnd), SW_SHOW);
-}
-
-void CPckControlCenter::PrintLogD(const char *_logtext)
-{
-	PreInsertLogToList(LOG_IMAGE_DEBUG, _logtext);
-}
-
-void CPckControlCenter::PrintLogN(const char *_logtext)
-{
-	PreInsertLogToList(LOG_IMAGE_NOTICE, _logtext);
-}
-
-
-void CPckControlCenter::PrintLogI(const wchar_t *_logtext)
-{
-	PreInsertLogToList(LOG_IMAGE_INFO, _logtext);
-}
-
-void CPckControlCenter::PrintLogW(const wchar_t *_logtext)
-{
-	PreInsertLogToList(LOG_IMAGE_WARNING, _logtext);
-}
-
-void CPckControlCenter::PrintLogE(const wchar_t *_logtext)
-{
-	PreInsertLogToList(LOG_IMAGE_ERROR, _logtext);
-	ShowWindow(GetParent(m_hWndLogListWnd), SW_SHOW);
-}
-
-void CPckControlCenter::PrintLogD(const wchar_t *_logtext)
-{
-	PreInsertLogToList(LOG_IMAGE_DEBUG, _logtext);
-}
-
-void CPckControlCenter::PrintLogN(const wchar_t *_logtext)
-{
-	PreInsertLogToList(LOG_IMAGE_NOTICE, _logtext);
-}
-
-void CPckControlCenter::PrintLogE(const char *_maintext, const char *_file, const char *_func, const long _line)
-{
+	CAnsi2Ucs cA2U;
 	m_dwLastError = GetLastError();
-	PrintLogE(AtoUCS2(_maintext), _file, _func, _line);
+	PrintLogEL(cA2U.GetString(_maintext), _file, _func, _line);
 }
 
-void CPckControlCenter::PrintLogE(const wchar_t *_maintext, const char *_file, const char *_func, const long _line)
+void CPckControlCenter::PrintLogEL(const wchar_t *_maintext, const char *_file, const char *_func, const long _line)
 {
-	wchar_t szPrintf[8192];
-	swprintf_s(szPrintf, L"%s (%S 发生错误在 %S 行数:%d)", _maintext, _file, _func, _line);
-	PrintLogE(szPrintf);
+
+	PrintLog(LOG_IMAGE_ERROR, L"%s (%S 发生错误在 %S 行数:%d)", _maintext, _file, _func, _line); 
+
 	if(0 == m_dwLastError) {
 		m_dwLastError = GetLastError();
 		if(0 != m_dwLastError)
-			PrintLogE(GetErrorMsg(GetLastError()));
+			PrintLog(LOG_IMAGE_ERROR, GetErrorMsg(GetLastError()));
 	} else {
-		PrintLogE(GetErrorMsg(m_dwLastError));
+		PrintLog(LOG_IMAGE_ERROR, GetErrorMsg(m_dwLastError));
 		m_dwLastError = 0;
 	}
 	assert(FALSE);
 
 }
 
-void CPckControlCenter::PrintLogE(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line)
+void CPckControlCenter::PrintLogEL(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line)
 {
 	char szPrintf[8192];
 	sprintf_s(szPrintf, _fmt, _maintext);
-	PrintLogE(szPrintf, _file, _func, _line);
+	PrintLogEL(szPrintf, _file, _func, _line);
 
 }
-void CPckControlCenter::PrintLogE(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line)
+void CPckControlCenter::PrintLogEL(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line)
 {
-	m_dwLastError = GetLastError();
-	PrintLogE(_fmt, UCS2toA(_maintext), _file, _func, _line);
+	CUcs2Ansi cU2A;
+	PrintLogEL(_fmt, cU2A.GetString(_maintext), _file, _func, _line);
 }
 
 
-void CPckControlCenter::PrintLog(const char chLevel, const char *_maintext)
+void CPckControlCenter::PrintLog(const char chLevel, const char *_fmt, va_list ap)
 {
+	char _maintext[8192];
+	_vsnprintf(_maintext, sizeof(_maintext), _fmt, ap);
+
+	PreInsertLogToList(chLevel, _maintext);
+
+//	switch(chLevel) {
+//	case LOG_FLAG_ERROR:
+//		PrintLogE(_maintext);
+//		break;
+//	case LOG_FLAG_WARNING:
+//		PrintLogW(_maintext);
+//		break;
+//	case LOG_FLAG_INFO:
+//		PrintLogI(_maintext);
+//		break;
+//	case LOG_FLAG_NOTICE:
+//		PrintLogN(_maintext);
+//		break;
+//#ifdef _DEBUG
+//	case LOG_FLAG_DEBUG:
+//		PrintLogD(_maintext);
+//		break;
+//#endif
+//	default:
+//		PrintLogI(_maintext);
+//	}
+}
+
+void CPckControlCenter::PrintLog(const char chLevel, const wchar_t *_fmt, va_list ap)
+{
+	//CUcs2Ansi cU2A;
+	wchar_t _maintext[8192];
+	_vsnwprintf(_maintext, sizeof(_maintext), _fmt, ap);
+
+	PreInsertLogToList(chLevel, _maintext);
+/*
 	switch(chLevel) {
 	case LOG_FLAG_ERROR:
 		PrintLogE(_maintext);
@@ -323,23 +331,23 @@ void CPckControlCenter::PrintLog(const char chLevel, const char *_maintext)
 #endif
 	default:
 		PrintLogI(_maintext);
-	}
-	//PrintLogE(szPrintf);
+	}*/
 }
 
-void CPckControlCenter::PrintLog(const char chLevel, const wchar_t *_maintext)
+void CPckControlCenter::PrintLog(const char chLevel, const char *_fmt, ...)
 {
-	PrintLog(chLevel, UCS2toA(_maintext));
+	va_list	ap;
+	va_start(ap, _fmt);
+	PrintLog(chLevel, _fmt, ap);
+	va_end(ap);
 }
 
-void CPckControlCenter::PrintLog(const char chLevel, const char *_fmt, const char *_maintext)
+void CPckControlCenter::PrintLog(const char chLevel, const wchar_t *_fmt, ...)
 {
-	char szPrintf[8192];
-	sprintf_s(szPrintf, _fmt, _maintext);
-	PrintLog(chLevel, szPrintf);
+	va_list	ap;
+	va_start(ap, _fmt);
+	PrintLog(chLevel, _fmt, ap);
+	va_end(ap);
+}
 
-}
-void CPckControlCenter::PrintLog(const char chLevel, const char *_fmt, const wchar_t *_maintext)
-{
-	PrintLog(chLevel, _fmt, UCS2toA(_maintext));
-}
+#undef define_one_PrintLog

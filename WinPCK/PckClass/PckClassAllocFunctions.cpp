@@ -18,7 +18,7 @@ void* CPckClass::AllocNodes(size_t	sizeStuct)
 	void*		lpMallocNode;
 
 	if(NULL == (lpMallocNode = /*(LPPCK_PATH_NODE)*/malloc(sizeStuct))) {
-		PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return lpMallocNode;
 	}
 	//初始化内存
@@ -36,14 +36,14 @@ BOOL CPckClass::AllocIndexTableAndInit(LPPCKINDEXTABLE &lpPckIndexTable, DWORD d
 #endif
 	//申请空间
 	if(NULL == (lpPckIndexTable = (LPPCKINDEXTABLE)malloc(sizeof(PCKINDEXTABLE) * dwFileCount))) {
-		PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
 	memset(lpPckIndexTable, 0, sizeof(PCKINDEXTABLE) * dwFileCount);
 
 #ifdef _DEBUG
-	sprintf_s(szDebug, "%s:%d", __FUNCTION__, GetTickCount() - take);
+	sprintf_s(szDebug, "%s take time(ms):%d", __FUNCTION__, GetTickCount() - take);
 	PrintLogD(szDebug);
 #endif
 	return TRUE;

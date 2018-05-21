@@ -19,13 +19,14 @@
 #include "winmain.h"
 //#include <strsafe.h>
 #include <shlwapi.h>
+#include "OpenSaveDlg.h"
 
 LPPCK_PATH_NODE	TInstDlg::GetLastShowNode()
 {
 	LPPCK_PATH_NODE lpCurrentNode = m_lpPckCenter->m_lpPckRootNode->child;
 	LPPCK_PATH_NODE lpCurrentNodeToFind = lpCurrentNode;
 
-	char	**lpCurrentDir = m_PathDirs.lpszDirNames;
+	TCHAR	**lpCurrentDir = m_PathDirs.lpszDirNames;
 
 	for(int i = 0;i < m_PathDirs.nDirCount;i++) {
 
@@ -35,7 +36,7 @@ LPPCK_PATH_NODE	TInstDlg::GetLastShowNode()
 
 		while(NULL != lpCurrentNodeToFind) {
 
-			if(0 == strcmp(lpCurrentNodeToFind->szName, *lpCurrentDir)) {
+			if(0 == _tcscmp(lpCurrentNodeToFind->szName, *lpCurrentDir)) {
 
 				lpCurrentNode = lpCurrentNodeToFind = lpCurrentNodeToFind->child;
 				isDirFound = TRUE;
@@ -77,7 +78,7 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 		iListTopView = ListView_GetTopIndex(GetDlgItem(IDC_LIST));
 	}
 
-	if(0 != *lpszFileToOpen || OpenSingleFile(m_Filename)) {
+	if(0 != *lpszFileToOpen || OpenSingleFile(hWnd, m_Filename)) {
 		t1 = GetTickCount();
 
 		//转换文件名格式 
@@ -122,8 +123,8 @@ VOID TInstDlg::SearchPckFiles()
 	LPPCKINDEXTABLE	lpPckIndexTable;
 	lpPckIndexTable = m_lpPckCenter->GetPckIndexTable();
 
-	char	szClearTextSize[CHAR_NUM_LEN], szCipherTextSize[CHAR_NUM_LEN];
-	char	szCompressionRatio[CHAR_NUM_LEN];
+	TCHAR	szClearTextSize[CHAR_NUM_LEN], szCipherTextSize[CHAR_NUM_LEN];
+	TCHAR	szCompressionRatio[CHAR_NUM_LEN];
 
 	LPPCK_PATH_NODE		lpNodeToShowPtr = m_lpPckCenter->m_lpPckRootNode;
 
@@ -150,19 +151,19 @@ VOID TInstDlg::SearchPckFiles()
 	m_currentNodeOnShow = m_lpPckCenter->m_lpPckRootNode->child;
 
 	InsertList(hList, 0, LVIF_PARAM | LVIF_IMAGE, 0, m_lpPckCenter->m_lpPckRootNode, 1,
-		"..");
+		TEXT(".."));
 
 	for(DWORD i = 0;i < dwFileCount;i++) {
 		if(NULL != strstr(lpPckIndexTable->cFileIndex.szFilename, m_szStrToSearch)) {
 			if(0 == lpPckIndexTable->cFileIndex.dwFileClearTextSize)
-				strcpy(szCompressionRatio, "-");
+				_tcscpy(szCompressionRatio, TEXT("-"));
 			else
-				sprintf_s(szCompressionRatio, CHAR_NUM_LEN, "%.1f%%", lpPckIndexTable->cFileIndex.dwFileCipherTextSize / (float)lpPckIndexTable->cFileIndex.dwFileClearTextSize * 100.0);
+				_stprintf_s(szCompressionRatio, CHAR_NUM_LEN, TEXT("%.1f%%"), lpPckIndexTable->cFileIndex.dwFileCipherTextSize / (float)lpPckIndexTable->cFileIndex.dwFileClearTextSize * 100.0);
 
 			InsertList(hList, iListIndex, LVIF_PARAM | LVIF_IMAGE, 1, lpPckIndexTable, 4,
-				lpPckIndexTable->cFileIndex.szFilename,
-				StrFormatByteSizeA(lpPckIndexTable->cFileIndex.dwFileClearTextSize, szClearTextSize, CHAR_NUM_LEN),
-				StrFormatByteSizeA(lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szCipherTextSize, CHAR_NUM_LEN),
+				lpPckIndexTable->cFileIndex.sztFilename,
+				StrFormatByteSize(lpPckIndexTable->cFileIndex.dwFileClearTextSize, szClearTextSize, CHAR_NUM_LEN),
+				StrFormatByteSize(lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szCipherTextSize, CHAR_NUM_LEN),
 				szCompressionRatio);
 
 			iListIndex++;
@@ -184,8 +185,8 @@ VOID TInstDlg::ShowPckFiles(LPPCK_PATH_NODE		lpNodeToShow)
 	m_lpPckCenter->SetListInSearchMode(FALSE);
 	LPPCKINDEXTABLE	lpPckIndexTable;
 
-	char	szClearTextSize[CHAR_NUM_LEN], szCipherTextSize[CHAR_NUM_LEN];
-	char	szCompressionRatio[CHAR_NUM_LEN];
+	TCHAR	szClearTextSize[CHAR_NUM_LEN], szCipherTextSize[CHAR_NUM_LEN];
+	TCHAR	szCompressionRatio[CHAR_NUM_LEN];
 
 	LPPCK_PATH_NODE		lpNodeToShowPtr = lpNodeToShow;
 
@@ -205,14 +206,14 @@ VOID TInstDlg::ShowPckFiles(LPPCK_PATH_NODE		lpNodeToShow)
 			if(NULL != lpNodeToShowPtr->child) {
 
 				if(0 == lpNodeToShowPtr->child->qdwDirClearTextSize)
-					strcpy(szCompressionRatio, "-");
+					_tcscpy(szCompressionRatio, TEXT("-"));
 				else
-					sprintf_s(szCompressionRatio, CHAR_NUM_LEN, "%.1f%%", lpNodeToShowPtr->child->qdwDirCipherTextSize / (float)lpNodeToShowPtr->child->qdwDirClearTextSize * 100.0);
+					_stprintf_s(szCompressionRatio, CHAR_NUM_LEN, TEXT("%.1f%%"), lpNodeToShowPtr->child->qdwDirCipherTextSize / (float)lpNodeToShowPtr->child->qdwDirClearTextSize * 100.0);
 
 				InsertList(hList, i, LVIF_PARAM | LVIF_IMAGE, 0, lpNodeToShowPtr, 4,
 					lpNodeToShowPtr->szName,
-					StrFormatByteSizeA(lpNodeToShowPtr->child->qdwDirClearTextSize, szClearTextSize, CHAR_NUM_LEN),
-					StrFormatByteSizeA(lpNodeToShowPtr->child->qdwDirCipherTextSize, szCipherTextSize, CHAR_NUM_LEN),
+					StrFormatByteSize(lpNodeToShowPtr->child->qdwDirClearTextSize, szClearTextSize, CHAR_NUM_LEN),
+					StrFormatByteSize(lpNodeToShowPtr->child->qdwDirCipherTextSize, szCipherTextSize, CHAR_NUM_LEN),
 					szCompressionRatio);
 			} else
 				InsertList(hList, i, LVIF_PARAM | LVIF_IMAGE, 0, lpNodeToShowPtr, 1,
@@ -228,14 +229,14 @@ VOID TInstDlg::ShowPckFiles(LPPCK_PATH_NODE		lpNodeToShow)
 			lpPckIndexTable = lpNodeToShowPtr->lpPckIndexTable;
 
 			if(0 == lpPckIndexTable->cFileIndex.dwFileClearTextSize)
-				strcpy(szCompressionRatio, "-");
+				_tcscpy(szCompressionRatio, TEXT("-"));
 			else
-				sprintf_s(szCompressionRatio, CHAR_NUM_LEN, "%.1f%%", lpPckIndexTable->cFileIndex.dwFileCipherTextSize / (float)lpPckIndexTable->cFileIndex.dwFileClearTextSize * 100.0);
+				_stprintf_s(szCompressionRatio, CHAR_NUM_LEN, TEXT("%.1f%%"), lpPckIndexTable->cFileIndex.dwFileCipherTextSize / (float)lpPckIndexTable->cFileIndex.dwFileClearTextSize * 100.0);
 
 			InsertList(hList, i, LVIF_PARAM | LVIF_IMAGE, 1, lpNodeToShowPtr, 4,
 				lpNodeToShowPtr->szName,
-				StrFormatByteSizeA(lpPckIndexTable->cFileIndex.dwFileClearTextSize, szClearTextSize, CHAR_NUM_LEN),
-				StrFormatByteSizeA(lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szCipherTextSize, CHAR_NUM_LEN),
+				StrFormatByteSize(lpPckIndexTable->cFileIndex.dwFileClearTextSize, szClearTextSize, CHAR_NUM_LEN),
+				StrFormatByteSize(lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szCipherTextSize, CHAR_NUM_LEN),
 				szCompressionRatio);
 			i++;
 		}

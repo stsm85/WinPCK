@@ -94,7 +94,7 @@ protected:
 	char	*lpszTextShow;
 
 	DWORD	dwSize;
-	char	*lpszFile;
+	const TCHAR	*lpszFile;
 
 	int		textType;
 
@@ -104,7 +104,7 @@ protected:
 	void	ShowRaw(LPBYTE lpbuf, size_t rawlength);
 
 public:
-	TViewDlg(char **_buf, DWORD &_dwSize, char *_lpszFile, TWin *_win);
+	TViewDlg(char **_buf, DWORD &_dwSize, const TCHAR *_lpszFile, TWin *_win);
 	//TViewDlg(BOOL ((*_GetSingleFileData)(LPVOID, LPVOID, char *, size_t)), LPVOID _lpPckFileIndexToShow, DWORD _dwSize, char *_lpszFile, TWin *_win);
 
 
@@ -148,7 +148,7 @@ protected:
 	ULONG_PTR	g_pGdiPlusToken;
 
 	//´°¿ÚÎÄ×Ö
-	char szTitle[MAX_PATH];
+	TCHAR szTitle[MAX_PATH];
 
 	//image
 	Graphics	*lpoGraph;
@@ -174,7 +174,7 @@ protected:
 
 	
 
-	char		*lpszFile;
+	const TCHAR		*lpszFile;
 	UINT32		dwSize;
 	int			iFormat;
 
@@ -241,7 +241,7 @@ protected:
 
 
 public:
-	TPicDlg(char **_buf, UINT32 _dwSize, int _iFormat, char *_lpszFile, TWin *_win);
+	TPicDlg(char **_buf, UINT32 _dwSize, int _iFormat, const TCHAR *_lpszFile, TWin *_win);
 	~TPicDlg();
 
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
@@ -265,20 +265,31 @@ class TRebuildOptDlg : public TDlg
 protected:
 
 	LPPCK_RUNTIME_PARAMS	lpParams;
-	TCHAR					*lpszScriptFile;
+	TCHAR					szScriptFile[MAX_PATH];
 	BOOL					*lpNeedRecompress;
 
 public:
-	TRebuildOptDlg(LPPCK_RUNTIME_PARAMS in, TCHAR *_lpszScriptFile, BOOL *_lpNeedRecompress, TWin *_win) : \
+	TRebuildOptDlg(LPPCK_RUNTIME_PARAMS in, BOOL *_lpNeedRecompress, TWin *_win) : \
 		TDlg(IDD_DIALOG_REBUILD_OPT, _win), \
 		lpParams(in), \
-		lpszScriptFile(_lpszScriptFile), \
-		lpNeedRecompress(_lpNeedRecompress) {}
+		lpNeedRecompress(_lpNeedRecompress), \
+		isScriptParseSuccess(FALSE)
+	{
+		*szScriptFile = 0;
+	}
 
 
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
 	virtual BOOL	EvCreate(LPARAM lParam);
 	virtual BOOL	EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar);
+	virtual BOOL	EvDropFiles(HDROP hDrop);
+
+protected:
+
+	void OnOK();
+	BOOL OnOpenClick();
+	BOOL isScriptParseSuccess;
+	BOOL ParseScript();
 };
 
 #endif

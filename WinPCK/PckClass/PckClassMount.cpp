@@ -12,6 +12,7 @@
 #pragma warning ( disable : 4996 )
 
 #include "PckClass.h"
+#include "CharsCodeConv.h"
 
 BOOL CPckClass::MountPckFile(LPCTSTR	szFile)
 {
@@ -31,6 +32,12 @@ void CPckClass::BuildDirTree()
 
 	for(DWORD i = 0;i < m_PckAllInfo.dwFileCount;++i) {
 		//½¨Á¢Ä¿Â¼
+#ifdef UNICODE
+		CAnsi2Ucs cA2U;
+		cA2U.GetString(lpPckIndexTable->cFileIndex.szFilename, lpPckIndexTable->cFileIndex.sztFilename, sizeof(lpPckIndexTable->cFileIndex.sztFilename) / sizeof(TCHAR));
+#else
+		memcpy(lpPckIndexTable->cFileIndex.sztFilename, lpPckIndexTable->cFileIndex.szFilename, sizeof(lpPckIndexTable->cFileIndex.szFilename));
+#endif
 		AddFileToNode(&m_RootNode, lpPckIndexTable);
 		++lpPckIndexTable;
 	}

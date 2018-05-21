@@ -68,7 +68,7 @@ void CZupClass::BuildDirTree()
 			BYTE	*lpbuffer = lpcReadfile->ReView(lpZupIndexTable->cFileIndex.dwAddressOffset, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
 			if(NULL == lpbuffer) {
 
-				PrintLogE(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+				PrintLogEL(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 
 				delete lpcReadfile;
 				return;
@@ -112,6 +112,7 @@ BOOL CZupClass::Init(LPCTSTR szFile)
 {
 
 	lstrcpy(m_PckAllInfo.szFilename, szFile);
+	m_PckAllInfo.lpszFileTitle = _tcsrchr(m_PckAllInfo.szFilename, TEXT('\\')) + 1;
 
 	if(m_ReadCompleted = MountPckFile(m_PckAllInfo.szFilename)) {
 

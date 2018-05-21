@@ -14,6 +14,7 @@
 #include "winmain.h"
 #include <process.h>
 #include <CommCtrl.h>
+#include "CharsCodeConv.h"
 
 #define MAX_COLUMN_COUNT		64
 
@@ -275,7 +276,7 @@ int CALLBACK ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSo
 			switch(iLastSort) {
 				//文件名
 			case 0:
-				iResult = lstrcmpiA(lpNodeToShow1->szName, lpNodeToShow2->szName);
+				iResult = lstrcmpi(lpNodeToShow1->szName, lpNodeToShow2->szName);
 				break;
 			case 1:
 				if(NULL == lpNodeToShow1->lpPckIndexTable)
@@ -385,7 +386,12 @@ BOOL TInstDlg::ListView_BeginLabelEdit(const HWND hWndList, LPARAM lParam)
 		if(NULL == lpNodeToShow->child) {
 			nLen = strnlen(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260);
 			//StringCchLengthA(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
+#ifdef UNICODE
+			CUcs2Ansi cU2A;
+			nAllowMaxLength = MAX_PATH_PCK_260 - nLen + strlen(cU2A.GetString(lpNodeToShow->szName)) - 2;
+#else
 			nAllowMaxLength = MAX_PATH_PCK_260 - nLen + strlen(lpNodeToShow->szName) - 2;
+#endif
 		} else {
 			nAllowMaxLength = MAX_PATH_PCK_260 - 2;
 		}
@@ -423,22 +429,22 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 		} else {
 			lpNodeToShow = (LPPCK_PATH_NODE)pNmHdr->item.lParam;
 
-			if(0 == strcmp(lpNodeToShow->szName, szEditedText))
+			if(0 == _tcscmp(lpNodeToShow->szName, pNmHdr->item.pszText))
 				return FALSE;
 		}
 
-		char*	lpszInvalid;
+		TCHAR*	lpszInvalid;
 		if(m_lpPckCenter->GetListInSearchMode()) {
-			lpszInvalid = (char*)TEXT_INVALID_PATHCHAR + 2;
+			lpszInvalid = (TCHAR*)TEXT( TEXT_INVALID_PATHCHAR ) + 2;
 		} else {
-			lpszInvalid = TEXT_INVALID_PATHCHAR;
+			lpszInvalid = TEXT( TEXT_INVALID_PATHCHAR );
 		}
 
 		while(0 != *lpszInvalid) {
-			if(NULL != strchr(szEditedText, *lpszInvalid)) {
-				char szPrintf[64];
-				sprintf_s(szPrintf, 64, GetLoadStrA(IDS_STRING_INVALIDFILENAME), lpszInvalid);
-				MessageBoxA(szPrintf, "提示", MB_OK | MB_ICONASTERISK);
+			if(NULL != _tcschr(pNmHdr->item.pszText, *lpszInvalid)) {
+				TCHAR szPrintf[64];
+				_stprintf_s(szPrintf, 64, GetLoadStr(IDS_STRING_INVALIDFILENAME), lpszInvalid);
+				MessageBox(szPrintf, TEXT("提示"), MB_OK | MB_ICONASTERISK);
 				return FALSE;
 			}
 
@@ -578,9 +584,9 @@ void TInstDlg::InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMa
 
 	if(0 == nColCount)return;
 
-	LVITEMA	item;
+	LVITEM	item;
 
-	ZeroMemory(&item, sizeof(LVITEMA));
+	ZeroMemory(&item, sizeof(LVITEM));
 
 	va_list	ap;
 	va_start(ap, nColCount);
@@ -589,22 +595,22 @@ void TInstDlg::InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMa
 	item.iImage = iImage;
 	item.iSubItem = 0;
 	item.mask = LVIF_TEXT | uiMask;
-	item.pszText = va_arg(ap, char*);
+	item.pszText = va_arg(ap, TCHAR*);
 	item.lParam = (LPARAM)lParam;
 
 	//ListView_InsertItem(hWndList,&item);
-	::SendMessageA(hWndList, LVM_INSERTITEMA, 0, (LPARAM)&item);
+	::SendMessage(hWndList, LVM_INSERTITEM, 0, (LPARAM)&item);
 
 	item.mask = LVIF_TEXT;
 
 	for(item.iSubItem = 1; item.iSubItem < nColCount; item.iSubItem++) {
 		//item.iItem = iIndex;			//从0开始
 		//item.iSubItem = i;
-		item.pszText = va_arg(ap, char*);
+		item.pszText = va_arg(ap, TCHAR*);
 
 		//item.pszText = _ultow(i, szID, 10);
 		//ListView_SetItem(hWndList,&item);
-		::SendMessageA(hWndList, LVM_SETITEMA, 0, (LPARAM)&item);
+		::SendMessage(hWndList, LVM_SETITEM, 0, (LPARAM)&item);
 	}
 
 	va_end(ap);

@@ -12,6 +12,8 @@
 #include "globals.h"
 #include "miscdlg.h"
 #include "PckControlCenter.h"
+#include "OpenSaveDlg.h"
+
 
 /*
 压缩选项
@@ -26,7 +28,9 @@ BOOL TRebuildOptDlg::EvCreate(LPARAM lParam)
 	SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETPOS, TRUE, (LPARAM)lpParams->dwCompressLevel);
 
 	SetDlgItemTextA(IDC_STATIC_LEVEL, ultoa(lpParams->dwCompressLevel, szStr, 10));
-	SetDlgItemTextA(IDC_EDIT_SCRIPT, "C:\\");
+#ifdef _DEBUG
+	SetDlgItemTextA(IDC_EDIT_SCRIPT, "F:\\!)MyProjects\\VC\\WinPCK\\testpck\\script\\test.txt");
+#endif
 
 	return	TRUE;
 }
@@ -37,25 +41,49 @@ BOOL TRebuildOptDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	switch(wID) {
 	case IDOK:
 	{
-		DWORD dwCompressLevel = lpParams->dwCompressLevel;
-		lpParams->dwCompressLevel = SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_GETPOS, 0, 0);
+		if(isScriptParseSuccess) {
 
-		if(dwCompressLevel != lpParams->dwCompressLevel) {
-			if(lpParams->lpPckControlCenter->IsValidPck())
-				lpParams->lpPckControlCenter->ResetCompressor();
+			OnOK();
+			EndDialog(wID);
+			return	TRUE;
 		}
-
-		*lpNeedRecompress = IsDlgButtonChecked(IDC_CHECK_RECPMPRESS);
-		GetDlgItemText(IDC_EDIT_SCRIPT, lpszScriptFile, MAX_PATH);
-
-		EndDialog(wID);
-		return	TRUE;
+		break;
 	}
 	case IDCANCEL:
 		EndDialog(wID);
 		return	TRUE;
+
+
+	case IDC_BUTTON_OPEN:
+		OnOpenClick();
+		break;
 	}
 	return	FALSE;
+}
+
+BOOL TRebuildOptDlg::OnOpenClick()
+{
+	if(OpenSingleFile(hWnd, szScriptFile)) {
+
+		SetDlgItemText(IDC_EDIT_SCRIPT, szScriptFile);
+		return ParseScript();
+	}
+	return FALSE;
+}
+
+void TRebuildOptDlg::OnOK()
+{
+	DWORD dwCompressLevel = lpParams->dwCompressLevel;
+	lpParams->dwCompressLevel = SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_GETPOS, 0, 0);
+
+	if(dwCompressLevel != lpParams->dwCompressLevel) {
+		if(lpParams->lpPckControlCenter->IsValidPck())
+			lpParams->lpPckControlCenter->ResetCompressor();
+	}
+
+	*lpNeedRecompress = IsDlgButtonChecked(IDC_CHECK_RECPMPRESS);
+	//GetDlgItemText(IDC_EDIT_SCRIPT, szScriptFile, MAX_PATH);
+
 }
 
 BOOL TRebuildOptDlg::EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar)
@@ -68,14 +96,51 @@ BOOL TRebuildOptDlg::EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar)
 	case TB_PAGEDOWN:
 	case TB_PAGEUP:
 		iPos = ::SendMessage(scrollBar, TBM_GETPOS, 0, 0);
-
-		if(scrollBar == GetDlgItem(IDC_SLIDER_LEVEL)) {
-			SetDlgItemTextA(IDC_STATIC_LEVEL, ultoa(iPos, szStr, 10));
-			break;
-		}
+		SetDlgItemTextA(IDC_STATIC_LEVEL, ultoa(iPos, szStr, 10));
+		CheckDlgButton(IDC_CHECK_RECPMPRESS, BST_CHECKED);
 
 		break;
 	}
 	return 0;
 }
 
+BOOL TRebuildOptDlg::ParseScript()
+{
+	GetDlgItemText(IDC_EDIT_SCRIPT, szScriptFile, MAX_PATH);
+	if(isScriptParseSuccess = lpParams->lpPckControlCenter->ParseScript((LPCTSTR)szScriptFile)) {
+
+		SetDlgItemTextA(IDC_EDIT_RESULT, "解析脚本成功");
+		::EnableWindow(GetDlgItem(IDOK), TRUE);
+		return TRUE;
+	} else {
+		SetDlgItemTextA(IDC_EDIT_RESULT, "解析脚本失败");
+		::EnableWindow(GetDlgItem(IDOK), FALSE);
+		return FALSE;
+	}
+}
+
+BOOL TRebuildOptDlg::EvDropFiles(HDROP hDrop)
+{
+
+	TCHAR	szFirstFile[MAX_PATH];
+
+	DWORD dwDropFileCount = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+
+	if(0 == dwDropFileCount)goto END_DROP;
+
+	if(1 == dwDropFileCount) {
+		
+		DragQueryFile(hDrop, 0, szFirstFile, MAX_PATH);
+		SetDlgItemText(IDC_EDIT_SCRIPT, szFirstFile);
+	}
+
+
+	DragAcceptFiles(hWnd, FALSE);
+
+	ParseScript();
+
+END_DROP:
+	DragFinish(hDrop);
+	DragAcceptFiles(hWnd, TRUE);
+	return	TRUE;
+}
