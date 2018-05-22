@@ -43,7 +43,7 @@ void CZupClass::BuildDirTree()
 {
 	CMapViewFileRead	cReadfile;
 
-	if(!cReadfile.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead))
+	if(!cReadfile.OpenPckAndMappingRead(m_PckAllInfo.szFilename))
 		return;
 
 	LPPCKINDEXTABLE lpPckIndexTable = m_lpPckIndexTable;

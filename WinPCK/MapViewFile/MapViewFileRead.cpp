@@ -106,19 +106,19 @@ BOOL CMapViewFileRead::Open(LPCWSTR lpszFilename)
 	return CMapViewFile::Open(hFile, lpszFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN);
 }
 
-BOOL CMapViewFileRead::Mapping(LPCSTR lpszNamespace)
+BOOL CMapViewFileRead::Mapping()
 {
-	if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, 0, lpszNamespace))){
+	if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, 0, GenerateMapName()))){
 		assert(FALSE);
 		return FALSE;
 	}
 #if ENABLE_PCK_PKX_FILE
 	if(hasPkx){
-		char szNamespace_2[16];
-		memcpy(szNamespace_2, lpszNamespace, 16);
-		strcat_s(szNamespace_2, 16, "_2");
+		//char szNamespace_2[16];
+		//memcpy(szNamespace_2, lpszNamespace, 16);
+		//strcat_s(szNamespace_2, 16, "_2");
 
-		if(NULL == (hFileMapping2 = CreateFileMappingA(hFile2, NULL, PAGE_READONLY, 0, 0, szNamespace_2))){
+		if(NULL == (hFileMapping2 = CreateFileMappingA(hFile2, NULL, PAGE_READONLY, 0, 0, GenerateMapName()))){
 			assert(FALSE);
 			return FALSE;
 		}
@@ -131,39 +131,39 @@ BOOL CMapViewFileRead::Mapping(LPCSTR lpszNamespace)
 
 #if ENABLE_PCK_PKX_FILE
 
-BOOL CMapViewFileRead::OpenPckAndMappingRead(LPCSTR lpFileName, LPCSTR lpszMapNamespace)
+BOOL CMapViewFileRead::OpenPckAndMappingRead(LPCSTR lpFileName)
 {
 	if(!(OpenPck(lpFileName))) 
 		return FALSE;
 
-	if(!(Mapping(lpszMapNamespace))) 
+	if(!(Mapping())) 
 		return FALSE;
 
 	return TRUE;
 }
 
-BOOL CMapViewFileRead::OpenPckAndMappingRead(LPCWSTR lpFileName, LPCSTR lpszMapNamespace)
+BOOL CMapViewFileRead::OpenPckAndMappingRead(LPCWSTR lpFileName)
 {
 	if(!(OpenPck(lpFileName)))
 		return FALSE;
 
-	if(!(Mapping(lpszMapNamespace))) 
+	if(!(Mapping())) 
 		return FALSE;
 
 	return TRUE;
 }
 
-LPBYTE CMapViewFileRead::OpenMappingAndViewAllRead(LPCSTR lpFileName, LPCSTR lpszMapNamespace)
+LPBYTE CMapViewFileRead::OpenMappingAndViewAllRead(LPCSTR lpFileName)
 {
-	if(OpenPckAndMappingRead(lpFileName, lpszMapNamespace))
+	if(OpenPckAndMappingRead(lpFileName))
 		return View(0, 0);
 	else
 		return NULL;
 }
 
-LPBYTE CMapViewFileRead::OpenMappingAndViewAllRead(LPCWSTR lpFileName, LPCSTR lpszMapNamespace)
+LPBYTE CMapViewFileRead::OpenMappingAndViewAllRead(LPCWSTR lpFileName)
 {
-	if(OpenPckAndMappingRead(lpFileName, lpszMapNamespace))
+	if(OpenPckAndMappingRead(lpFileName))
 		return View(0, 0);
 	else
 		return NULL;

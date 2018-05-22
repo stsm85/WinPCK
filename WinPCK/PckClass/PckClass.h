@@ -14,6 +14,8 @@
 #include "PckHeader.h"
 #include <stdio.h>
 #include <assert.h>
+#include "CharsCodeConv.h"
+
 
 #if !defined(_PCKCLASS_H_)
 #define _PCKCLASS_H_
@@ -106,9 +108,6 @@ protected:
 	BOOL	MountPckFile(LPCTSTR	szFile);
 
 	//PckClassFunction.cpp
-	//BOOL	OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace);
-	//BOOL	OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
-	//BOOL	OpenPckAndMappingWrite(CMapViewFileWrite *lpWrite, LPCTSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
 	//重建时重新计算文件数量，除去无效的和文件名重复的
 	DWORD	ReCountFiles();
 	BOOL	IsNeedExpandWritingFile(
@@ -127,14 +126,10 @@ protected:
 	void AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional = TRUE);
 	BOOL WritePckIndexTable(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, DWORD &dwFileCount, QWORD &dwAddress);
 	void AfterWriteThreadFailProcess(BOOL *lpbThreadRunning, HANDLE hevtAllCompressFinish, DWORD &dwFileCount, DWORD dwFileHasBeenWritten, QWORD &dwAddressFinal, QWORD dwAddress, BYTE **bufferPtrToWrite);
-	//LPBYTE OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace);
-	//LPBYTE OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
 	LPPCKINDEXTABLE_COMPRESS FillAndCompressIndexData(LPPCKINDEXTABLE_COMPRESS lpPckIndexTableComped, LPPCKFILEINDEX lpPckFileIndexToCompress);
 
 
 	//PckClassFunction.cpp
-	//BOOL	AllocIndexTableAndInit(LPPCKINDEXTABLE &lpPckIndexTable, DWORD dwFileCount);
-
 	virtual void	BuildDirTree();
 	void*	AllocMemory(size_t	sizeStuct);
 	VOID	DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode);
@@ -244,8 +239,8 @@ protected:
 	char			m_szEventAllCompressFinish[16];
 	char			m_szEventMaxMemory[16];
 
-	char			m_szMapNameRead[16];
-	char			m_szMapNameWrite[16];
+	//char			m_szMapNameRead[16];
+	//char			m_szMapNameWrite[16];
 };
 
 #endif

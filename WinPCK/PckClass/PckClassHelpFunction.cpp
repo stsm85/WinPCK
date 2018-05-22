@@ -14,77 +14,6 @@
 #pragma warning ( disable : 4267 )
 #pragma warning ( disable : 4996 )
 
-#if 0
-BOOL CPckClass::OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace)
-{
-
-	if(!(lpRead->OpenPck(lpFileName))) {
-
-		PrintLogEL(TEXT_OPENNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-	}
-
-	if(!(lpRead->Mapping(lpszMapNamespace))) {
-
-		PrintLogEL(TEXT_CREATEMAPNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-
-	}
-
-	return TRUE;
-}
-
-BOOL CPckClass::OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace)
-{
-
-	if(!(lpRead->OpenPck(lpFileName))) {
-
-		PrintLogEL(TEXT_OPENNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-	}
-
-	if(!(lpRead->Mapping(lpszMapNamespace))) {
-
-		PrintLogEL(TEXT_CREATEMAPNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-
-	}
-
-	return TRUE;
-}
-
-LPBYTE CPckClass::OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace)
-{
-	if(OpenPckAndMappingRead(lpRead, lpFileName, lpszMapNamespace))
-		return lpRead->View(0, 0);
-	else
-		return NULL;
-}
-
-LPBYTE CPckClass::OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace)
-{
-	if(OpenPckAndMappingRead(lpRead, lpFileName, lpszMapNamespace))
-		return lpRead->View(0, 0);
-	else
-		return NULL;
-}
-
-BOOL CPckClass::OpenPckAndMappingWrite(CMapViewFileWrite *lpWrite, LPCTSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap)
-{
-	if(!lpWrite->OpenPck(lpFileName, dwCreationDisposition)) {
-		PrintLogEL(TEXT_OPENWRITENAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-	}
-
-	if(!lpWrite->Mapping(m_szMapNameWrite, qdwSizeToMap)) {
-		PrintLogEL(TEXT_CREATEMAPNAME_FAIL, lpFileName, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-	}
-
-	return TRUE;
-}
-#endif
-
 void CPckClass::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional)
 {
 
@@ -172,7 +101,7 @@ BOOL CPckClass::IsNeedExpandWritingFile(
 		dwCompressTotalFileSize +=
 			((dwFileSize + PCK_SPACE_DETECT_SIZE) > PCK_STEP_ADD_SIZE ? (dwFileSize + PCK_SPACE_DETECT_SIZE) : PCK_STEP_ADD_SIZE);
 
-		if(!lpWrite->Mapping(m_szMapNameWrite, dwCompressTotalFileSize))
+		if(!lpWrite->Mapping(dwCompressTotalFileSize))
 			return FALSE;
 	}
 	return TRUE;

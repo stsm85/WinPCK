@@ -103,7 +103,7 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 	//打开源文件 
 	//lpFileRead = new CMapViewFileRead();
 
-	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) {
+	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
 		return FALSE;
 	}
 
@@ -206,7 +206,7 @@ VOID CPckClass::RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 
 #ifdef UNICODE
 	CUcs2Ansi		cU2A;
-	nBytesReadayToWrite = strlen(lpNode->lpPckIndexTable->cFileIndex.szFilename) - strlen(cU2A.GetString(lpNode->szName));
+	nBytesReadayToWrite = strlen(lpNode->lpPckIndexTable->cFileIndex.szFilename) - cU2A.GetStrlen(lpNode->szName);
 #else
 	nBytesReadayToWrite = strlen(lpNode->lpPckIndexTable->cFileIndex.szFilename) - strlen(lpNode->szName);
 #endif
@@ -258,7 +258,7 @@ BOOL CPckClass::RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 
 #ifdef UNICODE
 	CUcs2Ansi		cU2A;
-	lenNodeRes = strlen(cU2A.GetString(lpNode->szName));
+	lenNodeRes = cU2A.GetStrlen(lpNode->szName);
 #else
 	lenNodeRes = strlen(lpNode->szName);
 #endif

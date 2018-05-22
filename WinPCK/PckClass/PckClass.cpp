@@ -36,8 +36,8 @@ void CPckClass::CPckClassInit()
 	sprintf_s(m_szEventAllCompressFinish, 16, TEXT_EVENT_COMPRESS_PCK_DATA_FINISH, dwCurrentPID);
 	sprintf_s(m_szEventMaxMemory, 16, TEXT_EVENT_PCK_MAX_MEMORY, dwCurrentPID);
 
-	sprintf_s(m_szMapNameRead, 16, TEXT_MAP_NAME_READ, dwCurrentPID);
-	sprintf_s(m_szMapNameWrite, 16, TEXT_MAP_NAME_WRITE, dwCurrentPID);
+	//sprintf_s(m_szMapNameRead, 16, TEXT_MAP_NAME_READ, dwCurrentPID);
+	//sprintf_s(m_szMapNameWrite, 16, TEXT_MAP_NAME_WRITE, dwCurrentPID);
 
 	BuildSaveDlgFilterString();
 
@@ -111,32 +111,29 @@ char * CPckClass::GetAdditionalInfo()
 
 BOOL CPckClass::SetAdditionalInfo()
 {
-	if(0 == *m_PckAllInfo.szFilename)return FALSE;
+	if(0 == *m_PckAllInfo.szFilename)
+		return FALSE;
 
-	CMapViewFileWrite	*lpcWritefile = new CMapViewFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
+	CMapViewFileWrite	cWritefile(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
 	if(NULL == strstr(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO)) {
 		strcpy(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO
 			PCK_ADDITIONAL_INFO_STSM);
 	}
 
-	if(!lpcWritefile->OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
+	if(!cWritefile.OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
 		PrintLogEL(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
-		delete lpcWritefile;
 		return FALSE;
 	}
 
-	lpcWritefile->SetFilePointer(-((QWORD)(m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)), FILE_END);
+	cWritefile.SetFilePointer(-((QWORD)(m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)), FILE_END);
 
-	if(!lpcWritefile->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&m_PckAllInfo), \
+	if(!cWritefile.Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&m_PckAllInfo), \
 		m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)) {
 		PrintLogEL(TEXT_WRITEFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 
-		delete lpcWritefile;
 		return FALSE;
 	}
 
-	delete lpcWritefile;
 	return TRUE;
-
 }

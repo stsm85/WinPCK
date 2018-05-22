@@ -22,11 +22,7 @@ BOOL CPckClass::GetPckBasicInfo(LPTSTR lpszFile, PCKHEAD_V2020 *lpHead, LPBYTE &
 	dwPckFileIndexDataSize = m_PckAllInfo.qwPckSize - m_PckAllInfo.dwAddressName;
 
 	//lstrcpy(lpszFile, m_Filename);
-#ifdef UNICODE
-	memcpy(lpszFile, m_PckAllInfo.szFilename, MAX_PATH * 2);
-#else
-	memcpy(lpszFile, m_PckAllInfo.szFilename, MAX_PATH);
-#endif
+	memcpy(lpszFile, m_PckAllInfo.szFilename, MAX_PATH * sizeof(TCHAR));
 	
 	if(NULL == (lpFileIndexData = (LPBYTE) malloc (dwPckFileIndexDataSize))){
 
@@ -36,7 +32,7 @@ BOOL CPckClass::GetPckBasicInfo(LPTSTR lpszFile, PCKHEAD_V2020 *lpHead, LPBYTE &
 
 	CMapViewFileRead	cReadfile;
 
-	if(!cReadfile.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead))
+	if(!cReadfile.OpenPckAndMappingRead(m_PckAllInfo.szFilename))
 	{
 		free(lpFileIndexData);
 		return FALSE;

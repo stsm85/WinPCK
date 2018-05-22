@@ -78,7 +78,6 @@ BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAcces
 				assert(FALSE);
 				return FALSE;
 			}
-
 		}
 	} else {
 		return FALSE;
@@ -104,7 +103,6 @@ BOOL CMapViewFile::Open(HANDLE &hFile, LPCWSTR lpszFilename, DWORD dwDesiredAcce
 				assert(FALSE);
 				return FALSE;
 			}
-
 		}
 	} else {
 		return FALSE;
@@ -153,7 +151,6 @@ CMapViewFile::CMapViewFile()
 	lpCrossBuffer = NULL;
 #endif
 	uqwCurrentPos.qwValue = 0;
-
 
 }
 

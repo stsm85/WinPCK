@@ -155,17 +155,17 @@ public:
 	BOOL	OpenPck(LPCSTR lpszFilename);
 	BOOL	OpenPck(LPCWSTR lpszFilename);
 
-	BOOL	OpenPckAndMappingRead(LPCSTR lpFileName, LPCSTR lpszMapNamespace);
-	BOOL	OpenPckAndMappingRead(LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
+	BOOL	OpenPckAndMappingRead(LPCSTR lpFileName);
+	BOOL	OpenPckAndMappingRead(LPCWSTR lpFileName);
 
-	LPBYTE OpenMappingAndViewAllRead(LPCSTR lpFileName, LPCSTR lpszMapNamespace);
-	LPBYTE OpenMappingAndViewAllRead(LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
+	LPBYTE OpenMappingAndViewAllRead(LPCSTR lpFileName);
+	LPBYTE OpenMappingAndViewAllRead(LPCWSTR lpFileName);
 #endif
 
 	BOOL	Open(LPCSTR lpszFilename);
 	BOOL	Open(LPCWSTR lpszFilename);
 
-	BOOL	Mapping(LPCSTR lpszNamespace);
+	BOOL	Mapping();
 
 
 protected:
@@ -191,7 +191,7 @@ public:
 	BOOL	Open(LPCSTR lpszFilename, DWORD dwCreationDisposition);
 	BOOL	Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition);
 
-	BOOL	Mapping(LPCSTR lpszNamespace, QWORD dwMaxSize);
+	BOOL	Mapping(QWORD dwMaxSize);
 	void	SetEndOfFile();
 
 	DWORD	Write(LPVOID buffer, DWORD dwBytesToWrite);

@@ -41,13 +41,9 @@ BOOL TRebuildOptDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	switch(wID) {
 	case IDOK:
 	{
-		//if(isScriptParseSuccess) {
-
-			OnOK();
-			EndDialog(wID);
-			return	TRUE;
-		//}
-		break;
+		OnOK();
+		EndDialog(wID);
+		return	TRUE;
 	}
 	case IDCANCEL:
 		EndDialog(wID);

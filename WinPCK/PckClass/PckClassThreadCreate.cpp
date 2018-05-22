@@ -3,8 +3,6 @@
 #define COMPRESSSINGLETHREADFUNC CreatePckFileSingleThread
 #define TARGET_PCK_MODE_COMPRESS PCK_MODE_COMPRESS_CREATE
 #include "PckClassThreadCompressFunctions.h"
-#include "CharsCodeConv.h"
-
 
 VOID CPckClass::WriteThread(VOID* pParam)
 {
@@ -130,7 +128,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	if('\\' == *(szPath + nLen))*(szPath + nLen) = 0;
 	BOOL	IsPatition = lstrlen(szPath) == 2 ? TRUE : FALSE;
 
-	nLen = WideCharToMultiByte(CP_ACP, 0, szPath, -1, szPathMbsc, MAX_PATH, "_", 0);
+	nLen = cU2A.GetStrlen(szPath, szPathMbsc, MAX_PATH) + 1;
 
 	if(NULL == (m_firstFile = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS)))) {
 

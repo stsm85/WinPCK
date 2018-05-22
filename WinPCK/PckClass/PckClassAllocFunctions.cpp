@@ -28,30 +28,6 @@ void* CPckClass::AllocMemory(size_t	sizeStuct)
 
 }
 
-#if 0
-BOOL CPckClass::AllocIndexTableAndInit(LPPCKINDEXTABLE &lpPckIndexTable, DWORD dwFileCount)
-{
-#ifdef _DEBUG
-	char szDebug[64];
-	DWORD take = GetTickCount();
-#endif
-	//…Í«Îø’º‰
-	if(NULL == (lpPckIndexTable = (LPPCKINDEXTABLE)malloc(sizeof(PCKINDEXTABLE) * dwFileCount))) {
-		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-	}
-
-	memset(lpPckIndexTable, 0, sizeof(PCKINDEXTABLE) * dwFileCount);
-
-#ifdef _DEBUG
-	sprintf_s(szDebug, "%s take time(ms):%d", __FUNCTION__, GetTickCount() - take);
-	PrintLogD(szDebug);
-#endif
-	return TRUE;
-
-}
-#endif
-
 VOID CPckClass::DeallocateFileinfo()
 {
 	LPFILES_TO_COMPRESS Fileinfo;
@@ -63,21 +39,6 @@ VOID CPckClass::DeallocateFileinfo()
 	}
 	//m_firstFile = NULL;
 }
-
-#if 0
-LPFILES_TO_COMPRESS CPckClass::AllocateFileinfo()
-{
-	LPFILES_TO_COMPRESS pFileToCompress;
-
-	pFileToCompress = (LPFILES_TO_COMPRESS)malloc(sizeof(FILES_TO_COMPRESS));
-
-	if(pFileToCompress != NULL) {
-		memset(pFileToCompress, 0, sizeof(FILES_TO_COMPRESS));
-	}
-
-	return pFileToCompress;
-}
-#endif
 
 VOID CPckClass::DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode)
 {

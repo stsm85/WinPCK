@@ -113,23 +113,21 @@ BOOL CPckClass::RenameFilename()
 	DWORD		IndexCompressedFilenameDataLengthCryptKey2 = m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey2;
 
 	//以下是创建一个文件，用来保存压缩后的文件
-	CMapViewFileWrite *lpFileWrite = new CMapViewFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
+	CMapViewFileWrite cFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
-	if(!lpFileWrite->OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
+	if(!cFileWrite.OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
 
 		PrintLogEL(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		assert(FALSE);
-		delete lpFileWrite;
 		return FALSE;
 	}
 
-	QWORD dwFileSize = lpFileWrite->GetFileSize() + PCK_RENAME_EXPAND_ADD;
+	QWORD dwFileSize = cFileWrite.GetFileSize() + PCK_RENAME_EXPAND_ADD;
 
-	if(!lpFileWrite->Mapping(m_szMapNameWrite, dwFileSize)) {
+	if(!cFileWrite.Mapping(dwFileSize)) {
 
 		PrintLogEL(TEXT_CREATEMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		assert(FALSE);
-		delete lpFileWrite;
 		return FALSE;
 	}
 
@@ -159,15 +157,13 @@ BOOL CPckClass::RenameFilename()
 
 		FillAndCompressIndexData(&pckIndexTableTemp, &lpPckIndexTableSrc->cFileIndex);
 
-		WritePckIndex(lpFileWrite, &pckIndexTableTemp, dwAddress);
+		WritePckIndex(&cFileWrite, &pckIndexTableTemp, dwAddress);
 
 		++lpPckIndexTableSrc;
 
 	}
 
-	AfterProcess(lpFileWrite, m_PckAllInfo, dwAddress, FALSE);
-
-	delete lpFileWrite;
+	AfterProcess(&cFileWrite, m_PckAllInfo, dwAddress, FALSE);
 
 	PrintLogI(TEXT_LOG_WORKING_DONE);
 

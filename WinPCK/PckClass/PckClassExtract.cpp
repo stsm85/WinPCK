@@ -13,7 +13,6 @@
 #pragma warning ( disable : 4267 )
 
 #include "PckClass.h"
-#include "CharsCodeConv.h"
 
 BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer)
 {
@@ -25,7 +24,7 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFi
 	if(NULL == lpvoidFileRead) {
 		lpFileRead = new CMapViewFileRead();
 
-		if(!lpFileRead->OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) {
+		if(!lpFileRead->OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
 			delete lpFileRead;
 			return FALSE;
 		}
@@ -86,7 +85,7 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 
 	CMapViewFileRead	cFileRead;
 
-	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) 
+	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) 
 		return FALSE;
 
 	BOOL	ret = TRUE;
@@ -139,7 +138,7 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 
 	CMapViewFileRead	cFileRead;
 
-	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) 
+	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) 
 		return FALSE;
 
 	BOOL	ret = TRUE;
@@ -177,7 +176,7 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 	PrintLogI(TEXT_LOG_WORKING_DONE);
 	return	ret;
 }
-BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, /*DWORD	&dwCount, */LPVOID lpvoidFileRead/*, BOOL	&bThreadRunning*/)
+BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileRead)
 {
 
 	CMapViewFileRead	*lpFileRead = (CMapViewFileRead*)lpvoidFileRead;
@@ -222,7 +221,7 @@ BOOL CPckClass::DecompressFile(LPCTSTR	lpszFilename, LPPCKINDEXTABLE lpPckFileIn
 {
 	LPPCKFILEINDEX lpPckFileIndex = &lpPckFileIndexTable->cFileIndex;
 
-	CMapViewFileWrite	*lpFileWrite = new CMapViewFileWrite(0xffffffff);
+	CMapViewFileWrite cFileWrite(0xffffffff);
 
 	LPBYTE	lpMapAddressToWrite;
 	DWORD	dwFileLengthToWrite;
@@ -234,32 +233,27 @@ BOOL CPckClass::DecompressFile(LPCTSTR	lpszFilename, LPPCKINDEXTABLE lpPckFileIn
 	dwFileLengthToWrite = lpPckFileIndex->dwFileClearTextSize;
 
 	//以下是创建一个文件，用来保存解压缩后的文件
-	if(!lpFileWrite->Open(lpszFilename, CREATE_ALWAYS)) {
+	if(!cFileWrite.Open(lpszFilename, CREATE_ALWAYS)) {
 		PrintLogEL(TEXT_OPENWRITENAME_FAIL, lpszFilename, __FILE__, __FUNCTION__, __LINE__);
-		delete lpFileWrite;
 		return FALSE;
 	}
 
-	if(!lpFileWrite->Mapping(m_szMapNameWrite, dwFileLengthToWrite)) {
-		delete lpFileWrite;
-		if(0 == dwFileLengthToWrite)return TRUE;
+	if(!cFileWrite.Mapping(dwFileLengthToWrite)) {
+		if(0 == dwFileLengthToWrite)
+			return TRUE;
 		PrintLogEL(TEXT_CREATEMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
-	if(NULL == (lpMapAddressToWrite = lpFileWrite->View(0, 0))) {
+	if(NULL == (lpMapAddressToWrite = cFileWrite.View(0, 0))) {
 		PrintLogEL(TEXT_VIEWMAPNAME_FAIL, lpszFilename, __FILE__, __FUNCTION__, __LINE__);
-
-		delete lpFileWrite;
 		return FALSE;
 	}
 
-
 	BOOL rtn = GetSingleFileData(lpvoidFileRead, lpPckFileIndexTable, (char*)lpMapAddressToWrite);
 
-	lpFileWrite->SetFilePointer(dwFileLengthToWrite, FILE_BEGIN);
-	lpFileWrite->SetEndOfFile();
-	delete lpFileWrite;
+	cFileWrite.SetFilePointer(dwFileLengthToWrite, FILE_BEGIN);
+	cFileWrite.SetEndOfFile();
 
 	return rtn;
 }

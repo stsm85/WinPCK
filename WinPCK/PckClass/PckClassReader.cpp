@@ -20,9 +20,8 @@ BOOL CPckClass::ReadPckFileIndexes()
 	//CMapViewFileRead *lpRead = new CMapViewFileRead();
 	CMapViewFileRead cRead;
 
-	if(!cRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) {
+	if(!cRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
 		PrintLogEL(TEXT_OPENNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
-		//delete lpRead;
 		return FALSE;
 	}
 
@@ -34,8 +33,6 @@ BOOL CPckClass::ReadPckFileIndexes()
 	BYTE	*lpFileBuffer;
 	if(NULL == (lpFileBuffer = cRead.View(m_PckAllInfo.dwAddressName, cRead.GetFileSize() - m_PckAllInfo.dwAddressName))) {
 		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-
-		//delete lpRead;
 		return FALSE;
 	}
 
@@ -67,7 +64,6 @@ BOOL CPckClass::ReadPckFileIndexes()
 			if(dwFileIndexTableCryptedDataLength[0] != dwFileIndexTableCryptedDataLength[1]) {
 
 				PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
-				//delete lpRead;
 				return FALSE;
 			}
 
@@ -90,7 +86,6 @@ BOOL CPckClass::ReadPckFileIndexes()
 			if(dwFileIndexTableCryptedDataLength[0] != dwFileIndexTableCryptedDataLength[1]) {
 
 				PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
-				//delete lpRead;
 				return FALSE;
 			}
 
@@ -108,6 +103,5 @@ BOOL CPckClass::ReadPckFileIndexes()
 		}
 	}
 
-	//delete lpRead;
 	return TRUE;
 }

@@ -80,10 +80,15 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	lpfirstFile = m_firstFile;
 
 	//╤анд╪Ч
-	CMapViewFileRead *lpcFileRead = new CMapViewFileRead();
+	CMapViewFileRead cFileRead;
 	for(DWORD i = 0; i < dwAppendCount; i++) {
 
-		WideCharToMultiByte(CP_ACP, 0, *lpszFilePathPtr, -1, szPathMbsc, MAX_PATH, "_", 0);
+#ifdef UNICODE
+		CUcs2Ansi cU2A;
+		cU2A.GetString(*lpszFilePathPtr, szPathMbsc, MAX_PATH);
+#else
+		strcpy_s(szPathMbsc, *lpszFilePathPtr);
+#endif
 		nLen = (size_t)(strrchr(szPathMbsc, '\\') - szPathMbsc) + 1;
 
 		if(FILE_ATTRIBUTE_DIRECTORY == (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributesA(szPathMbsc))) {
@@ -91,12 +96,11 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 			EnumFile(szPathMbsc, FALSE, dwFileCount, lpfirstFile, qwTotalFileSize, nLen);
 		} else {
 
-			if(!lpcFileRead->Open(szPathMbsc)) {
+			if(!cFileRead.Open(szPathMbsc)) {
 				DeallocateFileinfo();
 				free(lpszFilePath);
 				PrintLogEL(TEXT_OPENNAME_FAIL, *lpszFilePathPtr, __FILE__, __FUNCTION__, __LINE__);
 
-				delete lpcFileRead;
 				assert(FALSE);
 				return FALSE;
 			}
@@ -106,20 +110,18 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 			lpfirstFile->lpszFileTitle = lpfirstFile->szFilename + nLen;
 			lpfirstFile->nBytesToCopy = MAX_PATH - nLen;
 
-			qwTotalFileSize += (lpfirstFile->dwFileSize = lpcFileRead->GetFileSize());
+			qwTotalFileSize += (lpfirstFile->dwFileSize = cFileRead.GetFileSize());
 
 			lpfirstFile->next = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS));
 			lpfirstFile = lpfirstFile->next;
 
-			lpcFileRead->clear();
+			cFileRead.clear();
 
 			dwFileCount++;
 		}
 
 		lpszFilePathPtr++;
 	}
-
-	delete lpcFileRead;
 
 	free(lpszFilePath);
 

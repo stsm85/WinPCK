@@ -2,16 +2,16 @@ VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
 {
 	CPckClass *pThis = (CPckClass*)pParam;
 
-	char	szFileMappingNameSpaceFormat[16];
-	char	szFileMappingNameSpace[32];
+	//char	szFileMappingNameSpaceFormat[16];
+	//char	szFileMappingNameSpace[32];
 	int		level = pThis->lpPckParams->dwCompressLevel;
 
-	memcpy(szFileMappingNameSpaceFormat, pThis->m_szMapNameRead, 16);
-	strcat_s(szFileMappingNameSpaceFormat, 16, "%d");
+	//memcpy(szFileMappingNameSpaceFormat, pThis->m_szMapNameRead, 16);
+	//strcat_s(szFileMappingNameSpaceFormat, 16, "%d");
 
-	EnterCriticalSection(&g_mt_threadID);
-	sprintf_s(szFileMappingNameSpace, 32, szFileMappingNameSpaceFormat, mt_threadID++);
-	LeaveCriticalSection(&g_mt_threadID);
+	//EnterCriticalSection(&g_mt_threadID);
+	//sprintf_s(szFileMappingNameSpace, 32, szFileMappingNameSpaceFormat, mt_threadID++);
+	//LeaveCriticalSection(&g_mt_threadID);
 
 	BYTE	*bufCompressData = (BYTE*)1;
 
@@ -66,7 +66,7 @@ VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
 		{
 			//文件不为0时的处理
 			//打开要进行压缩的文件
-			if (NULL == (lpBufferToRead = lpFileRead->OpenMappingAndViewAllRead(lpfirstFile->szFilename, szFileMappingNameSpace)))
+			if (NULL == (lpBufferToRead = lpFileRead->OpenMappingAndViewAllRead(lpfirstFile->szFilename)))
 			{
 				*(mt_lpbThreadRunning) = FALSE;
 				lpFileRead->clear();

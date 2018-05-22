@@ -388,7 +388,7 @@ BOOL TInstDlg::ListView_BeginLabelEdit(const HWND hWndList, LPARAM lParam)
 			//StringCchLengthA(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
 #ifdef UNICODE
 			CUcs2Ansi cU2A;
-			nAllowMaxLength = MAX_PATH_PCK_260 - nLen + strlen(cU2A.GetString(lpNodeToShow->szName)) - 2;
+			nAllowMaxLength = MAX_PATH_PCK_260 - nLen + cU2A.GetStrlen(lpNodeToShow->szName) - 2;
 #else
 			nAllowMaxLength = MAX_PATH_PCK_260 - nLen + strlen(lpNodeToShow->szName) - 2;
 #endif
@@ -418,8 +418,8 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 		if(0 == *pNmHdr->item.pszText)return FALSE;
 
 		//isSearchMode = 2 == ((NMLVDISPINFO*) pNmHdr)->item.iImage ? TRUE : FALSE;
-
-		WideCharToMultiByte(CP_ACP, 0, pNmHdr->item.pszText, -1, szEditedText, MAX_PATH_PCK_260, "_", 0);
+		CUcs2Ansi cU2A;
+		cU2A.GetString(pNmHdr->item.pszText, szEditedText, MAX_PATH_PCK_260);
 
 		if(m_lpPckCenter->GetListInSearchMode()) {
 			lpIndexToShow = (LPPCKINDEXTABLE)pNmHdr->item.lParam;

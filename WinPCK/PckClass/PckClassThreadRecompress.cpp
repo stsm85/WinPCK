@@ -300,7 +300,7 @@ BOOL CPckClass::RecompressPckFile(LPTSTR szRecompressPckFile)
 	//打开源文件 
 	//lpFileRead = new CMapViewFileRead();
 
-	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) {
+	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
 		assert(FALSE);
 		return FALSE;
 	}

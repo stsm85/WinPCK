@@ -149,12 +149,12 @@ BOOL CMapViewFileWrite::Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition)
 	return CMapViewFile::Open(hFile, lpszFilename, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL);
 }
 
-BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)
+BOOL CMapViewFileWrite::Mapping(QWORD qwMaxSize)
 {
 #if ENABLE_PCK_PKX_FILE
 	if(IsPckFile && (uqdwMaxPckSize.qwValue < qwMaxSize)){
 
-		if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READWRITE, uqdwMaxPckSize.dwValueHigh, uqdwMaxPckSize.dwValue, lpszNamespace))){
+		if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READWRITE, uqdwMaxPckSize.dwValueHigh, uqdwMaxPckSize.dwValue, GenerateMapName()))){
 			assert(FALSE);
 			return FALSE;
 		}
@@ -202,7 +202,7 @@ BOOL CMapViewFileWrite::Mapping(LPCSTR lpszNamespace, QWORD qwMaxSize)
 		UNQWORD uqwMaxSize;
 		uqwMaxSize.qwValue = qwMaxSize;
 
-		if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READWRITE, uqwMaxSize.dwValueHigh, uqwMaxSize.dwValue, lpszNamespace))){
+		if(NULL == (hFileMapping = CreateFileMappingA(hFile, NULL, PAGE_READWRITE, uqwMaxSize.dwValueHigh, uqwMaxSize.dwValue, GenerateMapName()))){
 			assert(FALSE);
 			return FALSE;
 		}	
@@ -295,7 +295,7 @@ BOOL CMapViewFileWrite::OpenPckAndMappingWrite(LPCTSTR lpFileName, DWORD dwCreat
 	if(!OpenPck(lpFileName, dwCreationDisposition))
 		return FALSE;
 
-	if(!Mapping(GenerateMapName(), qdwSizeToMap))
+	if(!Mapping(qdwSizeToMap))
 		return FALSE;
 
 	return TRUE;

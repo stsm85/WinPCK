@@ -2,8 +2,8 @@
 
 #define define_get_pckAllInfo_by_version(_ver, _id)	\
 		PCKTAIL_V##_ver PckTail_v##_ver; \
-		lpRead->SetFilePointer(-((QWORD)(sizeof(PCKTAIL_V##_ver))), FILE_END); \
-		if (!lpRead->Read(&PckTail_v##_ver, sizeof(PCKTAIL_V##_ver))) { \
+		cRead.SetFilePointer(-((QWORD)(sizeof(PCKTAIL_V##_ver))), FILE_END); \
+		if (!cRead.Read(&PckTail_v##_ver, sizeof(PCKTAIL_V##_ver))) { \
 			PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__); \
 			goto dect_err; \
 		} \

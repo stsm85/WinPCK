@@ -236,28 +236,28 @@ BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
 
 	int iDetectedPckID = -1;
 	//读取文件头
-	CMapViewFileRead *lpRead = new CMapViewFileRead();
+	CMapViewFileRead cRead;
 
-	if(!lpRead->OpenPck(lpszPckFile)) {
+	if(!cRead.OpenPck(lpszPckFile)) {
 		PrintLogEL(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
-	if(!lpRead->Read(&cPckHead, sizeof(PCKHEAD_V2020))) {
+	if(!cRead.Read(&cPckHead, sizeof(PCKHEAD_V2020))) {
 		PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
 	//判断是不是64位的文件大小
-	if(!lpRead->SetPckPackSize((0x100 < cPckHead.dwHeadCheckTail) ? cPckHead.dwPckSize : ((PCKHEAD_V2030*)&cPckHead)->dwPckSize)) {
+	if(!cRead.SetPckPackSize((0x100 < cPckHead.dwHeadCheckTail) ? cPckHead.dwPckSize : ((PCKHEAD_V2030*)&cPckHead)->dwPckSize)) {
 
 		PrintLogEL(TEXT_PCK_SIZE_INVALID, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
-	lpRead->SetFilePointer(-((QWORD)(sizeof(DWORD) * 4)), FILE_END);
+	cRead.SetFilePointer(-((QWORD)(sizeof(DWORD) * 4)), FILE_END);
 
-	if(!lpRead->Read(&dwTailVals, sizeof(DWORD) * 4)) {
+	if(!cRead.Read(&dwTailVals, sizeof(DWORD) * 4)) {
 		PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
@@ -321,12 +321,10 @@ BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
 
 	pckAllInfo->lpSaveAsPckVerFunc = pckAllInfo->lpDetectedPckVerFunc = &cPckVersionFunc[iDetectedPckID];
 
-	delete lpRead;
 	return TRUE;
 
 dect_err:
 	pckAllInfo->lpSaveAsPckVerFunc = NULL;
-	delete lpRead;
 	PrintInvalidVersionDebugInfo(lpszPckFile);
 	return FALSE;
 }
