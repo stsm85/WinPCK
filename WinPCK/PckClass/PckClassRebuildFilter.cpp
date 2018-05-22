@@ -357,7 +357,7 @@ BOOL CPckClass::ParseScript(LPCTSTR lpszScriptFile)
 	PrintLogI("开始解析脚本...");
 
 	//读取文件所有字符
-	if(NULL == (lpBufferToRead = OpenMappingAndViewAllRead(&cFileRead, lpszScriptFile, "parse_script"))) {
+	if(NULL == (lpBufferToRead = cFileRead.OpenMappingAndViewAllRead(lpszScriptFile, "parse_script"))) {
 
 		return FALSE;
 	}
@@ -367,15 +367,13 @@ BOOL CPckClass::ParseScript(LPCTSTR lpszScriptFile)
 	if(MAX_SCRIPT_SIZE < sfvBuf.dwSize)
 		return FALSE;
 
-	if(NULL == (sfvBuf.buffer = (BYTE*)malloc(sfvBuf.dwSize))) {
-
+	if(NULL == (sfvBuf.buffer = (BYTE*)malloc(sfvBuf.dwSize)))
 		return FALSE;
-	}
 
 	memcpy(sfvBuf.buffer, lpBufferToRead, sfvBuf.dwSize);
 
 
-	m_firstFileOp = (FILEOP *)AllocNodes(sizeof(FILEOP));
+	m_firstFileOp = (FILEOP *)AllocMemory(sizeof(FILEOP));
 	m_firstFileOp->next = NULL;
 
 	pFileOp = m_firstFileOp;
@@ -414,7 +412,7 @@ BOOL CPckClass::ParseScript(LPCTSTR lpszScriptFile)
 				//一行脚本分为两部分，操作和文件名
 				if(ParseOneLine(pFileOp, szLine, m_PckAllInfo.lpszFileTitle)) {
 
-					pFileOp->next = (FILEOP *)AllocNodes(sizeof(FILEOP));
+					pFileOp->next = (FILEOP *)AllocMemory(sizeof(FILEOP));
 					pFileOp_prev = pFileOp;
 					pFileOp = pFileOp->next;
 				} else {

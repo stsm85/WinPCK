@@ -2,13 +2,14 @@
 #include "OpenSaveDlg.h"
 #include <tchar.h>
 #include <shlobj.h>
-#include "globals.h"
+
+#define DEFAULT_FILTER	TEXT("所有文件\0*.*\0\0")
 
 /******************************************************
 只打开一个文件
 ******************************************************/
 
-BOOL OpenSingleFile(HWND hWnd, TCHAR * lpszFileName)
+BOOL OpenSingleFile(HWND hWnd, TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD nFilterIndex)
 {
 	OPENFILENAME ofn;
 	TCHAR szStrPrintf[MAX_PATH];
@@ -25,7 +26,8 @@ BOOL OpenSingleFile(HWND hWnd, TCHAR * lpszFileName)
 
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = hWnd;
-	ofn.lpstrFilter = TEXT_FILE_FILTER;
+	ofn.lpstrFilter = (NULL == lpstrFilter) ? DEFAULT_FILTER : lpstrFilter;
+	ofn.nFilterIndex = nFilterIndex;
 	//ofn.lpstrFile         = lpszFileName;
 	//ofn.lpstrInitialDir   = lpszFileName;
 	ofn.nMaxFile = MAX_PATH;
@@ -51,8 +53,7 @@ DWORD SaveFile(HWND hWnd, TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD nFilt
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = hWnd;
-	//ofn.lpstrFilter       = TEXT_FILE_FILTER;
-	ofn.lpstrFilter = lpstrFilter;
+	ofn.lpstrFilter = (NULL == lpstrFilter) ? DEFAULT_FILTER : lpstrFilter;
 	ofn.lpstrFile = lpszFileName;
 	ofn.nMaxFile = MAX_PATH;
 	ofn.Flags = OFN_OVERWRITEPROMPT | OFN_EXPLORER | OFN_ENABLESIZING;

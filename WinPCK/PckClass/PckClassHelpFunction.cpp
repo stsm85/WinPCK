@@ -14,6 +14,7 @@
 #pragma warning ( disable : 4267 )
 #pragma warning ( disable : 4996 )
 
+#if 0
 BOOL CPckClass::OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace)
 {
 
@@ -82,7 +83,7 @@ BOOL CPckClass::OpenPckAndMappingWrite(CMapViewFileWrite *lpWrite, LPCTSTR lpFil
 
 	return TRUE;
 }
-
+#endif
 
 void CPckClass::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional)
 {

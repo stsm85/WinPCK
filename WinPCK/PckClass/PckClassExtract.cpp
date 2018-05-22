@@ -25,7 +25,7 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFi
 	if(NULL == lpvoidFileRead) {
 		lpFileRead = new CMapViewFileRead();
 
-		if(!OpenPckAndMappingRead(lpFileRead, m_PckAllInfo.szFilename, m_szMapNameRead)) {
+		if(!lpFileRead->OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) {
 			delete lpFileRead;
 			return FALSE;
 		}
@@ -75,8 +75,6 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFi
 	if(NULL == lpvoidFileRead)
 		delete lpFileRead;
 
-
-
 	return TRUE;
 
 }
@@ -86,12 +84,10 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 
 	PrintLogI(TEXT_LOG_EXTRACT);
 
-	CMapViewFileRead	*lpFileRead = new CMapViewFileRead();
+	CMapViewFileRead	cFileRead;
 
-	if(!OpenPckAndMappingRead(lpFileRead, m_PckAllInfo.szFilename, m_szMapNameRead)) {
-		delete lpFileRead;
+	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) 
 		return FALSE;
-	}
 
 	BOOL	ret = TRUE;
 
@@ -103,7 +99,6 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 		if(!lpPckParams->cVarParams.bThreadRunning) {
 			PrintLogW(TEXT_USERCANCLE);
 
-			delete lpFileRead;
 			return FALSE;
 		}
 
@@ -122,10 +117,8 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 		}
 
 		//解压文件
-		if(!(DecompressFile(szFilename, *lpIndexToExtractPtr, lpFileRead))) {
+		if(!(DecompressFile(szFilename, *lpIndexToExtractPtr, &cFileRead))) {
 			PrintLogEL(TEXT_UNCOMP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-
-			delete lpFileRead;
 			return FALSE;
 		} else {
 			//dwCount++;
@@ -135,10 +128,7 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 		++lpIndexToExtractPtr;
 	}
 
-	delete lpFileRead;
-
 	PrintLogI(TEXT_LOG_WORKING_DONE);
-
 	return	ret;
 }
 
@@ -147,12 +137,10 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 
 	PrintLogI(TEXT_LOG_EXTRACT);
 
-	CMapViewFileRead	*lpFileRead = new CMapViewFileRead();
+	CMapViewFileRead	cFileRead;
 
-	if(!OpenPckAndMappingRead(lpFileRead, m_PckAllInfo.szFilename, m_szMapNameRead)) {
-		delete lpFileRead;
+	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) 
 		return FALSE;
-	}
 
 	BOOL	ret = TRUE;
 
@@ -161,18 +149,14 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 	for(int i = 0;i < nFileCount;i++) {
 		if(!lpPckParams->cVarParams.bThreadRunning) {
 			PrintLogW(TEXT_USERCANCLE);
-
-			delete lpFileRead;
 			return FALSE;
 		}
 
 		if(NULL == (*lpNodeToExtractPtr)->child) {
 
 			//解压文件
-			if(!(DecompressFile((*lpNodeToExtractPtr)->szName, (*lpNodeToExtractPtr)->lpPckIndexTable, lpFileRead))) {
+			if(!(DecompressFile((*lpNodeToExtractPtr)->szName, (*lpNodeToExtractPtr)->lpPckIndexTable, &cFileRead))) {
 				PrintLogEL(TEXT_UNCOMP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-
-				delete lpFileRead;
 				return FALSE;
 			} else {
 				//dwCount++;
@@ -183,17 +167,14 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 
 			CreateDirectory((*lpNodeToExtractPtr)->szName, NULL);
 			SetCurrentDirectory((*lpNodeToExtractPtr)->szName);
-			ret = StartExtract((*lpNodeToExtractPtr)->child->next, lpFileRead);
+			ret = StartExtract((*lpNodeToExtractPtr)->child->next, &cFileRead);
 			SetCurrentDirectoryA("..\\");
 		}
 
 		lpNodeToExtractPtr++;
 	}
 
-	delete lpFileRead;
-
 	PrintLogI(TEXT_LOG_WORKING_DONE);
-
 	return	ret;
 }
 BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, /*DWORD	&dwCount, */LPVOID lpvoidFileRead/*, BOOL	&bThreadRunning*/)

@@ -128,3 +128,45 @@ BOOL CMapViewFileRead::Mapping(LPCSTR lpszNamespace)
 	return TRUE;
 
 }
+
+#if ENABLE_PCK_PKX_FILE
+
+BOOL CMapViewFileRead::OpenPckAndMappingRead(LPCSTR lpFileName, LPCSTR lpszMapNamespace)
+{
+	if(!(OpenPck(lpFileName))) 
+		return FALSE;
+
+	if(!(Mapping(lpszMapNamespace))) 
+		return FALSE;
+
+	return TRUE;
+}
+
+BOOL CMapViewFileRead::OpenPckAndMappingRead(LPCWSTR lpFileName, LPCSTR lpszMapNamespace)
+{
+	if(!(OpenPck(lpFileName)))
+		return FALSE;
+
+	if(!(Mapping(lpszMapNamespace))) 
+		return FALSE;
+
+	return TRUE;
+}
+
+LPBYTE CMapViewFileRead::OpenMappingAndViewAllRead(LPCSTR lpFileName, LPCSTR lpszMapNamespace)
+{
+	if(OpenPckAndMappingRead(lpFileName, lpszMapNamespace))
+		return View(0, 0);
+	else
+		return NULL;
+}
+
+LPBYTE CMapViewFileRead::OpenMappingAndViewAllRead(LPCWSTR lpFileName, LPCSTR lpszMapNamespace)
+{
+	if(OpenPckAndMappingRead(lpFileName, lpszMapNamespace))
+		return View(0, 0);
+	else
+		return NULL;
+}
+
+#endif

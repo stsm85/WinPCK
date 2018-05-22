@@ -288,7 +288,7 @@ BOOL CPckClass::RecompressPckFile(LPTSTR szRecompressPckFile)
 	QWORD	dwTotalFileSizeAfterRebuild = m_PckAllInfo.qwPckSize + PCK_STEP_ADD_SIZE;
 
 	CMapViewFileWrite	*lpFileWrite;
-	CMapViewFileRead	*lpFileRead;
+	CMapViewFileRead	cFileRead;
 	int					threadnum = lpPckParams->dwMTThread;
 
 	//构造头和尾时需要的参数
@@ -298,22 +298,19 @@ BOOL CPckClass::RecompressPckFile(LPTSTR szRecompressPckFile)
 	lpPckParams->cVarParams.dwUIProgressUpper = dwNoDupFileCount;
 
 	//打开源文件 
-	lpFileRead = new CMapViewFileRead();
+	//lpFileRead = new CMapViewFileRead();
 
-	if(!OpenPckAndMappingRead(lpFileRead, m_PckAllInfo.szFilename, m_szMapNameRead)) {
-		delete lpFileRead;
+	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) {
 		assert(FALSE);
 		return FALSE;
 	}
 
 	if(!BeforeSingleOrMultiThreadProcess(&pckAllInfo, lpFileWrite, szRecompressPckFile, CREATE_ALWAYS, dwTotalFileSizeAfterRebuild, threadnum)) {
-		delete lpFileRead;
 		assert(FALSE);
 		return FALSE;
 	}
 
 	if(!initCompressedDataQueue(threadnum, dwFileCount, PCK_DATA_START_AT)) {
-		delete lpFileRead;
 		delete lpFileWrite;
 		assert(FALSE);
 		return FALSE;
@@ -322,7 +319,7 @@ BOOL CPckClass::RecompressPckFile(LPTSTR szRecompressPckFile)
 	if(PCK_COMPRESS_NEED_ST < threadnum) {
 
 		//mt_dwAddress = dwAddress;
-		mt_lpFileRead = lpFileRead;
+		mt_lpFileRead = &cFileRead;
 		mt_lpFileWrite = lpFileWrite;
 		mt_dwFileCount = dwFileCount;
 		mt_dwFileCountOfWriteTarget = dwNoDupFileCount;
@@ -356,7 +353,7 @@ BOOL CPckClass::RecompressPckFile(LPTSTR szRecompressPckFile)
 	}
 #endif
 	//关闭读文件
-	delete lpFileRead;
+	//delete lpFileRead;
 
 	//取消后，文件数量
 	dwNoDupFileCount = mt_dwFileCountOfWriteTarget;

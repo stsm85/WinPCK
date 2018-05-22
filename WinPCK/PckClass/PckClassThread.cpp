@@ -39,7 +39,7 @@ BOOL CPckClass::BeforeSingleOrMultiThreadProcess(LPPCK_ALL_INFOS lpPckAllInfo, C
 	lpWrite = new CMapViewFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
 	//OPEN_ALWAYS，新建新的pck(CREATE_ALWAYS)或更新存在的pck(OPEN_EXISTING)
-	if(!OpenPckAndMappingWrite(lpWrite, szPckFile, dwCreationDisposition, qdwSizeToMap)) {
+	if(!lpWrite->OpenPckAndMappingWrite(szPckFile, dwCreationDisposition, qdwSizeToMap)) {
 
 		delete lpWrite;
 		return FALSE;

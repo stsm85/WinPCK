@@ -66,7 +66,7 @@ VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
 		{
 			//文件不为0时的处理
 			//打开要进行压缩的文件
-			if (NULL == (lpBufferToRead = pThis->OpenMappingAndViewAllRead(lpFileRead, lpfirstFile->szFilename, szFileMappingNameSpace)))
+			if (NULL == (lpBufferToRead = lpFileRead->OpenMappingAndViewAllRead(lpfirstFile->szFilename, szFileMappingNameSpace)))
 			{
 				*(mt_lpbThreadRunning) = FALSE;
 				lpFileRead->clear();

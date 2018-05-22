@@ -13,6 +13,17 @@
 #include <assert.h>
 
 #define TEST_T 1
+/*
+#define CREATE_NEW          1
+#define CREATE_ALWAYS       2
+#define OPEN_EXISTING       3
+#define OPEN_ALWAYS         4
+#define TRUNCATE_EXISTING   5
+
+#define INVALID_FILE_SIZE ((DWORD)0xFFFFFFFF)
+#define INVALID_SET_FILE_POINTER ((DWORD)-1)
+#define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
+*/
 
 #if _MSC_VER >= 1400
 #pragma warning ( disable : 4996 )
@@ -44,16 +55,8 @@ typedef union _QWORD{
 #define PATHW_LOCAL_PREFIX			L"\\\\?\\"
 #define PATHW_UNC_PREFIX			L"\\\\?\\UNC"
 
-#define PATH_LOCAL_PREFIX_LEN		4
-#define PATH_UNC_PREFIX_LEN			7
-
-//#ifdef UNICODE
-//#define tcscpy_s	wcscpy_s
-//#define	tcslen		wcslen
-//#else
-//#define tcscpy_s	strcpy_s
-//#define	tcslen		strlen
-//#endif
+#define PATH_LOCAL_PREFIX_LEN		(strlen(PATH_LOCAL_PREFIX))
+#define PATH_UNC_PREFIX_LEN			(strlen(PATH_UNC_PREFIX))
 
 class CMapViewFile
 {
@@ -86,7 +89,7 @@ public:
 #endif
 
 protected:
-
+	LPCSTR	GenerateMapName();
 	
 	BOOL isWinNt();
 	void MakeUnlimitedPath(LPWSTR _dst, LPCWSTR	_src, size_t size);
@@ -151,12 +154,19 @@ public:
 
 	BOOL	OpenPck(LPCSTR lpszFilename);
 	BOOL	OpenPck(LPCWSTR lpszFilename);
+
+	BOOL	OpenPckAndMappingRead(LPCSTR lpFileName, LPCSTR lpszMapNamespace);
+	BOOL	OpenPckAndMappingRead(LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
+
+	LPBYTE OpenMappingAndViewAllRead(LPCSTR lpFileName, LPCSTR lpszMapNamespace);
+	LPBYTE OpenMappingAndViewAllRead(LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
 #endif
 
 	BOOL	Open(LPCSTR lpszFilename);
 	BOOL	Open(LPCWSTR lpszFilename);
 
 	BOOL	Mapping(LPCSTR lpszNamespace);
+
 
 protected:
 
@@ -174,6 +184,8 @@ public:
 	//void	SetMaxSinglePckSize(QWORD qwMaxPckSize);
 	BOOL	OpenPck(LPCSTR lpszFilename, DWORD dwCreationDisposition);
 	BOOL	OpenPck(LPCWSTR lpszFilename, DWORD dwCreationDisposition);
+
+	BOOL	OpenPckAndMappingWrite(LPCTSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
 #endif
 
 	BOOL	Open(LPCSTR lpszFilename, DWORD dwCreationDisposition);

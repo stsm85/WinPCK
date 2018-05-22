@@ -34,29 +34,22 @@ BOOL CPckClass::GetPckBasicInfo(LPTSTR lpszFile, PCKHEAD_V2020 *lpHead, LPBYTE &
 		return FALSE;
 	}
 
-	CMapViewFileRead	*lpcReadfile = new CMapViewFileRead();
+	CMapViewFileRead	cReadfile;
 
-	if(!OpenPckAndMappingRead(lpcReadfile, m_PckAllInfo.szFilename, m_szMapNameRead))
+	if(!cReadfile.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead))
 	{
 		free(lpFileIndexData);
-		delete lpcReadfile;
 		return FALSE;
 	}
 
-	if(NULL == (lpFileBuffer = lpcReadfile->View(m_PckAllInfo.dwAddressName, dwPckFileIndexDataSize)))
+	if(NULL == (lpFileBuffer = cReadfile.View(m_PckAllInfo.dwAddressName, dwPckFileIndexDataSize)))
 	{
 		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-
 		free(lpFileIndexData);
-		delete lpcReadfile;
-		
 		return FALSE;
 	}
 
 	memcpy(lpFileIndexData, lpFileBuffer, dwPckFileIndexDataSize);
-
-	delete lpcReadfile;
-
 	memcpy(lpHead, m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(&m_PckAllInfo), sizeof(PCKHEAD_V2020));
 
 	return TRUE;
@@ -68,29 +61,22 @@ BOOL CPckClass::SetPckBasicInfo(PCKHEAD_V2020 *lpHead, LPBYTE lpFileIndexData, D
 {
 	BYTE	*lpFileBuffer;
 
-	CMapViewFileWrite	*lpcWritefile = new CMapViewFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
+	CMapViewFileWrite	cWritefile(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
-	if(!OpenPckAndMappingWrite(lpcWritefile, m_PckAllInfo.szFilename, OPEN_EXISTING, lpHead->dwPckSize)){
-
-		delete lpcWritefile;
+	if(!cWritefile.OpenPckAndMappingWrite(m_PckAllInfo.szFilename, OPEN_EXISTING, lpHead->dwPckSize)){
 		return FALSE;
 	}
 
-	lpcWritefile->SetFilePointer(0, FILE_BEGIN);
-	lpcWritefile->Write(lpHead, sizeof(PCKHEAD_V2020));
+	cWritefile.SetFilePointer(0, FILE_BEGIN);
+	cWritefile.Write(lpHead, sizeof(PCKHEAD_V2020));
 
-	if(NULL == (lpFileBuffer = lpcWritefile->View(lpHead->dwPckSize - dwPckFileIndexDataSize, dwPckFileIndexDataSize)))
+	if(NULL == (lpFileBuffer = cWritefile.View(lpHead->dwPckSize - dwPckFileIndexDataSize, dwPckFileIndexDataSize)))
 	{
-
 		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-
-		delete lpcWritefile;
 		return FALSE;
 	}
 
 	memcpy(lpFileBuffer, lpFileIndexData, dwPckFileIndexDataSize);
 
-	delete lpcWritefile;
 	return TRUE;
-
 }

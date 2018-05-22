@@ -17,25 +17,25 @@
 
 BOOL CPckClass::ReadPckFileIndexes()
 {
-	CMapViewFileRead *lpRead = new CMapViewFileRead();
+	//CMapViewFileRead *lpRead = new CMapViewFileRead();
+	CMapViewFileRead cRead;
 
-	if(!OpenPckAndMappingRead(lpRead, m_PckAllInfo.szFilename, m_szMapNameRead)) {
+	if(!cRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) {
 		PrintLogEL(TEXT_OPENNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
-		delete lpRead;
+		//delete lpRead;
 		return FALSE;
 	}
 
-	if(!AllocIndexTableAndInit(m_lpPckIndexTable, m_PckAllInfo.dwFileCount)) {
-		delete lpRead;
+	if(NULL == (m_lpPckIndexTable = (LPPCKINDEXTABLE)AllocMemory(sizeof(PCKINDEXTABLE) * m_PckAllInfo.dwFileCount))) {
 		return FALSE;
 	}
 
 	//开始读文件
 	BYTE	*lpFileBuffer;
-	if(NULL == (lpFileBuffer = lpRead->View(m_PckAllInfo.dwAddressName, lpRead->GetFileSize() - m_PckAllInfo.dwAddressName))) {
+	if(NULL == (lpFileBuffer = cRead.View(m_PckAllInfo.dwAddressName, cRead.GetFileSize() - m_PckAllInfo.dwAddressName))) {
 		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 
-		delete lpRead;
+		//delete lpRead;
 		return FALSE;
 	}
 
@@ -51,7 +51,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 
 	//pck是压缩时，文件名的压缩长度不会超过0x100，所以当
 	//开始一个字节，如果0x75，就没有压缩，如果是0x74就是压缩的	0x75->FILEINDEX_LEVEL0
-	lpRead->SetFilePointer(m_PckAllInfo.dwAddressName, FILE_BEGIN);
+	cRead.SetFilePointer(m_PckAllInfo.dwAddressName, FILE_BEGIN);
 
 	byteLevelKey = (*(DWORD*)lpFileBuffer) ^ IndexCompressedFilenameDataLengthCryptKey[0];
 	isLevel0 = (m_PckAllInfo.lpDetectedPckVerFunc->dwFileIndexSize == byteLevelKey)/* ? TRUE : FALSE*/;
@@ -67,7 +67,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 			if(dwFileIndexTableCryptedDataLength[0] != dwFileIndexTableCryptedDataLength[1]) {
 
 				PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
-				delete lpRead;
+				//delete lpRead;
 				return FALSE;
 			}
 
@@ -90,7 +90,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 			if(dwFileIndexTableCryptedDataLength[0] != dwFileIndexTableCryptedDataLength[1]) {
 
 				PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
-				delete lpRead;
+				//delete lpRead;
 				return FALSE;
 			}
 
@@ -108,6 +108,6 @@ BOOL CPckClass::ReadPckFileIndexes()
 		}
 	}
 
-	delete lpRead;
+	//delete lpRead;
 	return TRUE;
 }

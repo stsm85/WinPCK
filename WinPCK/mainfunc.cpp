@@ -78,7 +78,7 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 		iListTopView = ListView_GetTopIndex(GetDlgItem(IDC_LIST));
 	}
 
-	if(0 != *lpszFileToOpen || OpenSingleFile(hWnd, m_Filename)) {
+	if(0 != *lpszFileToOpen || OpenSingleFile(hWnd, m_Filename, TEXT_FILE_FILTER)) {
 		t1 = GetTickCount();
 
 		//转换文件名格式 

@@ -13,11 +13,11 @@
 
 #include "PckClass.h"
 
-void* CPckClass::AllocNodes(size_t	sizeStuct)
+void* CPckClass::AllocMemory(size_t	sizeStuct)
 {
 	void*		lpMallocNode;
 
-	if(NULL == (lpMallocNode = /*(LPPCK_PATH_NODE)*/malloc(sizeStuct))) {
+	if(NULL == (lpMallocNode = malloc(sizeStuct))) {
 		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return lpMallocNode;
 	}
@@ -28,6 +28,7 @@ void* CPckClass::AllocNodes(size_t	sizeStuct)
 
 }
 
+#if 0
 BOOL CPckClass::AllocIndexTableAndInit(LPPCKINDEXTABLE &lpPckIndexTable, DWORD dwFileCount)
 {
 #ifdef _DEBUG
@@ -49,6 +50,7 @@ BOOL CPckClass::AllocIndexTableAndInit(LPPCKINDEXTABLE &lpPckIndexTable, DWORD d
 	return TRUE;
 
 }
+#endif
 
 VOID CPckClass::DeallocateFileinfo()
 {
@@ -62,6 +64,7 @@ VOID CPckClass::DeallocateFileinfo()
 	//m_firstFile = NULL;
 }
 
+#if 0
 LPFILES_TO_COMPRESS CPckClass::AllocateFileinfo()
 {
 	LPFILES_TO_COMPRESS pFileToCompress;
@@ -74,6 +77,7 @@ LPFILES_TO_COMPRESS CPckClass::AllocateFileinfo()
 
 	return pFileToCompress;
 }
+#endif
 
 VOID CPckClass::DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode)
 {

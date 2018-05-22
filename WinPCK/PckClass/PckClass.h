@@ -106,9 +106,9 @@ protected:
 	BOOL	MountPckFile(LPCTSTR	szFile);
 
 	//PckClassFunction.cpp
-	BOOL	OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace);
-	BOOL	OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
-	BOOL	OpenPckAndMappingWrite(CMapViewFileWrite *lpWrite, LPCTSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
+	//BOOL	OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace);
+	//BOOL	OpenPckAndMappingRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
+	//BOOL	OpenPckAndMappingWrite(CMapViewFileWrite *lpWrite, LPCTSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
 	//重建时重新计算文件数量，除去无效的和文件名重复的
 	DWORD	ReCountFiles();
 	BOOL	IsNeedExpandWritingFile(
@@ -127,26 +127,24 @@ protected:
 	void AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional = TRUE);
 	BOOL WritePckIndexTable(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, DWORD &dwFileCount, QWORD &dwAddress);
 	void AfterWriteThreadFailProcess(BOOL *lpbThreadRunning, HANDLE hevtAllCompressFinish, DWORD &dwFileCount, DWORD dwFileHasBeenWritten, QWORD &dwAddressFinal, QWORD dwAddress, BYTE **bufferPtrToWrite);
-	LPBYTE OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace);
-	LPBYTE OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
+	//LPBYTE OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCSTR lpFileName, LPCSTR lpszMapNamespace);
+	//LPBYTE OpenMappingAndViewAllRead(CMapViewFileRead *lpRead, LPCWSTR lpFileName, LPCSTR lpszMapNamespace);
 	LPPCKINDEXTABLE_COMPRESS FillAndCompressIndexData(LPPCKINDEXTABLE_COMPRESS lpPckIndexTableComped, LPPCKFILEINDEX lpPckFileIndexToCompress);
 
 
 	//PckClassFunction.cpp
-
-	BOOL	AllocIndexTableAndInit(LPPCKINDEXTABLE &lpPckIndexTable, DWORD dwFileCount);
+	//BOOL	AllocIndexTableAndInit(LPPCKINDEXTABLE &lpPckIndexTable, DWORD dwFileCount);
 
 	virtual void	BuildDirTree();
-	void* AllocNodes(size_t	sizeStuct);
+	void*	AllocMemory(size_t	sizeStuct);
 	VOID	DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode);
 
-	LPFILES_TO_COMPRESS AllocateFileinfo();
+	//LPFILES_TO_COMPRESS AllocateFileinfo();
 	VOID	DeallocateFileinfo();
 
 	BOOL	AddFileToNode(LPPCK_PATH_NODE lpRootNode, LPPCKINDEXTABLE	lpPckIndexNode);
 	LPPCK_PATH_NODE	FindFileNode(LPPCK_PATH_NODE lpBaseNode, char* lpszFile);
 
-	//BOOL	EnumNode(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileRead, LPVOID lpvoidFileWrite, LPPCKINDEXTABLE_COMPRESS &lpPckIndexTablePtr, QWORD &dwAddress);
 	VOID	EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, LPFILES_TO_COMPRESS &pFileinfo, QWORD &qwTotalFileSize, size_t nLen);
 
 	//PckClassExtract.cpp
@@ -230,13 +228,6 @@ public:
 protected:
 	void	ResetRebuildFilterInIndexList();
 	BOOL	ApplyScript2IndexList(VOID *pfirstFileOp);
-	//BOOL	LocationFileIndex(VOID *pFileOp);
-
-
-//变量
-public:
-
-	//TCHAR	m_lastErrorString[1024];
 
 protected:
 

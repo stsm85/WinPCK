@@ -90,8 +90,8 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 	PCK_ALL_INFOS		pckAllInfo;
 
 	LPBYTE				lpBufferToWrite, lpBufferToRead;
-	CMapViewFileWrite	*lpFileWrite;
-	CMapViewFileRead	*lpFileRead;
+	//CMapViewFileWrite	cFileWrite;
+	CMapViewFileRead	cFileRead;
 
 	//构造头和尾时需要的参数
 	memset(&pckAllInfo, 0, sizeof(PCK_ALL_INFOS));
@@ -101,27 +101,23 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 	lpPckParams->cVarParams.dwUIProgressUpper = dwNoDupFileCount;
 
 	//打开源文件 
-	lpFileRead = new CMapViewFileRead();
+	//lpFileRead = new CMapViewFileRead();
 
-	if(!OpenPckAndMappingRead(lpFileRead, m_PckAllInfo.szFilename, m_szMapNameRead)) {
-		delete lpFileRead;
+	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead)) {
 		return FALSE;
 	}
 
 	//打开目标文件 
 	//以下是创建一个文件，用来保存重建后的文件
-	lpFileWrite = new CMapViewFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
+	//lpFileWrite = new CMapViewFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
+	CMapViewFileWrite	cFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
-	if(!OpenPckAndMappingWrite(lpFileWrite, szRebuildPckFile, CREATE_ALWAYS, dwTotalFileSizeAfterRebuild)) {
-		delete lpFileRead;
-		delete lpFileWrite;
+	if(!cFileWrite.OpenPckAndMappingWrite(szRebuildPckFile, CREATE_ALWAYS, dwTotalFileSizeAfterRebuild)) {
 		return FALSE;
 	}
 
 	//申请空间,文件名压缩数据 数组
 	if(NULL == (lpPckIndexTable = new PCKINDEXTABLE_COMPRESS[dwNoDupFileCount])) {
-		delete lpFileRead;
-		delete lpFileWrite;
 		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
@@ -143,27 +139,23 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 
 		DWORD dwNumberOfBytesToMap = lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize;
 
-		if(NULL == (lpBufferToWrite = lpFileWrite->View(dwAddress, dwNumberOfBytesToMap))) {
+		if(NULL == (lpBufferToWrite = cFileWrite.View(dwAddress, dwNumberOfBytesToMap))) {
 			PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-			delete lpFileRead;
-			delete lpFileWrite;
 			delete[] lpPckIndexTable;
 			return FALSE;
 		}
 
 		DWORD dwSrcAddress = lpPckIndexTableSource->cFileIndex.dwAddressOffset;	//保存原来的地址
 
-		if(NULL == (lpBufferToRead = lpFileRead->View(dwSrcAddress, dwNumberOfBytesToMap))) {
+		if(NULL == (lpBufferToRead = cFileRead.View(dwSrcAddress, dwNumberOfBytesToMap))) {
 			PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-			delete lpFileRead;
-			delete lpFileWrite;
 			delete[] lpPckIndexTable;
 			return FALSE;
 		}
 
 		memcpy(lpBufferToWrite, lpBufferToRead, dwNumberOfBytesToMap);
 
-		lpFileRead->UnmapView();
+		cFileRead.UnmapView();
 
 		//写入此文件的PckFileIndex文件压缩信息并压缩
 		lpPckIndexTableSource->cFileIndex.dwAddressOffset = dwAddress;	//此文件的压缩数据起始地址
@@ -174,7 +166,7 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 
 		lpPckIndexTableSource->cFileIndex.dwAddressOffset = dwSrcAddress;	//还原原来的地址
 
-		lpFileWrite->UnmapView();
+		cFileWrite.UnmapView();
 
 		++lpPckIndexTablePtr;
 		++lpPckIndexTableSource;
@@ -188,17 +180,17 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 	}
 
 	//关闭读文件
-	delete lpFileRead;
+	//delete lpFileRead;
 
 	//写文件索引
 	dwAddressName = dwAddress;
-	WritePckIndexTable(lpFileWrite, lpPckIndexTable, dwNoDupFileCount, dwAddress);
+	WritePckIndexTable(&cFileWrite, lpPckIndexTable, dwNoDupFileCount, dwAddress);
 
 	pckAllInfo.dwAddressName = dwAddressName;
 	pckAllInfo.dwFileCount = dwNoDupFileCount;
-	AfterProcess(lpFileWrite, pckAllInfo, dwAddress);
+	AfterProcess(&cFileWrite, pckAllInfo, dwAddress);
 
-	delete lpFileWrite;
+	//delete lpFileWrite;
 	delete[] lpPckIndexTable;
 
 	PrintLogI(TEXT_LOG_WORKING_DONE);
@@ -308,7 +300,7 @@ BOOL CPckClass::AddFileToNode(LPPCK_PATH_NODE lpRootNode, LPPCKINDEXTABLE	lpPckI
 	do {
 		//此节点下还没有文件（是一个新产生的节点），首先添加".."
 		if(NULL == (lpChildNode->child)) {
-			lpChildNode->child = (LPPCK_PATH_NODE)AllocNodes(sizePckPathNode);
+			lpChildNode->child = (LPPCK_PATH_NODE)AllocMemory(sizePckPathNode);
 			lpChildNode->child->parent = lpChildNode;
 			lpChildNode->child->parentfirst = lpFirstNode;
 
@@ -339,7 +331,7 @@ BOOL CPckClass::AddFileToNode(LPPCK_PATH_NODE lpRootNode, LPPCKINDEXTABLE	lpPckI
 				if(NULL == lpChildNode->next) {
 
 					//添加文件（夹）
-					lpChildNode->next = (LPPCK_PATH_NODE)AllocNodes(sizePckPathNode);
+					lpChildNode->next = (LPPCK_PATH_NODE)AllocMemory(sizePckPathNode);
 					lpChildNode = lpChildNode->next;
 
 					strpathcpy(lpChildNode->szName, lpszFilename);
@@ -519,7 +511,7 @@ VOID CPckClass::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, 
 
 				qwTotalFileSize += (pFileinfo->dwFileSize = WFD.nFileSizeLow);
 
-				pFileinfo->next = AllocateFileinfo();
+				pFileinfo->next = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS));
 				pFileinfo = pFileinfo->next;
 
 			}

@@ -37,6 +37,11 @@ const wchar_t * CAnsi2Ucs::GetString(const char *_src, wchar_t *_dst, int _dstsi
 	return	(wchar_t*)m_buffer;
 }
 
+int	CAnsi2Ucs::GetStrlen(const char *_src)
+{
+	return (AtoW(_src, NULL, 0) - 1);
+}
+
 const char * CUcs2Ansi::GetString(const wchar_t *_src, char *_dst, int _dstsize)//_dstsize是指数组元素个数
 {
 
@@ -55,4 +60,9 @@ const char * CUcs2Ansi::GetString(const wchar_t *_src, char *_dst, int _dstsize)
 	}
 	return	(char*)m_buffer;
 
+}
+
+int	CUcs2Ansi::GetStrlen(const wchar_t *_src)
+{
+	return (WtoA(_src, NULL, 0) - 1);
 }

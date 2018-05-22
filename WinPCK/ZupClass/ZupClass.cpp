@@ -41,15 +41,10 @@ CONST	LPPCK_PATH_NODE CZupClass::GetPckPathNode()
 
 void CZupClass::BuildDirTree()
 {
+	CMapViewFileRead	cReadfile;
 
-	size_t	sizeFileIndex = sizeof(PCKINDEXTABLE);
-
-	CMapViewFileRead	*lpcReadfile = new CMapViewFileRead();
-
-	if(!OpenPckAndMappingRead(lpcReadfile, m_PckAllInfo.szFilename, m_szMapNameRead)) {
-		delete lpcReadfile;
+	if(!cReadfile.OpenPckAndMappingRead(m_PckAllInfo.szFilename, m_szMapNameRead))
 		return;
-	}
 
 	LPPCKINDEXTABLE lpPckIndexTable = m_lpPckIndexTable;
 	LPPCKINDEXTABLE lpZupIndexTable = m_lpZupIndexTable;
@@ -62,15 +57,13 @@ void CZupClass::BuildDirTree()
 		if(0x6d656c65 == *(DWORD*)lpPckIndexTable->cFileIndex.szFilename) {
 
 			//解码文件名
-			memcpy(lpZupIndexTable, lpPckIndexTable, sizeFileIndex);
+			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));
 			DecodeFilename(lpZupIndexTable->cFileIndex.szFilename, lpPckIndexTable->cFileIndex.szFilename);
 
-			BYTE	*lpbuffer = lpcReadfile->ReView(lpZupIndexTable->cFileIndex.dwAddressOffset, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
+			BYTE	*lpbuffer = cReadfile.ReView(lpZupIndexTable->cFileIndex.dwAddressOffset, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
 			if(NULL == lpbuffer) {
 
 				PrintLogEL(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
-
-				delete lpcReadfile;
 				return;
 			}
 
@@ -95,7 +88,7 @@ void CZupClass::BuildDirTree()
 			}
 		} else {
 			//直接复制
-			memcpy(lpZupIndexTable, lpPckIndexTable, sizeFileIndex);
+			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));
 		}
 
 		//建立目录
@@ -105,7 +98,6 @@ void CZupClass::BuildDirTree()
 		lpPckIndexTable++;
 		lpZupIndexTable++;
 	}
-	delete lpcReadfile;
 }
 
 BOOL CZupClass::Init(LPCTSTR szFile)
@@ -116,7 +108,7 @@ BOOL CZupClass::Init(LPCTSTR szFile)
 
 	if(m_ReadCompleted = MountPckFile(m_PckAllInfo.szFilename)) {
 
-		if(!AllocIndexTableAndInit(m_lpZupIndexTable, m_PckAllInfo.dwFileCount)) {
+		if(NULL == (m_lpZupIndexTable = (LPPCKINDEXTABLE)AllocMemory(sizeof(PCKINDEXTABLE) * m_PckAllInfo.dwFileCount))) {
 			return FALSE;
 		}
 

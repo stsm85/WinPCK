@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "MapViewFile.h"
+#include <stdio.h>
 
 BOOL CMapViewFile::isWinNt()
 {
@@ -63,7 +64,7 @@ BOOL CMapViewFile::FileExists(LPCWSTR szName)
 
 BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
 {
-	if(FileExists(lpszFilename) || 
+	if(FileExists(lpszFilename) ||
 		((OPEN_EXISTING != dwCreationDisposition) && (TRUNCATE_EXISTING != dwCreationDisposition))) {
 		char szFilename[MAX_PATH];
 		if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(lpszFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
@@ -89,7 +90,7 @@ BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAcces
 BOOL CMapViewFile::Open(HANDLE &hFile, LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
 {
 	if(FileExists(lpszFilename) ||
-		((OPEN_EXISTING != dwCreationDisposition) && (TRUNCATE_EXISTING != dwCreationDisposition)))  {
+		((OPEN_EXISTING != dwCreationDisposition) && (TRUNCATE_EXISTING != dwCreationDisposition))) {
 		WCHAR szFilename[MAX_PATH];
 
 		if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(lpszFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
@@ -455,19 +456,31 @@ DWORD CMapViewFile::Read(LPVOID buffer, DWORD dwBytesToRead)
 	return dwFileBytesRead;
 }
 
+
+#if ENABLE_PCK_PKX_FILE
+
 QWORD CMapViewFile::GetFileSize()
 {
 	UNQWORD cqwSize;
-#if ENABLE_PCK_PKX_FILE
+
 	if(!IsPckFile) {
-#endif
 		cqwSize.dwValue = ::GetFileSize(hFile, &cqwSize.dwValueHigh);
 		return cqwSize.qwValue;
-#if ENABLE_PCK_PKX_FILE
 	} else
 		return uqwFullSize.qwValue;
-#endif
 }
+
+#else
+
+QWORD CMapViewFile::GetFileSize()
+{
+	UNQWORD cqwSize;
+	cqwSize.dwValue = ::GetFileSize(hFile, &cqwSize.dwValueHigh);
+	return cqwSize.qwValue;
+}
+
+#endif
+
 #if ENABLE_PCK_PKX_FILE
 BOOL CMapViewFile::SetPckPackSize(QWORD qwPckSize)
 {
@@ -485,3 +498,13 @@ BOOL CMapViewFile::SetPckPackSize(QWORD qwPckSize)
 	return TRUE;
 }
 #endif
+
+LPCSTR CMapViewFile::GenerateMapName()
+{
+	static char _Buffer[32];
+	LARGE_INTEGER counter;
+	QueryPerformanceCounter(&counter);
+
+	sprintf_s(_Buffer, "mapv%x%x", GetCurrentThreadId(), counter.LowPart);
+	return _Buffer;
+}

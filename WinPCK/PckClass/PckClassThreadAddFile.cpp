@@ -68,7 +68,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 	}
 
-	if(NULL == m_firstFile)m_firstFile = AllocateFileinfo();
+	if(NULL == m_firstFile)m_firstFile = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS));
 	if(NULL == m_firstFile) {
 
 		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
@@ -108,7 +108,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 			qwTotalFileSize += (lpfirstFile->dwFileSize = lpcFileRead->GetFileSize());
 
-			lpfirstFile->next = AllocateFileinfo();
+			lpfirstFile->next = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS));
 			lpfirstFile = lpfirstFile->next;
 
 			lpcFileRead->clear();
