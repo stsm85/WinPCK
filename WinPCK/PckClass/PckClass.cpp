@@ -60,7 +60,7 @@ BOOL CPckClass::Init(LPCTSTR	szFile)
 {
 	////test();
 
-	lstrcpy(m_PckAllInfo.szFilename, szFile);
+	_tcscpy(m_PckAllInfo.szFilename, szFile);
 	m_PckAllInfo.lpszFileTitle = _tcsrchr(m_PckAllInfo.szFilename, TEXT('\\')) + 1;
 
 	if(MountPckFile(m_PckAllInfo.szFilename)) {

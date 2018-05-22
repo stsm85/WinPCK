@@ -110,7 +110,7 @@ void CZupClass::BuildDirTree()
 BOOL CZupClass::Init(LPCTSTR szFile)
 {
 
-	lstrcpy(m_PckAllInfo.szFilename, szFile);
+	_tcscpy(m_PckAllInfo.szFilename, szFile);
 	m_PckAllInfo.lpszFileTitle = _tcsrchr(m_PckAllInfo.szFilename, TEXT('\\')) + 1;
 
 	if(m_ReadCompleted = MountPckFile(m_PckAllInfo.szFilename)) {

@@ -122,7 +122,6 @@
 #define IDC_EDIT_SCRIPT                 1037
 #define IDC_CHECK_RECPMPRESS            1038
 #define IDC_BUTTON_OPEN                 1039
-#define IDC_EDIT2                       1040
 #define IDC_EDIT_RESULT                 1040
 #define ID_MENU_COMPRESS_OPT            40000
 #define ID_MENU_OPEN                    40001
@@ -170,13 +169,14 @@
 #define ID_LISTVIEW_RENAME              40044
 #define ID_LISTVIEW_ATTR                40045
 #define ID_LISTVIEW_POPMENU             40046
+#define ID_40048                        40048
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        187
-#define _APS_NEXT_COMMAND_VALUE         40048
+#define _APS_NEXT_COMMAND_VALUE         40049
 #define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

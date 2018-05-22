@@ -29,7 +29,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 	//…Ë÷√≤Œ ˝
 	if(m_ReadCompleted) {
-		lstrcpy(szPckFile, m_PckAllInfo.szFilename);
+		_tcscpy(szPckFile, m_PckAllInfo.szFilename);
 
 		dwOldPckFileCount = m_PckAllInfo.dwFileCount;
 

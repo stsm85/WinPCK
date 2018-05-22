@@ -364,7 +364,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "关于",                          ID_MENU_ABOUT
     END
-    MENUITEM "任何写操作前请务必做好备份！！！",            0
+    MENUITEM "任何写操作前请务必做好备份！！！",            ID_40048
 END
 
 IDR_MENU_RCLICK MENU
