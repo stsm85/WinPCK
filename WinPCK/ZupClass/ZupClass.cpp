@@ -91,6 +91,13 @@ void CZupClass::BuildDirTree()
 			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));
 		}
 
+
+#ifdef UNICODE
+		CAnsi2Ucs cA2U;
+		cA2U.GetString(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.sztFilename, sizeof(lpZupIndexTable->cFileIndex.sztFilename) / sizeof(TCHAR));
+#else
+		memcpy(lpZupIndexTable->cFileIndex.sztFilename, lpZupIndexTable->cFileIndex.szFilename, sizeof(lpZupIndexTable->cFileIndex.szFilename));
+#endif
 		//½¨Á¢Ä¿Â¼
 		AddFileToNode(&m_RootNodeZup, lpZupIndexTable);
 		AddFileToNode(&m_RootNode, lpPckIndexTable);

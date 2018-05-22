@@ -129,12 +129,10 @@ protected:
 	LPPCKINDEXTABLE_COMPRESS FillAndCompressIndexData(LPPCKINDEXTABLE_COMPRESS lpPckIndexTableComped, LPPCKFILEINDEX lpPckFileIndexToCompress);
 
 
-	//PckClassFunction.cpp
+	//PckClassAllocFunctions.cpp
 	virtual void	BuildDirTree();
 	void*	AllocMemory(size_t	sizeStuct);
 	VOID	DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode);
-
-	//LPFILES_TO_COMPRESS AllocateFileinfo();
 	VOID	DeallocateFileinfo();
 
 	BOOL	AddFileToNode(LPPCK_PATH_NODE lpRootNode, LPPCKINDEXTABLE	lpPckIndexNode);
