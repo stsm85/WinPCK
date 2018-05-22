@@ -25,8 +25,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,23,0,1
- PRODUCTVERSION 1,23,0,1
+ FILEVERSION 1,23,0,2
+ PRODUCTVERSION 1,23,0,2
  FILEFLAGSMASK 0x37L
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -42,12 +42,12 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "FileDescription", "WinPCK"
-            VALUE "FileVersion", "1.23.0.1"
+            VALUE "FileVersion", "1.23.0.2"
             VALUE "InternalName", "WinPCK"
             VALUE "LegalCopyright", "Copyright (C) 2012-2018 stsm"
             VALUE "OriginalFilename", "WinPCK.exe"
             VALUE "ProductName", "WinPCK"
-            VALUE "ProductVersion", "1.23.0.1"
+            VALUE "ProductVersion", "1.23.0.2"
             VALUE "SpecialBuild", "WinPCK by stsm"
         END
     END
@@ -192,7 +192,7 @@ EXSTYLE WS_EX_ACCEPTFILES
 CAPTION "重建选项"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "确定",IDOK,265,142,50,14,WS_DISABLED
+    DEFPUSHBUTTON   "确定",IDOK,265,142,50,14
     PUSHBUTTON      "取消",IDCANCEL,210,142,50,14
     CONTROL         "",IDC_SLIDER_LEVEL,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,54,7,213,17
     LTEXT           "压缩等级：",IDC_STATIC,8,9,41,11
