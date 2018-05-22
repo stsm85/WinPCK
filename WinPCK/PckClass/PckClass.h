@@ -238,9 +238,6 @@ protected:
 	char			m_szEventAllWriteFinish[16];
 	char			m_szEventAllCompressFinish[16];
 	char			m_szEventMaxMemory[16];
-
-	//char			m_szMapNameRead[16];
-	//char			m_szMapNameWrite[16];
 };
 
 #endif

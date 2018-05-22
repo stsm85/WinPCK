@@ -68,9 +68,6 @@ public:
 
 protected:
 
-
-protected:
-
 	PCK_PATH_NODE				m_RootNodeZup;
 	LPPCKINDEXTABLE				m_lpZupIndexTable;
 
