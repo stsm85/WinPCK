@@ -11,6 +11,8 @@
 
 #include <exdisp.h>
 #include <atlbase.h>
+#include <Windows.h>
+#include "GetDragPath.h"
 
 static char  *hexstr = "0123456789abcdef";
 
@@ -56,7 +58,7 @@ void decodeandcopy(TCHAR *dst, TCHAR *src)
 	*dst = 0;
 }
 
-
+//通过Com直接获取鼠标位置所在的explorer.exe的窗口，并获取路径
 BOOL GetWndPath(HWND hWnd, TCHAR * szPath)
 {
 
@@ -70,8 +72,6 @@ BOOL GetWndPath(HWND hWnd, TCHAR * szPath)
 
 		long lShellWindowCount = 0;
 		psw->get_Count(&lShellWindowCount);
-
-
 
 		for(long i = 0;i < lShellWindowCount;i++) {
 

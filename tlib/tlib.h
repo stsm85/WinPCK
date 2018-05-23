@@ -564,7 +564,7 @@ void DebugU8(char *fmt,...);
 #define Debug  DebugA
 #endif // !UNICODE
 #else
-#define Debug  
+#include "tDebug.h"
 #endif
 #include "tapi32u8.h"
 

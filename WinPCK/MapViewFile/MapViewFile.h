@@ -89,6 +89,7 @@ public:
 #endif
 
 protected:
+	////自动生成CreateFileMappingA时所需要的name
 	LPCSTR	GenerateMapName();
 	
 	BOOL isWinNt();
@@ -140,6 +141,9 @@ protected:
 	UNQWORD	uqwCurrentPos;		//当前文件指针位置
 
 	BOOL	isWriteMode;
+
+	//用于存放MapName
+	char szFileMappingName[32];
 };
 
 

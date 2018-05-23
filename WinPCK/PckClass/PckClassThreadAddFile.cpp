@@ -13,7 +13,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	size_t		nLen;
 
 	char		szPathMbsc[MAX_PATH];
-	char		szLogString[LOG_BUFFER];
+	//char		szLogString[LOG_BUFFER];
 
 	int			level = lpPckParams->dwCompressLevel;
 	int			threadnum = lpPckParams->dwMTThread;
@@ -44,27 +44,21 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 		mt_nCurrentNodeStringLen = strlen(mt_szCurrentNodeString);
 
-		sprintf_s(szLogString, TEXT_LOG_UPDATE_ADD
+		PrintLogI(TEXT_LOG_UPDATE_ADD
 			"-"
 			TEXT_LOG_LEVEL_THREAD, level, threadnum);
-		PrintLogI(szLogString);
 
 	} else {
 
 		m_PckAllInfo.dwAddressName = PCK_DATA_START_AT;
-
 		dwOldPckFileCount = 0;
-
 		lpNodeToInsertPtr = m_RootNode.child;
-
 		*mt_szCurrentNodeString = 0;
-
 		mt_nCurrentNodeStringLen = 0;
 
-		sprintf_s(szLogString, TEXT_LOG_UPDATE_NEW
+		PrintLogI(TEXT_LOG_UPDATE_NEW
 			"-"
 			TEXT_LOG_LEVEL_THREAD, level, threadnum);
-		PrintLogI(szLogString);
 
 	}
 
@@ -186,21 +180,18 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	}
 
 	//日志
-	sprintf_s(szLogString, TEXT_UPDATE_FILE_INFO, dwPrepareToAdd, mt_CompressTotalFileSize);
-	PrintLogI(szLogString);
+	PrintLogI(TEXT_UPDATE_FILE_INFO, dwPrepareToAdd, mt_CompressTotalFileSize);
 
 	PCK_ALL_INFOS	pckAllInfo;
 	//OPEN_ALWAYS，新建新的pck(CREATE_ALWAYS)或更新存在的pck(OPEN_EXISTING)
 	if(!BeforeSingleOrMultiThreadProcess(&pckAllInfo, mt_lpFileWrite, szPckFile, OPEN_ALWAYS, mt_CompressTotalFileSize, threadnum)) {
 		DeallocateFileinfo();
-		//PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
 		assert(FALSE);
 		return FALSE;
 	}
 	if(!initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress = m_PckAllInfo.dwAddressName)) {
 		delete mt_lpFileWrite;
 		DeallocateFileinfo();
-		//PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
 		assert(FALSE);
 		return FALSE;
 	}

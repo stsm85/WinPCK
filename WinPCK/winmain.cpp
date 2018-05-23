@@ -21,9 +21,7 @@
 #include <process.h>
 #include <shlobj.h>
 #include <tchar.h>
-
-
-BOOL GetWndPath(HWND hWnd, TCHAR * szPath);
+#include "GetDragPath.h"
 
 /*
 	WinMain
@@ -452,12 +450,9 @@ BOOL TInstDlg::IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath)
 	}
 
 	GetClassName(hRootHwnd, sRootClass, MAX_PATH);
-#ifdef _DEBUG
-	OutputDebugStringA("sRootClass:");
-	OutputDebugString(sRootClass);
-	OutputDebugString(TEXT("\r\n"));
 
-#endif
+	Debug(TEXT("sRootClass:%s\r\n"), sRootClass);
+
 	if((0 == lstrcmp(sRootClass, SHELL_LISTVIEW_ROOT_CLASS2)) || \
 		(0 == lstrcmp(sRootClass, SHELL_LISTVIEW_ROOT_CLASS1))/* || \
 		(GetClassName(hWndParent, sParentClass, MAX_PATH), 0 == lstrcmp(sParentClass, SHELL_LISTVIEW_PARENT_CLASS))*/) {
@@ -578,18 +573,14 @@ END_DROP:
 
 BOOL TInstDlg::EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	char szPrintf[256];
+	TCHAR szPrintf[256];
 
 	switch(uMsg) {
 	case WM_FRESH_MAIN_CAPTION:
 
 		if(wParam) {
-#ifdef UNICODE
-			sprintf_s(szPrintf, "%s - %s", THIS_MAIN_CAPTION, WtoA(m_lpPckCenter->GetCurrentVersionName()));
-#else
-			sprintf_s(szPrintf, "%s - %s", THIS_MAIN_CAPTION, m_lpPckCenter->GetCurrentVersionName());
-#endif
-			SetWindowTextA(szPrintf);
+			_stprintf_s(szPrintf, TEXT("%s - %s"), TEXT(THIS_MAIN_CAPTION), m_lpPckCenter->GetCurrentVersionName());
+			SetWindowText(szPrintf);
 		} else {
 			SetWindowTextA(THIS_MAIN_CAPTION);
 		}

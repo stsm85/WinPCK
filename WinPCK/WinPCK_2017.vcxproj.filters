@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="头文件\dds">
-      <UniqueIdentifier>{e285f6cc-c0da-4b77-b9f0-8ade51a52d0c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\tlib">
       <UniqueIdentifier>{1b0c2642-ff3e-499f-af73-1b180c0785a4}</UniqueIdentifier>
     </Filter>
@@ -49,9 +46,6 @@
     <Filter Include="源文件\ZupClass">
       <UniqueIdentifier>{229c4c48-5c97-41ea-b058-8c2aa51e6d06}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\dds">
-      <UniqueIdentifier>{579fc46f-f0d2-448f-8b8a-c984c9d2ae9d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\tlib">
       <UniqueIdentifier>{f8ac42b8-a202-4f12-8caf-a6bf5dbb4071}</UniqueIdentifier>
     </Filter>
@@ -60,6 +54,12 @@
     </Filter>
     <Filter Include="头文件\MiscFuncs">
       <UniqueIdentifier>{489345cc-453c-4390-9568-149e5e7158f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\decode_dds">
+      <UniqueIdentifier>{e285f6cc-c0da-4b77-b9f0-8ade51a52d0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\decode_dds">
+      <UniqueIdentifier>{579fc46f-f0d2-448f-8b8a-c984c9d2ae9d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -73,9 +73,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="threadproc.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GetDragPath.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="miscdecode.cpp">
@@ -122,9 +119,6 @@
     </ClCompile>
     <ClCompile Include=".\ZupClass\ZupClassFunction.cpp">
       <Filter>源文件\ZupClass</Filter>
-    </ClCompile>
-    <ClCompile Include=".\dds\DDSTextureLoader.cpp">
-      <Filter>源文件\dds</Filter>
     </ClCompile>
     <ClCompile Include="MapViewFile\MapViewFileWrite.cpp">
       <Filter>源文件\MapViewFile</Filter>
@@ -246,6 +240,15 @@
     <ClCompile Include="MiscFuncs\OpenSaveDlg.cpp">
       <Filter>源文件\MiscFuncs</Filter>
     </ClCompile>
+    <ClCompile Include="MiscFuncs\GetDragPath.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="decode_dds\DDSTextureLoader.cpp">
+      <Filter>源文件\decode_dds</Filter>
+    </ClCompile>
+    <ClCompile Include="decode_dds\BuildDIB.cpp">
+      <Filter>源文件\decode_dds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc">
@@ -267,15 +270,6 @@
     </ClInclude>
     <ClInclude Include=".\DictHash\DictHash.h">
       <Filter>头文件\DictHash</Filter>
-    </ClInclude>
-    <ClInclude Include=".\dds\DDS.h">
-      <Filter>头文件\dds</Filter>
-    </ClInclude>
-    <ClInclude Include=".\dds\DDSTextureLoader.h">
-      <Filter>头文件\dds</Filter>
-    </ClInclude>
-    <ClInclude Include=".\dds\dxgiformat.h">
-      <Filter>头文件\dds</Filter>
     </ClInclude>
     <ClInclude Include=".\PckClass\PckClass.h">
       <Filter>头文件\PckClass</Filter>
@@ -357,6 +351,24 @@
     </ClInclude>
     <ClInclude Include="MiscFuncs\OpenSaveDlg.h">
       <Filter>头文件\MiscFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tlib\tDebug.h">
+      <Filter>头文件\tlib</Filter>
+    </ClInclude>
+    <ClInclude Include="MiscFuncs\GetDragPath.h">
+      <Filter>头文件\MiscFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="decode_dds\DDS.h">
+      <Filter>头文件\decode_dds</Filter>
+    </ClInclude>
+    <ClInclude Include="decode_dds\DDSTextureLoader.h">
+      <Filter>头文件\decode_dds</Filter>
+    </ClInclude>
+    <ClInclude Include="decode_dds\dxgiformat.h">
+      <Filter>头文件\decode_dds</Filter>
+    </ClInclude>
+    <ClInclude Include="decode_dds\decode_dds.h">
+      <Filter>头文件\decode_dds</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -496,12 +496,20 @@ BOOL CMapViewFile::SetPckPackSize(QWORD qwPckSize)
 }
 #endif
 
+//自动生成CreateFileMappingA时所需要的name，要求同时正在使用的FileMapping的name不可重复
 LPCSTR CMapViewFile::GenerateMapName()
 {
-	static char _Buffer[32];
+	//
+	static unsigned int dwDupRemover = 0;
+	
 	LARGE_INTEGER counter;
 	QueryPerformanceCounter(&counter);
 
-	sprintf_s(_Buffer, "mapv%x%x", GetCurrentThreadId(), counter.LowPart);
-	return _Buffer;
+	sprintf_s(szFileMappingName, "mapv%x%x%x", GetCurrentThreadId(), counter.LowPart, dwDupRemover++);
+#ifdef _DEBUG
+	OutputDebugStringA(__FUNCTION__);
+	OutputDebugStringA(szFileMappingName);
+	OutputDebugStringA("\r\n");	
+#endif
+	return szFileMappingName;
 }

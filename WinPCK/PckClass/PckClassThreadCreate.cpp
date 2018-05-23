@@ -100,10 +100,8 @@ VOID CPckClass::WriteThread(VOID* pParam)
 
 BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 {
-	char		szLogString[LOG_BUFFER];
 	CUcs2Ansi cU2A;
-	sprintf_s(szLogString, TEXT_LOG_CREATE, cU2A.GetString(szPckFile));
-	PrintLogI(szLogString);
+	PrintLogI(TEXT_LOG_CREATE, cU2A.GetString(szPckFile));
 
 	DWORD		dwFileCount = 0;									//文件数量, 原pck文件中的文件数
 	QWORD		qwTotalFileSize = 0, qwTotalFileSizeTemp;			//未压缩时所有文件大小
@@ -118,8 +116,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	int			threadnum = lpPckParams->dwMTThread;
 
 	//LOG
-	sprintf_s(szLogString, TEXT_LOG_LEVEL_THREAD, level, threadnum);
-	PrintLogI(szLogString);
+	PrintLogI(TEXT_LOG_LEVEL_THREAD, level, threadnum);
 
 	//开始查找文件
 	LPFILES_TO_COMPRESS		lpfirstFile;

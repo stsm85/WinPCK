@@ -201,9 +201,7 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 		if(*lpbThreadRunning) {
 			//计时结束
 			t2 = GetTickCount() - t1;
-			_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWOK), t2);
-
-			pThis->m_lpPckCenter->PrintLogN(szPrintf);
+			pThis->m_lpPckCenter->PrintLogN(GetLoadStr(IDS_STRING_RENEWOK), t2);
 			//pThis->SetStatusBarText(4, szPrintf);
 		} else {
 
@@ -394,9 +392,8 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 		if(*lpbThreadRunning) {
 			//计时结束
 			t2 = GetTickCount() - t1;
-			_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_REBUILDOK), t2);
 
-			pThis->m_lpPckCenter->PrintLogN(szPrintf);
+			pThis->m_lpPckCenter->PrintLogN(GetLoadStr(IDS_STRING_REBUILDOK), t2);
 			//pThis->SetStatusBarText(4, szPrintf);
 		} else {
 			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
@@ -478,9 +475,8 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 		if(*lpbThreadRunning) {
 			//计时结束
 			t2 = GetTickCount() - t1;
-			_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_COMPOK), t2);
 
-			pThis->m_lpPckCenter->PrintLogN(szPrintf);
+			pThis->m_lpPckCenter->PrintLogN(GetLoadStr(IDS_STRING_COMPOK), t2);
 			//pThis->SetStatusBarText(4, szPrintf);
 		} else {
 			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));

@@ -130,7 +130,7 @@
       <FloatingPointModel>Precise</FloatingPointModel>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir)PckVersion;$(ProjectDir);$(SolutionDir)libpng</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)decode_dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;gdiplus.Lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -183,7 +183,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)MapViewFile;$(ProjectDir)PckVersion;$(ProjectDir);$(SolutionDir)libpng</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)decode_dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)MapViewFile;$(ProjectDir)</AdditionalIncludeDirectories>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
     </ClCompile>
     <Link>
@@ -232,7 +232,7 @@
       <EnablePREfast>false</EnablePREfast>
       <CompileAsManaged>
       </CompileAsManaged>
-      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)MapViewFile;$(ProjectDir)PckVersion;$(ProjectDir);$(SolutionDir)libpng</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)decode_dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)MapViewFile;$(ProjectDir)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
@@ -278,7 +278,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <StringPooling>true</StringPooling>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)MapViewFile;$(ProjectDir)PckVersion;$(ProjectDir);$(SolutionDir)libpng</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)decode_dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)MapViewFile;$(ProjectDir)</AdditionalIncludeDirectories>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
     </ClCompile>
@@ -293,7 +293,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir)PckVersion;$(ProjectDir);$(SolutionDir)libdeflate</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)decode_dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <WarningLevel>Level3</WarningLevel>
@@ -303,7 +303,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir)PckVersion;$(ProjectDir);$(SolutionDir)libdeflate</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)decode_dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>

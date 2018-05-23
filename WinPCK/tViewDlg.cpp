@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include "Raw2HexString.h"
 #include <tchar.h>
+#include "CharsCodeConv.h"
 
 TViewDlg::TViewDlg(char **_buf, DWORD &_dwSize, const TCHAR *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_VIEW, _win)
 {
@@ -108,8 +109,11 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 			break;
 
 		case TEXT_TYPE_UTF8:
-			SetDlgItemTextW(IDC_RICHEDIT_VIEW, U8toW(lpszTextShow));
-			U8toW("");
+		{
+			CU82Ucs cU82U;
+			SetDlgItemTextW(IDC_RICHEDIT_VIEW, cU82U.GetString(lpszTextShow));
+			//U8toW("");
+		}
 			break;
 
 		case TEXT_TYPE_RAW:

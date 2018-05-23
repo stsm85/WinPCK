@@ -2,6 +2,8 @@
 #include "Raw2HexString.h"
 #include <stdio.h>
 
+#pragma warning ( disable : 4996 )
+
 #define ADDRESS_FMTSTR		"%016llxh: "
 #define ADDRESS_STRLEN		19
 //strlen("+0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +a +b +c +d +e +f ")

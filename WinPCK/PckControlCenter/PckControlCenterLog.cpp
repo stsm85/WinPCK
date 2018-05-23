@@ -279,28 +279,6 @@ void CPckControlCenter::PrintLog(const char chLevel, const char *_fmt, va_list a
 	_vsnprintf(_maintext, sizeof(_maintext), _fmt, ap);
 
 	PreInsertLogToList(chLevel, _maintext);
-
-//	switch(chLevel) {
-//	case LOG_FLAG_ERROR:
-//		PrintLogE(_maintext);
-//		break;
-//	case LOG_FLAG_WARNING:
-//		PrintLogW(_maintext);
-//		break;
-//	case LOG_FLAG_INFO:
-//		PrintLogI(_maintext);
-//		break;
-//	case LOG_FLAG_NOTICE:
-//		PrintLogN(_maintext);
-//		break;
-//#ifdef _DEBUG
-//	case LOG_FLAG_DEBUG:
-//		PrintLogD(_maintext);
-//		break;
-//#endif
-//	default:
-//		PrintLogI(_maintext);
-//	}
 }
 
 void CPckControlCenter::PrintLog(const char chLevel, const wchar_t *_fmt, va_list ap)
@@ -310,28 +288,6 @@ void CPckControlCenter::PrintLog(const char chLevel, const wchar_t *_fmt, va_lis
 	_vsnwprintf(_maintext, sizeof(_maintext), _fmt, ap);
 
 	PreInsertLogToList(chLevel, _maintext);
-/*
-	switch(chLevel) {
-	case LOG_FLAG_ERROR:
-		PrintLogE(_maintext);
-		break;
-	case LOG_FLAG_WARNING:
-		PrintLogW(_maintext);
-		break;
-	case LOG_FLAG_INFO:
-		PrintLogI(_maintext);
-		break;
-	case LOG_FLAG_NOTICE:
-		PrintLogN(_maintext);
-		break;
-#ifdef _DEBUG
-	case LOG_FLAG_DEBUG:
-		PrintLogD(_maintext);
-		break;
-#endif
-	default:
-		PrintLogI(_maintext);
-	}*/
 }
 
 void CPckControlCenter::PrintLog(const char chLevel, const char *_fmt, ...)

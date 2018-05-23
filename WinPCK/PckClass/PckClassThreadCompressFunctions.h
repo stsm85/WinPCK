@@ -9,9 +9,10 @@ VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
 	//memcpy(szFileMappingNameSpaceFormat, pThis->m_szMapNameRead, 16);
 	//strcat_s(szFileMappingNameSpaceFormat, 16, "%d");
 
-	//EnterCriticalSection(&g_mt_threadID);
+	EnterCriticalSection(&g_mt_threadID);
 	//sprintf_s(szFileMappingNameSpace, 32, szFileMappingNameSpaceFormat, mt_threadID++);
-	//LeaveCriticalSection(&g_mt_threadID);
+	mt_threadID++;
+	LeaveCriticalSection(&g_mt_threadID);
 
 	BYTE	*bufCompressData = (BYTE*)1;
 

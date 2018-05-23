@@ -114,10 +114,6 @@ BOOL CMapViewFileRead::Mapping()
 	}
 #if ENABLE_PCK_PKX_FILE
 	if(hasPkx){
-		//char szNamespace_2[16];
-		//memcpy(szNamespace_2, lpszNamespace, 16);
-		//strcat_s(szNamespace_2, 16, "_2");
-
 		if(NULL == (hFileMapping2 = CreateFileMappingA(hFile2, NULL, PAGE_READONLY, 0, 0, GenerateMapName()))){
 			assert(FALSE);
 			return FALSE;

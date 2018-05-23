@@ -8,13 +8,17 @@
 // 
 // 2019.12.25
 //////////////////////////////////////////////////////////////////////
-
 #include "tlib.h"
 #include "resource.h"
 #include "winmain.h"
 #include <process.h>
 #include <CommCtrl.h>
 #include "CharsCodeConv.h"
+
+#define DEBUG_THIS 0
+#if !DEBUG_THIS
+#include "tDebug.h"
+#endif
 
 #define MAX_COLUMN_COUNT		64
 
@@ -52,9 +56,7 @@ DWORD dwSortStatus = 0;
 BOOL TInstDlg::EvNotifyListView(const NMHDR *pNmHdr)
 {
 	int iCurrentHotItem = ((LPNMLISTVIEW)pNmHdr)->iItem;
-#ifdef _DEBUG
 	Debug(L"D ListView:LVN_FIRST %d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
-#endif
 	switch(pNmHdr->code) {
 	case LVN_COLUMNCLICK:
 		ProcessColumnClick(((LPNMLISTVIEW)pNmHdr)->hdr.hwndFrom, (LPNMLISTVIEW)pNmHdr, dwSortStatus);
@@ -89,11 +91,9 @@ BOOL TInstDlg::EvNotifyListView(const NMHDR *pNmHdr)
 	case NM_RETURN:
 		break;
 	case LVN_KEYDOWN:
-#ifdef _DEBUG
-		NMLVKEYDOWN * tcode;
-		tcode = (NMLVKEYDOWN*)pNmHdr;
-		Debug(L"D ListView wVKey:%d(%c),flags:%x\r\n", tcode->wVKey, tcode->wVKey, ::GetKeyState(VK_CONTROL));
-#endif
+
+		DebugA("D ListView wVKey:%d(%c)\r\n", ((NMLVKEYDOWN*)pNmHdr)->wVKey, ((NMLVKEYDOWN*)pNmHdr)->wVKey);
+
 		BOOL bCtrl = ::GetKeyState(VK_CONTROL) & 0x80;
 		//BOOL bShift = ::GetKeyState(VK_SHIFT) & 0x80;  
 		BOOL bAlt = ::GetKeyState(VK_MENU) & 0x80; 

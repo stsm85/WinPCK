@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <WinPCK_Include>$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)decode_dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;</WinPCK_Include>
+    <IncludePath>$(IncludePath);$(WinPCK_Include)</IncludePath>
+  </PropertyGroup>
+</Project>

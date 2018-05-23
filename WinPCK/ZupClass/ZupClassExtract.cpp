@@ -48,10 +48,8 @@ BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFi
 					if(lpZupFileIndexTable->cFileIndex.dwFileClearTextSize == lpZupFileIndexTable->cFileIndex.dwFileCipherTextSize) {
 						memcpy(buffer, _cipherbuf + 4, dwFileLengthDecompress2);
 					} else {
-						char szPrintf[160];
-						sprintf_s(szPrintf, 160, TEXT_UNCOMPRESSDATA_FAIL, lpZupFileIndexTable->cFileIndex.szFilename);
 						assert(FALSE);
-						PrintLogE(szPrintf);
+						PrintLogE(TEXT_UNCOMPRESSDATA_FAIL, lpZupFileIndexTable->cFileIndex.szFilename);
 					}
 				}
 			} else {
