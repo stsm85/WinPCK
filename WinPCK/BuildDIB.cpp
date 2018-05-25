@@ -8,6 +8,7 @@
 // 
 // 2015.6.12
 //////////////////////////////////////////////////////////////////////
+#if 0
 
 #include <Windows.h>
 #include <Gdiplus.h>
@@ -15,92 +16,6 @@
 #include "miscdlg.h"
 #include <intrin.h>
 
-_inline void CalcRgbsDXT1(UINT32 dwRGBIndex[4], UINT16 wBlockColor2[2])
-{
-	__m128i xmmrmask = _mm_set_epi32(0, 0, 0xfff800, 0xfff800);
-	__m128i xmmgmask = _mm_set_epi32(0, 0, 0x07e0, 0x07e0);
-	__m128i xmmbmask = _mm_set_epi32(0, 0, 0x001f, 0x001f);
-
-	__m128i xmmres = _mm_set_epi16(0, 0, 0, 0, \
-		0xff, wBlockColor2[1], 0xff, wBlockColor2[0]);
-
-	__m128i xmmr = _mm_and_si128(xmmres, xmmrmask);
-	__m128i xmmg = _mm_and_si128(xmmres, xmmgmask);
-	__m128i xmmb = _mm_and_si128(xmmres, xmmbmask);
-
-	xmmr = _mm_slli_epi32(xmmr, 8);
-	xmmg = _mm_slli_epi32(xmmg, 5);
-	xmmb = _mm_slli_epi32(xmmb, 3);
-
-	__m128i xmm2 = _mm_or_si128(_mm_or_si128(xmmr, xmmg), xmmb);
-	__m128i xmm1 = _mm_shuffle_epi32(xmm2, _MM_SHUFFLE(3, 2, 0, 1));
-
-	dwRGBIndex[0] = xmm2.m128i_u32[0];
-	dwRGBIndex[1] = xmm2.m128i_u32[1];
-
-	__m128i xmm0 = _mm_setzero_si128();
-
-	if(wBlockColor2[0] > wBlockColor2[1]) {
-		xmm1 = _mm_slli_epi64(_mm_unpacklo_epi8(xmm1, xmm0), 1);
-		xmm2 = _mm_unpacklo_epi8(xmm2, xmm0);
-		xmmres = _mm_set_epi32(0x00000001, 0x00010001, 0x00000001, 0x00010001);
-		xmm1 = _mm_adds_epi16(_mm_adds_epi16(xmm1, xmm2), xmmres);
-		xmmr = _mm_set_epi32(0xaaabaaab, 0xaaabaaab, 0xaaabaaab, 0xaaabaaab);
-		xmm1 = _mm_srli_epi16(_mm_mulhi_epu16(xmm1, xmmr), 1);
-		xmm1 = _mm_packus_epi16(xmm1, xmm0);
-		dwRGBIndex[2] = xmm1.m128i_u32[1];
-		dwRGBIndex[3] = xmm1.m128i_u32[0];
-	} else {
-		xmm1 = _mm_avg_epu8(xmm1, xmm2);
-		dwRGBIndex[2] = xmm1.m128i_u32[1];
-		dwRGBIndex[3] = 0;
-	}
-}
-
-_inline void CalcRgbsDXT35(UINT32 dwRGBIndex[4], UINT16 wBlockColor2[2])
-{
-
-	__m128i xmmrmask = _mm_set_epi32(0, 0, 0xf800, 0xf800);
-	__m128i xmmgmask = _mm_set_epi32(0, 0, 0x07e0, 0x07e0);
-	__m128i xmmbmask = _mm_set_epi32(0, 0, 0x001f, 0x001f);
-
-	__m128i xmmres = _mm_set_epi16(0, 0, 0, 0, \
-		0, wBlockColor2[1], 0, wBlockColor2[0]);
-
-	__m128i xmmr = _mm_and_si128(xmmres, xmmrmask);
-	__m128i xmmg = _mm_and_si128(xmmres, xmmgmask);
-	__m128i xmmb = _mm_and_si128(xmmres, xmmbmask);
-
-	xmmr = _mm_slli_epi32(xmmr, 8);
-	xmmg = _mm_slli_epi32(xmmg, 5);
-	xmmb = _mm_slli_epi32(xmmb, 3);
-
-	__m128i xmm2 = _mm_or_si128(_mm_or_si128(xmmr, xmmg), xmmb);
-	__m128i xmm1 = _mm_shuffle_epi32(xmm2, _MM_SHUFFLE(3, 2, 0, 1));
-
-	dwRGBIndex[0] = xmm2.m128i_u32[0];
-	dwRGBIndex[1] = xmm2.m128i_u32[1];
-
-	__m128i xmm0 = _mm_setzero_si128();
-	//__m128i xmm1 = _mm_set_epi32(0, 0, cRGB[0].dwargb, cRGB[1].dwargb);
-	//__m128i xmm2 = _mm_set_epi32(0, 0, cRGB[1].dwargb, cRGB[0].dwargb);
-	__m128i xmm3 = _mm_slli_epi64(_mm_unpacklo_epi8(xmm1, xmm0), 1);
-	__m128i xmm4 = _mm_unpacklo_epi8(xmm2, xmm0);
-	__m128i xmm5 = _mm_set_epi32(0x00000001, 0x00010001, 0x00000001, 0x00010001);
-	xmm3 = _mm_adds_epi16(_mm_adds_epi16(xmm3, xmm4), xmm5);
-	xmm5 = _mm_set_epi32(0x0000aaab, 0xaaabaaab, 0x0000aaab, 0xaaabaaab);
-	xmm3 = _mm_srli_epi16(_mm_mulhi_epu16(xmm3, xmm5), 1);
-	xmm3 = _mm_packus_epi16(xmm3, xmm0);
-
-	if(wBlockColor2[0] > wBlockColor2[1]) {
-		dwRGBIndex[2] = xmm3.m128i_u32[1];
-	} else {
-		xmm1 = _mm_avg_epu8(xmm1, xmm2);
-		dwRGBIndex[2] = xmm1.m128i_u32[1];
-	}
-	dwRGBIndex[3] = xmm3.m128i_u32[0];
-
-}
 
 void TPicDlg::decode_dds_dxt1(BYTE *ddsimage)
 {
@@ -789,3 +704,4 @@ void TPicDlg::decode_tga_ColorMapped16REL(BYTE *tgaimage, char *lpColorMappedDat
 
 	}
 }
+#endif

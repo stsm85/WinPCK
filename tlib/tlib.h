@@ -277,6 +277,7 @@ public:
 	virtual BOOL	EvTimer(WPARAM timerID, TIMERPROC proc);
 	virtual BOOL	EvSetCursor(HWND cursorWnd, WORD nHitTest, WORD wMouseMsg);
 	virtual BOOL	EvMouseMove(UINT fwKeys, POINTS pos);
+	virtual BOOL	EvMouseWheel(UINT nFlags, short zDelta, POINTS pos);
 	virtual BOOL	EvNcHitTest(POINTS pos, LRESULT *result);
 	virtual BOOL	EvMeasureItem(UINT ctlID, MEASUREITEMSTRUCT *lpMis);
 	virtual BOOL	EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis);

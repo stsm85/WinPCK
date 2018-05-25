@@ -152,6 +152,9 @@ LRESULT TDlg::WinProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_MOUSEMOVE:
 		return	EvMouseMove((UINT)wParam, MAKEPOINTS(lParam));
 
+	case WM_MOUSEWHEEL:
+		return	EvMouseWheel(LOWORD(wParam), HIWORD(wParam), MAKEPOINTS(lParam));
+
 	case WM_NCHITTEST:
 		EvNcHitTest(MAKEPOINTS(lParam), &result);
 		SetWindowLong(DWL_MSGRESULT, result);

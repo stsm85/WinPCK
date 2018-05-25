@@ -368,6 +368,11 @@ BOOL TWin::EvMouseMove(UINT fwKeys, POINTS pos)
 	return	FALSE;
 }
 
+BOOL TWin::EvMouseWheel(UINT nFlags, short zDelta, POINTS pos)
+{
+	return	FALSE;
+}
+
 BOOL TWin::EvNcHitTest(POINTS pos, LRESULT *result)
 {
 	return	FALSE;

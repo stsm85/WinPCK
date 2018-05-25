@@ -12,33 +12,22 @@
 #pragma warning ( disable : 4018 )
 #pragma warning ( disable : 4267 )
 
-#include "miscdlg.h"
+#include "PreviewDlg.h"
 #include <stdio.h>
 #include "Raw2HexString.h"
 #include <tchar.h>
 #include "CharsCodeConv.h"
 
-TViewDlg::TViewDlg(char **_buf, DWORD &_dwSize, const TCHAR *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_VIEW, _win)
-{
-	buf = _buf;
-	dwSize = _dwSize;
-	lpszFile = _lpszFile;
-
-	//上限16MB	
-	if(0 != dwSize) {
-		if(VIEW_TEXT_MAX_BUFFER < dwSize)
-			_dwSize = dwSize = VIEW_TEXT_MAX_BUFFER;
-		*buf = (char*)malloc(dwSize + 2);
-	} else {
-		*buf = NULL;
-	}
-
-}
+TViewDlg::TViewDlg(LPBYTE *_buf, DWORD _dwSize, const TCHAR *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_VIEW, _win) ,
+	buf(_buf),
+	dwSize(_dwSize),
+	lpszFile(_lpszFile)
+{}
 
 TViewDlg::~TViewDlg()
 {
-	if(*buf)
-		free(*buf);
+	free(*buf);
+	*buf = NULL;
 }
 
 BOOL TViewDlg::EvCreate(LPARAM lParam)
@@ -53,15 +42,15 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 		if(0xfeff == *(WORD*)*buf) {
 			textType = TEXT_TYPE_UCS2;
 			_stprintf_s(szTitle, MAX_PATH, TEXT("文本查看 - %s (Unicode)"), lpszFile);
-			lpszTextShow = *buf + 2;
+			lpszTextShow = (char*)*buf + 2;
 
-		} else if((0xbbef == *(WORD*)*buf) && (0xbf == *(BYTE*)(*buf + 3))) {
+		} else if((0xbbef == *(WORD*)*buf) && (0xbf == *(*buf + 3))) {
 			textType = TEXT_TYPE_UTF8;
 			_stprintf_s(szTitle, MAX_PATH, TEXT("文本查看 - %s (UTF-8)"), lpszFile);
-			lpszTextShow = *buf + 3;
+			lpszTextShow = (char*)*buf + 3;
 
 		} else {
-			textType = DataType(*buf, dwSize);
+			textType = DataType((char*)*buf, dwSize);
 
 			switch(textType) {
 			case TEXT_TYPE_UTF8:
@@ -88,7 +77,7 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 
 			}
 
-			lpszTextShow = *buf;
+			lpszTextShow = (char*)*buf;
 		}
 
 
@@ -249,71 +238,3 @@ void TViewDlg::ShowRaw(LPBYTE lpbuf, size_t rawlength)
 
 	//SendDlgItemMessage(IDC_RICHEDIT_VIEW, WM_SETREDRAW, TRUE, 0);
 }
-
-//
-//BOOL TViewDlg::IsTextUTF8(char *inputStream, size_t size)
-//{
-//    int encodingBytesCount = 0;
-//    BOOL allTextsAreASCIIChars = true;
-// 
-//    for (int i = 0; i < size; ++i)
-//    {
-//        byte current = inputStream[i];
-// 
-//        if ((current & 0x80) == 0x80)
-//        {                   
-//            allTextsAreASCIIChars = false;
-//        }
-//        // First byte
-//        if(encodingBytesCount == 0)
-//        {
-//            if((current & 0x80) == 0)
-//            {
-//                // ASCII chars, from 0x00-0x7F
-//                continue;
-//            }
-// 
-//            if ((current & 0xC0) == 0xC0)
-//            {
-//                encodingBytesCount = 1;
-//                current <<= 2;
-// 
-//                // More than two bytes used to encoding a unicode char.
-//                // Calculate the real length.
-//                while ((current & 0x80) == 0x80)
-//                {
-//                    current <<= 1;
-//                    ++encodingBytesCount;
-//                }
-//            }                   
-//            else
-//            {
-//                // Invalid bits structure for UTF8 encoding rule.
-//                return FALSE;
-//            }
-//        }               
-//        else
-//        {
-//            // Following bytes, must start with 10.
-//            if ((current & 0xC0) == 0x80)
-//            {                       
-//                --encodingBytesCount;
-//            }
-//            else
-//            {
-//                // Invalid bits structure for UTF8 encoding rule.
-//                return FALSE;
-//            }
-//        }
-//    }
-// 
-//    if (encodingBytesCount != 0)
-//    {
-//        // Invalid bits structure for UTF8 encoding rule.
-//        // Wrong following bytes count.
-//        return FALSE;
-//    }
-// 
-//    // Although UTF8 supports encoding for ASCII chars, we regard as a input stream, whose contents are all ASCII as default encoding.
-//    return !allTextsAreASCIIChars;
-//}

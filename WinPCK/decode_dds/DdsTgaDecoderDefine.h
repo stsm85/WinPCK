@@ -8,13 +8,14 @@
 // 
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
+#include <windows.h>
 
 #ifndef _MISCPICDLG_H_
 #define _MISCPICDLG_H_
 
-#define	FMT_RAW			0	//bmp,jpg,png,gif,emf.....
-#define	FMT_DDS			1
-#define	FMT_TGA			2
+//#define	FMT_RAW			0	//bmp,jpg,png,gif,emf.....
+//#define	FMT_DDS			1
+//#define	FMT_TGA			2
 
 
 #define	TEXT_SAVE_FILTER		L"PNG文件(*.png)\0*.png\0\0"
@@ -37,6 +38,7 @@
 #define	FMTTGA_RLETBL	9
 #define	FMTTGA_RLERGB	10
 
+typedef enum { FMT_DDS, FMT_TGA, FMT_RAW, FMT_UNKNOWN } PICFORMAT;
 
 typedef unsigned __int64 QWORD, *LPQWORD;
 
@@ -95,7 +97,6 @@ typedef struct _TGAHEAD {
 									//	01 = 两路奇/偶交叉
 									//	10 = 四路交叉
 									//	11 = 保留
-
 } TGAHEAD, *LPTGAHEAD;
 
 //typedef struct _BMPHEAD {

@@ -3,7 +3,8 @@
 #include <tchar.h>
 #include <shlobj.h>
 
-#define DEFAULT_FILTER	TEXT("所有文件\0*.*\0\0")
+#define DEFAULT_FILTER	"所有文件\0*.*\0\0"
+#define __L(quote) L#quote
 
 /******************************************************
 只打开一个文件
@@ -26,7 +27,7 @@ BOOL OpenSingleFile(HWND hWnd, TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD 
 
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = hWnd;
-	ofn.lpstrFilter = (NULL == lpstrFilter) ? DEFAULT_FILTER : lpstrFilter;
+	ofn.lpstrFilter = (NULL == lpstrFilter) ? TEXT(DEFAULT_FILTER) : lpstrFilter;
 	ofn.nFilterIndex = nFilterIndex;
 	//ofn.lpstrFile         = lpszFileName;
 	//ofn.lpstrInitialDir   = lpszFileName;
@@ -45,22 +46,45 @@ BOOL OpenSingleFile(HWND hWnd, TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD 
 }
 
 
-DWORD SaveFile(HWND hWnd, TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD nFilterIndex)
+DWORD SaveFile(HWND hWnd, char * lpszFileName, LPCSTR lpszDefaultExt , LPCSTR lpstrFilter, DWORD nFilterIndex)
 {
-	OPENFILENAME ofn;
-	//TCHAR szStrPrintf[260];
+	OPENFILENAMEA ofn;
 
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
+	ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
+	ofn.lStructSize = sizeof(OPENFILENAMEA);
 	ofn.hwndOwner = hWnd;
 	ofn.lpstrFilter = (NULL == lpstrFilter) ? DEFAULT_FILTER : lpstrFilter;
 	ofn.lpstrFile = lpszFileName;
 	ofn.nMaxFile = MAX_PATH;
 	ofn.Flags = OFN_OVERWRITEPROMPT | OFN_EXPLORER | OFN_ENABLESIZING;
-	ofn.lpstrDefExt = TEXT("pck");
+	ofn.lpstrDefExt = lpszDefaultExt;
 	ofn.nFilterIndex = nFilterIndex;
 
-	if(!GetSaveFileName(&ofn)) {
+	//计算lpstrDefExt的字符值
+
+
+	if(!GetSaveFileNameA(&ofn)) {
+		return FALSE;
+	}
+	return ofn.nFilterIndex;
+
+}
+
+DWORD SaveFile(HWND hWnd, wchar_t * lpszFileName, LPCWSTR lpszDefaultExt, LPCWSTR lpstrFilter, DWORD nFilterIndex)
+{
+	OPENFILENAMEW ofn;
+
+	ZeroMemory(&ofn, sizeof(OPENFILENAMEW));
+	ofn.lStructSize = sizeof(OPENFILENAMEW);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFilter = (NULL == lpstrFilter) ? __L(DEFAULT_FILTER) : lpstrFilter;
+	ofn.lpstrFile = lpszFileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_OVERWRITEPROMPT | OFN_EXPLORER | OFN_ENABLESIZING;
+	ofn.lpstrDefExt = lpszDefaultExt;
+	ofn.nFilterIndex = nFilterIndex;
+
+	if(!GetSaveFileNameW(&ofn)) {
 		return FALSE;
 	}
 	return ofn.nFilterIndex;

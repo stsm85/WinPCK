@@ -7,8 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#define _VC80_UPGRADE 0x0800
-#include "afxres.h"
+#include "winres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -137,7 +136,7 @@ BEGIN
 END
 
 IDD_DIALOG_PIC DIALOGEX 0, 0, 557, 354
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_VSCROLL | WS_HSCROLL | WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "图片查看"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -423,6 +422,17 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_PIC AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -482,11 +492,6 @@ BEGIN
     IDS_STRING_RENAMEERROR  "文件夹名过长或重命名时出现错误！"
     IDS_STRING_ERROR        "错误！"
     IDS_STRING_PROCESS_ERROR "操作未能正常结束"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_STRING_FILE_EXT_PIC ".dds.tga.bmp.jpg.png.gif.jpeg.tif.tiff.emf"
 END
 
 #endif    // 中文(简体，中国) resources

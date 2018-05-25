@@ -27,7 +27,7 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 {
 
 	//判断文件格式
-	FMTPCK emunFileFormat;
+	FMTPCK emunFileFormat = FMTPCK_UNKNOWN;
 	size_t	nFileLength;
 
 	StringCchLength(lpszFile, MAX_PATH, &nFileLength);

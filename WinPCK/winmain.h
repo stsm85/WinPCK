@@ -125,11 +125,7 @@ protected:
 	VOID ViewFileAttribute();
 	VOID ViewFile();
 	BOOL AddFiles();
-	//BOOL OpenSingleFile(TCHAR * lpszFileName);
 	BOOL OpenFiles(/*TCHAR &((*lpszFilePathArray)[MAX_PATH])*/LPVOID &lpszFilePathArray, DWORD &dwFileCount);
-	//DWORD SaveFile(TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD nFilterIndex = 1);
-	//BOOL BrowseForFolderByPath(TCHAR *);
-	//static int CALLBACK TInstDlg::BFFCallBack(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
 	void AddSetupReg();
 	void DeleteSetupReg();
 

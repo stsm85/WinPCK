@@ -1124,11 +1124,15 @@
     <ClCompile Include="..\tlib\tlist.cpp" />
     <ClCompile Include="..\tlib\tregist.cpp" />
     <ClCompile Include=".\DictHash\DictHash.cpp" />
-    <ClCompile Include="BuildDIB.cpp" />
-    <ClCompile Include="decode_dds\BuildDIB.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    <ClCompile Include="decode_dds\DdsTgaDecoderBuildDIB.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="decode_dds\DDSTextureLoader.cpp" />
+    <ClCompile Include="decode_dds\DdsTgaDecoder.cpp" />
+    <ClCompile Include="decode_dds\DdsTgaDecoderDetectFormat.cpp" />
+    <ClCompile Include="decode_dds\DrawPicture.cpp" />
+    <ClCompile Include="decode_dds\SavePicture.cpp" />
+    <ClCompile Include="decode_dds\ShowPicture.cpp" />
     <ClCompile Include="listViewFunc.cpp" />
     <ClCompile Include="MapViewFile\MapViewFile.cpp" />
     <ClCompile Include="MapViewFile\MapViewFileRead.cpp" />
@@ -1220,16 +1224,11 @@
     <ClCompile Include="guirelated.cpp" />
     <ClCompile Include="helpfunc.cpp" />
     <ClCompile Include="mainfunc.cpp" />
-    <ClCompile Include="miscdecode.cpp">
-      <StructMemberAlignment Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">1Byte</StructMemberAlignment>
-      <StructMemberAlignment Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1Byte</StructMemberAlignment>
-      <StructMemberAlignment Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">1Byte</StructMemberAlignment>
-      <StructMemberAlignment Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">1Byte</StructMemberAlignment>
-    </ClCompile>
     <ClCompile Include=".\PckClass\PckClass.cpp" />
     <ClCompile Include=".\PckClass\PckClassExtract.cpp" />
     <ClCompile Include="PckClass\PckClassMainFunction.cpp" />
     <ClCompile Include=".\PckClass\PckClassThread.cpp" />
+    <ClCompile Include="PreviewDlg.cpp" />
     <ClCompile Include="tAttrDlg.cpp" />
     <ClCompile Include="tCompressOptDlg.cpp" />
     <ClCompile Include="threadproc.cpp" />
@@ -1260,8 +1259,10 @@
     <ClInclude Include=".\DictHash\DictHash.h" />
     <ClInclude Include="decode_dds\DDS.h" />
     <ClInclude Include="decode_dds\DDSTextureLoader.h" />
-    <ClInclude Include="decode_dds\decode_dds.h" />
+    <ClInclude Include="decode_dds\DdsTgaDecoder.h" />
     <ClInclude Include="decode_dds\dxgiformat.h" />
+    <ClInclude Include="decode_dds\DdsTgaDecoderDefine.h" />
+    <ClInclude Include="decode_dds\ShowPicture.h" />
     <ClInclude Include="MapViewFile\MapViewFile.h" />
     <ClInclude Include="MiscFuncs\CharsCodeConv.h" />
     <ClInclude Include="MiscFuncs\GetDragPath.h" />
@@ -1280,9 +1281,9 @@
     <ClInclude Include="PckControlCenter\PckControlCenter.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="miscdlg.h" />
-    <ClInclude Include="miscpicdlg.h" />
     <ClInclude Include=".\PckClass\PckClass.h" />
     <ClInclude Include=".\PckClass\PckHeader.h" />
+    <ClInclude Include="PreviewDlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="winmain.h" />
     <ClInclude Include=".\ZupClass\ZupClass.h" />

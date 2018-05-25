@@ -89,8 +89,6 @@
 #define IDS_STRING_RENAMEERROR          189
 #define IDS_STRING_ERROR                190
 #define IDS_STRING_PROCESS_ERROR        191
-#define IDS_STRING_FILE_FILTER          192
-#define IDS_STRING_FILE_EXT_PIC         192
 #define IDC_LIST                        1010
 #define IDC_PROGRESS                    1011
 #define IDC_STATUS                      1012
@@ -175,7 +173,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        187
+#define _APS_NEXT_RESOURCE_VALUE        192
 #define _APS_NEXT_COMMAND_VALUE         40049
 #define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           101

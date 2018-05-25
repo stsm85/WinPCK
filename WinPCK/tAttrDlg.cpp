@@ -11,7 +11,7 @@
 
 #include "miscdlg.h"
 #include <shlwapi.h>
-#include "PckHeader.h"
+
 
 TAttrDlg::TAttrDlg(void *_lpPckInfo, void *_lpRootInfo, QWORD _qwPckFileSize, char *_lpszPath, BOOL _isSearchMode, TWin *_win) : TDlg(IDD_DIALOG_ATTR, _win)
 {

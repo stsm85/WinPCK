@@ -18,11 +18,13 @@
 //#include "globals.h"
 #include "winmain.h"
 #include "miscdlg.h"
+#include "PreviewDlg.h"
 //#include <shlobj.h>
 //#include <strsafe.h>
 #include <process.h>
 #include "CharsCodeConv.h"
 #include "OpenSaveDlg.h"
+
 
 inline LONG RecurseDeleteKey(HKEY hRegKey, LPCTSTR lpszKey);
 inline void CreateAndSetDefaultValue(LPCTSTR pszValueName, LPCTSTR pszValue);
@@ -194,7 +196,6 @@ VOID TInstDlg::ViewFileAttribute()
 		TAttrDlg	dlg((void*)item.lParam, (void*)m_lpPckCenter->m_lpPckRootNode, m_lpPckCenter->GetPckRedundancyDataSize(), szPath, m_lpPckCenter->GetListInSearchMode(), this);
 		dlg.Exec();
 	}
-
 }
 
 
@@ -204,8 +205,6 @@ VOID TInstDlg::ViewFile()
 
 	HWND	hWndList = GetDlgItem(IDC_LIST);
 	int		iHotitem = m_lpPckCenter->GetListCurrentHotItem();
-
-	DWORD	dwFilesizeToView;
 
 	//LPPCK_PATH_NODE		lpNodeToShow;
 	//LPPCKINDEXTABLE		lpIndexToShow;
@@ -224,73 +223,10 @@ VOID TInstDlg::ViewFile()
 		lpPckFileIndexToShow = ((LPPCK_PATH_NODE)item.lParam)->lpPckIndexTable;
 	}
 
-	dwFilesizeToView = lpPckFileIndexToShow->cFileIndex.dwFileClearTextSize;
+	DWORD dwFilesizeToView = lpPckFileIndexToShow->cFileIndex.dwFileClearTextSize;
 
-
-	char *buf;
-
-	TDlg *dlg;
-	//BOOL	isDds;
-
-	const char	*lpszFileExt = strrchr(lpPckFileIndexToShow->cFileIndex.szFilename, '.');
-	const TCHAR	*lpszFileTitle;
-	//BOOL ((CPckControlCenter::*GetSingleFileData)(LPVOID, LPVOID, char *, size_t)) = *(m_lpPckCenter->GetSingleFileData);
-
-	if(m_lpPckCenter->GetListInSearchMode()) {
-		if(NULL == (lpszFileTitle = _tcsrchr(lpPckFileIndexToShow->cFileIndex.sztFilename, '\\')))
-			if(NULL == (lpszFileTitle = _tcsrchr(lpPckFileIndexToShow->cFileIndex.sztFilename, '/')))
-				lpszFileTitle = lpPckFileIndexToShow->cFileIndex.sztFilename - 1;
-
-		//把前面的'\\'或'/'去掉
-		lpszFileTitle++;
-	} else {
-//#ifdef UNICODE
-//		CUcs2Ansi cU2A;
-//		lpszFileTitle = cU2A.GetString(((LPPCK_PATH_NODE)item.lParam)->szName);
-//#else
-		lpszFileTitle = ((LPPCK_PATH_NODE)item.lParam)->szName;
-//#endif
-	}
-		
-
-	if(NULL != lpszFileExt) {
-		char szExt[8];
-		strcpy_s(szExt, lpszFileExt);
-		//转化lpszFileExt为小写,当strlen(lpszFileExt) > 6 时报错，修改
-		if(4 == strnlen_s(szExt, 6)) {
-			_strlwr_s(szExt, 6);
-
-			if(NULL != strstr(GetLoadStrA(IDS_STRING_FILE_EXT_PIC), szExt)) {
-				if(0 == strcmpi(szExt, ".dds"))
-					dlg = new TPicDlg(&buf, dwFilesizeToView, FMT_DDS, lpszFileTitle, this);
-				else if(0 == strcmpi(szExt, ".tga"))
-					dlg = new TPicDlg(&buf, dwFilesizeToView, FMT_TGA, lpszFileTitle, this);
-				else
-					dlg = new TPicDlg(&buf, dwFilesizeToView, FMT_RAW, lpszFileTitle, this);
-
-			} else {
-				dlg = new TViewDlg(&buf, dwFilesizeToView, lpszFileTitle, this);
-			}
-		} else {
-			dlg = new TViewDlg(&buf, dwFilesizeToView, lpszFileTitle, this);
-		}
-	} else {
-		dlg = new TViewDlg(&buf, dwFilesizeToView, lpszFileTitle, this);
-	}
-
-	if(0 != dwFilesizeToView) {
-		if(NULL == buf) {
-			m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-			delete dlg;
-			return;
-		}
-
-		m_lpPckCenter->GetSingleFileData(NULL, lpPckFileIndexToShow, buf, dwFilesizeToView);
-	}
-
-	dlg->Exec();
-
-	delete dlg;
+	CPriviewInDlg cPreview;
+	cPreview.Show(lpPckFileIndexToShow->cFileIndex.sztFilename, lpPckFileIndexToShow->cFileIndex.dwFileClearTextSize, m_lpPckCenter, lpPckFileIndexToShow, this);
 
 }
 

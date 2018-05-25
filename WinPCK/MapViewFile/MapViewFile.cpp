@@ -508,6 +508,7 @@ LPCSTR CMapViewFile::GenerateMapName()
 	sprintf_s(szFileMappingName, "mapv%x%x%x", GetCurrentThreadId(), counter.LowPart, dwDupRemover++);
 #ifdef _DEBUG
 	OutputDebugStringA(__FUNCTION__);
+	OutputDebugStringA(": ");
 	OutputDebugStringA(szFileMappingName);
 	OutputDebugStringA("\r\n");	
 #endif

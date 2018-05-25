@@ -12,121 +12,31 @@
 #pragma warning ( disable : 4018 )
 
 #include <assert.h>
-#include "miscdlg.h"
+#include "PreviewDlg.h"
 #include <stdio.h>
 #include <tchar.h>
+#include "OpenSaveDlg.h"
+#include "CharsCodeConv.h"
 
-TPicDlg::TPicDlg(char **_buf, UINT32 _dwSize, int _iFormat, const TCHAR *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_PIC, _win)
-{
-	s = NULL;
-	lpoGraph = NULL;
-	lpmyImage = NULL;
-	g_pGdiPlusToken = NULL;
-	*szDdsFormat = 0;
-
-	x = 0, y = 0;
-	isMouseDown = FALSE;
-
-	buf = _buf;
-	dwSize = _dwSize;
-	lpszFile = _lpszFile;
-
-	//hG = NULL;
-	*buf = NULL;
-	cleanimage = NULL;
-
-	//if(isDds = _isDds)
-	if(FMT_RAW != (iFormat = _iFormat))	//dds,tga
-	{
-		*buf = (char*)malloc(dwSize);
-	} else {							//bmp,jpg,png..
-		*buf = (char*)(hGlobal = GlobalAlloc(GMEM_FIXED, dwSize));
-	}
-
-	GdiplusStartup(&g_pGdiPlusToken, &g_oGdiPlusStartupInput, NULL);
-
-	//hbEditBack	=	CreateSolidBrush(RGB(233,248,247));
-
-
-}
+TPicDlg::TPicDlg(LPBYTE *_buf, UINT32 _dwSize, PICFORMAT _iFormat, const TCHAR *_lpszFile, TWin *_win) :
+	TDlg(IDD_DIALOG_PIC, _win),
+	lpShowPicture(NULL),
+	isMouseDown(FALSE),
+	buf(_buf),
+	dwSize(_dwSize),
+	lpszFile(_lpszFile),
+	iFormat(_iFormat),
+	m_dZoomRatio(1.0),
+	m_ShowX(0),
+	m_ShowY(0),
+	m_ShowPicWidth(0),
+	m_ShowPicHeight(0)
+{ }
 
 TPicDlg::~TPicDlg()
 {
-	if(NULL != lpoGraph)
-		delete lpoGraph;
-
-	if(NULL != lpmyImage)
-		delete lpmyImage;
-
-	if(NULL != s)
-		s->Release();
-
-	if(FMT_RAW != iFormat) {
-		if(NULL != *buf) {
-			free(*buf);
-		}
-	} else {
-
-		if(NULL != hGlobal)
-			GlobalFree(hGlobal);
-	}
-
-	if(NULL != cleanimage) {
-		free(cleanimage);
-	}
-
-	//DeleteObject( hbEditBack );
-	//SelectObject(MemDC, pOldBit);
-	DeleteObject(MemBitmap);
-	DeleteDC(MemDC);
-
-	GdiplusShutdown(g_pGdiPlusToken);
-}
-
-//BOOL TPicDlg::EvClose()
-//{
-//
-//	return FALSE;
-//}
-
-//BOOL TPicDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
-//{
-//
-//	if(NULL != lpoGraph)
-//	{
-//		EvPaint();
-//	}
-//	return FALSE;
-//}
-
-int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
-{
-	UINT num = 0;
-	UINT size = 0;
-
-	ImageCodecInfo* pImageCodecInfo = NULL;
-
-	GetImageEncodersSize(&num, &size);
-	if(size == 0) {
-		return -1;
-	}
-	pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
-	if(pImageCodecInfo == NULL) {
-		return -1;
-	}
-
-	GetImageEncoders(num, size, pImageCodecInfo);
-
-	for(UINT j = 0; j < num; ++j) {
-		if(wcscmp(pImageCodecInfo[j].MimeType, format) == 0) {
-			*pClsid = pImageCodecInfo[j].Clsid;
-			free(pImageCodecInfo);
-			return j;
-		}
-	}
-
-	free(pImageCodecInfo);
-	return -1;
+	if (NULL != lpShowPicture)
+		delete lpShowPicture;
 }
 
 BOOL TPicDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
@@ -142,25 +52,96 @@ BOOL TPicDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	return	FALSE;
 }
 
-BOOL TPicDlg::SaveFile(WCHAR * lpszFileName)
+BOOL TPicDlg::SaveFile()
 {
-	OPENFILENAMEW ofn;
-	//TCHAR szStrPrintf[260];
+	//导出
+	if(FMT_RAW != iFormat) {
+		WCHAR	szFilename[MAX_PATH];
+		::GetCurrentDirectoryW(MAX_PATH, szFilename);
 
-	ZeroMemory(&ofn, sizeof(OPENFILENAMEW));
-	ofn.lStructSize = sizeof(OPENFILENAMEW);
-	ofn.hwndOwner = hWnd;
-	ofn.lpstrFilter = TEXT_SAVE_FILTER;
-	//ofn.lpstrFilter       = AtoW(TEXT_SAVE_FILTER);
-	ofn.lpstrFile = lpszFileName;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_OVERWRITEPROMPT | OFN_EXPLORER | OFN_ENABLESIZING;
+		WCHAR *lpTail = szFilename + wcslen(szFilename) - 1;
+		if('\\' == *lpTail) {
+			*lpTail = 0;
+		}
 
-	if(!GetSaveFileNameW(&ofn)) {
-		return FALSE;
+		wcscat_s(szFilename, MAX_PATH, L"\\");
+#ifdef UNICODE
+		wcscat_s(szFilename, MAX_PATH, lpszFile);
+#else
+		CAnsi2Ucs cA2U;
+		wcscat_s(szFilename, MAX_PATH, cA2U.GetString(lpszFile));
+#endif
+		wcscpy(wcsrchr(szFilename, L'.'), L".png\0\0");
+
+		if(::SaveFile(hWnd, szFilename, L"png", TEXT_SAVE_FILTER)) {
+
+			return lpShowPicture->Save(szFilename);
+		}
 	}
+	
 	return TRUE;
+}
 
+double TPicDlg::CalcFixedRatio(UINT uRealX, UINT uRealY, UINT uToX, UINT uToY)
+{
+	//计算一下多大是正好的缩放率
+	 double zoomx = uToX / (double)uRealX;
+	 double zoomy = uToX / (double)uRealX;
+
+	 return zoomx > zoomy ? zoomy : zoomx;
+}
+
+void TPicDlg::InitFixedShowPositionAndShowWindow()
+{
+	//RECT	rectWin;
+
+	//当前分辨率
+	const int width = GetSystemMetrics(SM_CXSCREEN);
+	const int height = GetSystemMetrics(SM_CYSCREEN);
+
+	double screenx_d_realx = width / (double)m_RealPicWidth;
+	double screeny_d_realy = height / (double)m_RealPicHeight;
+
+	BOOL bNeedShowMax = TRUE;
+	//比较screenx_d_realx和screeny_d_realy，哪个小说明哪个边先越界
+	if(screenx_d_realx < screeny_d_realy) {
+
+		if(width < m_RealPicWidth) {
+			m_dZoomRatio = screenx_d_realx;
+
+		} else {
+			bNeedShowMax = FALSE;
+			
+		}
+	} else {
+
+		if(height < m_RealPicHeight) {
+			m_dZoomRatio = screeny_d_realy;
+			
+		} else {
+			bNeedShowMax = FALSE;
+
+		}
+	}
+	m_ShowPicWidth = m_dZoomRatio * m_RealPicWidth;
+	m_ShowPicHeight = m_dZoomRatio * m_RealPicHeight;
+
+	FreshWindowTitle();
+
+	if(bNeedShowMax) {
+		ShowWindow(SW_SHOWMAXIMIZED);
+	} else {
+		::SetWindowPos(hWnd, NULL, 0, 0, m_RealPicWidth + 10, m_RealPicHeight + 30, SWP_NOZORDER | SWP_NOMOVE);
+		//显示窗口
+		Show();
+	}
+}
+
+void TPicDlg::FreshWindowTitle()
+{
+	TCHAR szTitle[MAX_PATH];
+	_stprintf_s(szTitle, TEXT("%s (%d%%)"), m_szTitle, (int)(m_dZoomRatio * 100.0 + 0.5));
+	SetWindowText(szTitle);
 }
 
 BOOL TPicDlg::EvCreate(LPARAM lParam)
@@ -171,297 +152,34 @@ BOOL TPicDlg::EvCreate(LPARAM lParam)
 	GetClientRect(hWnd, &rectWin);
 	//::SetWindowPos(GetDlgItem(IDC_STATIC_PIC), NULL, 0, 0, rectWin.right, rectWin.bottom, SWP_NOZORDER | SWP_NOMOVE);
 
-	//读dds header
+	lpShowPicture = new CShowPicture(hWnd, *buf, dwSize, lpszFile, iFormat);
 
-	switch(iFormat) {
-	case FMT_DDS:
-
-		if(!CreateBmpBufferByDds()) {
-			MessageBoxA(TEXT_SHOWPIC_ERROR, NULL, MB_OK | MB_ICONERROR);
-			assert(FALSE);
-			EndDialog(IDCANCEL);
-			return FALSE;
-		}
-
-		free(*buf);
-		*buf = NULL;
-
-		lpmyImage = new Bitmap(picWidth, picHeight, stride, decodedDIBFormat, (BYTE*)cleanimage);
-
-		break;
-
-	case FMT_TGA:
-
-		if(!CreateBmpBufferByTga()) {
-			MessageBoxA(TEXT_SHOWPIC_ERROR, NULL, MB_OK | MB_ICONERROR);
-			assert(FALSE);
-			EndDialog(IDCANCEL);
-			return FALSE;
-		}
-
-		free(*buf);
-		*buf = NULL;
-
-		lpmyImage = new Bitmap(picWidth, picHeight, stride, decodedDIBFormat, (BYTE*)cleanimage);
-		break;
-
-	case FMT_RAW:	//bmp,jpg,png..
-
-		CreateStreamOnHGlobal(hGlobal, false, &s);
-		if(!s) {
-			MessageBoxA(TEXT_SHOWPIC_ERROR, NULL, MB_OK | MB_ICONERROR);
-			assert(FALSE);
-			EndDialog(IDCANCEL);
-			return FALSE;
-		}
-
-		//show picture
-		lpmyImage = new Image(s);
-
-		//看看图片大小和显示窗口大小
-		picWidth = lpmyImage->GetWidth();
-		picHeight = lpmyImage->GetHeight();
-
-		break;
-
-	default:
-
-		MessageBoxA(TEXT_NOT_DEFINE, NULL, MB_OK | MB_ICONERROR);
-		EndDialog(IDCANCEL);
+	if (!lpShowPicture->Decode())
 		return FALSE;
-		break;
-	}
 
-	DrawBlockOnDlg();
+	lpShowPicture->GetWindowTitle(m_szTitle, sizeof(m_szTitle) / sizeof(TCHAR));
 
-	lpoGraph = new Graphics(MemDC);
+	m_RealPicWidth = lpShowPicture->GetWidth();
+	m_RealPicHeight = lpShowPicture->GetHeight();
 
-	lpoGraph->DrawImage(lpmyImage, x, y, picWidth, picHeight);
-
-	ShowScrollBar(hWnd, SB_VERT, FALSE);
-	ShowScrollBar(hWnd, SB_HORZ, FALSE);
-
-	GetClientRect(hWnd, &rectWin);
-
-
-	if(rectWin.right < picWidth || rectWin.bottom < picHeight) {
-
-		if(rectWin.right < picWidth) {
-			ShowScrollBar(hWnd, SB_HORZ, TRUE);
-			SetScrollRange(hWnd, SB_HORZ, 0, picWidth - rectWin.right, TRUE);
-		} else {
-
-			ShowScrollBar(hWnd, SB_HORZ, FALSE);
-		}
-
-		GetClientRect(hWnd, &rectWin);
-
-		if(rectWin.bottom < picHeight) {
-			ShowScrollBar(hWnd, SB_VERT, TRUE);
-			SetScrollRange(hWnd, SB_VERT, 0, picHeight - rectWin.bottom, TRUE);
-
-			GetClientRect(hWnd, &rectWin);
-
-
-			if(rectWin.right < picWidth) {
-				ShowScrollBar(hWnd, SB_HORZ, TRUE);
-				SetScrollRange(hWnd, SB_HORZ, 0, picWidth - rectWin.right, TRUE);
-			} else {
-				ShowScrollBar(hWnd, SB_HORZ, FALSE);
-			}
-
-		} else {
-			ShowScrollBar(hWnd, SB_VERT, FALSE);
-		}
-
-	} else {
-
-		::SetWindowPos(hWnd, NULL, 0, 0, picWidth + 20, picHeight + 50, SWP_NOZORDER | SWP_NOMOVE);
-	}
-
-	if(NULL != lpoGraph)
-		delete lpoGraph;
-	lpoGraph = NULL;
-
-	//窗口文字
-	if(FMT_RAW != iFormat) {
-#ifdef UNICODE
-		_stprintf_s(szTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d, %S"), lpszFile, picWidth, picHeight, szDdsFormat);
-#else
-		_stprintf_s(szTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d, %s"), lpszFile, picWidth, picHeight, szDdsFormat);
-#endif
-	} else {
-		_stprintf_s(szTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d"), lpszFile, picWidth, picHeight);
-
-		if(NULL != lpmyImage)
-			delete lpmyImage;
-		lpmyImage = NULL;
-
-		if(NULL != s)
-			s->Release();
-		s = NULL;
-
-		if(NULL != hGlobal)
-			GlobalFree(hGlobal);
-		hGlobal = NULL;
-
-	}
-
-	SetWindowText(szTitle);
-
-	//显示窗口
-	Show();
+	InitFixedShowPositionAndShowWindow();
 
 	return	FALSE;
 }
 
-BOOL TPicDlg::EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar)
-{
-	int nCurPos;
-	//RECT	rect;
-
-	switch(uMsg) {
-	case WM_HSCROLL:
-
-		nCurPos = GetScrollPos(hWnd, SB_HORZ);
-
-		switch(nCode) {
-		case SB_LINEUP:
-			if(nCurPos > 0) {
-				nCurPos -= 1;
-				//ScrollWindow(hWnd, 1, 0, 0, 0);
-			}
-			break;
-		case SB_LINEDOWN:
-			if(nCurPos < 20) {
-				nCurPos += 1;
-				//ScrollWindow(hWnd, -1, 0, 0, 0);
-			}
-			break;
-		case SB_PAGEUP:
-			nCurPos -= 4;
-			//ScrollWindow(hWnd, 4, 0, 0, 0);
-			break;
-		case SB_PAGEDOWN:
-			nCurPos += 4;
-			//ScrollWindow(hWnd, -4, 0, 0, 0);
-			break;
-		case SB_THUMBTRACK:
-			//ScrollWindow(hWnd, nCurPos - nPos, 0, 0, 0);
-			nCurPos = nPos;
-			break;
-		default:
-			break;
-		}
-		SetScrollPos(hWnd, SB_HORZ, nCurPos, TRUE);
-
-		//DebugA("nCurPos = %d\r\n", nCurPos);
-
-		x = 0 - nCurPos;
-
-		EvPaint();
-		break;
-
-	case WM_VSCROLL:
-
-		nCurPos = GetScrollPos(hWnd, SB_VERT);
-
-		switch(nCode) {
-		case SB_LINEUP:
-			if(nCurPos > 0) {
-				nCurPos -= 1;
-				//ScrollWindow(hWnd, 0, 1, 0, 0);
-			}
-			break;
-		case SB_LINEDOWN:
-			if(nCurPos < 20) {
-				nCurPos += 1;
-				//ScrollWindow(hWnd, 0,-1, 0, 0);
-			}
-			break;
-		case SB_PAGEUP:
-			nCurPos -= 4;
-			//ScrollWindow(hWnd, 0, 4, 0, 0);
-			break;
-		case SB_PAGEDOWN:
-			nCurPos += 4;
-			//ScrollWindow(hWnd, 0, -4, 0, 0);
-			break;
-		case SB_THUMBTRACK:
-			//ScrollWindow(hWnd, 0, nCurPos - nPos, 0, 0);
-			nCurPos = nPos;
-			break;
-		default:
-			break;
-		}
-		SetScrollPos(hWnd, SB_VERT, nCurPos, TRUE);
-
-		y = 0 - nCurPos;
-
-		EvPaint();
-
-		break;
-	}
-
-	return	FALSE;
-}
 
 BOOL TPicDlg::EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight)
 {
-	//::SetWindowPos(GetDlgItem(IDC_STATIC_PIC), NULL, 0, 0, nWidth, nHeight, SWP_NOZORDER | SWP_NOMOVE);
+	m_ShowX = ((int)nWidth - (int)m_ShowPicWidth) / 2;
+	m_ShowY = ((int)nHeight - (int)m_ShowPicHeight) / 2;
 
-	//if(NULL != lpoGraph)
-	//{
-	//delete lpoGraph;
-	//lpoGraph = new Graphics(GetDlgItem(IDC_STATIC_PIC));
+	//计算一下多大是正好的缩放率
+	m_fixedZoomRatio = CalcFixedRatio(m_RealPicWidth, m_RealPicHeight, nWidth, nHeight);
 
-	int nCurPos = 0;
+	DebugA("set1 nWidth = %d, m_ShowPicWidth = %d\r\n", nWidth, m_ShowPicWidth);
+	DebugA("set1 m_ShowX = %d, m_ShowY = %d\r\n", m_ShowX, m_ShowY);
 
-	if(nWidth < picWidth || nHeight < picHeight) {
-
-		if(nWidth < picWidth) {
-			ShowScrollBar(hWnd, SB_HORZ, TRUE);
-
-			nCurPos = GetScrollPos(hWnd, SB_HORZ);
-
-			if(nCurPos > picWidth - nWidth) {
-				nCurPos = picWidth - nWidth;
-				x = 0 - nCurPos;
-			}
-
-			SetScrollRange(hWnd, SB_HORZ, 0, picWidth - nWidth, TRUE);
-		} else {
-			x = 0;
-			ShowScrollBar(hWnd, SB_HORZ, FALSE);
-		}
-
-		if(nHeight < picHeight) {
-			ShowScrollBar(hWnd, SB_VERT, TRUE);
-
-			nCurPos = GetScrollPos(hWnd, SB_VERT);
-
-			if(nCurPos > picHeight - nHeight) {
-				nCurPos = picHeight - nHeight;
-				y = 0 - nCurPos;
-			}
-
-			SetScrollRange(hWnd, SB_VERT, 0, picHeight - nHeight, TRUE);
-
-		} else {
-			y = 0;
-			ShowScrollBar(hWnd, SB_VERT, FALSE);
-		}
-
-	} else {
-		x = y = 0;
-		ShowScrollBar(hWnd, SB_VERT, FALSE);
-		ShowScrollBar(hWnd, SB_HORZ, FALSE);
-
-	}
-
-	//EvPaint();
-	//}
-
+	EvPaint();
 	return	FALSE;
 
 }
@@ -482,51 +200,121 @@ BOOL TPicDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 
 		break;
 
+	case WM_RBUTTONDOWN:
+
+		ZoomPictureAtPoint(1.0, &pos);
+
+		break;
 	case WM_LBUTTONDBLCLK:
 		//导出
-		if(0 != iFormat) {
-			WCHAR	szFilename[MAX_PATH];
-			::GetCurrentDirectoryW(MAX_PATH, szFilename);
-
-			WCHAR *lpTail = szFilename + wcslen(szFilename) - 1;
-			if('\\' == *lpTail) {
-				*lpTail = 0;
-			}
-
-			wcscat_s(szFilename, MAX_PATH, L"\\");
-#ifdef UNICODE
-			wcscat_s(szFilename, MAX_PATH, lpszFile);
-#else
-			wcscat_s(szFilename, MAX_PATH, AtoW(lpszFile));
-#endif
-
-			//*(DWORD*)strrchr(szFilename, '.') = *(DWORD*)".png";//0x706D622E;	//.bmp
-			memcpy(wcsrchr(szFilename, L'.'), L".png\0\0", 12);
-
-			if(SaveFile(szFilename)) {
-				//PrepareToSavePng(szFilename);
-				CLSID pngClsid;
-				GetEncoderClsid(L"image/png", &pngClsid);
-				lpmyImage->Save(szFilename, &pngClsid, NULL);
-			}
-		}
+		this->SaveFile();
 		break;
-
 
 	}
 
 	return FALSE;
 }
 
+#define CHANGE_RATIO	1.2
+#define MAX_ZOOM_RATIO	32.0
+
+void TPicDlg::ZoomPictureAtPoint(double dZoomRatio, POINTS *pos)
+{
+	POINTS thispos;
+	if(NULL == pos) {
+		GetCursorPos(&pointMouse);
+		thispos.x = pointMouse.x;
+		thispos.y = pointMouse.y;
+		pos = &thispos;
+	}
+
+	m_dZoomRatio = dZoomRatio;
+
+	/*
+	计算m_ShowX,m_ShowY
+	当前显示大小大于窗口时：
+	缩放以当前鼠标位置为中心缩放
+	假设鼠标的点在图片上的位置为rx,ry, 鼠标在窗口上的位置为mx,my，图片0,0在窗口上的显示点为sx,sy，则rx=mx-sx
+	缩放以当前鼠标位置为中心缩放，则鼠标在图片上的点不动，就是向量值不动，设x方向上的向量值为p,设当前图片宽度为sw，则p=rx/sw=(mx-sx)/sw
+	缩放后图片宽度变化为sw1,显示点变化为sx1，p不变，p=(mx-sx1)/sw1，得到sx1 = mx - (mx-sx)*sw1/sw
+	*/
+	POINT pointMouse = { pos->x , pos->y };
+	ScreenToClient(hWnd, &pointMouse);
+	int mouseX = pointMouse.x, mouseY = pointMouse.y;
+	//当鼠标点在图像之外时，以图像边界为准
+	if(m_ShowX > mouseX)mouseX = m_ShowX;
+	if(m_ShowY > mouseY)mouseY = m_ShowY;
+	int iShowRight = m_ShowX + m_ShowPicWidth;
+	int iShowBottom = m_ShowY + m_ShowPicHeight;
+	if(iShowRight < mouseX)mouseX = iShowRight;
+	if(iShowBottom < mouseY)mouseY = iShowBottom;
+
+	//计算缩放后的m_ShowX, m_ShowY
+	UINT	dwShowPicWidth = m_dZoomRatio * m_RealPicWidth;
+	UINT	dwShowPicHeight = m_dZoomRatio * m_RealPicHeight;
+
+	//当显示的图片宽度大于当前窗口时
+	RECT	rectWin;
+	GetClientRect(hWnd, &rectWin);
+
+	if(rectWin.right < dwShowPicWidth) {
+		m_ShowX = mouseX - (mouseX - m_ShowX) * dwShowPicWidth / m_ShowPicWidth;
+		if(0 < m_ShowX)m_ShowX = 0;
+	} else {
+
+		m_ShowX = (rectWin.right - dwShowPicWidth) / 2;
+	}
+
+	//当显示的图片高度大于当前窗口时
+	if(rectWin.bottom < dwShowPicHeight) {
+		m_ShowY = mouseY - (mouseY - m_ShowY) * dwShowPicHeight / m_ShowPicHeight;
+		if(0 < m_ShowY)m_ShowY = 0;
+	} else {
+
+		m_ShowY = (rectWin.bottom - dwShowPicHeight) / 2;
+	}
+
+	m_ShowPicWidth = dwShowPicWidth;
+	m_ShowPicHeight = dwShowPicHeight;
+
+	EvPaint();
+
+	FreshWindowTitle();
+
+}
+
+BOOL TPicDlg::EvMouseWheel(UINT nFlags, short zDelta, POINTS pos)
+{
+
+	DebugA("%s: nFlags = %x, zDelta = %d\r\n", __FUNCTION__, nFlags, zDelta);
+	//最大放大倍数为8倍，最小为适应当前窗口大小
+	double dZoomChangeRatio = 1.0;
+	//放大
+	if(0 < zDelta) {
+
+		dZoomChangeRatio *= (zDelta / 120.0 * CHANGE_RATIO);
+	} else if(0 > zDelta)
+	{
+		dZoomChangeRatio /= (zDelta / (-120.0) * CHANGE_RATIO);
+	}
+
+	//限制缩放范围
+	double dMinZoomRatio = (m_fixedZoomRatio > 0.99) ? 1.0 : m_fixedZoomRatio;
+
+	if(((MAX_ZOOM_RATIO + 0.1) < m_dZoomRatio) || (dMinZoomRatio > (m_dZoomRatio + 0.1)))
+		return FALSE;
+
+	m_dZoomRatio *= dZoomChangeRatio;
+	if(m_dZoomRatio > MAX_ZOOM_RATIO)m_dZoomRatio = MAX_ZOOM_RATIO;
+	if(m_dZoomRatio < dMinZoomRatio) m_dZoomRatio = dMinZoomRatio;
+
+	ZoomPictureAtPoint(m_dZoomRatio, &pos);
+
+	return FALSE;
+}
 
 BOOL TPicDlg::EvMouseMove(UINT fwKeys, POINTS pos)
 {
-
-	/*
-	SetCapture();
-	SetCursor(m_hCursorAllow);
-	m_isSearchWindow = TRUE;
-	*/
 
 	if(isMouseDown) {
 		POINT	pointLast = pointMouse;
@@ -538,133 +326,96 @@ BOOL TPicDlg::EvMouseMove(UINT fwKeys, POINTS pos)
 		RECT	rectWin;
 		GetClientRect(hWnd, &rectWin);
 
+		//当显示的图片宽度大于当前窗口时
+		if(rectWin.right < m_ShowPicWidth) {
 
-		int nCurPos, nCurPosMax;
+			int min_x = (int)rectWin.right - (int)m_ShowPicWidth;
 
-		if(rectWin.right < picWidth) {
-			GetScrollRange(hWnd, SB_HORZ, &nCurPos, &nCurPosMax);
+			//当显示区域大于窗口时，图片左上角不能大于0
+			//鼠标向左动
+			if(xOffset > 0) {
 
-			nCurPos = GetScrollPos(hWnd, SB_HORZ);
-			nCurPos += xOffset;
+				if(min_x <= m_ShowX) {
+					m_ShowX -= xOffset;
+					if(m_ShowX < min_x) m_ShowX = min_x;
+				}
+			} else {
 
-			if(0 > nCurPos)nCurPos = 0;
-			if(nCurPosMax < nCurPos)nCurPos = nCurPosMax;
-
-			SetScrollPos(hWnd, SB_HORZ, nCurPos, TRUE);
-
-			x = 0 - nCurPos;
+				if(0 >= m_ShowX) {
+					m_ShowX -= xOffset;
+					if(m_ShowX > 0)m_ShowX = 0;
+				}
+			}
 
 		}
 
-		if(rectWin.bottom < picHeight) {
-			GetScrollRange(hWnd, SB_VERT, &nCurPos, &nCurPosMax);
+		//当显示的图片高度大于当前窗口时
+		if(rectWin.bottom < m_ShowPicHeight) {
 
-			nCurPos = GetScrollPos(hWnd, SB_VERT);
-			nCurPos += yOffset;
+			int min_y = (int)rectWin.bottom - (int)m_ShowPicHeight;
 
-			if(0 > nCurPos)nCurPos = 0;
-			if(nCurPosMax < nCurPos)nCurPos = nCurPosMax;
+			//鼠标向上动
+			if(yOffset > 0) {
 
-			SetScrollPos(hWnd, SB_VERT, nCurPos, TRUE);
+				if(min_y <= m_ShowY) {
+					m_ShowY -= yOffset;
+					if(m_ShowY < min_y) m_ShowY = min_y;
+				}
+			} else {
 
-			y = 0 - nCurPos;
+				if(0 >= m_ShowY) {
+					m_ShowY -= yOffset;
+					if(m_ShowY > 0)m_ShowY = 0;
+				}
+			}
+
 		}
+		DebugA("set2 m_ShowX = %d, m_ShowY = %d\r\n", m_ShowX, m_ShowY);
 
 		EvPaint();
 	}
 
 	return FALSE;
 }
-//
-//BOOL TPicDlg::EventCtlColor(UINT uMsg, HDC hDcCtl, HWND hWndCtl, HBRUSH *result)
-//{
-//	//switch(uMsg)
-//	//{
-//
-//	//case WM_CTLCOLORSTATIC:
-// //       SetBkMode(hDcCtl, TRANSPARENT); 
-// //       //pDC->SetTextColor(RGB(125,0,0)); 
-// //       //return (LRESULT)hbEditBack; 
-//	//	*result = (HBRUSH)GetStockObject(HOLLOW_BRUSH); 
-//	//	return TRUE;
-//	//	break;
-//
-//	//}
-//	EvPaint();
-//	return FALSE;
-//}
-
-void TPicDlg::DrawBlockOnDlg()
-{
-	//HDC pDC = ::GetDC(GetDlgItem(IDC_STATIC_PIC));
-	HDC pDC = ::GetDC(hWnd);
-	//GetClientRect(hWnd, &rect);
-
-	//CDC MemDC; //首先定义一个显示设备对象
-	HDC MemDCTemp;
-	//CBitmap MemBitmap;//定义一个位图对象
-	HBITMAP MemBitmapTemp;
-	//随后建立与屏幕显示兼容的内存显示设备  
-	MemDC = CreateCompatibleDC(NULL);
-	MemDCTemp = CreateCompatibleDC(NULL);
-	//这时还不能绘图，因为没有地方画 ^_^ 
-	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小 
-	MemBitmap = CreateCompatibleBitmap(pDC, picWidth, picHeight);
-	MemBitmapTemp = CreateCompatibleBitmap(pDC, 24, 8);
-
-	ReleaseDC(hWnd, pDC);
-
-	//将位图选入到内存显示设备中 
-	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上 
-	HBITMAP pOldBit = (HBITMAP)SelectObject(MemDC, MemBitmap);
-	HBITMAP pOldBit1 = (HBITMAP)SelectObject(MemDCTemp, MemBitmapTemp);
-
-	//先用背景色将位图清除干净，这里我用的是白色作为背景 
-	//你也可以用自己应该用的颜色 
-	SetBkColor(MemDCTemp, RGB(204, 204, 204));
-	RECT thisrect = { 0, 0, 24, 8 };
-	ExtTextOut(MemDCTemp, 0, 0, ETO_OPAQUE, &thisrect, NULL, 0, NULL);
-
-	thisrect.left += 8;
-	SetBkColor(MemDCTemp, RGB(255, 255, 255));
-	ExtTextOut(MemDCTemp, 0, 0, ETO_OPAQUE, &thisrect, NULL, 0, NULL);
-
-	thisrect.left += 8;
-	SetBkColor(MemDCTemp, RGB(204, 204, 204));
-	ExtTextOut(MemDCTemp, 0, 0, ETO_OPAQUE, &thisrect, NULL, 0, NULL);
-
-	for(int j = 0;j < picHeight;j += 8) {
-		for(int i = 0;i < picWidth;i += 16) {
-			if(j & 8)
-				BitBlt(MemDC, i, j, i + 16, j + 8, MemDCTemp, 0, 0, SRCCOPY);
-			else
-				BitBlt(MemDC, i, j, i + 16, j + 8, MemDCTemp, 8, 0, SRCCOPY);
-		}
-	}
-	//MemBitmap.DeleteObject(); 
-	SelectObject(MemDCTemp, pOldBit1);
-	//a = DeleteObject(MemBitmap);
-	DeleteObject(MemBitmapTemp);
-	//MemDC.DeleteDC();
-	DeleteDC(MemDCTemp);
-
-}
 
 BOOL TPicDlg::EvPaint(void)
 {
-	RECT rectDlg;
+	DebugA("m_ShowX = %d, m_ShowY = %d\r\n", m_ShowX, m_ShowY);
+	lpShowPicture->Paint(m_ShowX, m_ShowY, 0, 0, m_dZoomRatio);
 
-	HDC pDC = ::GetDC(hWnd);
-	GetClientRect(hWnd, &rectDlg);
 
-	PAINTSTRUCT ps;
-	HDC pDC1 = BeginPaint(hWnd, &ps);
+	//计算无效区域
+	//x
+	RECT	rectWin;
+	GetClientRect(hWnd, &rectWin);
 
-	BitBlt(pDC, x, y, picWidth, picHeight, MemDC, 0, 0, SRCCOPY);
-	//BitBlt(pDC, 0, 0, picWidth, picHeight, MemDC, -x, -y, SRCCOPY);
+	if(m_ShowX > 0) {
 
-	ReleaseDC(hWnd, pDC);
-	EndPaint(hWnd, &ps);
+		RECT rectInvalid = { 0, 0, m_ShowX, rectWin.bottom };
+		InvalidateRect(hWnd, &rectInvalid, TRUE);
+	}
+
+	if(m_ShowY > 0) {
+
+		RECT rectInvalid = { m_ShowX >0 ? m_ShowX : 0, 0, rectWin.right, m_ShowY };
+		InvalidateRect(hWnd, &rectInvalid, TRUE);
+	}
+
+	int iShowBottom = m_ShowY + m_ShowPicHeight;
+
+	if(iShowBottom < rectWin.bottom) {
+
+		RECT rectInvalid = { m_ShowX >0 ? m_ShowX : 0, iShowBottom, rectWin.right, rectWin.bottom };
+		InvalidateRect(hWnd, &rectInvalid, TRUE);
+	}
+
+	int iShowRight = m_ShowX + m_ShowPicWidth;
+	if(iShowRight < rectWin.right) {
+
+		RECT rectInvalid = { iShowRight, m_ShowY >0 ? m_ShowY : 0,rectWin.right, iShowBottom < rectWin.bottom ? iShowBottom : rectWin.bottom };
+		InvalidateRect(hWnd, &rectInvalid, TRUE);
+	}
+
 
 	return TRUE;
 }

@@ -75,9 +75,6 @@
     <ClCompile Include="threadproc.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="miscdecode.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\tlib\tapi32ex.cpp">
       <Filter>源文件\tlib</Filter>
     </ClCompile>
@@ -165,9 +162,6 @@
     <ClCompile Include="..\tlib\tapi32u8.cpp">
       <Filter>源文件\tlib</Filter>
     </ClCompile>
-    <ClCompile Include="BuildDIB.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="PckClass\PckClassVersionDetect.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
@@ -246,8 +240,26 @@
     <ClCompile Include="decode_dds\DDSTextureLoader.cpp">
       <Filter>源文件\decode_dds</Filter>
     </ClCompile>
-    <ClCompile Include="decode_dds\BuildDIB.cpp">
+    <ClCompile Include="decode_dds\ShowPicture.cpp">
       <Filter>源文件\decode_dds</Filter>
+    </ClCompile>
+    <ClCompile Include="decode_dds\SavePicture.cpp">
+      <Filter>源文件\decode_dds</Filter>
+    </ClCompile>
+    <ClCompile Include="decode_dds\DrawPicture.cpp">
+      <Filter>源文件\decode_dds</Filter>
+    </ClCompile>
+    <ClCompile Include="decode_dds\DdsTgaDecoder.cpp">
+      <Filter>源文件\decode_dds</Filter>
+    </ClCompile>
+    <ClCompile Include="decode_dds\DdsTgaDecoderDetectFormat.cpp">
+      <Filter>源文件\decode_dds</Filter>
+    </ClCompile>
+    <ClCompile Include="decode_dds\DdsTgaDecoderBuildDIB.cpp">
+      <Filter>源文件\decode_dds</Filter>
+    </ClCompile>
+    <ClCompile Include="PreviewDlg.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -263,9 +275,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="miscdlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="miscpicdlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include=".\DictHash\DictHash.h">
@@ -367,8 +376,17 @@
     <ClInclude Include="decode_dds\dxgiformat.h">
       <Filter>头文件\decode_dds</Filter>
     </ClInclude>
-    <ClInclude Include="decode_dds\decode_dds.h">
+    <ClInclude Include="decode_dds\ShowPicture.h">
       <Filter>头文件\decode_dds</Filter>
+    </ClInclude>
+    <ClInclude Include="decode_dds\DdsTgaDecoder.h">
+      <Filter>头文件\decode_dds</Filter>
+    </ClInclude>
+    <ClInclude Include="decode_dds\DdsTgaDecoderDefine.h">
+      <Filter>头文件\decode_dds</Filter>
+    </ClInclude>
+    <ClInclude Include="PreviewDlg.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
