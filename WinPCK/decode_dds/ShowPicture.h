@@ -1,5 +1,7 @@
 #pragma once
 
+#define EPSILON 0.000001
+
 #include "DdsTgaDecoderDefine.h"
 #include <Gdiplus.h>
 using namespace Gdiplus;
@@ -20,7 +22,7 @@ public:
 	LPCTSTR	GetWindowTitle(LPTSTR	lpszTitle = NULL, size_t bufSize = 0);
 
 	//在设备上显示图像
-	BOOL	Paint(int nXOriginDest, int nYOriginDest, int nXOriginSrc, int nYOriginSrc, double dZoomRatio = 1.00);
+	BOOL	Paint(__int64 nXOriginDest, __int64 nYOriginDest, int nXOriginSrc, int nYOriginSrc, double dZoomRatio = 1.00);
 
 	//保存显示的图片
 	BOOL	Save(const WCHAR *lpszFilename);
@@ -78,5 +80,8 @@ protected:
 	BOOL	DrawPictureOnDC();
 	//更新目标窗口标题
 	BOOL	ShowTitleOnWindow();
+
+	//判断两个double相等
+	BOOL	isEqual(double d1, double d2);
 };
 

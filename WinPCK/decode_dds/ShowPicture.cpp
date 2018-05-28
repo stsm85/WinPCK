@@ -2,6 +2,7 @@
 #include "ShowPicture.h"
 #include <tchar.h>
 
+#include <math.h>
 
 CShowPicture::CShowPicture(HWND hWndShow, LPBYTE &_buffer, size_t _bufsize, LPCTSTR _lpszFileTitle, PICFORMAT _picFormat) :
 	m_hWndShow(hWndShow),
@@ -67,6 +68,11 @@ CShowPicture::~CShowPicture()
 	GdiplusShutdown(m_pGdiPlusToken);
 }
 
+BOOL CShowPicture::isEqual(double d1, double d2)
+{
+	return (EPSILON > fabs((d1-d2)));
+}
+
 LPCTSTR	CShowPicture::GetWindowTitle(LPTSTR	lpszTitle, size_t bufSize)
 {
 	static TCHAR szTitle[MAX_PATH];
@@ -119,8 +125,39 @@ UINT CShowPicture::GetHeight()
 	return m_picHeight;
 }
 
+
+void CalcZoomInAreaAndDrawPosition(__int64 &dst_xy, __int64 &dst_wh, __int64 &src_xy, __int64 &src_wh, double dZoomRatio, LONG iClientWidthHeight, UINT uiPicWidthHeight)
+{
+	/*
+	当缩放后图像大于窗口后，设定窗口左上角坐标为 0,0
+	左端未显示到的区域设定为left_invisible(绝对值),右端为right_invisible，设缩放率为Ratio，
+	则左侧未显示的实际图像大小区域为 left_invisible_real = (int)left_invisible/Ratio，余数为left_invisible_rem
+	右侧相同为right_invisible = tmp_dst_w - left_invisible - rectDlg.right，right_invisible_real = (int)right_invisible/Ratio，right_invisible_rem
+	同时相除后的余数(left_invisible_rem)为要取数据在缩放后显示在窗口上的偏移
+	设实际图像宽度为m_picWidth实际要取的数据为：visible_width_real = m_picWidth - left_invisible_real - right_invisible_real,
+	目标左上角显示坐标dst_x = left_invisible_rem
+	源左上角X坐标src_x = left_invisible_real
+	*/
+
+	__int64		left_invisible = -dst_xy;
+	double	left_invisible_real_double = left_invisible / dZoomRatio;
+	__int64		left_invisible_real = (__int64)left_invisible_real_double;
+	__int64		left_invisible_rem = (__int64)(left_invisible - left_invisible_real * dZoomRatio);
+	__int64		right_invisible = dst_wh - left_invisible - iClientWidthHeight;
+	__int64		right_invisible_real_double = (__int64)(right_invisible / dZoomRatio);
+	__int64		right_invisible_real = (__int64)right_invisible_real_double;
+	__int64		right_invisible_rem = (__int64)(right_invisible - right_invisible_real * dZoomRatio);
+	__int64		visible_width_real = uiPicWidthHeight - left_invisible_real - right_invisible_real;
+
+	dst_xy = -left_invisible_rem;
+	src_xy = left_invisible_real;
+	src_wh = visible_width_real;
+	dst_wh = iClientWidthHeight + right_invisible_rem + left_invisible_rem;
+
+}
+
 //在设备上显示图像
-BOOL CShowPicture::Paint(int nXOriginDest, int nYOriginDest, int nXOriginSrc, int nYOriginSrc, double dZoomRatio)
+BOOL CShowPicture::Paint(__int64 nXOriginDest, __int64 nYOriginDest, int nXOriginSrc, int nYOriginSrc, double dZoomRatio)
 {
 	/*
 	设定窗口左上角坐标为 0,0
@@ -132,128 +169,68 @@ BOOL CShowPicture::Paint(int nXOriginDest, int nYOriginDest, int nXOriginSrc, in
 	GetClientRect(m_hWndShow, &rectDlg);
 
 	//重计算源起点、宽高和目标起点、宽高
-	int src_x = nXOriginSrc;
-	int src_y = nYOriginSrc;
-	int src_w = m_picWidth;
-	int src_h = m_picHeight;
-	int dst_x = nXOriginDest;
-	int dst_y = nYOriginDest;
-	int dst_w = m_picWidth;
-	int dst_h = m_picHeight;
+	__int64 src_x = nXOriginSrc;
+	__int64 src_y = nYOriginSrc;
+	__int64 src_w = m_picWidth;
+	__int64 src_h = m_picHeight;
+	__int64 dst_x = nXOriginDest;
+	__int64 dst_y = nYOriginDest;
+	__int64 dst_w = m_picWidth;
+	__int64 dst_h = m_picHeight;
 
 	PAINTSTRUCT ps;
 	HDC pDC1 = BeginPaint(m_hWndShow, &ps);
 
-	if((0.999 < dZoomRatio) && (1.0001 > dZoomRatio)) {
-		//不缩放
+	if(((1.0 - EPSILON) < dZoomRatio) && ((1.0 + EPSILON) > dZoomRatio)) {
+		//if(isEqual(1.0, dZoomRatio)) {
+			//不缩放
 		if(nXOriginDest < 0) {
 
 			dst_x = 0;
 			src_x = nXOriginSrc - nXOriginDest;
-			dst_w = ((m_picWidth - src_x) > rectDlg.right) ? rectDlg.right : (m_picWidth - src_x);
+			dst_w = (((__int64)m_picWidth - src_x) > (__int64)rectDlg.right) ? (__int64)rectDlg.right : ((__int64)m_picWidth - src_x);
 		}
 		if(nYOriginSrc < 0) {
 
 			dst_y = 0;
 			src_y = nYOriginSrc - nYOriginDest;
-			dst_h = ((m_picHeight - src_y) > rectDlg.bottom) ? rectDlg.bottom : (m_picHeight - src_y);
+			dst_h = (((__int64)m_picHeight - src_y) >(__int64)rectDlg.bottom) ? (__int64)rectDlg.bottom : ((__int64)m_picHeight - src_y);
 		}
 
 		BitBlt(	
 			pDC,				// 目标 DC 句柄
-			dst_x,				// 目标左上角X坐标
-			dst_y,				// 目标左上角Y坐标
-			dst_w,				// 目标宽度
-			dst_h,				// 目标高度
+			(int)dst_x,				// 目标左上角X坐标
+			(int)dst_y,				// 目标左上角Y坐标
+			(int)dst_w,				// 目标宽度
+			(int)dst_h,				// 目标高度
 			m_MemDC, 			// 源 DC 句柄
-			src_x,				// 源左上角X坐标
-			src_y,				// 源左上角Y坐标
+			(int)src_x,				// 源左上角X坐标
+			(int)src_y,				// 源左上角Y坐标
 			SRCCOPY);
 
 	} else {
 		//缩放
-		int tmp_dst_w = m_picWidth * dZoomRatio, tmp_dst_h = m_picHeight * dZoomRatio;
-		dst_w = m_picWidth * dZoomRatio;
-		dst_h = m_picHeight * dZoomRatio;
+		dst_w = (__int64)(m_picWidth * dZoomRatio + 0.5);
+		dst_h = (__int64)(m_picHeight * dZoomRatio + 0.5);
 
-		//	/* StretchBlt() Modes */
-		//	#define BLACKONWHITE                 1
-		//	#define WHITEONBLACK                 2
-		//	#define COLORONCOLOR                 3
-		//	#define HALFTONE                     4
-		//	#define MAXSTRETCHBLTMODE            4
-		//	#if(WINVER >= 0x0400)
-		//	/* New StretchBlt() Modes */
-		//	#define STRETCH_ANDSCANS    BLACKONWHITE
-		//	#define STRETCH_ORSCANS     WHITEONBLACK
-		//	#define STRETCH_DELETESCANS COLORONCOLOR
-		//	#define STRETCH_HALFTONE    HALFTONE
-#if 1
-		/*
-		当缩放后图像大于窗口后，设定窗口左上角坐标为 0,0
-		左端未显示到的区域设定为left_invisible(绝对值),右端为right_invisible，设缩放率为Ratio，
-		则左侧未显示的实际图像大小区域为 left_invisible_real = (int)left_invisible/Ratio，余数为left_invisible_rem
-		右侧相同为right_invisible = tmp_dst_w - left_invisible - rectDlg.right，right_invisible_real = (int)right_invisible/Ratio，right_invisible_rem
-		同时相除后的余数(left_invisible_rem)为要取数据在缩放后显示在窗口上的偏移
-		设实际图像宽度为m_picWidth实际要取的数据为：visible_width_real = m_picWidth - left_invisible_real - right_invisible_real, 
-		目标左上角显示坐标dst_x = left_invisible_rem
-		源左上角X坐标src_x = left_invisible_real
-		*/
-		if(rectDlg.right < tmp_dst_w) {
+		if(rectDlg.right < dst_w)
+			CalcZoomInAreaAndDrawPosition(dst_x, dst_w, src_x, src_w, dZoomRatio, rectDlg.right, m_picWidth);
 
-			int		left_invisible = -nXOriginDest;
-			double	left_invisible_real_double = left_invisible / dZoomRatio;
-			int		left_invisible_real = (int)left_invisible_real_double;
-			int		left_invisible_rem = left_invisible - left_invisible_real * dZoomRatio;
-			int		right_invisible = tmp_dst_w - left_invisible - rectDlg.right ;
-			int		right_invisible_real_double = right_invisible / dZoomRatio;
-			int		right_invisible_real = (int)right_invisible_real_double;
-			int		right_invisible_rem = right_invisible - right_invisible_real * dZoomRatio;
-			int		visible_width_real = m_picWidth - left_invisible_real - right_invisible_real;
+		if(rectDlg.bottom < dst_h)
+			CalcZoomInAreaAndDrawPosition(dst_y, dst_h, src_y, src_h, dZoomRatio, rectDlg.bottom, m_picHeight);
 
-
-			dst_x = -left_invisible_rem;
-			src_x = left_invisible_real;
-			src_w = visible_width_real;
-			dst_w = rectDlg.right + right_invisible_rem + left_invisible_rem;
-
-			double dZoomRatio_2 = dst_w / (double)src_w;
-			dZoomRatio_2 = 1;
-		}
-
-		if(rectDlg.bottom < tmp_dst_h) {
-			int		top_invisible = -nYOriginDest;
-			double	top_invisible_real_double = top_invisible / dZoomRatio;
-			int		top_invisible_real = (int)top_invisible_real_double;
-			int		top_invisible_rem = top_invisible - top_invisible_real * dZoomRatio;
-			int		bottom_invisible = tmp_dst_h - top_invisible - rectDlg.bottom;
-			int		bottom_invisible_real_double = bottom_invisible / dZoomRatio;
-			int		bottom_invisible_real = (int)bottom_invisible_real_double;
-			int		bottom_invisible_rem = bottom_invisible - bottom_invisible_real * dZoomRatio;
-			int		visible_height_real = m_picHeight - top_invisible_real - bottom_invisible_real;
-
-
-			dst_y = -top_invisible_rem;
-			src_y = top_invisible_real;
-			src_h = visible_height_real;
-			dst_h = rectDlg.bottom + bottom_invisible_rem + top_invisible_rem;
-
-			double dZoomRatio_2 = dst_h / (double)src_h;
-			dZoomRatio_2 = 1;
-		}
-#endif
 		SetStretchBltMode(pDC, COLORONCOLOR);
 		StretchBlt(
 			pDC,				// 目标 DC 句柄
-			dst_x,				// 目标左上角X坐标
-			dst_y,				// 目标左上角Y坐标
-			dst_w,				// 目标宽度
-			dst_h,				// 目标高度
+			(int)dst_x,				// 目标左上角X坐标
+			(int)dst_y,				// 目标左上角Y坐标
+			(int)dst_w,				// 目标宽度
+			(int)dst_h,				// 目标高度
 			m_MemDC,			// 源 DC 句柄
-			src_x,				// 源左上角X坐标
-			src_y,				// 源左上角Y坐标
-			src_w,				// 源宽度
-			src_h,				// 源高度
+			(int)src_x,				// 源左上角X坐标
+			(int)src_y,				// 源左上角Y坐标
+			(int)src_w,				// 源宽度
+			(int)src_h,				// 源高度
 			SRCCOPY);
 	}
 
@@ -303,8 +280,8 @@ BOOL CShowPicture::DrawBlockOnDlg()
 	SetBkColor(MemDCTemp, RGB(204, 204, 204));
 	ExtTextOut(MemDCTemp, 0, 0, ETO_OPAQUE, &thisrect, NULL, 0, NULL);
 
-	for(int j = 0;j < m_picHeight;j += 8) {
-		for(int i = 0;i < m_picWidth;i += 16) {
+	for(unsigned int j = 0;j < m_picHeight;j += 8) {
+		for(unsigned int i = 0;i < m_picWidth;i += 16) {
 			if(j & 8)
 				BitBlt(m_MemDC, i, j, i + 16, j + 8, MemDCTemp, 0, 0, SRCCOPY);
 			else

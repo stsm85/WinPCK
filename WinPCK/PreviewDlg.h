@@ -1,7 +1,7 @@
 #pragma once
 #include "tlib.h"
 #include "resource.h"
-#include "ShowPicture.h"
+#include "CShowPictureWithZoom.h"
 #include "PckHeader.h"
 
 
@@ -70,50 +70,34 @@ class TPicDlg : public TDlg
 protected:
 
 	//窗口标题
-	TCHAR		m_szTitle[MAX_PATH];
+	TCHAR			m_szTitle[MAX_PATH];
 
-	//图片实际大小
-	UINT		m_RealPicWidth;
-	UINT		m_RealPicHeight;
+	//待显示图片数据和大小
+	LPBYTE			*buf;
+	UINT32			dwSize;
 
-	//最佳显示坐标
-	int		m_ShowX, m_ShowY;
-	//最佳显示大小
-	UINT		m_ShowPicWidth;
-	UINT		m_ShowPicHeight;
-	double		m_dZoomRatio;
-	//适应当前窗口大小 的缩放率
-	double		m_fixedZoomRatio;
-	LPBYTE		*buf;
-
-
+	//文件名
 	const TCHAR		*lpszFile;
-	UINT32		dwSize;
-	PICFORMAT			iFormat;
+	
+	//格式
+	PICFORMAT		iFormat;
 
-	//INT			x, y;
-	POINT		pointMouse;
-	BOOL		isMouseDown;
+	//记录当前鼠标位置
+	POINT			pointMouse;
+	BOOL			isMouseDown;
 
-	CShowPicture *lpShowPicture;
+	CShowPictureWithZoom *lpShowPicture;
 
 	BOOL	SaveFile();
 
-	double	CalcFixedRatio(UINT uRealX, UINT uRealY, UINT uToX, UINT uToY);
 	void	InitFixedShowPositionAndShowWindow();
 
 	void	FreshWindowTitle();
-
-	void	ZoomPictureAtPoint(double dZoomRatio, POINTS *pos = NULL);
 
 
 public:
 	TPicDlg(LPBYTE *_buf, UINT32 _dwSize, PICFORMAT _iFormat, const TCHAR *_lpszFile, TWin *_win);
 	~TPicDlg();
-
-
-
-
 
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
 	virtual BOOL	EvCreate(LPARAM lParam);

@@ -1124,6 +1124,7 @@
     <ClCompile Include="..\tlib\tlist.cpp" />
     <ClCompile Include="..\tlib\tregist.cpp" />
     <ClCompile Include=".\DictHash\DictHash.cpp" />
+    <ClCompile Include="decode_dds\CShowPictureWithZoom.cpp" />
     <ClCompile Include="decode_dds\DdsTgaDecoderBuildDIB.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -1257,6 +1258,7 @@
     <ClInclude Include="..\tlib\tlist.h" />
     <ClInclude Include="..\tlib\tregist.h" />
     <ClInclude Include=".\DictHash\DictHash.h" />
+    <ClInclude Include="decode_dds\CShowPictureWithZoom.h" />
     <ClInclude Include="decode_dds\DDS.h" />
     <ClInclude Include="decode_dds\DDSTextureLoader.h" />
     <ClInclude Include="decode_dds\DdsTgaDecoder.h" />

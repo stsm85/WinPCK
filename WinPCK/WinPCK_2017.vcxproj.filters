@@ -261,6 +261,9 @@
     <ClCompile Include="PreviewDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="decode_dds\CShowPictureWithZoom.cpp">
+      <Filter>源文件\decode_dds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc">
@@ -387,6 +390,9 @@
     </ClInclude>
     <ClInclude Include="PreviewDlg.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="decode_dds\CShowPictureWithZoom.h">
+      <Filter>头文件\decode_dds</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
