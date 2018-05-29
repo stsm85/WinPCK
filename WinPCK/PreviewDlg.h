@@ -1,7 +1,7 @@
 #pragma once
 #include "tlib.h"
 #include "resource.h"
-#include "CShowPictureWithZoom.h"
+#include "ShowPictureWithZoom.h"
 #include "PckHeader.h"
 
 

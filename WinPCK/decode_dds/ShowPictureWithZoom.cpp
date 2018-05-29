@@ -1,4 +1,4 @@
-#include "CShowPictureWithZoom.h"
+#include "ShowPictureWithZoom.h"
 
 
 #define CHANGE_RATIO	1.2

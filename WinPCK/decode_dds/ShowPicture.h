@@ -5,7 +5,7 @@
 #include "DdsTgaDecoderDefine.h"
 #include <Gdiplus.h>
 using namespace Gdiplus;
-//#pragma comment(lib,"gdiplus.lib")
+#pragma comment(lib,"gdiplus.lib")
 
 class CShowPicture
 {
