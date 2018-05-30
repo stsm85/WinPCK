@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////
-// BuildDIB.cpp(v2): 构建DIB数据
+// DdsTgaDecoderBuildDIB.cpp: 构建DIB数据
 // 解码dds、tga的模块
 //
 // 此程序由 李秋枫/stsm/liqf 编写

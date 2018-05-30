@@ -16,7 +16,7 @@
 
 #include "winmain.h"
 #include <tchar.h>
-
+#pragma comment(lib,"comctl32.lib")
 
 
 int initArgumentException(int code);

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ShowPlatformName>false</ShowPlatformName>
+    <VSPlatformName Condition="('$(PlatformToolset)'=='v141') And ('$(ShowPlatformName)'=='true')">VS2017</VSPlatformName>
+    <VSPlatformName Condition="'$(ShowPlatformName)'=='false'"></VSPlatformName>
+    <IntDirName>build</IntDirName>
+    <!-- 生成文件=Makefile 应用程序(.exe)=Application dll=DynamicLibrary lib=StaticLibrary 实用工具=Utility -->
+    <IsExecuteFile Condition="('$(ConfigurationType)'=='Application') Or ('$(ConfigurationType)'=='DynamicLibrary')">true</IsExecuteFile>
+    <IsExecuteFile Condition="'$(IsExecuteFile)'!='true'">false</IsExecuteFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutDir Condition="'$(IsExecuteFile)'=='true'">$(SolutionDir)\$(Configuration)\$(VSPlatformName)\</OutDir>
+    <OutDir Condition="'$(IsExecuteFile)'=='false'">$(SolutionDir)\$(Configuration)\$(VSPlatformName)\libs\$(PlatformShortName)\</OutDir>
+    <IntDir>$(SolutionDir)\$(IntDirName)\$(VSPlatformName)\$(ProjectName)\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <TargetName Condition="'$(IsExecuteFile)'=='true'">$(ProjectName)_$(PlatformShortName)</TargetName>
+  </PropertyGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(SolutionDir)\Config\Project_optimize.props" Condition=" ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_optimize.props'))"/>
+  </ImportGroup>
+</Project>

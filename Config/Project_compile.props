@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- 多处理器编译 -->
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(UseDebugLibraries)'=='false'">
+    <ClCompile>
+      <!-- 汇编程序输出 禁用=NoListing 带源代码的程序集=AssemblyAndSourceCode -->
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <!-- 调试信息格式 无=None C7兼容=OldStyle 程序数据库=ProgramDatabase -->
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <!-- 随机基址 是=true 否=false -->
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+    </ClCompile>
+    <Link>
+      <!-- 调试信息格式 无=false 生成调试信息(/DEBUG)=true 生成经过优化以使链接更快的调试信息 (/DEBUG:FASTLINK)=DebugFastLink 生成经过优化以共享和发布的调试信息 (/DEBUG:FULL)=DebugFull -->
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

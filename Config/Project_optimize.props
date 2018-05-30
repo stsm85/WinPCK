@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!--检测是否是Debug编译-->
+    <UseDebugLibraries Condition="('$(UseDebugLibraries)'=='') And ('$(Configuration)'=='Debug')">true</UseDebugLibraries>
+    <UseDebugLibraries Condition="('$(UseDebugLibraries)'!='true')">false</UseDebugLibraries>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(UseDebugLibraries)'=='false'">
+    <ClCompile>
+      <!-- 优化 /O1=MinSpace /O2=MaxSpeed /Ox=Full -->
+      <Optimization>Full</Optimization>
+      <!-- 优选大小或速度 /Ot=Speed /Os=Size 均不=Neither -->
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <!-- 支持纤程安全的线程本地存储区 -->
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <!-- 省略帧指针 -->
+      <OmitFramePointers>true</OmitFramePointers>
+      <!-- 启用字符串池 -->
+      <StringPooling>true</StringPooling>
+      <!-- 启用内部函数 -->
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <!-- 启用函数级链接 -->
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <!-- 安全检查 -->
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <!-- 控制流防护 启用=Guard 禁用=false -->
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <!-- 浮点模型 快速=Fast 严格=Strict 精度=Precise -->
+      <FloatingPointModel>Fast</FloatingPointModel>
+    </ClCompile>
+    <Link>
+      <!-- 引用 是(/OPT:REF)=true 否(/OPT:NOREF)=false /OPT:REF 将消除从未引用过的函数和/或数据，而 /OPT:NOREF 则保留从未引用过的函数和/或数据。 -->
+      <OptimizeReferences>true</OptimizeReferences>
+      <!-- 启用 COMDAT 折叠 是(/OPT:REF)=true 否(/OPT:NOREF)=false 使用 /OPT:ICF[=iterations] 可执行相同 COMDAT 折叠。 -->
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(UseDebugLibraries)|$(Platform)'=='false|Win32'">
+    <ClCompile>
+      <!-- 增强指令集 SSE2=StreamingSIMDExtensions2 禁用=NotSet -->
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(SolutionDir)\Config\Project_compile.props" Condition=" ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_compile.props'))"/>
+  </ImportGroup>
+</Project>

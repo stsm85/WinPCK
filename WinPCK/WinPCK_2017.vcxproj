@@ -54,11 +54,6 @@
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
-    <UseMpiLibrary>INTELMPI</UseMpiLibrary>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -66,11 +61,6 @@
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
-    <UseMpiLibrary>INTELMPI</UseMpiLibrary>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -78,11 +68,6 @@
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
-    <UseMpiLibrary>INTELMPI</UseMpiLibrary>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -94,80 +79,18 @@
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
-    <UseIntelIPP>false</UseIntelIPP>
-    <UseIntelTBB>true</UseIntelTBB>
-    <InstrumentIntelTBB>true</InstrumentIntelTBB>
-    <UseIntelDAAL>true</UseIntelDAAL>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CharacterSet>Unicode</CharacterSet>
@@ -179,67 +102,51 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="WinPCK_Includes.props" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\VC-LTL\VC-LTL helper for Visual Studio.props" />
-    <Import Project="WinPCK_Includes.props" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\VC-LTL\VC-LTL_xp.props" />
-    <Import Project="WinPCK_Includes.props" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="WinPCK_Includes.props" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="WinPCK_Includes.props" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\VC-LTL\VC-LTL helper for Visual Studio.props" />
-    <Import Project="WinPCK_Includes.props" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\VC-LTL\VC-LTL_xp.props" />
-    <Import Project="WinPCK_Includes.props" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="WinPCK_Includes.props" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -249,11 +156,6 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
@@ -262,42 +164,18 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" />
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -305,19 +183,8 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <StringPooling>false</StringPooling>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Precise</FloatingPointModel>
-      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <OptimizeReferences>
@@ -331,271 +198,219 @@
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <StringPooling>true</StringPooling>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <StringPooling>true</StringPooling>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <StructMemberAlignment>16Bytes</StructMemberAlignment>
+      <EnablePREfast>false</EnablePREfast>
+      <Parallelization>false</Parallelization>
+      <GenerateAlternateCodePaths>SSE2</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>SSE2</UseProcessorExtensions>
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LargeAddressAware>
+      </LargeAddressAware>
+      <TerminalServerAware>
+      </TerminalServerAware>
+      <SwapRunFromCD>false</SwapRunFromCD>
+      <AssemblyDebug>
+      </AssemblyDebug>
+      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
+    <MASM>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <StringPooling>true</StringPooling>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <StructMemberAlignment>16Bytes</StructMemberAlignment>
+      <EnablePREfast>false</EnablePREfast>
+      <Parallelization>false</Parallelization>
+      <GenerateAlternateCodePaths>SSE2</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>SSE2</UseProcessorExtensions>
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LargeAddressAware>
+      </LargeAddressAware>
+      <TerminalServerAware>
+      </TerminalServerAware>
+      <SwapRunFromCD>false</SwapRunFromCD>
+      <AssemblyDebug>
+      </AssemblyDebug>
+      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
+    <MASM>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WIN64;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AssemblerOutput>NoListing</AssemblerOutput>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <Optimization>Full</Optimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
+      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
+      <StructMemberAlignment>16Bytes</StructMemberAlignment>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
     <ClCompile>
-      <Optimization>Full</Optimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <StringPooling>false</StringPooling>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
+      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
+      <StructMemberAlignment>16Bytes</StructMemberAlignment>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">
     <ClCompile>
-      <Optimization>Full</Optimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
+      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
+      <StructMemberAlignment>16Bytes</StructMemberAlignment>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>None</DebugInformationFormat>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <StringPooling>false</StringPooling>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <FloatingPointModel>Fast</FloatingPointModel>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
       <EnablePREfast>false</EnablePREfast>
+      <Parallelization>false</Parallelization>
+      <GenerateAlternateCodePaths>SSE2</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>SSE2</UseProcessorExtensions>
       <CompileAsManaged>
       </CompileAsManaged>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
       <LargeAddressAware>
       </LargeAddressAware>
@@ -605,441 +420,25 @@
       <AssemblyDebug>
       </AssemblyDebug>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <MASM>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </MASM>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>None</DebugInformationFormat>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <StringPooling>false</StringPooling>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <EnablePREfast>false</EnablePREfast>
-      <CompileAsManaged>
-      </CompileAsManaged>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>
-      </LargeAddressAware>
-      <TerminalServerAware>
-      </TerminalServerAware>
-      <SwapRunFromCD>false</SwapRunFromCD>
-      <AssemblyDebug>
-      </AssemblyDebug>
-      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Link>
-    <MASM>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-    </MASM>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <StringPooling>false</StringPooling>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <EnablePREfast>false</EnablePREfast>
-      <CompileAsManaged>
-      </CompileAsManaged>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <TargetMachine>MachineX86</TargetMachine>
-      <LargeAddressAware>
-      </LargeAddressAware>
-      <TerminalServerAware>
-      </TerminalServerAware>
-      <SwapRunFromCD>false</SwapRunFromCD>
-      <AssemblyDebug>
-      </AssemblyDebug>
-      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Link>
-    <MASM>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-    </MASM>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <StringPooling>false</StringPooling>
-      <OmitFramePointers>false</OmitFramePointers>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <StringPooling>false</StringPooling>
-      <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <StringPooling>false</StringPooling>
-      <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <StringPooling>false</StringPooling>
-      <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <StringPooling>false</StringPooling>
-      <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <StringPooling>false</StringPooling>
-      <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <StringPooling>false</StringPooling>
-      <OmitFramePointers>false</OmitFramePointers>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>None</DebugInformationFormat>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <StringPooling>false</StringPooling>
-      <OmitFramePointers>false</OmitFramePointers>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <WarningLevel>Level3</WarningLevel>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-    </ClCompile>
-    <Link>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <Parallelization>false</Parallelization>
-      <GenerateAlternateCodePaths>SSE2</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE2</UseProcessorExtensions>
-      <Optimization>Full</Optimization>
-    </ClCompile>
-    <Link>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">
-    <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <Parallelization>false</Parallelization>
-      <GenerateAlternateCodePaths>SSE2</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE2</UseProcessorExtensions>
-      <Optimization>Full</Optimization>
-    </ClCompile>
-    <Link>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">
-    <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <Parallelization>false</Parallelization>
-      <GenerateAlternateCodePaths>SSE2</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>SSE2</UseProcessorExtensions>
-      <Optimization>Full</Optimization>
     </ClCompile>
     <Link>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -1052,9 +451,7 @@
     <ClCompile Include="..\tlib\tregist.cpp" />
     <ClCompile Include=".\DictHash\DictHash.cpp" />
     <ClCompile Include="decode_dds\ShowPictureWithZoom.cpp" />
-    <ClCompile Include="decode_dds\DdsTgaDecoderBuildDIB.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="decode_dds\DdsTgaDecoderBuildDIB.cpp" />
     <ClCompile Include="decode_dds\DDSTextureLoader.cpp" />
     <ClCompile Include="decode_dds\DdsTgaDecoder.cpp" />
     <ClCompile Include="decode_dds\DdsTgaDecoderDetectFormat.cpp" />
@@ -1078,64 +475,16 @@
     <ClCompile Include="PckClass\PckClassReader.cpp" />
     <ClCompile Include="PckClass\PckClassRebuildFilter.cpp" />
     <ClCompile Include="PckClass\PckClassThreadAddFile.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PckClass\PckClassThreadCreate.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PckClass\PckClassThreadRecompress.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PckClass\PckClassThreadVariables.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_xp|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PckClass\PckClassVersionDetect.cpp" />
     <ClCompile Include="PckControlCenter\PckControlCenter.cpp" />

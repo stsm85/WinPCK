@@ -2,9 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <WinPCK_Include>$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)decode_dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;</WinPCK_Include>
-    <IncludePath>$(IncludePath);$(WinPCK_Include)</IncludePath>
-    <OutDir>$(SolutionDir)\$(Configuration)\VS2017\</OutDir>
-    <IntDir>$(SolutionDir)\build\VS2017\$(ProjectName)\$(PlatformShortName)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)_$(PlatformShortName)</TargetName>
+    <IncludePath Condition="'$(ConfigurationType)'=='Application'">$(IncludePath);$(WinPCK_Include)</IncludePath>
   </PropertyGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(SolutionDir)\Config\Project_paths.props" Condition=" ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_paths.props'))"/>
+  </ImportGroup>
 </Project>

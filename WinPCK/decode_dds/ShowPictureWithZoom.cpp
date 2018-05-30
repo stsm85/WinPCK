@@ -1,5 +1,15 @@
-#include "ShowPictureWithZoom.h"
+//////////////////////////////////////////////////////////////////////
+// ShowPictureWithZoom.cpp: 显示缩放的dds、tga图像
+// 将解码的dds、tga图像进行缩放后进行显示
+//
+// 此程序由 李秋枫/stsm/liqf 编写
+//
+// 此代码预计将会开源，任何基于此代码的修改发布请保留原作者信息
+// 
+// 2018.5.29
+//////////////////////////////////////////////////////////////////////
 
+#include "ShowPictureWithZoom.h"
 
 #define CHANGE_RATIO	1.2
 #define MAX_ZOOM_RATIO	32.0

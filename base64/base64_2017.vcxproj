@@ -84,27 +84,27 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\WinPCK_libs.props" />
+    <Import Project="..\Config\Project_paths.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\WinPCK_libs.props" />
+    <Import Project="..\Config\Project_paths.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\WinPCK_libs.props" />
+    <Import Project="..\Config\Project_paths.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\WinPCK_libs.props" />
+    <Import Project="..\Config\Project_paths.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\WinPCK_libs.props" />
+    <Import Project="..\Config\Project_paths.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\WinPCK_libs.props" />
+    <Import Project="..\Config\Project_paths.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
@@ -117,9 +117,8 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -130,9 +129,9 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,18 +143,9 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <FunctionLevelLinking>
-      </FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AssemblerOutput>NoListing</AssemblerOutput>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <Optimization>Full</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -169,18 +159,11 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <FunctionLevelLinking>
-      </FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AssemblerOutput>NoListing</AssemblerOutput>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <Optimization>Full</Optimization>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -194,16 +177,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <FunctionLevelLinking>
-      </FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -217,16 +192,10 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <FunctionLevelLinking>
-      </FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
