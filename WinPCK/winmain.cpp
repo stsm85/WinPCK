@@ -131,7 +131,7 @@ BOOL TInstDlg::EvTimer(WPARAM timerID, TIMERPROC proc)
 	return	FALSE;
 }
 /*
-	儊僀儞僟僀傾儘僌梡 WM_COMMAND 張棟儖乕僠儞
+	主对话框WM_COMMAND处理程序
 */
 BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {

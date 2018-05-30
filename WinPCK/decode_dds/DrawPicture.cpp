@@ -88,12 +88,13 @@ BOOL CShowPicture::DrawPictureOnDC()
 		delete m_lpoGraph;
 	m_lpoGraph = NULL;
 
-	if(NULL != m_lpmyImage)
-		delete m_lpmyImage;
-	m_lpmyImage = NULL;
-
 	//以下在源代码中是当FMT_RAW == iFormat时执行的
 	if (FMT_RAW == m_picFormat) {
+
+		//不可以现在释放m_lpmyImage，保存为png时会用到
+		if(NULL != m_lpmyImage)
+			delete m_lpmyImage;
+		m_lpmyImage = NULL;
 
 		if (NULL != m_stream)
 			m_stream->Release();
