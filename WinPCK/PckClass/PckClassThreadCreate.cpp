@@ -4,6 +4,9 @@
 #define TARGET_PCK_MODE_COMPRESS PCK_MODE_COMPRESS_CREATE
 #include "PckClassThreadCompressFunctions.h"
 #include "PckClassFileDisk.h"
+#include "PckClassAllocFunctions.h"
+using namespace NPckClassAllocFuncs;
+
 
 VOID CPckClass::WriteThread(VOID* pParam)
 {
@@ -25,7 +28,7 @@ VOID CPckClass::WriteThread(VOID* pParam)
 			//判断一下dwAddress的值会不会超过dwTotalFileSizeAfterCompress
 			//如果超过，说明文件空间申请的过小，重新申请一下ReCreateFileMapping
 			//新文件大小在原来的基础上增加(lpfirstFile->dwFileSize + 1mb) >= 64mb ? (lpfirstFile->dwFileSize + 1mb) :64mb
-			if(!CPckClassFileDisk::IsNeedExpandWritingFile(mt_lpFileWrite, dwAddress, lpPckIndexTableComp->dwCompressedFilesize, dwTotalFileSizeAfterCompress)) {
+			if(!NPckClassFileDisk::IsNeedExpandWritingFile(mt_lpFileWrite, dwAddress, lpPckIndexTableComp->dwCompressedFilesize, dwTotalFileSizeAfterCompress)) {
 
 				pThis->AfterWriteThreadFailProcess(
 					mt_lpbThreadRunning,
@@ -121,7 +124,8 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	m_PckLog.PrintLogI(TEXT_LOG_LEVEL_THREAD, level, threadnum);
 
 	//开始查找文件
-	LPFILES_TO_COMPRESS		lpfirstFile;
+	LinkList<FILES_TO_COMPRESS> cFileLinkList;
+	//LPFILES_TO_COMPRESS		lpfirstFile;
 
 	size_t nLen = lstrlen(szPath) - 1;
 	if('\\' == *(szPath + nLen))*(szPath + nLen) = 0;
@@ -134,24 +138,26 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
-	lpfirstFile = m_firstFile;
+	m_firstFile = cFileLinkList.first();
+
+	//lpfirstFile = m_firstFile;
 
 	//遍历所有文件
-	EnumFile(szPathMbsc, IsPatition, dwFileCount, lpfirstFile, qwTotalFileSize, nLen);
+	NPckClassFileDisk::EnumFile(szPathMbsc, IsPatition, dwFileCount, &cFileLinkList, qwTotalFileSize, nLen);
 	if(0 == dwFileCount)return TRUE;
 
 	//文件数写入窗口类中保存以显示进度
 	mt_dwFileCount = lpPckParams->cVarParams.dwUIProgressUpper = dwFileCount;
 
 	//计算大概需要多大空间qwTotalFileSize
-	mt_CompressTotalFileSize = CPckClassFileDisk::GetPckFilesizeByCompressed(szPckFile, qwTotalFileSize, 0);
+	mt_CompressTotalFileSize = NPckClassFileDisk::GetPckFilesizeByCompressed(szPckFile, qwTotalFileSize, 0);
 
 	//if (PCK_SPACE_DETECT_SIZE >= mt_CompressTotalFileSize)mt_CompressTotalFileSize = PCK_STEP_ADD_SIZE;
 
 	PCK_ALL_INFOS	pckAllInfo;
 	if(!BeforeSingleOrMultiThreadProcess(&pckAllInfo, mt_lpFileWrite, szPckFile, CREATE_ALWAYS, mt_CompressTotalFileSize, threadnum))
 	{
-		DeallocateFileinfo();
+		//DeallocateFileinfo(m_firstFile);
 		assert(FALSE);
 		return FALSE;
 	}
@@ -159,7 +165,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	if(!initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress))
 	{
 		delete mt_lpFileWrite;
-		DeallocateFileinfo();
+		//DeallocateFileinfo(m_firstFile);
 		assert(FALSE);
 		return FALSE;
 	}
@@ -178,7 +184,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	AfterProcess(mt_lpFileWrite, pckAllInfo, dwAddress);
 
 	delete mt_lpFileWrite;
-	DeallocateFileinfo();
+	//DeallocateFileinfo(m_firstFile);
 
 	uninitCompressedDataQueue(threadnum);
 

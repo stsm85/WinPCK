@@ -264,12 +264,15 @@ typedef struct _PCK_INDEX_TABLE_COMPRESS
 
 typedef struct _PCK_ALL_INFOS
 {
-	QWORD			qwPckSize;
-	DWORD			dwFileCount;
-	QWORD			dwAddressName;		//此值指向pck文件数据区的末尾，也就是文件索引的压缩数据的起始位置
-	char			szAdditionalInfo[PCK_ADDITIONAL_INFO_SIZE];
-	TCHAR			szFilename[MAX_PATH];
-	TCHAR			*lpszFileTitle;
+	QWORD				qwPckSize;
+	DWORD				dwFileCount;
+	QWORD				dwAddressName;		//此值指向pck文件数据区的末尾，也就是文件索引的压缩数据的起始位置
+	char				szAdditionalInfo[PCK_ADDITIONAL_INFO_SIZE];
+	TCHAR				szFilename[MAX_PATH];
+	TCHAR				*lpszFileTitle;
+
+	LPPCKINDEXTABLE		lpPckIndexTable;	//PCK文件的索引
+	PCK_PATH_NODE		lpRootNode;			//PCK文件节点的根节点
 
 	const PCK_VERSION_FUNC*	lpDetectedPckVerFunc;
 	const PCK_VERSION_FUNC*	lpSaveAsPckVerFunc;

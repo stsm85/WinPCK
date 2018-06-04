@@ -126,7 +126,7 @@ void CZupClass::DecodeFilename(char *_dst, char *_src)
 
 BOOL CZupClass::BuildZupBaseDict()
 {
-	LPPCKINDEXTABLE	lpPckIndexTable = m_lpPckIndexTable;
+	LPPCKINDEXTABLE	lpPckIndexTable = m_PckAllInfo.lpPckIndexTable;
 
 	for(unsigned long i = 0;i < m_PckAllInfo.dwFileCount;i++) {
 		//以element\开头的都需要解码
@@ -250,7 +250,6 @@ BOOL CZupClass::BuildZupBaseDict()
 	return TRUE;
 }
 
-
 //删除一个节点
 VOID CZupClass::DeleteNode(LPPCK_PATH_NODE lpNode)
 {
@@ -288,8 +287,7 @@ VOID CZupClass::RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString)
 	return;
 }
 
-
 LPPCKINDEXTABLE CZupClass::GetBaseFileIndex(LPPCKINDEXTABLE lpIndex, LPPCKINDEXTABLE lpZeroBaseIndex)
 {
-	return m_lpPckIndexTable + (lpIndex - lpZeroBaseIndex);
+	return m_PckAllInfo.lpPckIndexTable + (lpIndex - lpZeroBaseIndex);
 }

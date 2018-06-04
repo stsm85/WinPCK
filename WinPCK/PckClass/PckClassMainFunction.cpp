@@ -12,10 +12,13 @@
 #include "tlib.h"
 #endif
 
+#include "PckClassAllocFunctions.h"
 #include "PckClass.h"
 #include "CharsCodeConv.h"
 #include "PckClassFileDisk.h"
 #include "PckClassRebuildFilter.h"
+
+using namespace NPckClassAllocFuncs;
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4267 )
@@ -73,7 +76,7 @@ BOOL CPckClass::RebuildPckFile(LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
 	BOOL rtn = bUseRecompress ? RecompressPckFile(szRebuildPckFile) : RebuildPckFile(szRebuildPckFile);
 
 	//重建后清除过滤数据
-	CPckClassRebuildScriptFilter::ResetRebuildFilterInIndexList(m_lpPckIndexTable, m_PckAllInfo.dwFileCount);
+	NPckClassRebuildFilter::ResetRebuildFilterInIndexList(m_PckAllInfo);
 
 	return rtn;
 }
@@ -87,7 +90,7 @@ BOOL CPckClass::RebuildPckFile(LPCTSTR szRebuildPckFile)
 	QWORD	dwAddress = PCK_DATA_START_AT, dwAddressName;
 	DWORD	dwFileCount = m_PckAllInfo.dwFileCount;
 	DWORD	dwNoDupFileCount = ReCountFiles();
-	QWORD	dwTotalFileSizeAfterRebuild = CPckClassFileDisk::GetPckFilesizeRebuild(szRebuildPckFile, m_PckAllInfo.qwPckSize);
+	QWORD	dwTotalFileSizeAfterRebuild = NPckClassFileDisk::GetPckFilesizeRebuild(szRebuildPckFile, m_PckAllInfo.qwPckSize);
 
 	PCK_ALL_INFOS		pckAllInfo;
 
@@ -127,7 +130,7 @@ BOOL CPckClass::RebuildPckFile(LPCTSTR szRebuildPckFile)
 	//不使用Enum进行遍历处理，改用_PCK_INDEX_TABLE
 	lpPckIndexTablePtr = lpPckIndexTable;
 
-	LPPCKINDEXTABLE lpPckIndexTableSource = m_lpPckIndexTable;
+	LPPCKINDEXTABLE lpPckIndexTableSource = m_PckAllInfo.lpPckIndexTable;
 	DWORD		IndexCompressedFilenameDataLengthCryptKey1 = m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey1;
 	DWORD		IndexCompressedFilenameDataLengthCryptKey2 = m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey2;
 	int			level = lpPckParams->dwCompressLevel;
@@ -462,66 +465,5 @@ BOOL CPckClass::RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpsz
 	memcpy(lpszReplacePos + lenrs, szTemp, MAX_PATH_PCK_260 - lenrp - lenrs + lenNodeRes);
 
 	return TRUE;
-}
-
-//////////////////////////以下是程序过程中需要调用的过程///////////////////////////////
-VOID CPckClass::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, LPFILES_TO_COMPRESS &pFileinfo, QWORD &qwTotalFileSize, size_t nLen)
-{
-
-	char		szPath[MAX_PATH], szFile[MAX_PATH];
-
-	size_t nLenBytePath = mystrcpy(szPath, szFilename) - szPath + 1;
-	strcat(szFilename, "\\*.*");
-
-	HANDLE					hFile;
-	WIN32_FIND_DATAA		WFD;
-
-	if((hFile = FindFirstFileA(szFilename, &WFD)) != INVALID_HANDLE_VALUE) {
-		if(!IsPatition) {
-			FindNextFileA(hFile, &WFD);
-			if(!FindNextFileA(hFile, &WFD)) {
-				return;
-			}
-		}
-
-		do {
-			if((WFD.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) {
-
-				if((MAX_PATH_PCK_260 - 13) >= mystrcpy(mystrcpy(mystrcpy(szFile, szPath), "\\"), WFD.cFileName) - szFile) {
-					EnumFile(szFile, FALSE, dwFileCount, pFileinfo, qwTotalFileSize, nLen);
-				}
-
-			} else {
-
-				if(NULL == pFileinfo)return;
-				if(0 != WFD.nFileSizeHigh)continue;
-
-				++dwFileCount;
-
-				if(MAX_PATH_PCK_260 < nLenBytePath + strlen(WFD.cFileName)) {
-					mystrcpy(mystrcpy(mystrcpy(pFileinfo->szFilename, szPath), "\\"), WFD.cAlternateFileName);
-				} else {
-					mystrcpy(mystrcpy(mystrcpy(pFileinfo->szFilename, szPath), "\\"), WFD.cFileName);
-				}
-
-#if 0
-				logOutput(__FUNCTION__, formatString("pFileinfo add:(%d)\t%s\r\n", (int)pFileinfo, pFileinfo->szFilename));
-#endif
-
-				pFileinfo->lpszFileTitle = pFileinfo->szFilename + nLen;
-				pFileinfo->nBytesToCopy = MAX_PATH - nLen;
-
-				qwTotalFileSize += (pFileinfo->dwFileSize = WFD.nFileSizeLow);
-
-				pFileinfo->next = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS));
-				pFileinfo = pFileinfo->next;
-
-			}
-
-		} while(FindNextFileA(hFile, &WFD));
-
-		FindClose(hFile);
-	}
-
 }
 

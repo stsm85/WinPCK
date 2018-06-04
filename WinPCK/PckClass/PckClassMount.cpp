@@ -28,7 +28,7 @@ BOOL CPckClass::MountPckFile(LPCTSTR	szFile)
 void CPckClass::BuildDirTree()
 {
 
-	LPPCKINDEXTABLE lpPckIndexTable = m_lpPckIndexTable;
+	LPPCKINDEXTABLE lpPckIndexTable = m_PckAllInfo.lpPckIndexTable;
 
 	for(DWORD i = 0;i < m_PckAllInfo.dwFileCount;++i) {
 		//½¨Á¢Ä¿Â¼
@@ -38,7 +38,7 @@ void CPckClass::BuildDirTree()
 #else
 		memcpy(lpPckIndexTable->cFileIndex.sztFilename, lpPckIndexTable->cFileIndex.szFilename, sizeof(lpPckIndexTable->cFileIndex.szFilename));
 #endif
-		AddFileToNode(&m_RootNode, lpPckIndexTable);
+		AddFileToNode(&m_PckAllInfo.lpRootNode, lpPckIndexTable);
 		++lpPckIndexTable;
 	}
 

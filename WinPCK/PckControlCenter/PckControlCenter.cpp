@@ -13,18 +13,21 @@
 #include "PckControlCenter.h"
 #include "PckClass.h"
 	
+
 CPckControlCenter::CPckControlCenter():
 	m_lpClassPck(NULL),
 	m_isSearchMode(FALSE),
 	m_lpPckRootNode(NULL),
 	hasRestoreData(FALSE),
 	m_lpPckFileIndexData(NULL),
-	m_emunFileFormat(FMTPCK_UNKNOWN)
+	m_emunFileFormat(FMTPCK_UNKNOWN),
+	cParams({ 0 })
 {
 	init();
 	Reset();
 }
 
+#if 0
 CPckControlCenter::CPckControlCenter(HWND hWnd): 
 	m_hWndMain(hWnd),
 	m_lpClassPck(NULL),
@@ -37,16 +40,20 @@ CPckControlCenter::CPckControlCenter(HWND hWnd):
 	init();
 	Reset();
 }
+#endif
 
 CPckControlCenter::~CPckControlCenter()
 {
 }
 
+void CPckControlCenter::setMainWnd(HWND _hWnd)
+{
+	m_hWndMain = _hWnd;
+}
+
 void CPckControlCenter::init()
 {
 	cParams.lpPckControlCenter = this;
-	cParams.iListHotItem = 0;
-
 }
 
 void CPckControlCenter::Reset(DWORD dwUIProgressUpper)

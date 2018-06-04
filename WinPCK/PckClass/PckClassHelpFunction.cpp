@@ -70,7 +70,7 @@ void CPckClass::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllIn
 DWORD CPckClass::ReCountFiles()
 {
 	DWORD deNewFileCount = 0;
-	LPPCKINDEXTABLE lpPckIndexTableSource = m_lpPckIndexTable;
+	LPPCKINDEXTABLE lpPckIndexTableSource = m_PckAllInfo.lpPckIndexTable;
 
 	for(DWORD i = 0; i < m_PckAllInfo.dwFileCount; ++i) {
 

@@ -11,6 +11,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "PckClass.h"
+#include "PckClassAllocFunctions.h"
+using namespace NPckClassAllocFuncs;
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4146 )
@@ -19,11 +21,8 @@
 void CPckClass::CPckClassInit()
 {
 	m_ReadCompleted = FALSE;
-
-	m_lpPckIndexTable = NULL;
 	m_firstFile = NULL;
 
-	memset(&m_RootNode, 0, sizeof(PCK_PATH_NODE));
 	memset(&m_PckAllInfo, 0, sizeof(PCK_ALL_INFOS));
 
 	DWORD	dwCurrentPID = GetCurrentProcessId();
@@ -31,8 +30,6 @@ void CPckClass::CPckClassInit()
 	sprintf_s(m_szEventAllWriteFinish, 16, TEXT_EVENT_WRITE_PCK_DATA_FINISH, dwCurrentPID);
 	sprintf_s(m_szEventAllCompressFinish, 16, TEXT_EVENT_COMPRESS_PCK_DATA_FINISH, dwCurrentPID);
 	sprintf_s(m_szEventMaxMemory, 16, TEXT_EVENT_PCK_MAX_MEMORY, dwCurrentPID);
-
-	//BuildSaveDlgFilterString();
 
 	init_compressor();
 
@@ -46,10 +43,10 @@ CPckClass::CPckClass(LPPCK_RUNTIME_PARAMS inout)
 
 CPckClass::~CPckClass()
 {
-	DeAllocMultiNodes(m_RootNode.child);
+	DeAllocMultiNodes(m_PckAllInfo.lpRootNode.child);
 
-	if(NULL != m_lpPckIndexTable)
-		free(m_lpPckIndexTable);
+	if(NULL != m_PckAllInfo.lpPckIndexTable)
+		free(m_PckAllInfo.lpPckIndexTable);
 }
 
 BOOL CPckClass::Init(LPCTSTR	szFile)
@@ -69,12 +66,12 @@ BOOL CPckClass::Init(LPCTSTR	szFile)
 
 CONST	LPPCKINDEXTABLE CPckClass::GetPckIndexTable()
 {
-	return m_lpPckIndexTable;
+	return m_PckAllInfo.lpPckIndexTable;
 }
 
 CONST	LPPCK_PATH_NODE CPckClass::GetPckPathNode()
 {
-	return &m_RootNode;
+	return &m_PckAllInfo.lpRootNode;
 }
 
 QWORD CPckClass::GetPckSize()
@@ -94,7 +91,7 @@ QWORD CPckClass::GetPckDataAreaSize()
 
 QWORD CPckClass::GetPckRedundancyDataSize()
 {
-	return m_PckAllInfo.dwAddressName - PCK_DATA_START_AT - m_RootNode.child->qdwDirCipherTextSize;
+	return m_PckAllInfo.dwAddressName - PCK_DATA_START_AT - m_PckAllInfo.lpRootNode.child->qdwDirCipherTextSize;
 }
 
 char * CPckClass::GetAdditionalInfo()

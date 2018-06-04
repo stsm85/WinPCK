@@ -24,9 +24,10 @@ class CPckControlCenter
 	//º¯Êý
 public:
 	CPckControlCenter();
-	CPckControlCenter(HWND hWnd);
+	//CPckControlCenter(HWND hWnd);
 	virtual ~CPckControlCenter();
 
+	void					setMainWnd(HWND _hWnd);
 	void					init();
 	void					Reset(DWORD dwUIProgressUpper = 1);
 

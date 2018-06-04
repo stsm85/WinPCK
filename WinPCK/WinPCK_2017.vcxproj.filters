@@ -409,6 +409,12 @@
     <ClInclude Include="PckClass\PckClassRebuildFilter.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
+    <ClInclude Include="PckClass\PckClassAllocFunctions.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassLinkList.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="icons\file.ico">

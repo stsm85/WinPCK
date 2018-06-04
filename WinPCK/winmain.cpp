@@ -50,7 +50,7 @@ void TInstApp::InitWindow(void)
 
 }
 
-TInstDlg::TInstDlg(LPTSTR cmdLine) : TDlg(IDD_MAIN), m_cPckCenter(hWnd)//, staticText(this)
+TInstDlg::TInstDlg(LPTSTR cmdLine) : TDlg(IDD_MAIN)//, staticText(this)
 {}
 
 TInstDlg::~TInstDlg() {}

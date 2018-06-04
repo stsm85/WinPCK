@@ -55,9 +55,7 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 			break;
 		}
 
-		//*m_lpClassPck->m_lastErrorString = 0;
-
-		m_PckLog.PrintLogI(TEXT_LOG_OPENFILE, (TCHAR *)lpszFile);
+		m_PckLog.PrintLogI(TEXT(TEXT_LOG_OPENFILE), lpszFile);
 
 		if(m_lpClassPck->Init(lpszFile)) {
 

@@ -11,53 +11,60 @@
 
 #pragma warning ( disable : 4996 )
 
-#include "PckClass.h"
 
-void* CPckClass::AllocMemory(size_t	sizeStuct)
-{
-	void*		lpMallocNode;
+#include "PckClassAllocFunctions.h"
 
-	if(NULL == (lpMallocNode = malloc(sizeStuct))) {
-		//m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		return lpMallocNode;
-	}
-	//初始化内存
-	memset(lpMallocNode, 0, sizeStuct);
-
-	return lpMallocNode;
-
-}
-
-VOID CPckClass::DeallocateFileinfo()
-{
-	LPFILES_TO_COMPRESS Fileinfo;
-
-	while(m_firstFile != NULL) {
-		Fileinfo = m_firstFile->next;
-		free(m_firstFile);
-		m_firstFile = Fileinfo;
-	}
-	//m_firstFile = NULL;
-}
-
-VOID CPckClass::DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode)
+namespace NPckClassAllocFuncs
 {
 
-	LPPCK_PATH_NODE		lpThisNodePtr = lpThisNode;
-	//BOOL				bFinish = FALSE;
+	void* AllocMemory(size_t	sizeStuct)
+	{
+		void*		lpMallocNode;
 
-	while(NULL != lpThisNode) {
-
-		lpThisNodePtr = lpThisNode;
-		if(NULL != lpThisNodePtr->child) {
-			DeAllocMultiNodes(lpThisNodePtr->child);
+		if(NULL == (lpMallocNode = malloc(sizeStuct))) {
+			//m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			return lpMallocNode;
 		}
-		lpThisNode = lpThisNodePtr->next;
+		//初始化内存
+		memset(lpMallocNode, 0, sizeStuct);
 
-		free(lpThisNodePtr);
+		return lpMallocNode;
 
 	}
 
+#if 0
+	VOID DeallocateFileinfo(LPFILES_TO_COMPRESS p_firstFile)
+	{
+		LPFILES_TO_COMPRESS Fileinfo;
+
+		while(p_firstFile != NULL) {
+			Fileinfo = p_firstFile->next;
+			free(p_firstFile);
+			p_firstFile = Fileinfo;
+		}
+		//m_firstFile = NULL;
+	}
+#endif
+
+	VOID DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode)
+	{
+
+		LPPCK_PATH_NODE		lpThisNodePtr = lpThisNode;
+		//BOOL				bFinish = FALSE;
+
+		while(NULL != lpThisNode) {
+
+			lpThisNodePtr = lpThisNode;
+			if(NULL != lpThisNodePtr->child) {
+				DeAllocMultiNodes(lpThisNodePtr->child);
+			}
+			lpThisNode = lpThisNodePtr->next;
+
+			free(lpThisNodePtr);
+
+		}
+
+	}
 }
 
 VOID CPckClass::DeleteNode(LPPCK_PATH_NODE lpNode)

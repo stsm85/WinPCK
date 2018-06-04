@@ -21,7 +21,7 @@ VOID CPckClass::CompressThreadRecompress(VOID* pParam)
 	DWORD				dwMaxMallocSource = 0, dwMaxMallocDecompress = 0;
 
 	//开始
-	LPPCKINDEXTABLE					lpPckIndexTablePtrSrc = pThis->m_lpPckIndexTable;		//源文件的文件索引信息
+	LPPCKINDEXTABLE					lpPckIndexTablePtrSrc = pThis->m_PckAllInfo.lpPckIndexTable;		//源文件的文件索引信息
 	PCKINDEXTABLE_COMPRESS			cPckIndexTableDst;
 
 	DWORD	dwFileCount = pThis->m_PckAllInfo.dwFileCount;
@@ -177,7 +177,7 @@ BOOL CPckClass::RecompressPckFile(LPCTSTR szRecompressPckFile)
 	QWORD	dwAddress = PCK_DATA_START_AT, dwAddressName;
 	DWORD	dwFileCount = m_PckAllInfo.dwFileCount;
 	DWORD	dwNoDupFileCount = ReCountFiles();
-	QWORD	dwTotalFileSizeAfterRebuild = CPckClassFileDisk::GetPckFilesizeRebuild(szRecompressPckFile, m_PckAllInfo.qwPckSize);
+	QWORD	dwTotalFileSizeAfterRebuild = NPckClassFileDisk::GetPckFilesizeRebuild(szRecompressPckFile, m_PckAllInfo.qwPckSize);
 
 	CMapViewFileWrite	*lpFileWrite;
 	CMapViewFileRead	cFileRead;
@@ -218,7 +218,7 @@ BOOL CPckClass::RecompressPckFile(LPCTSTR szRecompressPckFile)
 	dwAddressName = dwAddress = mt_dwAddressQueue;
 
 	//清除掉多线程使用的已压缩标记位
-	LPPCKINDEXTABLE lpPckIndexTablePtrSrc = m_lpPckIndexTable;
+	LPPCKINDEXTABLE lpPckIndexTablePtrSrc = m_PckAllInfo.lpPckIndexTable;
 
 	for(DWORD i = 0; i < m_PckAllInfo.dwFileCount; ++i) {
 

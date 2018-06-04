@@ -11,13 +11,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "PckClass.h"
+#include "PckClassAllocFunctions.h"
+using namespace NPckClassAllocFuncs;
 
 #pragma warning ( disable : 4244 )
 #pragma warning ( disable : 4267 )
 
 BOOL CPckClass::ReadPckFileIndexes()
 {
-	//CMapViewFileRead *lpRead = new CMapViewFileRead();
 	CMapViewFileRead cRead;
 
 	if(!cRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
@@ -25,7 +26,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 		return FALSE;
 	}
 
-	if(NULL == (m_lpPckIndexTable = (LPPCKINDEXTABLE)AllocMemory(sizeof(PCKINDEXTABLE) * m_PckAllInfo.dwFileCount))) {
+	if(NULL == (m_PckAllInfo.lpPckIndexTable = (LPPCKINDEXTABLE)AllocMemory(sizeof(PCKINDEXTABLE) * m_PckAllInfo.dwFileCount))) {
 		return FALSE;
 	}
 
@@ -36,7 +37,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 		return FALSE;
 	}
 
-	LPPCKINDEXTABLE lpPckIndexTable = m_lpPckIndexTable;
+	LPPCKINDEXTABLE lpPckIndexTable = m_PckAllInfo.lpPckIndexTable;
 	BOOL			isLevel0;
 	DWORD			byteLevelKey;
 	//存放每条文件索引的头部的两个DWORD压缩数据长度信息

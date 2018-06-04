@@ -122,7 +122,7 @@ BOOL CPckClass::RenameFilename()
 		return FALSE;
 	}
 
-	QWORD dwFileSize = CPckClassFileDisk::GetPckFilesizeRename(m_PckAllInfo.szFilename, cFileWrite.GetFileSize());//cFileWrite.GetFileSize() + PCK_RENAME_EXPAND_ADD;
+	QWORD dwFileSize = NPckClassFileDisk::GetPckFilesizeRename(m_PckAllInfo.szFilename, cFileWrite.GetFileSize());//cFileWrite.GetFileSize() + PCK_RENAME_EXPAND_ADD;
 
 	if(!cFileWrite.Mapping(dwFileSize)) {
 
@@ -139,7 +139,7 @@ BOOL CPckClass::RenameFilename()
 	lpPckParams->cVarParams.dwUIProgressUpper = m_PckAllInfo.dwFileCount;
 
 	//写原来的文件
-	LPPCKINDEXTABLE	lpPckIndexTableSrc = m_lpPckIndexTable;
+	LPPCKINDEXTABLE	lpPckIndexTableSrc = m_PckAllInfo.lpPckIndexTable;
 
 	//写入索引
 	for(DWORD i = 0; i < lpPckParams->cVarParams.dwUIProgressUpper; ++i) {

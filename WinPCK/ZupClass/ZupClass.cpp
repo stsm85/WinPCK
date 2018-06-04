@@ -10,7 +10,8 @@
 //////////////////////////////////////////////////////////////////////
 //#include "zlib.h"
 #include "ZupClass.h"
-
+#include "PckClassAllocFunctions.h"
+using namespace NPckClassAllocFuncs;
 
 CZupClass::CZupClass(LPPCK_RUNTIME_PARAMS inout) : CPckClass(inout)
 {
@@ -46,7 +47,7 @@ void CZupClass::BuildDirTree()
 	if(!cReadfile.OpenPckAndMappingRead(m_PckAllInfo.szFilename))
 		return;
 
-	LPPCKINDEXTABLE lpPckIndexTable = m_lpPckIndexTable;
+	LPPCKINDEXTABLE lpPckIndexTable = m_PckAllInfo.lpPckIndexTable;
 	LPPCKINDEXTABLE lpZupIndexTable = m_lpZupIndexTable;
 
 	for(DWORD i = 0;i < m_PckAllInfo.dwFileCount;i++) {
@@ -100,7 +101,7 @@ void CZupClass::BuildDirTree()
 #endif
 		//½¨Á¢Ä¿Â¼
 		AddFileToNode(&m_RootNodeZup, lpZupIndexTable);
-		AddFileToNode(&m_RootNode, lpPckIndexTable);
+		AddFileToNode(&m_PckAllInfo.lpRootNode, lpPckIndexTable);
 
 		lpPckIndexTable++;
 		lpZupIndexTable++;

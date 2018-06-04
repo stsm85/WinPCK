@@ -48,6 +48,8 @@ void TInstDlg::initParams()
 {
 
 	//初始化数据
+	m_cPckCenter.setMainWnd(hWnd);
+
 	lpPckParams = m_cPckCenter.GetParams();
 
 	*m_szStrToSearch = 0;			//查找的文字

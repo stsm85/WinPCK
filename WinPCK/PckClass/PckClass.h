@@ -126,14 +126,13 @@ protected:
 
 	//PckClassAllocFunctions.cpp
 	virtual void	BuildDirTree();
-	void*	AllocMemory(size_t	sizeStuct);
-	VOID	DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode);
-	VOID	DeallocateFileinfo();
+	//void*	AllocMemory(size_t	sizeStuct);
+	//VOID	DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode);
+	//VOID	DeallocateFileinfo();
 
 	BOOL	AddFileToNode(LPPCK_PATH_NODE lpRootNode, LPPCKINDEXTABLE	lpPckIndexNode);
 	LPPCK_PATH_NODE	FindFileNode(LPPCK_PATH_NODE lpBaseNode, char* lpszFile);
 
-	VOID	EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, LPFILES_TO_COMPRESS &pFileinfo, QWORD &qwTotalFileSize, size_t nLen);
 
 	//PckClassExtract.cpp
 
@@ -180,20 +179,16 @@ protected:
 public:
 	BOOL	ParseScript(LPCTSTR lpszScriptFile);
 
-//protected:
-	//void	ResetRebuildFilterInIndexList();
-	//BOOL	ApplyScript2IndexList(VOID *pfirstFileOp);
-
 protected:
 
 	LPPCK_RUNTIME_PARAMS	lpPckParams;
 
 	BOOL					m_ReadCompleted;
 	PCK_ALL_INFOS			m_PckAllInfo;
-	LPPCKINDEXTABLE			m_lpPckIndexTable;
-	PCK_PATH_NODE			m_RootNode;
+	//LPPCKINDEXTABLE			m_lpPckIndexTable;
+	//PCK_PATH_NODE			m_RootNode;
 
-	LPFILES_TO_COMPRESS		m_firstFile;
+	LPFILES_TO_COMPRESS		m_firstFile;		//添加待压缩文件时，遍历文件时使用的文件列表的第一个文件
 	
 	char			m_szEventAllWriteFinish[16];
 	char			m_szEventAllCompressFinish[16];
