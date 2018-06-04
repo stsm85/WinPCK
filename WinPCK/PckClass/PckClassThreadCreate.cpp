@@ -125,7 +125,6 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 
 	//开始查找文件
 	LinkList<FILES_TO_COMPRESS> cFileLinkList;
-	//LPFILES_TO_COMPRESS		lpfirstFile;
 
 	size_t nLen = lstrlen(szPath) - 1;
 	if('\\' == *(szPath + nLen))*(szPath + nLen) = 0;
@@ -140,8 +139,6 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	}
 	m_firstFile = cFileLinkList.first();
 
-	//lpfirstFile = m_firstFile;
-
 	//遍历所有文件
 	NPckClassFileDisk::EnumFile(szPathMbsc, IsPatition, dwFileCount, &cFileLinkList, qwTotalFileSize, nLen);
 	if(0 == dwFileCount)return TRUE;
@@ -152,12 +149,9 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	//计算大概需要多大空间qwTotalFileSize
 	mt_CompressTotalFileSize = NPckClassFileDisk::GetPckFilesizeByCompressed(szPckFile, qwTotalFileSize, 0);
 
-	//if (PCK_SPACE_DETECT_SIZE >= mt_CompressTotalFileSize)mt_CompressTotalFileSize = PCK_STEP_ADD_SIZE;
-
 	PCK_ALL_INFOS	pckAllInfo;
 	if(!BeforeSingleOrMultiThreadProcess(&pckAllInfo, mt_lpFileWrite, szPckFile, CREATE_ALWAYS, mt_CompressTotalFileSize, threadnum))
 	{
-		//DeallocateFileinfo(m_firstFile);
 		assert(FALSE);
 		return FALSE;
 	}
@@ -165,7 +159,6 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	if(!initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress))
 	{
 		delete mt_lpFileWrite;
-		//DeallocateFileinfo(m_firstFile);
 		assert(FALSE);
 		return FALSE;
 	}
@@ -184,7 +177,6 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	AfterProcess(mt_lpFileWrite, pckAllInfo, dwAddress);
 
 	delete mt_lpFileWrite;
-	//DeallocateFileinfo(m_firstFile);
 
 	uninitCompressedDataQueue(threadnum);
 

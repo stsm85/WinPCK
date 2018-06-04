@@ -101,7 +101,6 @@ void CPckClass::MultiThreadInitialize(VOID CompressThread(VOID*), VOID WriteThre
 
 }
 
-
 //重命名文件
 BOOL CPckClass::RenameFilename()
 {

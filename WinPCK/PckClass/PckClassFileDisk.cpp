@@ -23,12 +23,6 @@
 
 #define ZLIB_AVG_RATIO					0.6
 
-//CPckClassFileDisk::CPckClassFileDisk()
-//{}
-//
-//CPckClassFileDisk::~CPckClassFileDisk()
-//{}
-
 namespace NPckClassFileDisk
 {
 

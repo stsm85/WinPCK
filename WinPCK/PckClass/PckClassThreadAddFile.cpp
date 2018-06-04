@@ -23,7 +23,6 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 	//开始查找文件
 	LinkList<FILES_TO_COMPRESS> cFileLinkList;
-	//LPFILES_TO_COMPRESS			lpfirstFile;
 	TCHAR(*lpszFilePathPtr)[MAX_PATH] = (TCHAR(*)[MAX_PATH])lpszFilePath;
 	DWORD				dwAppendCount = nFileCount;
 	LPPCK_PATH_NODE		lpNodeToInsertPtr;
@@ -66,17 +65,6 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 	m_firstFile = cFileLinkList.first();
 
-	//if(NULL == m_firstFile)m_firstFile = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS));
-	//if(NULL == m_firstFile) {
-
-	//	m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-	//	free(lpszFilePath);
-	//	assert(FALSE);
-	//	return FALSE;
-	//}
-
-	//lpfirstFile = m_firstFile;
-
 	//读文件
 	CMapViewFileRead cFileRead;
 	for(DWORD i = 0; i < dwAppendCount; i++) {
@@ -95,7 +83,6 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 		} else {
 
 			if(!cFileRead.Open(szPathMbsc)) {
-				//DeallocateFileinfo(m_firstFile);
 				free(lpszFilePath);
 				m_PckLog.PrintLogEL(TEXT_OPENNAME_FAIL, *lpszFilePathPtr, __FILE__, __FUNCTION__, __LINE__);
 
@@ -113,8 +100,6 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 			qwTotalFileSize += (lpfirstFile->dwFileSize = cFileRead.GetFileSize());
 
 			cFileLinkList.insertNext();
-			//lpfirstFile->next = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS));
-			//lpfirstFile = lpfirstFile->next;
 
 			cFileRead.clear();
 
@@ -160,7 +145,6 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 			lpDuplicateNode = FindFileNode(lpNodeToInsertPtr, lpfirstFile->lpszFileTitle);
 
 			if(-1 == (int)lpDuplicateNode) {
-				//DeallocateFileinfo(m_firstFile);
 				m_PckLog.PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
 				assert(FALSE);
 				return FALSE;
@@ -182,13 +166,11 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	PCK_ALL_INFOS	pckAllInfo;
 	//OPEN_ALWAYS，新建新的pck(CREATE_ALWAYS)或更新存在的pck(OPEN_EXISTING)
 	if(!BeforeSingleOrMultiThreadProcess(&pckAllInfo, mt_lpFileWrite, szPckFile, OPEN_ALWAYS, mt_CompressTotalFileSize, threadnum)) {
-		//DeallocateFileinfo(m_firstFile);
 		assert(FALSE);
 		return FALSE;
 	}
 	if(!initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress = m_PckAllInfo.dwAddressName)) {
 		delete mt_lpFileWrite;
-		//DeallocateFileinfo(m_firstFile);
 		assert(FALSE);
 		return FALSE;
 	}
@@ -250,7 +232,6 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	AfterProcess(mt_lpFileWrite, pckAllInfo, dwAddress);
 
 	delete mt_lpFileWrite;
-	//DeallocateFileinfo(m_firstFile);
 
 	uninitCompressedDataQueue(threadnum);
 

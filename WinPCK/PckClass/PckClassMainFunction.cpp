@@ -58,13 +58,6 @@ _inline void __fastcall strpathcpy(T * dst, T * &src)
 		;
 }
 
-template <typename T>
-_inline T * __fastcall mystrcpy(T * dest, const T *src)
-{
-	while((*dest = *src))
-		++dest, ++src;
-	return dest;
-}
 
 /********************************
 *
@@ -95,7 +88,6 @@ BOOL CPckClass::RebuildPckFile(LPCTSTR szRebuildPckFile)
 	PCK_ALL_INFOS		pckAllInfo;
 
 	LPBYTE				lpBufferToWrite, lpBufferToRead;
-	//CMapViewFileWrite	cFileWrite;
 	CMapViewFileRead	cFileRead;
 
 	//构造头和尾时需要的参数
@@ -106,15 +98,12 @@ BOOL CPckClass::RebuildPckFile(LPCTSTR szRebuildPckFile)
 	lpPckParams->cVarParams.dwUIProgressUpper = dwNoDupFileCount;
 
 	//打开源文件 
-	//lpFileRead = new CMapViewFileRead();
-
 	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
 		return FALSE;
 	}
 
 	//打开目标文件 
 	//以下是创建一个文件，用来保存重建后的文件
-	//lpFileWrite = new CMapViewFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 	CMapViewFileWrite	cFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
 	if(!cFileWrite.OpenPckAndMappingWrite(szRebuildPckFile, CREATE_ALWAYS, dwTotalFileSizeAfterRebuild)) {

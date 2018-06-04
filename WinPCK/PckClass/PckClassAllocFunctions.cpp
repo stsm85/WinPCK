@@ -32,20 +32,6 @@ namespace NPckClassAllocFuncs
 
 	}
 
-#if 0
-	VOID DeallocateFileinfo(LPFILES_TO_COMPRESS p_firstFile)
-	{
-		LPFILES_TO_COMPRESS Fileinfo;
-
-		while(p_firstFile != NULL) {
-			Fileinfo = p_firstFile->next;
-			free(p_firstFile);
-			p_firstFile = Fileinfo;
-		}
-		//m_firstFile = NULL;
-	}
-#endif
-
 	VOID DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode)
 	{
 
