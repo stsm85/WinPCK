@@ -10,6 +10,7 @@
 #include "PckClass.h"
 #include <stdlib.h>
 #include "CharsCodeConv.h"
+#include "PckClassRebuildFilter.h"
 //chkfile
 //protect
 //delete
@@ -43,7 +44,20 @@ typedef struct _FILEOPS
 	_FILEOPS * next;
 }FILEOP;
 
+void* AllocMemory(size_t	sizeStuct)
+{
+	void*		lpMallocNode;
 
+	if(NULL == (lpMallocNode = malloc(sizeStuct))) {
+		//m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		return lpMallocNode;
+	}
+	//初始化内存
+	memset(lpMallocNode, 0, sizeStuct);
+
+	return lpMallocNode;
+
+}
 
 VOID DeallocateFileopMemory(FILEOP *m_firstFileOp)
 {
@@ -54,7 +68,6 @@ VOID DeallocateFileopMemory(FILEOP *m_firstFileOp)
 		free(m_firstFileOp);
 		m_firstFileOp = Fileinfo;
 	}
-	//m_firstFileOp = NULL;
 }
 
 void SetBufPointer(SCRIPTBUFFER *sfvBuf, int pos)
@@ -189,21 +202,6 @@ BOOL ParseOneLine(FILEOP * pFileOp, char * lpszLine, TCHAR *lpszFileName)
 	return TRUE;
 }
 
-//清除掉重建包时所需要读取的过滤信息
-void CPckClass::ResetRebuildFilterInIndexList()
-{
-	LPPCKINDEXTABLE lpPckIndexTable = m_lpPckIndexTable;
-
-	for(DWORD i = 0;i < m_PckAllInfo.dwFileCount;++i) {
-
-		if(lpPckIndexTable->isToDeDelete) {
-			lpPckIndexTable->isInvalid = FALSE;
-		}
-		lpPckIndexTable->isProtected = lpPckIndexTable->isToDeDelete = FALSE;
-		++lpPckIndexTable;
-	}
-}
-
 //分解脚本中的目录
 void SepratePaths(FILEOP * pFileOp)
 {
@@ -300,46 +298,25 @@ void MarkFilterFlagToNode(LPPCK_PATH_NODE lpNode, SCRIPTOP op)
 
 }
 
-//将脚本内容应用到文件列表中
-BOOL CPckClass::ApplyScript2IndexList(VOID *pfirstFileOp)
-{
-	FILEOP *m_firstFileOp = (FILEOP *)pfirstFileOp;
-	FILEOP * pFileOp = m_firstFileOp;
-
-	//解析过程是否发生了错误
-	BOOL bHasErrorHappend = FALSE;
-
-	while(NULL != pFileOp) {
-
-		if(OP_CheckFile != pFileOp->op) {
-
-			//分解脚本中的目录
-			SepratePaths(pFileOp);
-
-			//定位文件索引
-			LPPCK_PATH_NODE lpFoundNode = LocationFileIndex(pFileOp->lpszSepratedPaths, m_RootNode.child);
-			if(NULL == lpFoundNode) {
-
-				PrintLogW(TEXT("已解析脚本失败在: %s, 跳过..."), pFileOp->szFilename);
-				bHasErrorHappend = TRUE;
-
-			} else {
-				if(NULL != lpFoundNode->child) {
-
-					MarkFilterFlagToNode(lpFoundNode, pFileOp->op);
-				} else {
-					MarkFilterFlagToFileIndex(lpFoundNode->lpPckIndexTable, pFileOp->op);
-				}
-			}
-
-		}
-		pFileOp = pFileOp->next;
-	}
-
-	return (!bHasErrorHappend);
-}
 
 BOOL CPckClass::ParseScript(LPCTSTR lpszScriptFile)
+{
+	CPckClassRebuildScriptFilter cScript(m_PckAllInfo, m_lpPckIndexTable, m_RootNode);
+	return cScript.ParseScript(lpszScriptFile);
+}
+
+
+CPckClassRebuildScriptFilter::CPckClassRebuildScriptFilter(PCK_ALL_INFOS _DstPckAllInfo, LPPCKINDEXTABLE _lpDstPckIndexTable, PCK_PATH_NODE _DstRootNode):
+	m_DstPckAllInfo(_DstPckAllInfo),
+	m_lpDstPckIndexTable(_lpDstPckIndexTable),
+	m_DstRootNode(_DstRootNode)
+{}
+
+CPckClassRebuildScriptFilter::~CPckClassRebuildScriptFilter()
+{}
+
+
+BOOL CPckClassRebuildScriptFilter::ParseScript(LPCTSTR lpszScriptFile)
 {
 
 	CHAR	szLineAnsi[MAX_LINE_LENGTH];
@@ -354,7 +331,7 @@ BOOL CPckClass::ParseScript(LPCTSTR lpszScriptFile)
 	CMapViewFileRead	cFileRead;
 	FILEOP *m_firstFileOp = NULL;
 
-	PrintLogI("开始解析脚本...");
+	m_PckLog.PrintLogI("开始解析脚本...");
 
 	//读取文件所有字符
 	if(NULL == (lpBufferToRead = cFileRead.OpenMappingAndViewAllRead(lpszScriptFile))) {
@@ -410,14 +387,14 @@ BOOL CPckClass::ParseScript(LPCTSTR lpszScriptFile)
 			if((szLine[0] != TEXT(';')) && (szLine[0] != TEXT('\0'))) {
 
 				//一行脚本分为两部分，操作和文件名
-				if(ParseOneLine(pFileOp, szLine, m_PckAllInfo.lpszFileTitle)) {
+				if(ParseOneLine(pFileOp, szLine, m_DstPckAllInfo.lpszFileTitle)) {
 
 					pFileOp->next = (FILEOP *)AllocMemory(sizeof(FILEOP));
 					pFileOp_prev = pFileOp;
 					pFileOp = pFileOp->next;
 				} else {
 
-					PrintLogW("脚本解析失败在行%d: %s, 跳过...", iReadLineNumber, szLine);
+					m_PckLog.PrintLogW("脚本解析失败在行%d: %s, 跳过...", iReadLineNumber, szLine);
 					bHasErrorHappend = TRUE;
 				}
 			}
@@ -440,17 +417,75 @@ BOOL CPckClass::ParseScript(LPCTSTR lpszScriptFile)
 	BOOL rtn = FALSE;
 
 	//将数据应用于tree中
-	if(!bHasErrorHappend) 
+	if(!bHasErrorHappend)
 		rtn = ApplyScript2IndexList(m_firstFileOp);
 
 	DeallocateFileopMemory(m_firstFileOp);
 
 	if(!rtn) {
-		ResetRebuildFilterInIndexList();
-		PrintLogI("解析脚本失败");
+		ResetRebuildFilterInIndexList(m_lpDstPckIndexTable, m_DstPckAllInfo.dwFileCount);
+		m_PckLog.PrintLogI("解析脚本失败");
 	} else {
-		PrintLogI("解析脚本成功");
+		m_PckLog.PrintLogI("解析脚本成功");
 	}
 
 	return rtn;
+}
+
+#pragma region ApplyScript2IndexList,将脚本内容应用到文件列表中
+
+//将脚本内容应用到文件列表中
+BOOL CPckClassRebuildScriptFilter::ApplyScript2IndexList(VOID *pfirstFileOp)
+{
+	FILEOP *m_firstFileOp = (FILEOP *)pfirstFileOp;
+	FILEOP * pFileOp = m_firstFileOp;
+
+	//解析过程是否发生了错误
+	BOOL bHasErrorHappend = FALSE;
+
+	while(NULL != pFileOp) {
+
+		if(OP_CheckFile != pFileOp->op) {
+
+			//分解脚本中的目录
+			SepratePaths(pFileOp);
+
+			//定位文件索引
+			LPPCK_PATH_NODE lpFoundNode = LocationFileIndex(pFileOp->lpszSepratedPaths, m_DstRootNode.child);
+			if(NULL == lpFoundNode) {
+
+				m_PckLog.PrintLogW(TEXT("已解析脚本失败在: %s, 跳过..."), pFileOp->szFilename);
+				bHasErrorHappend = TRUE;
+
+			} else {
+				if(NULL != lpFoundNode->child) {
+
+					MarkFilterFlagToNode(lpFoundNode, pFileOp->op);
+				} else {
+					MarkFilterFlagToFileIndex(lpFoundNode->lpPckIndexTable, pFileOp->op);
+				}
+			}
+
+		}
+		pFileOp = pFileOp->next;
+	}
+
+	return (!bHasErrorHappend);
+}
+
+#pragma endregion
+
+//清除掉重建包时所需要读取的过滤信息
+void CPckClassRebuildScriptFilter::ResetRebuildFilterInIndexList(LPPCKINDEXTABLE lpDstPckIndexTable, DWORD dwFileCount)
+{
+	LPPCKINDEXTABLE lpPckIndexTable = lpDstPckIndexTable;
+
+	for(DWORD i = 0;i < dwFileCount;++i) {
+
+		if(lpPckIndexTable->isToDeDelete) {
+			lpPckIndexTable->isInvalid = FALSE;
+		}
+		lpPckIndexTable->isProtected = lpPckIndexTable->isToDeDelete = FALSE;
+		++lpPckIndexTable;
+	}
 }

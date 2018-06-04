@@ -83,6 +83,9 @@ public:
 	void	UnMaping();
 	void	clear();
 
+	//获取当前文件的磁盘名
+	const char*	GetFileDiskName();
+
 #if ENABLE_PCK_PKX_FILE
 
 	BOOL	SetPckPackSize(QWORD qwPckSize);
@@ -100,6 +103,9 @@ protected:
 	void GetPkxName(LPSTR dst, LPCSTR src);
 	void GetPkxName(LPWSTR dst, LPCWSTR src);
 #endif
+
+	template <typename T>
+	void GetDiskNameFromFilename(T* lpszFilename);
 
 	LPBYTE	ViewReal(LPVOID & lpMapAddress, HANDLE hFileMapping, QWORD qwAddress, DWORD dwSize);
 
@@ -137,6 +143,10 @@ protected:
 	char	m_szPkxFileName[MAX_PATH];
 	wchar_t	m_tszPkxFileName[MAX_PATH];
 #endif
+	//文件对应的磁盘
+	char	m_szDisk[8];
+	//char	m_szFullFilename[MAX_PATH];
+	//wchar_t	m_wszFullFilename[MAX_PATH];
 
 	UNQWORD	uqwCurrentPos;		//当前文件指针位置
 

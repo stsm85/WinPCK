@@ -24,6 +24,7 @@
 #include <process.h>
 #include "CharsCodeConv.h"
 #include "OpenSaveDlg.h"
+#include "ShowLogOnDlgListView.h"
 
 
 inline LONG RecurseDeleteKey(HKEY hRegKey, LPCTSTR lpszKey);
@@ -31,7 +32,7 @@ inline void CreateAndSetDefaultValue(LPCTSTR pszValueName, LPCTSTR pszValue);
 
 void TInstDlg::UnpackAllFiles()
 {
-	if(m_lpPckCenter->IsValidPck()) {
+	if(m_cPckCenter.IsValidPck()) {
 		if(lpPckParams->cVarParams.bThreadRunning) {
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
 			EnableButton(ID_MENU_UNPACK_ALL, FALSE);
@@ -47,7 +48,7 @@ void TInstDlg::UnpackAllFiles()
 
 void TInstDlg::UnpackSelectedFiles()
 {
-	if(m_lpPckCenter->IsValidPck()) {
+	if(m_cPckCenter.IsValidPck()) {
 		if(lpPckParams->cVarParams.bThreadRunning) {
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
 			EnableButton(ID_MENU_UNPACK_SELECTED, FALSE);
@@ -67,7 +68,7 @@ void TInstDlg::DbClickListView(const int itemIndex)
 	LVITEM						item;
 	LPPCK_PATH_NODE		lpNodeToShow;
 
-	m_lpPckCenter->SetListCurrentHotItem(itemIndex);
+	m_cPckCenter.SetListCurrentHotItem(itemIndex);
 
 	item.mask = LVIF_PARAM;
 	item.iItem = itemIndex;
@@ -78,7 +79,7 @@ void TInstDlg::DbClickListView(const int itemIndex)
 	//isSearchMode = 2 == item.iImage ? TRUE : FALSE;
 
 	//列表是否是以搜索状态显示
-	if(m_lpPckCenter->GetListInSearchMode()) {
+	if(m_cPckCenter.GetListInSearchMode()) {
 		//memset(&m_PathDirs, 0, sizeof(m_PathDirs));
 		//*m_PathDirs.lpszDirNames = m_PathDirs.szPaths;
 		//m_PathDirs.nDirCount = 0;
@@ -128,7 +129,7 @@ void TInstDlg::PopupRightMenu(const int itemIndex)
 	LVITEM						item;
 	LPPCK_PATH_NODE		lpNodeToShow;
 
-	m_lpPckCenter->SetListCurrentHotItem(itemIndex);
+	m_cPckCenter.SetListCurrentHotItem(itemIndex);
 
 	HMENU hMenuRClick = GetSubMenu(LoadMenu(TApp::GetInstance(), MAKEINTRESOURCE(IDR_MENU_RCLICK)), 0);
 
@@ -140,7 +141,7 @@ void TInstDlg::PopupRightMenu(const int itemIndex)
 
 	//isSearchMode = 2 == item.iImage ? TRUE : FALSE;
 
-	if(!m_lpPckCenter->GetListInSearchMode()) {
+	if(!m_cPckCenter.GetListInSearchMode()) {
 
 		lpNodeToShow = (LPPCK_PATH_NODE)item.lParam;
 
@@ -177,7 +178,7 @@ VOID TInstDlg::ViewFileAttribute()
 
 	HWND	hWndList = GetDlgItem(IDC_LIST);
 	//int		iHotitem = ListView_GetHotItem(hWndList);
-	int		iHotitem = m_lpPckCenter->GetListCurrentHotItem();
+	int		iHotitem = m_cPckCenter.GetListCurrentHotItem();
 
 	if(0 == iHotitem)return;
 
@@ -188,12 +189,12 @@ VOID TInstDlg::ViewFileAttribute()
 	ListView_GetItem(hWndList, &item);
 
 
-	if(m_lpPckCenter->IsValidPck()) {
+	if(m_cPckCenter.IsValidPck()) {
 		char	szPath[MAX_PATH_PCK_260];
 
-		m_lpPckCenter->GetCurrentNodeString(szPath, m_currentNodeOnShow);
+		m_cPckCenter.GetCurrentNodeString(szPath, m_currentNodeOnShow);
 
-		TAttrDlg	dlg((void*)item.lParam, (void*)m_lpPckCenter->m_lpPckRootNode, m_lpPckCenter->GetPckRedundancyDataSize(), szPath, m_lpPckCenter->GetListInSearchMode(), this);
+		TAttrDlg	dlg((void*)item.lParam, (void*)m_cPckCenter.m_lpPckRootNode, m_cPckCenter.GetPckRedundancyDataSize(), szPath, m_cPckCenter.GetListInSearchMode(), this);
 		dlg.Exec();
 	}
 }
@@ -204,7 +205,7 @@ VOID TInstDlg::ViewFile()
 	if(lpPckParams->cVarParams.bThreadRunning)return;
 
 	HWND	hWndList = GetDlgItem(IDC_LIST);
-	int		iHotitem = m_lpPckCenter->GetListCurrentHotItem();
+	int		iHotitem = m_cPckCenter.GetListCurrentHotItem();
 
 	//LPPCK_PATH_NODE		lpNodeToShow;
 	//LPPCKINDEXTABLE		lpIndexToShow;
@@ -216,7 +217,7 @@ VOID TInstDlg::ViewFile()
 	item.iItem = iHotitem;
 	ListView_GetItem(hWndList, &item);
 
-	if(m_lpPckCenter->GetListInSearchMode()) {
+	if(m_cPckCenter.GetListInSearchMode()) {
 		lpPckFileIndexToShow = (LPPCKINDEXTABLE)item.lParam;
 
 	} else {
@@ -226,7 +227,7 @@ VOID TInstDlg::ViewFile()
 	DWORD dwFilesizeToView = lpPckFileIndexToShow->cFileIndex.dwFileClearTextSize;
 
 	CPriviewInDlg cPreview;
-	cPreview.Show(lpPckFileIndexToShow->cFileIndex.sztFilename, lpPckFileIndexToShow->cFileIndex.dwFileClearTextSize, m_lpPckCenter, lpPckFileIndexToShow, this);
+	cPreview.Show(lpPckFileIndexToShow->cFileIndex.sztFilename, lpPckFileIndexToShow->cFileIndex.dwFileClearTextSize, &m_cPckCenter, lpPckFileIndexToShow, this);
 
 }
 
@@ -267,7 +268,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 
 	szBuffer = (TCHAR *)malloc(MAX_BUFFER_SIZE_OFN * sizeof(TCHAR));
 	if(szBuffer == NULL) {
-		m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
@@ -301,7 +302,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 
 		TCHAR		**szFilenamePtrArray, **szFilenamePtrArrayPtr;
 		if(NULL == (szFilenamePtrArray = (TCHAR**)malloc(MAX_BUFFER_SIZE_OFN * sizeof(TCHAR**)))) {
-			m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			free(szBuffer);
 			return FALSE;
 
@@ -333,7 +334,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 		*szFilenamePtrArrayPtr = 0;
 
 		if(NULL == (lpszFilePathArray = /*(TCHAR(*)[MAX_PATH])*/ malloc(sizeof(TCHAR) * MAX_PATH * dwFileCount))) {
-			m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			free(szFilenamePtrArray);
 			free(szBuffer);
 			return	FALSE;
@@ -356,7 +357,7 @@ BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
 		dwFileCount = 1;
 
 		if(NULL == (lpszFilePathArray = /*(TCHAR(*)[MAX_PATH])*/ malloc(sizeof(TCHAR) * MAX_PATH))) {
-			m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			free(szBuffer);
 			return	FALSE;
 		}
@@ -495,11 +496,14 @@ void TInstDlg::InitLogWindow()
 	//Log windows
 	logdlg = new TLogDlg(this);
 	logdlg->Create();
-	m_lpPckCenter->SetLogListWnd(logdlg->GetListWnd());
+	SetLogListWnd(logdlg->GetListWnd());
+	SetLogMainWnd(hWnd);
 
-	//logdlg->Show();
+	//日志函数绑定
+	m_PckLog.PckClass_log_register(PreInsertLogToList);
 
-	m_lpPckCenter->PrintLogI(THIS_NAME \
+	//启动日志
+	m_PckLog.PrintLogI(THIS_NAME \
 		THIS_VERSION \
 		" is started.");
 

@@ -9,6 +9,8 @@
 // 2018.5.29
 //////////////////////////////////////////////////////////////////////
 
+#pragma warning ( disable : 4996 )
+
 #include <Windows.h>
 #include "DdsTgaDecoder.h"
 #include "DDS.h"

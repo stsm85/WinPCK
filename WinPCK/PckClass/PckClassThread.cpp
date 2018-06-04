@@ -11,6 +11,7 @@
 
 #include "PckClass.h"
 #include <process.h>
+#include "PckClassFileDisk.h"
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4244 )
@@ -28,7 +29,7 @@
 **
 */
 
-BOOL CPckClass::BeforeSingleOrMultiThreadProcess(LPPCK_ALL_INFOS lpPckAllInfo, CMapViewFileWrite* &lpWrite, LPTSTR szPckFile, DWORD dwCreationDisposition, QWORD qdwSizeToMap, int threadnum)
+BOOL CPckClass::BeforeSingleOrMultiThreadProcess(LPPCK_ALL_INFOS lpPckAllInfo, CMapViewFileWrite* &lpWrite, LPCTSTR szPckFile, DWORD dwCreationDisposition, QWORD qdwSizeToMap, int threadnum)
 {
 	//构造头和尾时需要的参数
 	memset(lpPckAllInfo, 0, sizeof(PCK_ALL_INFOS));
@@ -48,14 +49,13 @@ BOOL CPckClass::BeforeSingleOrMultiThreadProcess(LPPCK_ALL_INFOS lpPckAllInfo, C
 	lpPckParams->cVarParams.dwUIProgress = 0;
 
 	//多线程使用参数初始化
-	if(PCK_COMPRESS_NEED_ST < threadnum) {
-		mt_lpbThreadRunning = &lpPckParams->cVarParams.bThreadRunning;	//监视线程暂停
-		mt_lpdwCount = &lpPckParams->cVarParams.dwUIProgress;			//dwCount;
-		mt_MaxMemory = lpPckParams->dwMTMaxMemory;						//可用最大缓存;
-		mt_lpMaxMemory = &lpPckParams->cVarParams.dwMTMemoryUsed;		//已使用缓存;
-		mt_nMallocBlocked = 0;											//等待的线程数
-	}
 
+	mt_lpbThreadRunning = &lpPckParams->cVarParams.bThreadRunning;	//监视线程暂停
+	mt_lpdwCount = &lpPckParams->cVarParams.dwUIProgress;			//dwCount;
+	mt_MaxMemory = lpPckParams->dwMTMaxMemory;						//可用最大缓存;
+	mt_lpMaxMemory = &lpPckParams->cVarParams.dwMTMemoryUsed;		//已使用缓存;
+	mt_nMallocBlocked = 0;											//等待的线程数
+	
 	return TRUE;
 }
 
@@ -96,7 +96,7 @@ void CPckClass::MultiThreadInitialize(VOID CompressThread(VOID*), VOID WriteThre
 	CloseHandle(mt_evtAllWriteFinish);
 
 	if(!lpPckParams->cVarParams.bThreadRunning) {
-		PrintLogW(TEXT_USERCANCLE);
+		m_PckLog.PrintLogW(TEXT_USERCANCLE);
 	}
 
 }
@@ -106,7 +106,7 @@ void CPckClass::MultiThreadInitialize(VOID CompressThread(VOID*), VOID WriteThre
 BOOL CPckClass::RenameFilename()
 {
 
-	PrintLogI(TEXT_LOG_RENAME);
+	m_PckLog.PrintLogI(TEXT_LOG_RENAME);
 
 	int			level = lpPckParams->dwCompressLevel;
 	DWORD		IndexCompressedFilenameDataLengthCryptKey1 = m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey1;
@@ -117,16 +117,16 @@ BOOL CPckClass::RenameFilename()
 
 	if(!cFileWrite.OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
 
-		PrintLogEL(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		assert(FALSE);
 		return FALSE;
 	}
 
-	QWORD dwFileSize = cFileWrite.GetFileSize() + PCK_RENAME_EXPAND_ADD;
+	QWORD dwFileSize = CPckClassFileDisk::GetPckFilesizeRename(m_PckAllInfo.szFilename, cFileWrite.GetFileSize());//cFileWrite.GetFileSize() + PCK_RENAME_EXPAND_ADD;
 
 	if(!cFileWrite.Mapping(dwFileSize)) {
 
-		PrintLogEL(TEXT_CREATEMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_CREATEMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		assert(FALSE);
 		return FALSE;
 	}
@@ -165,7 +165,7 @@ BOOL CPckClass::RenameFilename()
 
 	AfterProcess(&cFileWrite, m_PckAllInfo, dwAddress, FALSE);
 
-	PrintLogI(TEXT_LOG_WORKING_DONE);
+	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 }
@@ -220,29 +220,28 @@ BOOL CPckClass::initCompressedDataQueue(int threadnum, DWORD dwFileCount, QWORD 
 {
 	//申请空间,文件名压缩数据 数组
 	if(NULL == (mt_lpPckIndexTable = new PCKINDEXTABLE_COMPRESS[dwFileCount])) {
-		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		assert(FALSE);
 		return FALSE;
 	}
 	memset(mt_lpPckIndexTable, 0, sizeof(PCKINDEXTABLE_COMPRESS) * dwFileCount);
 
-	if(PCK_COMPRESS_NEED_ST < threadnum) {
-		if(NULL == (mt_pckCompressedDataPtrArray = (BYTE**)malloc(sizeof(BYTE*) * (dwFileCount + 1)))) {
-			PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-			assert(FALSE);
-			return FALSE;
-		}
-		memset(mt_pckCompressedDataPtrArray, 0, sizeof(BYTE*) * (dwFileCount + 1));
-
-		mt_lpPckIndexTablePut = mt_lpPckIndexTableGet = mt_lpPckIndexTable;
-		mt_pckCompressedDataPtrArrayPut = mt_pckCompressedDataPtrArrayGet = mt_pckCompressedDataPtrArray;
-		mt_dwMaxQueueLength = dwFileCount;
-#ifdef _DEBUG
-		mt_dwCurrentQueuePosPut = mt_dwCurrentQueuePosGet = 0;
-#endif
-		mt_dwCurrentQueueLength = 0;
-		mt_dwAddressNameQueue = mt_dwAddressQueue = dwAddressStartAt;
+	if(NULL == (mt_pckCompressedDataPtrArray = (BYTE**)malloc(sizeof(BYTE*) * (dwFileCount + 1)))) {
+		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		assert(FALSE);
+		return FALSE;
 	}
+	memset(mt_pckCompressedDataPtrArray, 0, sizeof(BYTE*) * (dwFileCount + 1));
+
+	mt_lpPckIndexTablePut = mt_lpPckIndexTableGet = mt_lpPckIndexTable;
+	mt_pckCompressedDataPtrArrayPut = mt_pckCompressedDataPtrArrayGet = mt_pckCompressedDataPtrArray;
+	mt_dwMaxQueueLength = dwFileCount;
+#ifdef _DEBUG
+	mt_dwCurrentQueuePosPut = mt_dwCurrentQueuePosGet = 0;
+#endif
+	mt_dwCurrentQueueLength = 0;
+	mt_dwAddressNameQueue = mt_dwAddressQueue = dwAddressStartAt;
+
 
 	return TRUE;
 }
@@ -335,6 +334,5 @@ void CPckClass::uninitCompressedDataQueue(int threadnum)
 {
 	delete[] mt_lpPckIndexTable;
 
-	if(PCK_COMPRESS_NEED_ST < threadnum)
-		free(mt_pckCompressedDataPtrArray);
+	free(mt_pckCompressedDataPtrArray);
 }

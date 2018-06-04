@@ -1,7 +1,7 @@
 
 #include "PckControlCenter.h"
 #include "miscdlg.h"
-
+#include "PckClassLog.h"
 
 class TInstDlg : public TDlg
 {
@@ -53,7 +53,9 @@ protected:
 	TCHAR	m_Filename[MAX_PATH], m_CurrentPath[MAX_PATH];
 
 
-	CPckControlCenter	*m_lpPckCenter;
+	CPckControlCenter	m_cPckCenter;
+	CPckClassLog		m_PckLog;
+
 	LPPCK_PATH_NODE		m_currentNodeOnShow;	/*m_lpPckNode, */
 
 	LPPCK_RUNTIME_PARAMS	lpPckParams;

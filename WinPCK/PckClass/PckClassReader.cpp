@@ -21,7 +21,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 	CMapViewFileRead cRead;
 
 	if(!cRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
-		PrintLogEL(TEXT_OPENNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_OPENNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
@@ -32,7 +32,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 	//开始读文件
 	BYTE	*lpFileBuffer;
 	if(NULL == (lpFileBuffer = cRead.View(m_PckAllInfo.dwAddressName, cRead.GetFileSize() - m_PckAllInfo.dwAddressName))) {
-		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
@@ -63,7 +63,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 
 			if(dwFileIndexTableCryptedDataLength[0] != dwFileIndexTableCryptedDataLength[1]) {
 
-				PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
+				m_PckLog.PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
 				return FALSE;
 			}
 
@@ -85,7 +85,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 
 			if(dwFileIndexTableCryptedDataLength[0] != dwFileIndexTableCryptedDataLength[1]) {
 
-				PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
+				m_PckLog.PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
 				return FALSE;
 			}
 

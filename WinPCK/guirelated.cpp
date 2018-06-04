@@ -48,9 +48,7 @@ void TInstDlg::initParams()
 {
 
 	//初始化数据
-	m_lpPckCenter = new CPckControlCenter(hWnd);
-
-	lpPckParams = m_lpPckCenter->GetParams();
+	lpPckParams = m_cPckCenter.GetParams();
 
 	*m_szStrToSearch = 0;			//查找的文字
 	//bThreadRunning = FALSE;			//线程运行标记

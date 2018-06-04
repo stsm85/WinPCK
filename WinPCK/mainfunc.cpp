@@ -23,7 +23,7 @@
 
 LPPCK_PATH_NODE	TInstDlg::GetLastShowNode()
 {
-	LPPCK_PATH_NODE lpCurrentNode = m_lpPckCenter->m_lpPckRootNode->child;
+	LPPCK_PATH_NODE lpCurrentNode = m_cPckCenter.m_lpPckRootNode->child;
 	LPPCK_PATH_NODE lpCurrentNodeToFind = lpCurrentNode;
 
 	TCHAR	**lpCurrentDir = m_PathDirs.lpszDirNames;
@@ -82,7 +82,7 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 		t1 = GetTickCount();
 
 		//转换文件名格式 
-		if(m_lpPckCenter->Open(m_Filename)) {
+		if(m_cPckCenter.Open(m_Filename)) {
 			t2 = GetTickCount() - t1;
 			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENOK), t2);
 			SetStatusBarText(4, szString);
@@ -90,10 +90,10 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 			SetStatusBarText(0, wcsrchr(m_Filename, TEXT('\\')) + 1);
 			SetStatusBarText(3, TEXT(""));
 
-			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILESIZE), m_lpPckCenter->GetPckSize());
+			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILESIZE), m_cPckCenter.GetPckSize());
 			SetStatusBarText(1, szString);
 
-			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILECOUNT), m_lpPckCenter->GetPckFileCount());
+			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILECOUNT), m_cPckCenter.GetPckFileCount());
 			SetStatusBarText(2, szString);
 
 			if(isReOpen) {
@@ -101,12 +101,12 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 				ListView_EnsureVisible(GetDlgItem(IDC_LIST), iListTopView, NULL);
 				ListView_EnsureVisible(GetDlgItem(IDC_LIST), iListTopView + ListView_GetCountPerPage(GetDlgItem(IDC_LIST)) - 1, NULL);
 			} else
-				ShowPckFiles(m_lpPckCenter->m_lpPckRootNode->child);
+				ShowPckFiles(m_cPckCenter.m_lpPckRootNode->child);
 
 			return TRUE;
 		} else {
 			SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-			m_lpPckCenter->Close();
+			m_cPckCenter.Close();
 			return FALSE;
 		}
 
@@ -117,20 +117,20 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 }
 VOID TInstDlg::SearchPckFiles()
 {
-	DWORD	dwFileCount = m_lpPckCenter->GetPckFileCount();
+	DWORD	dwFileCount = m_cPckCenter.GetPckFileCount();
 	if(0 == dwFileCount)return;
 	HWND	hList = GetDlgItem(IDC_LIST);
 	LPPCKINDEXTABLE	lpPckIndexTable;
-	lpPckIndexTable = m_lpPckCenter->GetPckIndexTable();
+	lpPckIndexTable = m_cPckCenter.GetPckIndexTable();
 
 	TCHAR	szClearTextSize[CHAR_NUM_LEN], szCipherTextSize[CHAR_NUM_LEN];
 	TCHAR	szCompressionRatio[CHAR_NUM_LEN];
 
-	LPPCK_PATH_NODE		lpNodeToShowPtr = m_lpPckCenter->m_lpPckRootNode;
+	LPPCK_PATH_NODE		lpNodeToShowPtr = m_cPckCenter.m_lpPckRootNode;
 
 	if(NULL == lpNodeToShowPtr)return;
 
-	m_lpPckCenter->SetListInSearchMode(TRUE);
+	m_cPckCenter.SetListInSearchMode(TRUE);
 
 	//显示查找文字
 	char	szPrintf[64];
@@ -148,9 +148,9 @@ VOID TInstDlg::SearchPckFiles()
 
 	int	iListIndex = 1;
 
-	m_currentNodeOnShow = m_lpPckCenter->m_lpPckRootNode->child;
+	m_currentNodeOnShow = m_cPckCenter.m_lpPckRootNode->child;
 
-	InsertList(hList, 0, LVIF_PARAM | LVIF_IMAGE, 0, m_lpPckCenter->m_lpPckRootNode, 1,
+	InsertList(hList, 0, LVIF_PARAM | LVIF_IMAGE, 0, m_cPckCenter.m_lpPckRootNode, 1,
 		TEXT(".."));
 
 	for(DWORD i = 0;i < dwFileCount;i++) {
@@ -182,7 +182,7 @@ VOID TInstDlg::SearchPckFiles()
 VOID TInstDlg::ShowPckFiles(LPPCK_PATH_NODE		lpNodeToShow)
 {
 	HWND	hList = GetDlgItem(IDC_LIST);
-	m_lpPckCenter->SetListInSearchMode(FALSE);
+	m_cPckCenter.SetListInSearchMode(FALSE);
 	LPPCKINDEXTABLE	lpPckIndexTable;
 
 	TCHAR	szClearTextSize[CHAR_NUM_LEN], szCipherTextSize[CHAR_NUM_LEN];

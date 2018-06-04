@@ -13,6 +13,7 @@
 #include "miscdlg.h"
 #include <stdio.h>
 #include "PckHeader.h"
+#include "PckClassLog.h"
 
 /*
 日志信息对话框
@@ -249,30 +250,8 @@ char*  TLogDlg::pszTargetListLog(int iItem)
 	item.cchTextMax = 8190;
 	::SendMessageA(hWndList, LVM_GETITEMA, 0, (LPARAM)(LV_ITEMA*)&item);
 
-	switch(item.iImage) {
-	case LOG_IMAGE_INFO:
+	*szText = CPckClassLog::GetLogLevelPrefix(item.iImage);
 
-		*szText = LOG_FLAG_INFO;
-		break;
-
-	case LOG_IMAGE_WARNING:
-
-		*szText = LOG_FLAG_WARNING;
-		break;
-
-	case LOG_IMAGE_ERROR:
-
-		*szText = LOG_FLAG_ERROR;
-		break;
-
-	case LOG_IMAGE_DEBUG:
-
-		*szText = LOG_FLAG_DEBUG;
-		break;
-
-	default:
-		*szText = ' ';
-	}
 	return szText;
 }
 

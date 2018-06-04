@@ -1,13 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(UseDebugLibraries)'=='false'">
     <ClCompile>
       <!-- 多处理器编译 -->
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(UseDebugLibraries)'=='false'">
-    <ClCompile>
       <!-- 汇编程序输出 禁用=NoListing 带源代码的程序集=AssemblyAndSourceCode -->
       <AssemblerOutput>NoListing</AssemblerOutput>
       <!-- 调试信息格式 无=None C7兼容=OldStyle 程序数据库=ProgramDatabase -->

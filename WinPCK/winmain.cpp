@@ -50,7 +50,7 @@ void TInstApp::InitWindow(void)
 
 }
 
-TInstDlg::TInstDlg(LPTSTR cmdLine) : TDlg(IDD_MAIN)//, staticText(this)
+TInstDlg::TInstDlg(LPTSTR cmdLine) : TDlg(IDD_MAIN), m_cPckCenter(hWnd)//, staticText(this)
 {}
 
 TInstDlg::~TInstDlg() {}
@@ -113,7 +113,6 @@ BOOL TInstDlg::EvClose()
 
 	ListView_Uninit();
 
-	delete m_lpPckCenter;
 	delete logdlg;
 
 	::PostQuitMessage(0);
@@ -156,18 +155,18 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		if(lpPckParams->cVarParams.bThreadRunning)
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
 		ListView_DeleteAllItems(GetDlgItem(IDC_LIST));
-		m_lpPckCenter->Close();
+		m_cPckCenter.Close();
 		break;
 	case ID_MENU_INFO:
-		if(m_lpPckCenter->IsValidPck()) {
-			TInfoDlg	dlg(m_lpPckCenter->GetAdditionalInfo(), this);
+		if(m_cPckCenter.IsValidPck()) {
+			TInfoDlg	dlg(m_cPckCenter.GetAdditionalInfo(), this);
 			if(dlg.Exec() == TRUE) {
-				m_lpPckCenter->SetAdditionalInfo();
+				m_cPckCenter.SetAdditionalInfo();
 			}
 		}
 		break;
 	case ID_MENU_SEARCH:
-		if(m_lpPckCenter->IsValidPck()) {
+		if(m_cPckCenter.IsValidPck()) {
 			TSearchDlg	dlg(m_szStrToSearch, this);
 			if(dlg.Exec() == TRUE) {
 				SearchPckFiles();
@@ -213,7 +212,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		if(lpPckParams->cVarParams.bThreadRunning)break;
 		HWND	hList = GetDlgItem(IDC_LIST);
 		::SetWindowLong(hList, GWL_STYLE, ::GetWindowLong(hList, GWL_STYLE) | LVS_EDITLABELS);
-		ListView_EditLabel(hList, m_lpPckCenter->GetListCurrentHotItem());
+		ListView_EditLabel(hList, m_cPckCenter.GetListCurrentHotItem());
 	}
 	break;
 	case ID_MENU_DELETE:
@@ -300,7 +299,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		break;
 
 	case ID_LISTVIEW_ENTER:
-		DbClickListView(m_lpPckCenter->GetListCurrentHotItem());
+		DbClickListView(m_cPckCenter.GetListCurrentHotItem());
 		break;
 	//case ID_LISTVIEW_BACK:
 	//	DbClickListView(0);
@@ -365,7 +364,7 @@ BOOL TInstDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 			m_isSearchWindow = FALSE;
 
 			if(IsValidWndAndGetPath(szPath, TRUE)) {
-				if(m_lpPckCenter->IsValidPck()) {
+				if(m_cPckCenter.IsValidPck()) {
 					if(!lpPckParams->cVarParams.bThreadRunning) {
 						//mt_MaxMemoryCount = 0;
 						lpPckParams->cVarParams.dwMTMemoryUsed = 0;
@@ -524,7 +523,7 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 	if(0 == m_DropFileCount)goto END_DROP;
 
 	if(1 == m_DropFileCount) {
-		if(!m_lpPckCenter->IsValidPck()) {
+		if(!m_cPckCenter.IsValidPck()) {
 			size_t	nFirstFileLength;
 			DragQueryFile(hDrop, 0, szFirstFile, MAX_PATH);
 			nFirstFileLength = _tcsnlen(szFirstFile, MAX_PATH);
@@ -549,7 +548,7 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 	DragAcceptFiles(hWnd, FALSE);
 
 	if(NULL == (m_lpszFilePath = (TCHAR(*)[MAX_PATH]) malloc(sizeof(TCHAR) * MAX_PATH * m_DropFileCount))) {
-		m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		goto END_DROP;
 	}
 
@@ -579,7 +578,7 @@ BOOL TInstDlg::EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_FRESH_MAIN_CAPTION:
 
 		if(wParam) {
-			_stprintf_s(szPrintf, TEXT("%s - %s"), TEXT(THIS_MAIN_CAPTION), m_lpPckCenter->GetCurrentVersionName());
+			_stprintf_s(szPrintf, TEXT("%s - %s"), TEXT(THIS_MAIN_CAPTION), m_cPckCenter.GetCurrentVersionName());
 			SetWindowText(szPrintf);
 		} else {
 			SetWindowTextA(THIS_MAIN_CAPTION);

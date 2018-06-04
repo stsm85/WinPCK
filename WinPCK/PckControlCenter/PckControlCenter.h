@@ -14,7 +14,7 @@
 
 #include "globals.h"
 #include "PckHeader.h"
-
+#include "PckClassLog.h"
 
 
 class CPckClass;
@@ -32,9 +32,6 @@ public:
 
 	LPPCK_RUNTIME_PARAMS	GetParams();
 	//void					SetParams(LPPCK_RUNTIME_PARAMS in);
-
-	//BOOL					ConfirmErrors(LPCSTR lpszMainString, LPCSTR lpszCaption, UINT uType);
-	//BOOL					ConfirmErrors(LPCWSTR lpszMainString, LPCWSTR lpszCaption, UINT uType);
 
 	void					New();
 	//BOOL					Open(LPCSTR lpszFile);
@@ -61,10 +58,6 @@ public:
 
 	///pck 类的交互
 	CONST	LPPCKINDEXTABLE		GetPckIndexTable();
-	//CONST	LPPCK_PATH_NODE		GetPckPathNode();
-	//CONST	LPPCKHEAD			GetPckHead();
-
-	//LPCTSTR						GetLastErrorString();
 
 
 	BOOL						IsValidPck();
@@ -100,8 +93,6 @@ public:
 	//重置PCK的压缩参数
 	void	ResetCompressor();
 
-	
-
 	//新建pck文件
 	BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath);
 
@@ -121,51 +112,11 @@ public:
 	//删除一个节点
 	VOID	DeleteNode(LPPCK_PATH_NODE lpNode);
 
-
-	//log日志相关功能 
-	void	SetLogListWnd(HWND _hWndList);
-
-#define define_define_one_PrintLog(_loglvchar)	\
-	void PrintLog##_loglvchar(const char *_text, ...);\
-	void PrintLog##_loglvchar(const wchar_t *_text, ...);\
-	void PrintLog##_loglvchar(const char *_text, va_list ap);\
-	void PrintLog##_loglvchar(const wchar_t *_text, va_list ap);
-
-	define_define_one_PrintLog(I)
-	define_define_one_PrintLog(W)
-	define_define_one_PrintLog(E)
-	define_define_one_PrintLog(D)
-	define_define_one_PrintLog(N)
-
-#undef define_define_one_PrintLog
-
-	//__FILE__, __FUNCTION__, __LINE__
-	void	PrintLogEL(const char *_maintext, const char *_file, const char *_func, const long _line);
-	void	PrintLogEL(const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
-	void	PrintLogEL(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line);
-	void	PrintLogEL(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
-
-
-	void	PrintLog(const char chLevel, const char *_fmt, va_list ap);
-	void	PrintLog(const char chLevel, const wchar_t *_fmt, va_list ap);
-	void	PrintLog(const char chLevel, const char *_fmt, ...);
-	void	PrintLog(const char chLevel, const wchar_t *_fmt, ...);
-
-
-
 private:
 
 	void	CreateRestoreData();
 	void	RestoreData(LPCTSTR lpszFile);
 	void	DeleteRestoreData();
-
-	//log日志相关功能 
-	//template<typename T>
-	void	PreInsertLogToList(const int, const WCHAR *);
-	void	PreInsertLogToList(const int, const char *);
-
-	//void	_InsertLogIntoList(const int, const char *);
-	void	_InsertLogIntoList(const int, const wchar_t *);
 
 public:
 
@@ -178,6 +129,7 @@ private:
 
 	PCK_RUNTIME_PARAMS			cParams;
 	CPckClass					*m_lpClassPck;
+	CPckClassLog				m_PckLog;
 
 	BOOL						hasRestoreData;
 
@@ -187,14 +139,8 @@ private:
 	LPBYTE						m_lpPckFileIndexData;
 	DWORD						m_dwPckFileIndexDataSize;
 
-
 	//LOG
 	HWND						m_hWndMain;
-	//HWND						m_hWndLogWnd;
-	HWND						m_hWndLogListWnd;
-	int							m_LogListCount;
-
-	DWORD						m_dwLastError;
 
 	//格式
 	FMTPCK						m_emunFileFormat;

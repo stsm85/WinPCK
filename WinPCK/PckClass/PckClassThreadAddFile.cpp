@@ -3,17 +3,16 @@
 #define COMPRESSSINGLETHREADFUNC UpdatePckFileSingleThread
 #define TARGET_PCK_MODE_COMPRESS PCK_MODE_COMPRESS_ADD
 #include "PckClassThreadCompressFunctions.h"
-
+#include "PckClassFileDisk.h"
 
 //更新pck包
 BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert)
 {
-	DWORD		dwFileCount = 0, dwOldPckFileCount;					//文件数量, 原pck文件中的文件数
-	QWORD		qwTotalFileSize = 0, qwTotalFileSizeTemp;			//未压缩时所有文件大小
+	DWORD		dwFileCount = 0, dwOldPckFileCount;			//文件数量, 原pck文件中的文件数
+	QWORD		qwTotalFileSize = 0;						//未压缩时所有文件大小
 	size_t		nLen;
 
 	char		szPathMbsc[MAX_PATH];
-	//char		szLogString[LOG_BUFFER];
 
 	int			level = lpPckParams->dwCompressLevel;
 	int			threadnum = lpPckParams->dwMTThread;
@@ -44,7 +43,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 		mt_nCurrentNodeStringLen = strlen(mt_szCurrentNodeString);
 
-		PrintLogI(TEXT_LOG_UPDATE_ADD
+		m_PckLog.PrintLogI(TEXT_LOG_UPDATE_ADD
 			"-"
 			TEXT_LOG_LEVEL_THREAD, level, threadnum);
 
@@ -56,7 +55,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 		*mt_szCurrentNodeString = 0;
 		mt_nCurrentNodeStringLen = 0;
 
-		PrintLogI(TEXT_LOG_UPDATE_NEW
+		m_PckLog.PrintLogI(TEXT_LOG_UPDATE_NEW
 			"-"
 			TEXT_LOG_LEVEL_THREAD, level, threadnum);
 
@@ -65,7 +64,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	if(NULL == m_firstFile)m_firstFile = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS));
 	if(NULL == m_firstFile) {
 
-		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		free(lpszFilePath);
 		assert(FALSE);
 		return FALSE;
@@ -93,7 +92,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 			if(!cFileRead.Open(szPathMbsc)) {
 				DeallocateFileinfo();
 				free(lpszFilePath);
-				PrintLogEL(TEXT_OPENNAME_FAIL, *lpszFilePathPtr, __FILE__, __FUNCTION__, __LINE__);
+				m_PckLog.PrintLogEL(TEXT_OPENNAME_FAIL, *lpszFilePathPtr, __FILE__, __FUNCTION__, __LINE__);
 
 				assert(FALSE);
 				return FALSE;
@@ -133,17 +132,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	DWORD dwPrepareToAdd = mt_dwFileCount = lpPckParams->cVarParams.dwUIProgressUpper = dwFileCount;
 
 	//计算大概需要多大空间qwTotalFileSize
-	qwTotalFileSizeTemp = qwTotalFileSize * 0.6 + m_PckAllInfo.dwAddressName + PCK_SPACE_DETECT_SIZE;
-
-#if !PCK_SIZE_UNLIMITED
-	if(((0 != (qwTotalFileSizeTemp >> 32)) && (0x20002 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version)) || \
-		((0 != (qwTotalFileSizeTemp >> 33)) && (0x20003 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version))) {
-
-		PrintLogE(TEXT_COMPFILE_TOOBIG, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-	}
-#endif
-	mt_CompressTotalFileSize = qwTotalFileSizeTemp;
+	mt_CompressTotalFileSize = CPckClassFileDisk::GetPckFilesizeByCompressed(szPckFile, qwTotalFileSize, m_PckAllInfo.qwPckSize/*m_PckAllInfo.dwAddressName*/);
 
 	//if (PCK_SPACE_DETECT_SIZE >= mt_CompressTotalFileSize)mt_CompressTotalFileSize = PCK_STEP_ADD_SIZE;
 
@@ -164,7 +153,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 
 			if(-1 == (int)lpDuplicateNode) {
 				DeallocateFileinfo();
-				PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
+				m_PckLog.PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
 				assert(FALSE);
 				return FALSE;
 			}
@@ -180,7 +169,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	}
 
 	//日志
-	PrintLogI(TEXT_UPDATE_FILE_INFO, dwPrepareToAdd, mt_CompressTotalFileSize);
+	m_PckLog.PrintLogI(TEXT_UPDATE_FILE_INFO, dwPrepareToAdd, mt_CompressTotalFileSize);
 
 	PCK_ALL_INFOS	pckAllInfo;
 	//OPEN_ALWAYS，新建新的pck(CREATE_ALWAYS)或更新存在的pck(OPEN_EXISTING)
@@ -196,16 +185,10 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 		return FALSE;
 	}
 
-	if(PCK_COMPRESS_NEED_ST < threadnum) {
 
-		MultiThreadInitialize(CompressThreadAdd, WriteThread, threadnum);
-		dwAddress = mt_dwAddressQueue;
-	}
-#if PCK_COMPRESS_NEED_ST
-	else {
-		UpdatePckFileSingleThread(dwAddress);
-	}
-#endif
+	MultiThreadInitialize(CompressThreadAdd, WriteThread, threadnum);
+	dwAddress = mt_dwAddressQueue;
+
 	//打印报告用参数
 	DWORD	dwUseNewDataAreaInDuplicateFile = 0;
 
@@ -271,7 +254,7 @@ BOOL CPckClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], 
 	lpPckParams->cVarParams.dwUseNewDataAreaInDuplicateFileSize = dwUseNewDataAreaInDuplicateFile;
 	lpPckParams->cVarParams.dwFinalFileCount = pckAllInfo.dwFileCount;
 
-	PrintLogI(TEXT_LOG_WORKING_DONE);
+	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 

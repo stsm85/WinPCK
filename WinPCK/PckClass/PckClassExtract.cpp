@@ -34,7 +34,7 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFi
 	BYTE	*lpMapAddress;
 	if(NULL == (lpMapAddress = lpFileRead->View(lpPckFileIndex->dwAddressOffset, lpPckFileIndex->dwFileCipherTextSize))) {
 
-		PrintLogEL(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 
 		if(NULL == lpvoidFileRead)
 			delete lpFileRead;
@@ -55,7 +55,7 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFi
 				memcpy(buffer, lpMapAddress, dwFileLengthToWrite);
 			else {
 
-				PrintLogEL(TEXT_UNCOMPRESSDATA_FAIL, lpPckFileIndex->szFilename, __FILE__, __FUNCTION__, __LINE__);
+				m_PckLog.PrintLogEL(TEXT_UNCOMPRESSDATA_FAIL, lpPckFileIndex->szFilename, __FILE__, __FUNCTION__, __LINE__);
 				assert(FALSE);
 				lpFileRead->UnmapView();
 
@@ -81,7 +81,7 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFi
 BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 {
 
-	PrintLogI(TEXT_LOG_EXTRACT);
+	m_PckLog.PrintLogI(TEXT_LOG_EXTRACT);
 
 	CMapViewFileRead	cFileRead;
 
@@ -96,7 +96,7 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 
 	for(int i = 0;i < nFileCount;i++) {
 		if(!lpPckParams->cVarParams.bThreadRunning) {
-			PrintLogW(TEXT_USERCANCLE);
+			m_PckLog.PrintLogW(TEXT_USERCANCLE);
 
 			return FALSE;
 		}
@@ -117,7 +117,7 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 
 		//解压文件
 		if(!(DecompressFile(szFilename, *lpIndexToExtractPtr, &cFileRead))) {
-			PrintLogEL(TEXT_UNCOMP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_PckLog.PrintLogEL(TEXT_UNCOMP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			return FALSE;
 		} else {
 			//dwCount++;
@@ -127,14 +127,14 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 		++lpIndexToExtractPtr;
 	}
 
-	PrintLogI(TEXT_LOG_WORKING_DONE);
+	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
 	return	ret;
 }
 
 BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 {
 
-	PrintLogI(TEXT_LOG_EXTRACT);
+	m_PckLog.PrintLogI(TEXT_LOG_EXTRACT);
 
 	CMapViewFileRead	cFileRead;
 
@@ -147,7 +147,7 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 
 	for(int i = 0;i < nFileCount;i++) {
 		if(!lpPckParams->cVarParams.bThreadRunning) {
-			PrintLogW(TEXT_USERCANCLE);
+			m_PckLog.PrintLogW(TEXT_USERCANCLE);
 			return FALSE;
 		}
 
@@ -155,7 +155,7 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 
 			//解压文件
 			if(!(DecompressFile((*lpNodeToExtractPtr)->szName, (*lpNodeToExtractPtr)->lpPckIndexTable, &cFileRead))) {
-				PrintLogEL(TEXT_UNCOMP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+				m_PckLog.PrintLogEL(TEXT_UNCOMP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 				return FALSE;
 			} else {
 				//dwCount++;
@@ -173,7 +173,7 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 		lpNodeToExtractPtr++;
 	}
 
-	PrintLogI(TEXT_LOG_WORKING_DONE);
+	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
 	return	ret;
 }
 BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileRead)
@@ -183,7 +183,7 @@ BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileR
 
 	do {
 		if(!lpPckParams->cVarParams.bThreadRunning) {
-			PrintLogW(TEXT_USERCANCLE);
+			m_PckLog.PrintLogW(TEXT_USERCANCLE);
 			return FALSE;
 		}
 
@@ -201,7 +201,7 @@ BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileR
 
 			//解压文件
 			if(!DecompressFile(lpNodeToExtract->szName, lpNodeToExtract->lpPckIndexTable, lpFileRead)) {
-				PrintLogEL(TEXT_UNCOMP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+				m_PckLog.PrintLogEL(TEXT_UNCOMP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 
 				return FALSE;
 			} else {
@@ -234,19 +234,19 @@ BOOL CPckClass::DecompressFile(LPCTSTR	lpszFilename, LPPCKINDEXTABLE lpPckFileIn
 
 	//以下是创建一个文件，用来保存解压缩后的文件
 	if(!cFileWrite.Open(lpszFilename, CREATE_ALWAYS)) {
-		PrintLogEL(TEXT_OPENWRITENAME_FAIL, lpszFilename, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_OPENWRITENAME_FAIL, lpszFilename, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
 	if(!cFileWrite.Mapping(dwFileLengthToWrite)) {
 		if(0 == dwFileLengthToWrite)
 			return TRUE;
-		PrintLogEL(TEXT_CREATEMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_CREATEMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
 	if(NULL == (lpMapAddressToWrite = cFileWrite.View(0, 0))) {
-		PrintLogEL(TEXT_VIEWMAPNAME_FAIL, lpszFilename, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_VIEWMAPNAME_FAIL, lpszFilename, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 

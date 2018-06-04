@@ -18,7 +18,7 @@ void* CPckClass::AllocMemory(size_t	sizeStuct)
 	void*		lpMallocNode;
 
 	if(NULL == (lpMallocNode = malloc(sizeStuct))) {
-		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		//m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return lpMallocNode;
 	}
 	//³õÊ¼»¯ÄÚ´æ

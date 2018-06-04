@@ -177,7 +177,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -302,6 +301,7 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -439,6 +439,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -466,10 +467,12 @@
     <ClCompile Include="MiscFuncs\GetDragPath.cpp" />
     <ClCompile Include="MiscFuncs\OpenSaveDlg.cpp" />
     <ClCompile Include="MiscFuncs\Raw2HexString.cpp" />
+    <ClCompile Include="MiscFuncs\ShowLogOnDlgListView.cpp" />
     <ClCompile Include="PckClass\PckClassAllocFunctions.cpp" />
     <ClCompile Include="PckClass\PckClassCompress.cpp" />
     <ClCompile Include="PckClass\PckClassExceptionRestore.cpp" />
-    <ClCompile Include="PckClass\PckClassFeedback.cpp" />
+    <ClCompile Include="PckClass\PckClassLog.cpp" />
+    <ClCompile Include="PckClass\PckClassFileDisk.cpp" />
     <ClCompile Include="PckClass\PckClassHelpFunction.cpp" />
     <ClCompile Include="PckClass\PckClassMount.cpp" />
     <ClCompile Include="PckClass\PckClassReader.cpp" />
@@ -489,7 +492,6 @@
     <ClCompile Include="PckClass\PckClassVersionDetect.cpp" />
     <ClCompile Include="PckControlCenter\PckControlCenter.cpp" />
     <ClCompile Include="PckControlCenter\PckControlCenterAttribute.cpp" />
-    <ClCompile Include="PckControlCenter\PckControlCenterLog.cpp" />
     <ClCompile Include="PckControlCenter\PckControlCenterInterface.cpp" />
     <ClCompile Include="PckControlCenter\PckControlCenterOperation.cpp" />
     <ClCompile Include="PckControlCenter\PckControlCenterParams.cpp" />
@@ -546,9 +548,13 @@
     <ClInclude Include="MiscFuncs\GetDragPath.h" />
     <ClInclude Include="MiscFuncs\OpenSaveDlg.h" />
     <ClInclude Include="MiscFuncs\Raw2HexString.h" />
+    <ClInclude Include="MiscFuncs\ShowLogOnDlgListView.h" />
     <ClInclude Include="PckClass\PckClassCompress.h" />
     <ClInclude Include="PckClass\PckClassExceptionRestore.h" />
+    <ClInclude Include="PckClass\PckClassFileDisk.h" />
+    <ClInclude Include="PckClass\PckClassLog.h" />
     <ClInclude Include="PckClass\PckClassReader.h" />
+    <ClInclude Include="PckClass\PckClassRebuildFilter.h" />
     <ClInclude Include="PckClass\PckClassThreadCompressFunctions.h" />
     <ClInclude Include="PckClass\PckClassVersionDetect.h" />
     <ClInclude Include="PckClass\PckClassVersionDetectFunctionDefinitions.h" />

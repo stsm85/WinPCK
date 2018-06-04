@@ -23,7 +23,7 @@
 		}
 
 #define define_one_FillIndexData_by_version(_ver)	\
-		LPVOID CPckClass::FillIndexData_V##_ver(void *param, void *pckFileIndexBuf) \
+		LPVOID CPckClassVersionDetect::FillIndexData_V##_ver(void *param, void *pckFileIndexBuf) \
 		{ \
 			LPPCKFILEINDEX lpFileIndex = (LPPCKFILEINDEX)param; \
 			LPPCKFILEINDEX_V##_ver lpPckIndexTableClear = (LPPCKFILEINDEX_V##_ver)pckFileIndexBuf; \
@@ -37,7 +37,7 @@
 
 
 #define define_one_PickIndexData_by_version(_ver)	\
-		BOOL CPckClass::PickIndexData_V##_ver(void *param, void* lpIndex) \
+		BOOL CPckClassVersionDetect::PickIndexData_V##_ver(void *param, void* lpIndex) \
 		{ \
 			LPPCKFILEINDEX lpFileIndex = (LPPCKFILEINDEX)param; \
 			LPPCKFILEINDEX_V##_ver lpPckIndexTableClear = (LPPCKFILEINDEX_V##_ver)lpIndex; \
@@ -49,7 +49,7 @@
 		}
 
 #define define_one_FillHeadData_by_version(_ver)	\
-		LPVOID CPckClass::FillHeadData_V##_ver(void *param) \
+		LPVOID CPckClassVersionDetect::FillHeadData_V##_ver(void *param) \
 		{ \
 			static DWORD headbuf[3]; \
 			LPPCK_ALL_INFOS lpPckAllInfo = (LPPCK_ALL_INFOS)param; \
@@ -65,7 +65,7 @@
 		}
 
 #define define_one_FillTailData_by_version(_ver)	\
-		LPVOID CPckClass::FillTailData_V##_ver(void *param) \
+		LPVOID CPckClassVersionDetect::FillTailData_V##_ver(void *param) \
 		{ \
 			static BYTE tailbuf[MAX_TAIL_LENGTH]; \
 			LPPCK_ALL_INFOS lpPckAllInfo = (LPPCK_ALL_INFOS)param; \

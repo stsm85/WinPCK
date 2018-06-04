@@ -254,37 +254,37 @@ BOOL CZupClass::BuildZupBaseDict()
 //删除一个节点
 VOID CZupClass::DeleteNode(LPPCK_PATH_NODE lpNode)
 {
-	PrintLogE(TEXT_NOTSUPPORT);
+	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
 }
 
 //重命名一个节点
 BOOL CZupClass::RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 {
-	PrintLogE(TEXT_NOTSUPPORT);
+	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
 	return FALSE;
 }
 
 BOOL CZupClass::RenameNodeEnum(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp)
 {
-	PrintLogE(TEXT_NOTSUPPORT);
+	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
 	return FALSE;
 }
 
 BOOL CZupClass::RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp)
 {
-	PrintLogE(TEXT_NOTSUPPORT);
+	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
 	return FALSE;
 }
 
 VOID CZupClass::RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 {
-	PrintLogE(TEXT_NOTSUPPORT);
+	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
 	return;
 }
 
 VOID CZupClass::RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString)
 {
-	PrintLogE(TEXT_NOTSUPPORT);
+	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
 	return;
 }
 

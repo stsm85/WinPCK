@@ -57,7 +57,7 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 
 		//*m_lpClassPck->m_lastErrorString = 0;
 
-		PrintLog(LOG_FLAG_INFO, TEXT_LOG_OPENFILE, (TCHAR *)lpszFile);
+		m_PckLog.PrintLogI(TEXT_LOG_OPENFILE, (TCHAR *)lpszFile);
 
 		if(m_lpClassPck->Init(lpszFile)) {
 
@@ -97,7 +97,7 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 void CPckControlCenter::SetPckVersion(int verID)
 {
 	//GetSaveFileName返回的nFilterIndex是以1为基数的，此时应该-1
-	m_lpClassPck->SetPckVersion(verID - 1);
+	m_lpClassPck->SetSavePckVersion(verID - 1);
 }
 
 int	CPckControlCenter::GetPckVersion()
@@ -109,7 +109,7 @@ int	CPckControlCenter::GetPckVersion()
 void CPckControlCenter::Close()
 {
 	if(NULL != m_lpClassPck) {
-		PrintLog(LOG_FLAG_INFO, TEXT_LOG_CLOSEFILE);
+		m_PckLog.PrintLogI(TEXT_LOG_CLOSEFILE);
 
 		delete m_lpClassPck;
 		m_lpClassPck = NULL;
@@ -130,7 +130,7 @@ void CPckControlCenter::CreateRestoreData()
 	if(m_lpClassPck->GetPckBasicInfo(m_lpszFile4Restore, &m_PckHeadForRestore, m_lpPckFileIndexData, m_dwPckFileIndexDataSize)) {
 		hasRestoreData = TRUE;
 	} else {
-		PrintLogE(TEXT_ERROR_GET_RESTORE_DATA);
+		m_PckLog.PrintLogE(TEXT_ERROR_GET_RESTORE_DATA);
 	}
 
 }
@@ -141,9 +141,9 @@ void CPckControlCenter::RestoreData(LPCTSTR lpszFile)
 		if(0 == lstrcmpi(m_lpszFile4Restore, lpszFile)) {
 
 			if(!m_lpClassPck->SetPckBasicInfo(&m_PckHeadForRestore, m_lpPckFileIndexData, m_dwPckFileIndexDataSize))
-				PrintLogE(TEXT_ERROR_RESTORING);
+				m_PckLog.PrintLogE(TEXT_ERROR_RESTORING);
 			else
-				PrintLogI(TEXT_LOG_RESTOR_OK);
+				m_PckLog.PrintLogI(TEXT_LOG_RESTOR_OK);
 		}
 	}
 	DeleteRestoreData();

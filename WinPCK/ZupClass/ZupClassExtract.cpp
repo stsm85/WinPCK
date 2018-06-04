@@ -35,7 +35,7 @@ BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFi
 		char	*_cipherbuf = (char*)malloc(dwFileLengthDecompress1);
 
 		if(NULL == _cipherbuf) {
-			PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			return FALSE;
 		}
 
@@ -49,7 +49,7 @@ BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFi
 						memcpy(buffer, _cipherbuf + 4, dwFileLengthDecompress2);
 					} else {
 						assert(FALSE);
-						PrintLogE(TEXT_UNCOMPRESSDATA_FAIL, lpZupFileIndexTable->cFileIndex.szFilename);
+						m_PckLog.PrintLogE(TEXT_UNCOMPRESSDATA_FAIL, lpZupFileIndexTable->cFileIndex.szFilename);
 					}
 				}
 			} else {

@@ -26,7 +26,7 @@ BOOL CPckClass::GetPckBasicInfo(LPTSTR lpszFile, PCKHEAD_V2020 *lpHead, LPBYTE &
 	
 	if(NULL == (lpFileIndexData = (LPBYTE) malloc (dwPckFileIndexDataSize))){
 
-		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
@@ -40,7 +40,7 @@ BOOL CPckClass::GetPckBasicInfo(LPTSTR lpszFile, PCKHEAD_V2020 *lpHead, LPBYTE &
 
 	if(NULL == (lpFileBuffer = cReadfile.View(m_PckAllInfo.dwAddressName, dwPckFileIndexDataSize)))
 	{
-		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		free(lpFileIndexData);
 		return FALSE;
 	}
@@ -68,7 +68,7 @@ BOOL CPckClass::SetPckBasicInfo(PCKHEAD_V2020 *lpHead, LPBYTE lpFileIndexData, D
 
 	if(NULL == (lpFileBuffer = cWritefile.View(lpHead->dwPckSize - dwPckFileIndexDataSize, dwPckFileIndexDataSize)))
 	{
-		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 

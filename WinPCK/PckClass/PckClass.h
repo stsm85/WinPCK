@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include "CharsCodeConv.h"
+#include "PckClassVersionDetect.h"
+#include "PckClassLog.h"
 
 
 #if !defined(_PCKCLASS_H_)
@@ -30,7 +32,6 @@ class CPckClass
 //函数
 public:
 	void	CPckClassInit();
-	//CPckClass();
 	CPckClass(LPPCK_RUNTIME_PARAMS inout);
 	virtual ~CPckClass();
 
@@ -38,11 +39,11 @@ public:
 
 	virtual CONST	LPPCKINDEXTABLE		GetPckIndexTable();
 	virtual CONST	LPPCK_PATH_NODE		GetPckPathNode();
-	//CONST	LPPCKHEAD			GetPckHead();
 
 	//设置版本
+	CPckClassVersionDetect cVerDetect;
 	const	PCK_KEYS*	GetPckVersion();
-	void	SetPckVersion(int verID);
+	void	SetSavePckVersion(int verID);
 	LPCTSTR	GetSaveDlgFilterString();
 
 	//文件大小
@@ -69,10 +70,10 @@ public:
 	virtual BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath);
 
 	//重建pck文件
-	virtual BOOL	RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress);
+	virtual BOOL	RebuildPckFile(LPCTSTR szRebuildPckFile, BOOL bUseRecompress);
 protected:
-	BOOL	RebuildPckFile(LPTSTR szRebuildPckFile);
-	BOOL	RecompressPckFile(LPTSTR szRecompressPckFile);
+	BOOL	RebuildPckFile(LPCTSTR szRebuildPckFile);
+	BOOL	RecompressPckFile(LPCTSTR szRecompressPckFile);
 
 public:
 	//更新pck文件
@@ -110,16 +111,10 @@ protected:
 	//PckClassFunction.cpp
 	//重建时重新计算文件数量，除去无效的和文件名重复的
 	DWORD	ReCountFiles();
-	BOOL	IsNeedExpandWritingFile(
-		CMapViewFileWrite *lpWrite,
-		QWORD dwAddress,
-		QWORD dwFileSize,
-		QWORD &dwCompressTotalFileSize
-	);
 	DWORD GetCompressBoundSizeByFileSize(LPPCKFILEINDEX	lpPckFileIndex, DWORD dwFileSize);
 
 	//函数
-	BOOL BeforeSingleOrMultiThreadProcess(LPPCK_ALL_INFOS lpPckAllInfo, CMapViewFileWrite* &lpWrite, LPTSTR szPckFile, DWORD dwCreationDisposition, QWORD qdwSizeToMap, int threadnum);
+	BOOL BeforeSingleOrMultiThreadProcess(LPPCK_ALL_INFOS lpPckAllInfo, CMapViewFileWrite* &lpWrite, LPCTSTR szPckFile, DWORD dwCreationDisposition, QWORD qdwSizeToMap, int threadnum);
 
 	void MultiThreadInitialize(VOID CompressThread(VOID*), VOID WriteThread(VOID*), int threadnum);
 	BOOL WritePckIndex(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, QWORD &dwAddress);
@@ -148,14 +143,6 @@ protected:
 
 	//PckClassThread.cpp
 
-	/////////以下过程用于多线程pck压缩的测试
-	//单线程版
-#if PCK_COMPRESS_NEED_ST
-	BOOL	CreatePckFileSingleThread(QWORD &dwAddress);
-	BOOL	UpdatePckFileSingleThread(QWORD &dwAddress);
-	BOOL	RecompressPckFileSingleThread(CMapViewFileRead	*lpFileRead, CMapViewFileWrite *lpFileWrite, DWORD dwFileCount, QWORD &dwAddress, LPPCKINDEXTABLE_COMPRESS	&lpPckIndexTable);
-#endif
-
 	static	VOID CompressThreadCreate(VOID* pParam);
 	static	VOID WriteThread(VOID* pParam);
 
@@ -180,32 +167,7 @@ protected:
 	//virtual void test();
 
 	//打印日志
-#define define_define_one_PrintLog(_loglvchar)	\
-	void PrintLog##_loglvchar(const char *_text, ...);\
-	void PrintLog##_loglvchar(const wchar_t *_text, ...);\
-	void PrintLog##_loglvchar(const char *_text, va_list ap);\
-	void PrintLog##_loglvchar(const wchar_t *_text, va_list ap);
-
-	define_define_one_PrintLog(I)
-	define_define_one_PrintLog(W)
-	define_define_one_PrintLog(E)
-	define_define_one_PrintLog(D)
-	define_define_one_PrintLog(N)
-
-#undef define_define_one_PrintLog
-
-	void PrintLogEL(const char *_maintext, const char *_file, const char *_func, const long _line);
-	void PrintLogEL(const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
-	void PrintLogEL(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line);
-	void PrintLogEL(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
-
-	void PrintLog(const char chLevel, const char *_fmt, va_list ap);
-	void PrintLog(const char chLevel, const wchar_t *_fmt, va_list ap);
-	void PrintLog(const char chLevel, const char *_fmt, ...);
-	void PrintLog(const char chLevel, const wchar_t *_fmt, ...);
-
-	//
-	#include "PckClassVersionDetect.h"
+	CPckClassLog	m_PckLog;
 
 	// 文件头、尾等结构体的读取
 	#include "PckClassReader.h"
@@ -218,9 +180,9 @@ protected:
 public:
 	BOOL	ParseScript(LPCTSTR lpszScriptFile);
 
-protected:
-	void	ResetRebuildFilterInIndexList();
-	BOOL	ApplyScript2IndexList(VOID *pfirstFileOp);
+//protected:
+	//void	ResetRebuildFilterInIndexList();
+	//BOOL	ApplyScript2IndexList(VOID *pfirstFileOp);
 
 protected:
 
@@ -236,6 +198,7 @@ protected:
 	char			m_szEventAllWriteFinish[16];
 	char			m_szEventAllCompressFinish[16];
 	char			m_szEventMaxMemory[16];
+
 };
 
 #endif

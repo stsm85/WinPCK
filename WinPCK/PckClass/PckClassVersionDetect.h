@@ -8,31 +8,57 @@
 // 
 // 2017.6.27
 //////////////////////////////////////////////////////////////////////
+#pragma once
 
-//检测pck的版本并写入到iDetectedPckID，同时读取文件头和尾
-BOOL	DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo);
-void	PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile);
+//PckVersion
+#define PCK_VERSION_INVALID		(-1)
+#define	PCK_VERSION_ZX			0
+#define	PCK_VERSION_SDS			1
+#define	PCK_VERSION_XAJH		2
+#define	PCK_VERSION_ZXNEW		3
+#define PCK_VERSION_SM			4
+#define	PCK_VERSION_NUMS		5
 
-TCHAR		szSaveDlgFilterString[1024];
+class CPckClassVersionDetect
+{
+public:
+	CPckClassVersionDetect();
+	~CPckClassVersionDetect();
 
-const static PCK_KEYS			cPckKeys[PCK_VERSION_NUMS];
-const static PCK_VERSION_FUNC	cPckVersionFunc[PCK_VERSION_NUMS];
+	//设置版本
+	BOOL	SetPckVersion(const PCK_VERSION_FUNC* &lpSaveAsPckVerFunc, int verID);
+	LPCTSTR	GetSaveDlgFilterString();
 
-void	BuildSaveDlgFilterString();
+	//检测pck的版本并写入到iDetectedPckID，同时读取文件头和尾
+	BOOL	DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo);
 
-//文件头、尾的数据填写和数据写入
-static LPVOID	FillHeadData_V2020(void *param);
-static LPVOID	FillHeadData_V2030(void *param);
+private:
 
-static LPVOID	FillTailData_V2020(void *param);
-static LPVOID	FillTailData_V2030(void *param);
-static LPVOID	FillTailData_V2031(void *param);
+	const static PCK_KEYS			cPckKeys[PCK_VERSION_NUMS];
+	const static PCK_VERSION_FUNC	cPckVersionFunc[PCK_VERSION_NUMS];
 
-static LPVOID FillIndexData_V2020(void *param, void *pckFileIndexBuf);
-static LPVOID FillIndexData_V2030(void *param, void *pckFileIndexBuf);
-static LPVOID FillIndexData_V2031(void *param, void *pckFileIndexBuf);
+	TCHAR		szSaveDlgFilterString[1024];
 
-//数据从lpIndex -> param
-static BOOL PickIndexData_V2020(void *param, void* lpIndex);
-static BOOL PickIndexData_V2030(void *param, void* lpIndex);
-static BOOL PickIndexData_V2031(void *param, void* lpIndex);
+	//文件头、尾的数据填写和数据写入
+	static LPVOID	FillHeadData_V2020(void *param);
+	static LPVOID	FillHeadData_V2030(void *param);
+
+	static LPVOID	FillTailData_V2020(void *param);
+	static LPVOID	FillTailData_V2030(void *param);
+	static LPVOID	FillTailData_V2031(void *param);
+
+	static LPVOID FillIndexData_V2020(void *param, void *pckFileIndexBuf);
+	static LPVOID FillIndexData_V2030(void *param, void *pckFileIndexBuf);
+	static LPVOID FillIndexData_V2031(void *param, void *pckFileIndexBuf);
+
+	//数据从lpIndex -> param
+	static BOOL PickIndexData_V2020(void *param, void* lpIndex);
+	static BOOL PickIndexData_V2030(void *param, void* lpIndex);
+	static BOOL PickIndexData_V2031(void *param, void* lpIndex);
+
+	void	BuildSaveDlgFilterString();
+
+	void	PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile);
+
+	
+};

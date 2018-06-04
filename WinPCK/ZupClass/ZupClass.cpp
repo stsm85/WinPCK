@@ -63,7 +63,7 @@ void CZupClass::BuildDirTree()
 			BYTE	*lpbuffer = cReadfile.ReView(lpZupIndexTable->cFileIndex.dwAddressOffset, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
 			if(NULL == lpbuffer) {
 
-				PrintLogEL(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+				m_PckLog.PrintLogEL(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 				return;
 			}
 

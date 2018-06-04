@@ -29,7 +29,7 @@ void CPckClass::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllIn
 	//写pckTail
 	if(NULL == (lpBufferToWrite = lpWrite->View(dwAddress, m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize))) {
 
-		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		lpWrite->SetFilePointer(dwAddress, FILE_BEGIN);
 		dwAddress += lpWrite->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&PckAllInfo), \
 			m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize);
@@ -48,7 +48,7 @@ void CPckClass::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllIn
 
 	if(NULL == (lpBufferToWrite = lpWrite->View(0, m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize))) {
 
-		PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		lpWrite->SetFilePointer(0, FILE_BEGIN);
 		lpWrite->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(&PckAllInfo), \
 			m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize);
@@ -82,32 +82,6 @@ DWORD CPckClass::ReCountFiles()
 	return deNewFileCount;
 }
 
-//在写文件时，文件空间申请的过小，重新申请一下
-BOOL CPckClass::IsNeedExpandWritingFile(
-	CMapViewFileWrite *lpWrite,
-	QWORD dwAddress,
-	QWORD dwFileSize,
-	QWORD &dwCompressTotalFileSize
-)
-{
-	//判断一下dwAddress的值会不会超过dwTotalFileSizeAfterCompress
-	//如果超过，说明文件空间申请的过小，重新申请一下ReCreateFileMapping
-	//新文件大小在原来的基础上增加(lpfirstFile->dwFileSize + 1mb) >= 64mb ? (lpfirstFile->dwFileSize + 1mb) :64mb
-	//1mb=0x100000
-	//64mb=0x4000000
-	if((dwAddress + dwFileSize + PCK_SPACE_DETECT_SIZE) > dwCompressTotalFileSize) {
-		lpWrite->UnMaping();
-
-		dwCompressTotalFileSize +=
-			((dwFileSize + PCK_SPACE_DETECT_SIZE) > PCK_STEP_ADD_SIZE ? (dwFileSize + PCK_SPACE_DETECT_SIZE) : PCK_STEP_ADD_SIZE);
-
-		if(!lpWrite->Mapping(dwCompressTotalFileSize))
-			return FALSE;
-	}
-	return TRUE;
-}
-
-
 BOOL CPckClass::WritePckIndex(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, QWORD &dwAddress)
 {
 
@@ -117,7 +91,7 @@ BOOL CPckClass::WritePckIndex(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRE
 	assert(lpPckIndexTablePtr->dwIndexValueHead != 0);
 
 	if(NULL == (lpBufferToWrite = lpWrite->View(dwAddress, dwNumberOfBytesToMap))) {
-		PrintLogEL(TEXT_WRITE_PCK_INDEX, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_WRITE_PCK_INDEX, __FILE__, __FUNCTION__, __LINE__);
 		assert(FALSE);
 		return FALSE;
 	}

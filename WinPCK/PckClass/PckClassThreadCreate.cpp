@@ -3,6 +3,7 @@
 #define COMPRESSSINGLETHREADFUNC CreatePckFileSingleThread
 #define TARGET_PCK_MODE_COMPRESS PCK_MODE_COMPRESS_CREATE
 #include "PckClassThreadCompressFunctions.h"
+#include "PckClassFileDisk.h"
 
 VOID CPckClass::WriteThread(VOID* pParam)
 {
@@ -24,7 +25,7 @@ VOID CPckClass::WriteThread(VOID* pParam)
 			//判断一下dwAddress的值会不会超过dwTotalFileSizeAfterCompress
 			//如果超过，说明文件空间申请的过小，重新申请一下ReCreateFileMapping
 			//新文件大小在原来的基础上增加(lpfirstFile->dwFileSize + 1mb) >= 64mb ? (lpfirstFile->dwFileSize + 1mb) :64mb
-			if(!pThis->IsNeedExpandWritingFile(mt_lpFileWrite, dwAddress, lpPckIndexTableComp->dwCompressedFilesize, dwTotalFileSizeAfterCompress)) {
+			if(!CPckClassFileDisk::IsNeedExpandWritingFile(mt_lpFileWrite, dwAddress, lpPckIndexTableComp->dwCompressedFilesize, dwTotalFileSizeAfterCompress)) {
 
 				pThis->AfterWriteThreadFailProcess(
 					mt_lpbThreadRunning,
@@ -66,6 +67,7 @@ VOID CPckClass::WriteThread(VOID* pParam)
 				mt_lpFileWrite->UnmapView();
 			}
 
+			//已读入文件数+1
 			nWrite++;
 
 			pThis->freeMaxAndSubtractMemory(lpPckIndexTableComp->dwMallocSize);
@@ -101,10 +103,10 @@ VOID CPckClass::WriteThread(VOID* pParam)
 BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 {
 	CUcs2Ansi cU2A;
-	PrintLogI(TEXT_LOG_CREATE, cU2A.GetString(szPckFile));
+	m_PckLog.PrintLogI(TEXT_LOG_CREATE, cU2A.GetString(szPckFile));
 
 	DWORD		dwFileCount = 0;									//文件数量, 原pck文件中的文件数
-	QWORD		qwTotalFileSize = 0, qwTotalFileSizeTemp;			//未压缩时所有文件大小
+	QWORD		qwTotalFileSize = 0;								//未压缩时所有文件大小
 	QWORD		dwAddress = PCK_DATA_START_AT;
 
 	DWORD		IndexCompressedFilenameDataLengthCryptKey1 = m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey1;
@@ -116,7 +118,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	int			threadnum = lpPckParams->dwMTThread;
 
 	//LOG
-	PrintLogI(TEXT_LOG_LEVEL_THREAD, level, threadnum);
+	m_PckLog.PrintLogI(TEXT_LOG_LEVEL_THREAD, level, threadnum);
 
 	//开始查找文件
 	LPFILES_TO_COMPRESS		lpfirstFile;
@@ -129,7 +131,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 
 	if(NULL == (m_firstFile = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS)))) {
 
-		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 	lpfirstFile = m_firstFile;
@@ -142,16 +144,8 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	mt_dwFileCount = lpPckParams->cVarParams.dwUIProgressUpper = dwFileCount;
 
 	//计算大概需要多大空间qwTotalFileSize
-	qwTotalFileSizeTemp = qwTotalFileSize * 0.6 + PCK_SPACE_DETECT_SIZE;
-#if !PCK_SIZE_UNLIMITED
-	if(((0 != (qwTotalFileSizeTemp >> 32)) && (0x20002 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version)) || \
-		((0 != (qwTotalFileSizeTemp >> 33)) && (0x20003 == m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->Version))) {
+	mt_CompressTotalFileSize = CPckClassFileDisk::GetPckFilesizeByCompressed(szPckFile, qwTotalFileSize, 0);
 
-		PrintLogE(TEXT_COMPFILE_TOOBIG, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-	}
-#endif
-	mt_CompressTotalFileSize = qwTotalFileSizeTemp;
 	//if (PCK_SPACE_DETECT_SIZE >= mt_CompressTotalFileSize)mt_CompressTotalFileSize = PCK_STEP_ADD_SIZE;
 
 	PCK_ALL_INFOS	pckAllInfo;
@@ -170,20 +164,11 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 		return FALSE;
 	}
 
-	if(PCK_COMPRESS_NEED_ST < threadnum) {
-
-		MultiThreadInitialize(CompressThreadCreate, WriteThread, threadnum);
-		dwAddress = mt_dwAddressQueue;
-	}
-#if PCK_COMPRESS_NEED_ST
-	else {
-
-		CreatePckFileSingleThread(dwAddress);
-	}
-#endif
+	MultiThreadInitialize(CompressThreadCreate, WriteThread, threadnum);
+	dwAddress = mt_dwAddressQueue;
 
 	//LOG
-	PrintLogI(TEXT_LOG_COMPRESSOK);
+	m_PckLog.PrintLogI(TEXT_LOG_COMPRESSOK);
 
 	//写文件索引
 	pckAllInfo.dwAddressName = dwAddress;
@@ -198,7 +183,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	uninitCompressedDataQueue(threadnum);
 
 	//LOG
-	PrintLogI(TEXT_LOG_WORKING_DONE);
+	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 }

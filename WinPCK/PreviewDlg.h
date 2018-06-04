@@ -3,7 +3,7 @@
 #include "resource.h"
 #include "ShowPictureWithZoom.h"
 #include "PckHeader.h"
-
+#include "PckClassLog.h"
 
 class CPriviewInDlg
 {
@@ -17,6 +17,9 @@ protected:
 
 	//将要显示的对话框
 	TDlg *	dlg;
+
+	//日志系统
+	CPckClassLog		m_PckLog;
 
 	void *	m_buffer;
 	DWORD	m_buffersize;

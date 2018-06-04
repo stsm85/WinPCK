@@ -14,6 +14,8 @@
 
 #include "PckClass.h"
 #include "CharsCodeConv.h"
+#include "PckClassFileDisk.h"
+#include "PckClassRebuildFilter.h"
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4267 )
@@ -66,26 +68,26 @@ _inline T * __fastcall mystrcpy(T * dest, const T *src)
 *公共函数
 *
 ********************/
-BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress)
+BOOL CPckClass::RebuildPckFile(LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
 {
 	BOOL rtn = bUseRecompress ? RecompressPckFile(szRebuildPckFile) : RebuildPckFile(szRebuildPckFile);
 
 	//重建后清除过滤数据
-	ResetRebuildFilterInIndexList();
+	CPckClassRebuildScriptFilter::ResetRebuildFilterInIndexList(m_lpPckIndexTable, m_PckAllInfo.dwFileCount);
 
 	return rtn;
 }
 
-BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
+BOOL CPckClass::RebuildPckFile(LPCTSTR szRebuildPckFile)
 {
 
-	PrintLogI(TEXT_LOG_REBUILD);
+	m_PckLog.PrintLogI(TEXT_LOG_REBUILD);
 
 	LPPCKINDEXTABLE_COMPRESS	lpPckIndexTable, lpPckIndexTablePtr;
 	QWORD	dwAddress = PCK_DATA_START_AT, dwAddressName;
 	DWORD	dwFileCount = m_PckAllInfo.dwFileCount;
 	DWORD	dwNoDupFileCount = ReCountFiles();
-	QWORD	dwTotalFileSizeAfterRebuild = m_PckAllInfo.qwPckSize + (dwFileCount << 3);
+	QWORD	dwTotalFileSizeAfterRebuild = CPckClassFileDisk::GetPckFilesizeRebuild(szRebuildPckFile, m_PckAllInfo.qwPckSize);
 
 	PCK_ALL_INFOS		pckAllInfo;
 
@@ -118,7 +120,7 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 
 	//申请空间,文件名压缩数据 数组
 	if(NULL == (lpPckIndexTable = new PCKINDEXTABLE_COMPRESS[dwNoDupFileCount])) {
-		PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
@@ -140,7 +142,7 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 		DWORD dwNumberOfBytesToMap = lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize;
 
 		if(NULL == (lpBufferToWrite = cFileWrite.View(dwAddress, dwNumberOfBytesToMap))) {
-			PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			delete[] lpPckIndexTable;
 			return FALSE;
 		}
@@ -148,7 +150,7 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 		DWORD dwSrcAddress = lpPckIndexTableSource->cFileIndex.dwAddressOffset;	//保存原来的地址
 
 		if(NULL == (lpBufferToRead = cFileRead.View(dwSrcAddress, dwNumberOfBytesToMap))) {
-			PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			delete[] lpPckIndexTable;
 			return FALSE;
 		}
@@ -175,7 +177,7 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 	}
 
 	if(!lpPckParams->cVarParams.bThreadRunning) {
-		PrintLogW(TEXT_USERCANCLE);
+		m_PckLog.PrintLogW(TEXT_USERCANCLE);
 		dwFileCount = lpPckParams->cVarParams.dwUIProgress;
 	}
 
@@ -193,7 +195,7 @@ BOOL CPckClass::RebuildPckFile(LPTSTR szRebuildPckFile)
 	//delete lpFileWrite;
 	delete[] lpPckIndexTable;
 
-	PrintLogI(TEXT_LOG_WORKING_DONE);
+	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 

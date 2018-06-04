@@ -158,7 +158,7 @@ VOID CPckClass::CompressThreadRecompress(VOID* pParam)
 
 	mt_threadID--;
 	if(0 == mt_threadID) {
-		pThis->PrintLogN(TEXT_LOG_FLUSH_CACHE);
+		pThis->m_PckLog.PrintLogN(TEXT_LOG_FLUSH_CACHE);
 		SetEvent(mt_evtAllCompressFinish);
 	}
 
@@ -167,125 +167,17 @@ VOID CPckClass::CompressThreadRecompress(VOID* pParam)
 	return;
 }
 
-#if PCK_COMPRESS_NEED_ST
-BOOL CPckClass::RecompressPckFileSingleThread(CMapViewFileRead	*lpFileRead, CMapViewFileWrite *lpFileWrite, DWORD dwFileCount, QWORD &dwAddress, LPPCKINDEXTABLE_COMPRESS	&lpPckIndexTable)
-{
-
-	LPBYTE		lpBufferToWrite, lpBufferToRead;
-
-	//申请空间,文件名压缩数据 数组
-	//不使用Enum进行遍历处理，改用_PCK_INDEX_TABLE
-	LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr = lpPckIndexTable = mt_lpPckIndexTable;
-
-	LPPCKINDEXTABLE lpPckIndexTableSource = m_lpPckIndexTable;
-
-	int			level = lpPckParams->dwCompressLevel;
-	size_t		nMaxMallocSize = 0;
-	LPBYTE		lpDecompressBuffer = NULL;
-
-	for(DWORD i = 0; i < dwFileCount; ++i) {
-
-		if(lpPckIndexTableSource->isInvalid) {
-			++lpPckIndexTableSource;
-			continue;
-		}
-
-		DWORD dwNumberOfBytesToMap = lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize;
-		DWORD dwCompressBound = this->compressBound(lpPckIndexTableSource->cFileIndex.dwFileClearTextSize);
-
-		if(!lpPckParams->cVarParams.bThreadRunning) {
-			PrintLogW(TEXT_USERCANCLE);
-			//目前已压缩了多少文件，将数据写入dwFileCount，写文件名列表和文件头、尾，完成文件操作
-			SET_PCK_FILE_COUNT_GLOBAL
-				break;
-		}
-
-		if(NULL == (lpBufferToWrite = lpFileWrite->View(dwAddress, dwCompressBound))) {
-			PrintLogE(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-			SET_PCK_FILE_COUNT_AT_FAIL
-				break;
-		}
-
-		DWORD dwSrcAddress = lpPckIndexTableSource->cFileIndex.dwAddressOffset;	//保存原来的地址
-
-		if(NULL == (lpBufferToRead = lpFileRead->View(dwSrcAddress, dwNumberOfBytesToMap))) {
-			PrintLogE(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-			SET_PCK_FILE_COUNT_AT_FAIL
-				break;
-		}
-
-		//memcpy(lpBufferToWrite, lpBufferToRead, dwNumberOfBytesToMap);
-		//申请空间并重压缩数据块
-		if(nMaxMallocSize < lpPckIndexTableSource->cFileIndex.dwFileClearTextSize) {
-			nMaxMallocSize = lpPckIndexTableSource->cFileIndex.dwFileClearTextSize;
-
-			if(NULL != lpDecompressBuffer)
-				free(lpDecompressBuffer);
-
-			if(NULL == (lpDecompressBuffer = (LPBYTE)malloc(nMaxMallocSize))) {
-				PrintLogE(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-				SET_PCK_FILE_COUNT_AT_FAIL
-					break;
-			}
-		}
-
-		//如果成功，重压缩数据，失败就直接复制源数据
-		DWORD dwFileCipherTextSizeSrc = lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize;
-
-		if(PCK_BEGINCOMPRESS_SIZE < lpPckIndexTableSource->cFileIndex.dwFileClearTextSize) {
-
-			DWORD dwFileBytesRead = lpPckIndexTableSource->cFileIndex.dwFileClearTextSize;
-			decompress(lpDecompressBuffer, &dwFileBytesRead, lpBufferToRead, lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize);
-
-			if(dwFileBytesRead == lpPckIndexTableSource->cFileIndex.dwFileClearTextSize) {
-
-				compress(lpBufferToWrite, &dwCompressBound,
-					lpDecompressBuffer, dwFileBytesRead, level);
-
-				lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize = dwCompressBound;
-
-			} else
-				memcpy(lpBufferToWrite, lpBufferToRead, lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize);
-		} else {
-			memcpy(lpBufferToWrite, lpBufferToRead, lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize);
-		}
-
-		lpFileRead->UnmapView();
-
-		//写入此文件的PckFileIndex文件压缩信息并压缩
-		lpPckIndexTableSource->cFileIndex.dwAddressOffset = dwAddress;	//此文件的压缩数据起始地址
-		dwAddress += lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize;	//下一个文件的压缩数据起始地址
-
-		FillAndCompressIndexData(lpPckIndexTablePtr, &lpPckIndexTableSource->cFileIndex);
-
-		lpPckIndexTableSource->cFileIndex.dwAddressOffset = dwSrcAddress;	//还原原来的地址
-		lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize = dwFileCipherTextSizeSrc;
-
-		lpFileWrite->UnmapView();
-
-		++lpPckIndexTablePtr;
-		++lpPckIndexTableSource;
-		++(lpPckParams->cVarParams.dwUIProgress);
-
-	}
-
-	if(NULL != lpDecompressBuffer)
-		free(lpDecompressBuffer);
-
-	return TRUE;
-}
-#endif
 //重压缩文件
-BOOL CPckClass::RecompressPckFile(LPTSTR szRecompressPckFile)
+BOOL CPckClass::RecompressPckFile(LPCTSTR szRecompressPckFile)
 {
 
-	PrintLogI(TEXT_LOG_RECOMPRESS);
+	m_PckLog.PrintLogI(TEXT_LOG_RECOMPRESS);
 
 	LPPCKINDEXTABLE_COMPRESS	lpPckIndexTable, lpPckIndexTablePtr;
 	QWORD	dwAddress = PCK_DATA_START_AT, dwAddressName;
 	DWORD	dwFileCount = m_PckAllInfo.dwFileCount;
 	DWORD	dwNoDupFileCount = ReCountFiles();
-	QWORD	dwTotalFileSizeAfterRebuild = m_PckAllInfo.qwPckSize + PCK_STEP_ADD_SIZE;
+	QWORD	dwTotalFileSizeAfterRebuild = CPckClassFileDisk::GetPckFilesizeRebuild(szRecompressPckFile, m_PckAllInfo.qwPckSize);
 
 	CMapViewFileWrite	*lpFileWrite;
 	CMapViewFileRead	cFileRead;
@@ -298,8 +190,6 @@ BOOL CPckClass::RecompressPckFile(LPTSTR szRecompressPckFile)
 	lpPckParams->cVarParams.dwUIProgressUpper = dwNoDupFileCount;
 
 	//打开源文件 
-	//lpFileRead = new CMapViewFileRead();
-
 	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
 		assert(FALSE);
 		return FALSE;
@@ -316,44 +206,25 @@ BOOL CPckClass::RecompressPckFile(LPTSTR szRecompressPckFile)
 		return FALSE;
 	}
 
-	if(PCK_COMPRESS_NEED_ST < threadnum) {
+	mt_lpFileRead = &cFileRead;
+	mt_lpFileWrite = lpFileWrite;
+	mt_dwFileCount = dwFileCount;
+	mt_dwFileCountOfWriteTarget = dwNoDupFileCount;
 
-		//mt_dwAddress = dwAddress;
-		mt_lpFileRead = &cFileRead;
-		mt_lpFileWrite = lpFileWrite;
-		mt_dwFileCount = dwFileCount;
-		mt_dwFileCountOfWriteTarget = dwNoDupFileCount;
-		//mt_level = lpPckParams->dwCompressLevel;
+	MultiThreadInitialize(CompressThreadRecompress, WriteThread, threadnum);
 
-		MultiThreadInitialize(CompressThreadRecompress, WriteThread, threadnum);
+	//写文件索引
+	lpPckIndexTablePtr = lpPckIndexTable = mt_lpPckIndexTable;
+	dwAddressName = dwAddress = mt_dwAddressQueue;
 
-		//写文件索引
-		lpPckIndexTablePtr = lpPckIndexTable = mt_lpPckIndexTable;
-		dwAddressName = dwAddress = mt_dwAddressQueue;
+	//清除掉多线程使用的已压缩标记位
+	LPPCKINDEXTABLE lpPckIndexTablePtrSrc = m_lpPckIndexTable;
 
+	for(DWORD i = 0; i < m_PckAllInfo.dwFileCount; ++i) {
 
-		//清除掉多线程使用的已压缩标记位
-		LPPCKINDEXTABLE lpPckIndexTablePtrSrc = m_lpPckIndexTable;
-
-		for(DWORD i = 0; i < m_PckAllInfo.dwFileCount; ++i) {
-
-			lpPckIndexTablePtrSrc->isRecompressed = FALSE;
-			lpPckIndexTablePtrSrc++;
-		}
+		lpPckIndexTablePtrSrc->isRecompressed = FALSE;
+		lpPckIndexTablePtrSrc++;
 	}
-#if PCK_COMPRESS_NEED_ST
-	else {
-
-		RecompressPckFileSingleThread(lpFileRead, lpFileWrite, dwFileCount, dwAddress, lpPckIndexTable);
-
-		//写文件索引
-		lpPckIndexTablePtr = lpPckIndexTable;
-		dwAddressName = dwAddress;
-
-	}
-#endif
-	//关闭读文件
-	//delete lpFileRead;
 
 	//取消后，文件数量
 	dwNoDupFileCount = mt_dwFileCountOfWriteTarget;
@@ -371,7 +242,7 @@ BOOL CPckClass::RecompressPckFile(LPTSTR szRecompressPckFile)
 
 	uninitCompressedDataQueue(threadnum);
 
-	PrintLogN(TEXT_LOG_WORKING_DONE);
+	m_PckLog.PrintLogN(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 }

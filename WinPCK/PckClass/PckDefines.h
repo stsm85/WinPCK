@@ -23,16 +23,6 @@ typedef unsigned char       BYTE;
 //zlib
 #define Z_OK				0
 
-
-//PckVersion
-#define	PCK_VERSION_ZX		0
-#define	PCK_VERSION_SDS		1
-#define	PCK_VERSION_XAJH	2
-#define	PCK_VERSION_ZXNEW	3
-#define PCK_VERSION_SM		4
-#define	PCK_VERSION_NUMS	5
-
-
 //数字转字符时使用的字符串长度
 #define CHAR_NUM_LEN 12
 
@@ -46,16 +36,12 @@ typedef unsigned char       BYTE;
 #define PCK_DATA_START_AT				12
 
 
-//创建时，剩余文件的空间量不够时，添加量
-#define	PCK_STEP_ADD_SIZE				0x4000000
-//创建时，剩余文件的空间量小于此值时，扩展数据
-#define	PCK_SPACE_DETECT_SIZE			0x400000
 
-#define PCK_RENAME_EXPAND_ADD			0x1000000
 
 #define	PCK_ADDITIONAL_INFO				"Angelica File Package"
 #define	PCK_ADDITIONAL_INFO_STSM		"\r\nCreate by WinPCK"
 
+#if 0
 //日志
 #define	LOG_BUFFER						1024
 
@@ -71,7 +57,7 @@ typedef unsigned char       BYTE;
 #define LOG_IMAGE_ERROR					3
 #define LOG_IMAGE_DEBUG					4
 #define LOG_IMAGE_EMPTY					5
-
+#endif
 
 //LOG INFO STRING
 #define TEXT_LOG_OPENFILE				"打开文件 %s"

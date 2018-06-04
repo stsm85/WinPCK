@@ -23,12 +23,8 @@ void CPckClass::CPckClassInit()
 	m_lpPckIndexTable = NULL;
 	m_firstFile = NULL;
 
-	m_PckAllInfo.dwFileCount = 0;
-
 	memset(&m_RootNode, 0, sizeof(PCK_PATH_NODE));
-
-	*m_PckAllInfo.szAdditionalInfo = 0;
-	*m_PckAllInfo.szFilename = 0;
+	memset(&m_PckAllInfo, 0, sizeof(PCK_ALL_INFOS));
 
 	DWORD	dwCurrentPID = GetCurrentProcessId();
 
@@ -36,7 +32,7 @@ void CPckClass::CPckClassInit()
 	sprintf_s(m_szEventAllCompressFinish, 16, TEXT_EVENT_COMPRESS_PCK_DATA_FINISH, dwCurrentPID);
 	sprintf_s(m_szEventMaxMemory, 16, TEXT_EVENT_PCK_MAX_MEMORY, dwCurrentPID);
 
-	BuildSaveDlgFilterString();
+	//BuildSaveDlgFilterString();
 
 	init_compressor();
 
@@ -119,7 +115,7 @@ BOOL CPckClass::SetAdditionalInfo()
 	}
 
 	if(!cWritefile.OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
-		PrintLogEL(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
@@ -127,7 +123,7 @@ BOOL CPckClass::SetAdditionalInfo()
 
 	if(!cWritefile.Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&m_PckAllInfo), \
 		m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)) {
-		PrintLogEL(TEXT_WRITEFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_WRITEFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 
 		return FALSE;
 	}

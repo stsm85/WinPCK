@@ -13,27 +13,27 @@
 
 BOOL CZupClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 {
-	PrintLogE(TEXT_NOTSUPPORT);
+	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
 	return FALSE;
 }
 
 //重建pck文件
 BOOL CZupClass::RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress)
 {
-	PrintLogE(TEXT_NOTSUPPORT);
+	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
 	return FALSE;
 }
 
 //更新pck文件//有bug
 BOOL CZupClass::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert)
 {
-	PrintLogE(TEXT_NOTSUPPORT);
+	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
 	return FALSE;
 }
 
 //重命名文件
 BOOL CZupClass::RenameFilename()
 {
-	PrintLogE(TEXT_NOTSUPPORT);
+	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
 	return FALSE;
 }

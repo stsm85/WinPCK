@@ -126,9 +126,6 @@
     <ClCompile Include="MapViewFile\MapViewFile.cpp">
       <Filter>源文件\MapViewFile</Filter>
     </ClCompile>
-    <ClCompile Include="PckClass\PckClassFeedback.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
     <ClCompile Include="PckClass\PckClassMainFunction.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
@@ -137,9 +134,6 @@
     </ClCompile>
     <ClCompile Include="PckClass\PckClassHelpFunction.cpp">
       <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="PckControlCenter\PckControlCenterLog.cpp">
-      <Filter>源文件\PckControlCenter</Filter>
     </ClCompile>
     <ClCompile Include="PckControlCenter\PckControlCenterAttribute.cpp">
       <Filter>源文件\PckControlCenter</Filter>
@@ -263,6 +257,15 @@
     </ClCompile>
     <ClCompile Include="decode_dds\ShowPictureWithZoom.cpp">
       <Filter>源文件\decode_dds</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassFileDisk.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassLog.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="MiscFuncs\ShowLogOnDlgListView.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -393,6 +396,18 @@
     </ClInclude>
     <ClInclude Include="decode_dds\ShowPictureWithZoom.h">
       <Filter>头文件\decode_dds</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassFileDisk.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassLog.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="MiscFuncs\ShowLogOnDlgListView.h">
+      <Filter>头文件\MiscFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassRebuildFilter.h">
+      <Filter>头文件\PckClass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

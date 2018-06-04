@@ -94,7 +94,7 @@ BOOL CPriviewInDlg::Show(LPCTSTR lpszFilename, DWORD dwSize, CPckControlCenter	*
 		return FALSE;
 
 	if(NULL == m_buffer) {
-		m_lpPckCenter->PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		delete dlg;
 		return FALSE;
 	}

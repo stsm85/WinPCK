@@ -43,6 +43,22 @@ void CMapViewFile::MakeUnlimitedPath(LPSTR _dst, LPCSTR _src, size_t size)
 
 }
 
+
+template <typename T>
+void CMapViewFile::GetDiskNameFromFilename(T* lpszFilename)
+{
+	m_szDisk[0] = lpszFilename[0];
+	m_szDisk[1] = lpszFilename[1];
+	m_szDisk[2] = lpszFilename[2];
+	m_szDisk[3] = '\0';
+}
+
+const char * CMapViewFile::GetFileDiskName()
+{
+	return m_szDisk;
+}
+
+
 /*****************************************************************************
 BOOL FileExists(CONST TCHAR szName[MAX_PATH_EX])
 szName	: (IN) string
@@ -64,12 +80,17 @@ BOOL CMapViewFile::FileExists(LPCWSTR szName)
 
 BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
 {
-	if(FileExists(lpszFilename) ||
+	char m_szFullFilename[MAX_PATH];
+
+	GetFullPathNameA(lpszFilename, MAX_PATH, m_szFullFilename, NULL);
+	GetDiskNameFromFilename(m_szFullFilename);
+
+	if(FileExists(m_szFullFilename) ||
 		((OPEN_EXISTING != dwCreationDisposition) && (TRUNCATE_EXISTING != dwCreationDisposition))) {
 		char szFilename[MAX_PATH];
-		if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(lpszFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
+		if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(m_szFullFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
 			if(isWinNt()) {
-				MakeUnlimitedPath(szFilename, lpszFilename, MAX_PATH);
+				MakeUnlimitedPath(szFilename, m_szFullFilename, MAX_PATH);
 				if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(szFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
 					assert(FALSE);
 					return FALSE;
@@ -88,13 +109,18 @@ BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAcces
 
 BOOL CMapViewFile::Open(HANDLE &hFile, LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
 {
-	if(FileExists(lpszFilename) ||
+	wchar_t	m_wszFullFilename[MAX_PATH];
+
+	GetFullPathNameW(lpszFilename, MAX_PATH, m_wszFullFilename, NULL);
+	GetDiskNameFromFilename(m_wszFullFilename);
+
+	if(FileExists(m_wszFullFilename) ||
 		((OPEN_EXISTING != dwCreationDisposition) && (TRUNCATE_EXISTING != dwCreationDisposition))) {
 		WCHAR szFilename[MAX_PATH];
 
-		if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(lpszFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
+		if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(m_wszFullFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
 			if(isWinNt()) {
-				MakeUnlimitedPath(szFilename, lpszFilename, MAX_PATH);
+				MakeUnlimitedPath(szFilename, m_wszFullFilename, MAX_PATH);
 				if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(szFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
 					assert(FALSE);
 					return FALSE;
@@ -151,6 +177,7 @@ CMapViewFile::CMapViewFile()
 	lpCrossBuffer = NULL;
 #endif
 	uqwCurrentPos.qwValue = 0;
+	memset(m_szDisk, 0, sizeof(m_szDisk));
 
 }
 
@@ -198,8 +225,6 @@ void CMapViewFile::clear()
 	}
 #endif
 }
-
-
 
 LPBYTE CMapViewFile::ViewReal(LPVOID & lpMapAddress, HANDLE hFileMapping, QWORD qwAddress, DWORD dwSize)
 {

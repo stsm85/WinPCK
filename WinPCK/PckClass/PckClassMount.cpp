@@ -16,7 +16,7 @@
 
 BOOL CPckClass::MountPckFile(LPCTSTR	szFile)
 {
-	if(!DetectPckVerion(szFile, &m_PckAllInfo))
+	if(!cVerDetect.DetectPckVerion(szFile, &m_PckAllInfo))
 		return FALSE;
 
 	if(!ReadPckFileIndexes())

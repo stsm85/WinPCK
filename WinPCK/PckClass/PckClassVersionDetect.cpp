@@ -11,6 +11,7 @@
 
 #include "MapViewFile.h"
 #include "PckClass.h"
+#include "PckClassVersionDetect.h"
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4244 )
@@ -96,27 +97,60 @@ xxxxxxxxxx 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
 其中 78 DA ** ** ** ** ** ** 是zlib的校验头，通常以78 01(1), 78 5e(2-5),78 9c(6), 78 da(7-12)开头
 
 */
-const PCK_KEYS CPckClass::cPckKeys[PCK_VERSION_NUMS] = \
+
+#pragma region CPckClass
+
+LPCTSTR CPckClass::GetSaveDlgFilterString()
+{
+	return cVerDetect.GetSaveDlgFilterString();
+}
+
+const PCK_KEYS* CPckClass::GetPckVersion()
+{
+	return m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys;
+}
+
+void CPckClass::SetSavePckVersion(int verID)
+{
+	if(!cVerDetect.SetPckVersion(m_PckAllInfo.lpSaveAsPckVerFunc, verID))
+		m_PckLog.PrintLogW(TEXT_INVALID_VERSION);
+}
+
+#pragma endregion
+#pragma region CPckClassVersionDetect
+
+CPckClassVersionDetect::CPckClassVersionDetect()
+{
+	BuildSaveDlgFilterString();
+}
+
+CPckClassVersionDetect::~CPckClassVersionDetect()
+{}
+
+const PCK_KEYS CPckClassVersionDetect::cPckKeys[PCK_VERSION_NUMS] = \
 /*		ID				名称				版本ID		版本值	0xAAAAAAAA	0xBBBBBBBB	0xCCCCCCCC	0xDDDDDDDDEEEEEEEE	0xFFFFFFFF	0xGGGGGGGG	0xHHHHHHHH	分块大小	
 		id				name				VersionId	Version	HeadVerifyKey1			TailVerifyKey1					TailVerifyKey2			IndexCompressedFilenameDataLengthCryptKey2
 																			HeadVerifyKey2			IndexesEntryAddressCryptKey		IndexCompressedFilenameDataLengthCryptKey1*/
-{	{ PCK_VERSION_ZX,	TEXT("诛仙"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0xFDFDFEEE, 0x00000000A8937462, 0xF00DBEEF, 0xA8937462, 0xF1A43653, 0x7fffff00}, \
+{	{PCK_VERSION_ZX,	TEXT("诛仙"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0xFDFDFEEE, 0x00000000A8937462, 0xF00DBEEF, 0xA8937462, 0xF1A43653, 0x7fffff00}, \
 	{PCK_VERSION_SDS,	TEXT("圣斗士"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0x7b2a7820, 0x0000000062a4f9e1, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0x7fffff00}, \
 	{PCK_VERSION_XAJH,	TEXT("笑傲江湖"),	PCK_V2030, 0x20003, 0x5edb34f0, 0x00000000, 0x7b2a7820, 0x49ab7f1d33c3eddb, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0xffffff00}, \
 	{PCK_VERSION_ZXNEW, TEXT("诛仙3·十年"),PCK_V2031, 0x20003, 0x4DCA23EF, 0x00000000, 0xFDFDFEEE, 0xffffffffA8937462, 0xF00DBEEF, 0xA8937462, 0xF1A43653, 0x7fffff00}, \
 	{PCK_VERSION_SM,	TEXT("神魔"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0xA508BDC4, 0x0000000021c31a3f, 0x853567C8, 0x21c31a3f, 0x185c2025, 0x7fffff00}, \
 };
 
-const PCK_VERSION_FUNC CPckClass::cPckVersionFunc[PCK_VERSION_NUMS] = \
-{	{ &cPckKeys[PCK_VERSION_ZX],	sizeof(PCKHEAD_V2020), sizeof(PCKTAIL_V2020), sizeof(PCKFILEINDEX_V2020), PickIndexData_V2020, FillHeadData_V2020, FillTailData_V2020, FillIndexData_V2020}, \
-	{&cPckKeys[PCK_VERSION_SDS],	sizeof(PCKHEAD_V2020), sizeof(PCKTAIL_V2020), sizeof(PCKFILEINDEX_V2020), PickIndexData_V2020, FillHeadData_V2020, FillTailData_V2020, FillIndexData_V2020}, \
-	{&cPckKeys[PCK_VERSION_XAJH],	sizeof(PCKHEAD_V2030), sizeof(PCKTAIL_V2030), sizeof(PCKFILEINDEX_V2030), PickIndexData_V2030, FillHeadData_V2030, FillTailData_V2030, FillIndexData_V2030}, \
-	{&cPckKeys[PCK_VERSION_ZXNEW],	sizeof(PCKHEAD_V2031), sizeof(PCKTAIL_V2031), sizeof(PCKFILEINDEX_V2031), PickIndexData_V2031, FillHeadData_V2030, FillTailData_V2031, FillIndexData_V2031}, \
-	{&cPckKeys[PCK_VERSION_SM],		sizeof(PCKHEAD_V2020), sizeof(PCKTAIL_V2020), sizeof(PCKFILEINDEX_V2020), PickIndexData_V2020, FillHeadData_V2020, FillTailData_V2020, FillIndexData_V2020}, \
+#define PCK_VER_FUNC_LINE(_id, _head_ver, _tail_ver, _index_ver) \
+{&cPckKeys[_id], sizeof(PCKHEAD_V##_head_ver), sizeof(PCKTAIL_V##_tail_ver), sizeof(PCKFILEINDEX_V##_index_ver), PickIndexData_V##_index_ver, FillHeadData_V##_head_ver, FillTailData_V##_tail_ver, FillIndexData_V##_index_ver}
+
+const PCK_VERSION_FUNC CPckClassVersionDetect::cPckVersionFunc[PCK_VERSION_NUMS] = \
+{	PCK_VER_FUNC_LINE(PCK_VERSION_ZX,		2020, 2020, 2020), \
+	PCK_VER_FUNC_LINE(PCK_VERSION_SDS,		2020, 2020, 2020), \
+	PCK_VER_FUNC_LINE(PCK_VERSION_XAJH,		2030, 2030, 2030), \
+	PCK_VER_FUNC_LINE(PCK_VERSION_ZXNEW,	2030, 2031, 2031), \
+	PCK_VER_FUNC_LINE(PCK_VERSION_SM,		2020, 2020, 2020), \
 };
 
 //生成界面保存文件时的Filter文本
-void CPckClass::BuildSaveDlgFilterString()
+void CPckClassVersionDetect::BuildSaveDlgFilterString()
 {
 	*szSaveDlgFilterString = 0;
 	TCHAR szPrintf[256];
@@ -138,29 +172,30 @@ void CPckClass::BuildSaveDlgFilterString()
 	*lpszStr = 0;
 }
 
-LPCTSTR CPckClass::GetSaveDlgFilterString()
+
+LPCTSTR CPckClassVersionDetect::GetSaveDlgFilterString()
 {
 	return szSaveDlgFilterString;
 }
 
-const PCK_KEYS* CPckClass::GetPckVersion()
+BOOL CPckClassVersionDetect::SetPckVersion(const PCK_VERSION_FUNC* &lpPckVerFunc, int verID)
 {
-	return m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys;
-}
+	if(0 <= verID && PCK_VERSION_NUMS > verID) {
+		lpPckVerFunc = &cPckVersionFunc[verID];
+		return TRUE;
+	} else
+		return FALSE;
 
-void CPckClass::SetPckVersion(int verID)
-{
-	if(0 <= verID && PCK_VERSION_NUMS > verID)
-		m_PckAllInfo.lpSaveAsPckVerFunc = &cPckVersionFunc[verID];
-	else
-		PrintLogW(TEXT_INVALID_VERSION);
+	return TRUE;
 }
 
 
 #define PRINT_HEAD_SIZE		0x20
 #define PRINT_TAIL_SIZE		0x580
- 
-void CPckClass::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
+#define PrintLogEL
+#define PrintLogD
+
+void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 {
 	//打印详细原因：
 	//hex 一行长度89 数据一共402行，大小0x8BC2
@@ -229,12 +264,12 @@ dect_err:
 #undef PRINT_TAIL_SIZE
 
 //读取文件头和尾确定pck文件版本，返回版本ID
-BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
+BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
 {
 	PCKHEAD_V2020 cPckHead;
 	DWORD		dwTailVals[4];
 
-	int iDetectedPckID = -1;
+	int iDetectedPckID = PCK_VERSION_INVALID;
 	//读取文件头
 	CMapViewFileRead cRead;
 
@@ -291,7 +326,7 @@ BOOL CPckClass::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
 	}
 
 	//读取PCKINDEXADDR，验证
-	if(-1 == iDetectedPckID) {
+	if(PCK_VERSION_INVALID == iDetectedPckID) {
 		PrintLogEL(TEXT_VERSION_NOT_FOUND, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
@@ -345,3 +380,7 @@ define_one_FillIndexData_by_version(2031);
 define_one_PickIndexData_by_version(2020);
 define_one_PickIndexData_by_version(2030);
 define_one_PickIndexData_by_version(2031);
+
+#undef PrintLogEL
+#undef PrintLogD
+#pragma endregion
