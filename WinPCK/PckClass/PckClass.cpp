@@ -11,8 +11,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "PckClass.h"
-#include "PckClassAllocFunctions.h"
-using namespace NPckClassAllocFuncs;
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4146 )
@@ -20,11 +18,8 @@ using namespace NPckClassAllocFuncs;
 
 void CPckClass::CPckClassInit()
 {
-	m_ReadCompleted = FALSE;
-	m_firstFile = NULL;
 
-	memset(&m_PckAllInfo, 0, sizeof(PCK_ALL_INFOS));
-
+	m_PckAllInfo.lpRootNode = m_classNode.GetRootNode();
 	DWORD	dwCurrentPID = GetCurrentProcessId();
 
 	sprintf_s(m_szEventAllWriteFinish, 16, TEXT_EVENT_WRITE_PCK_DATA_FINISH, dwCurrentPID);
@@ -35,26 +30,22 @@ void CPckClass::CPckClassInit()
 
 }
 
-CPckClass::CPckClass(LPPCK_RUNTIME_PARAMS inout)
+CPckClass::CPckClass(LPPCK_RUNTIME_PARAMS inout) :
+	m_lpPckParams(inout),
+	m_ReadCompleted(FALSE),
+	m_firstFile(NULL),
+	m_PckAllInfo({ 0 })
 {
-	lpPckParams = inout;
 	CPckClassInit();
 }
 
 CPckClass::~CPckClass()
-{
-	DeAllocMultiNodes(m_PckAllInfo.lpRootNode.child);
-
-	if(NULL != m_PckAllInfo.lpPckIndexTable)
-		free(m_PckAllInfo.lpPckIndexTable);
-}
+{}
 
 BOOL CPckClass::Init(LPCTSTR	szFile)
 {
-	////test();
-
 	_tcscpy(m_PckAllInfo.szFilename, szFile);
-	m_PckAllInfo.lpszFileTitle = _tcsrchr(m_PckAllInfo.szFilename, TEXT('\\')) + 1;
+	GetFileTitle(m_PckAllInfo.szFilename, m_PckAllInfo.szFileTitle, MAX_PATH);
 
 	if(MountPckFile(m_PckAllInfo.szFilename)) {
 		BuildDirTree();
@@ -71,7 +62,7 @@ CONST	LPPCKINDEXTABLE CPckClass::GetPckIndexTable()
 
 CONST	LPPCK_PATH_NODE CPckClass::GetPckPathNode()
 {
-	return &m_PckAllInfo.lpRootNode;
+	return m_PckAllInfo.lpRootNode;
 }
 
 QWORD CPckClass::GetPckSize()
@@ -86,12 +77,12 @@ DWORD CPckClass::GetPckFileCount()
 
 QWORD CPckClass::GetPckDataAreaSize()
 {
-	return m_PckAllInfo.dwAddressName - PCK_DATA_START_AT;
+	return m_PckAllInfo.dwAddressOfFilenameIndex - PCK_DATA_START_AT;
 }
 
 QWORD CPckClass::GetPckRedundancyDataSize()
 {
-	return m_PckAllInfo.dwAddressName - PCK_DATA_START_AT - m_PckAllInfo.lpRootNode.child->qdwDirCipherTextSize;
+	return m_PckAllInfo.dwAddressOfFilenameIndex - PCK_DATA_START_AT - m_PckAllInfo.lpRootNode->child->qdwDirCipherTextSize;
 }
 
 char * CPckClass::GetAdditionalInfo()

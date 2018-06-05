@@ -10,24 +10,16 @@
 //////////////////////////////////////////////////////////////////////
 //#include "zlib.h"
 #include "ZupClass.h"
-#include "PckClassAllocFunctions.h"
-using namespace NPckClassAllocFuncs;
 
-CZupClass::CZupClass(LPPCK_RUNTIME_PARAMS inout) : CPckClass(inout)
+CZupClass::CZupClass(LPPCK_RUNTIME_PARAMS inout) : 
+	CPckClass(inout),
+	m_lpZupIndexTable(NULL)
 {
-	lpPckParams = inout;
-
-	m_lpZupIndexTable = NULL;
-	//m_firstFile = NULL;
-	memset(&m_RootNodeZup, 0, sizeof(PCK_PATH_NODE));
-
+	m_lpRootNodeZup = m_classNodeZup.GetRootNode();
 }
 
 CZupClass::~CZupClass()
-{
-	DeAllocMultiNodes(m_RootNodeZup.child);
-	if(NULL != m_lpZupIndexTable)free(m_lpZupIndexTable);
-}
+{}
 
 CONST	LPPCKINDEXTABLE CZupClass::GetPckIndexTable()
 {
@@ -36,7 +28,7 @@ CONST	LPPCKINDEXTABLE CZupClass::GetPckIndexTable()
 
 CONST	LPPCK_PATH_NODE CZupClass::GetPckPathNode()
 {
-	return &m_RootNodeZup;
+	return m_lpRootNodeZup;
 }
 
 
@@ -59,7 +51,7 @@ void CZupClass::BuildDirTree()
 
 			//解码文件名
 			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));
-			DecodeFilename(lpZupIndexTable->cFileIndex.szFilename, lpPckIndexTable->cFileIndex.szFilename);
+			DecodeFilename(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, lpPckIndexTable->cFileIndex.szFilename);
 
 			BYTE	*lpbuffer = cReadfile.ReView(lpZupIndexTable->cFileIndex.dwAddressOffset, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
 			if(NULL == lpbuffer) {
@@ -90,33 +82,37 @@ void CZupClass::BuildDirTree()
 		} else {
 			//直接复制
 			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));
+			CAnsi2Ucs cA2U;
+			cA2U.GetString(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, sizeof(lpZupIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
+
 		}
 
-
-#ifdef UNICODE
+#if 0
 		CAnsi2Ucs cA2U;
-		cA2U.GetString(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.sztFilename, sizeof(lpZupIndexTable->cFileIndex.sztFilename) / sizeof(TCHAR));
-#else
-		memcpy(lpZupIndexTable->cFileIndex.sztFilename, lpZupIndexTable->cFileIndex.szFilename, sizeof(lpZupIndexTable->cFileIndex.szFilename));
+		cA2U.GetString(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, sizeof(lpZupIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
 #endif
+
 		//建立目录
-		AddFileToNode(&m_RootNodeZup, lpZupIndexTable);
-		AddFileToNode(&m_PckAllInfo.lpRootNode, lpPckIndexTable);
+		//AddFileToNode(&m_lpRootNodeZup, lpZupIndexTable);
+		//AddFileToNode(&m_PckAllInfo.lpRootNode, lpPckIndexTable);
 
 		lpPckIndexTable++;
 		lpZupIndexTable++;
 	}
+
+	m_lpRootNodeZup = m_classNodeZup.ParseIndexTableToNode();
+	m_PckAllInfo.lpRootNode = m_classNode.ParseIndexTableToNode();
+
 }
 
 BOOL CZupClass::Init(LPCTSTR szFile)
 {
-
 	_tcscpy(m_PckAllInfo.szFilename, szFile);
-	m_PckAllInfo.lpszFileTitle = _tcsrchr(m_PckAllInfo.szFilename, TEXT('\\')) + 1;
+	GetFileTitle(m_PckAllInfo.szFilename, m_PckAllInfo.szFileTitle, MAX_PATH);
 
 	if(m_ReadCompleted = MountPckFile(m_PckAllInfo.szFilename)) {
 
-		if(NULL == (m_lpZupIndexTable = (LPPCKINDEXTABLE)AllocMemory(sizeof(PCKINDEXTABLE) * m_PckAllInfo.dwFileCount))) {
+		if(NULL == (m_lpZupIndexTable = (m_classNodeZup.AllocPckIndexTableByFileCount(m_PckAllInfo.dwFileCount)))) {
 			return FALSE;
 		}
 

@@ -18,7 +18,7 @@
 #include <tchar.h>
 #include "CharsCodeConv.h"
 
-TViewDlg::TViewDlg(LPBYTE *_buf, DWORD _dwSize, const TCHAR *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_VIEW, _win) ,
+TViewDlg::TViewDlg(LPBYTE *_buf, DWORD _dwSize, const wchar_t *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_VIEW, _win) ,
 	buf(_buf),
 	dwSize(_dwSize),
 	lpszFile(_lpszFile)
@@ -33,7 +33,7 @@ TViewDlg::~TViewDlg()
 BOOL TViewDlg::EvCreate(LPARAM lParam)
 {
 	//窗口文字
-	TCHAR szTitle[MAX_PATH];
+	wchar_t szTitle[MAX_PATH];
 
 	if(0 != dwSize) {
 
@@ -41,12 +41,12 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 
 		if(0xfeff == *(WORD*)*buf) {
 			textType = TEXT_TYPE_UCS2;
-			_stprintf_s(szTitle, MAX_PATH, TEXT("文本查看 - %s (Unicode)"), lpszFile);
+			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (Unicode)", lpszFile);
 			lpszTextShow = (char*)*buf + 2;
 
 		} else if((0xbbef == *(WORD*)*buf) && (0xbf == *(*buf + 3))) {
 			textType = TEXT_TYPE_UTF8;
-			_stprintf_s(szTitle, MAX_PATH, TEXT("文本查看 - %s (UTF-8)"), lpszFile);
+			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (UTF-8)", lpszFile);
 			lpszTextShow = (char*)*buf + 3;
 
 		} else {
@@ -56,13 +56,13 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 			case TEXT_TYPE_UTF8:
 
 				//textType = TEXT_TYPE_UTF8;
-				_stprintf_s(szTitle, MAX_PATH, TEXT("文本查看 - %s (UTF-8)"), lpszFile);
+				swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (UTF-8)", lpszFile);
 				break;
 
 			case TEXT_TYPE_ANSI:
 
 				//textType = TEXT_TYPE_ANSI;
-				_stprintf_s(szTitle, MAX_PATH, TEXT("文本查看 - %s"), lpszFile);
+				swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s", lpszFile);
 				break;
 
 			case TEXT_TYPE_RAW:
@@ -70,10 +70,9 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 				if(VIEW_RAW_MAX_BUFFER < dwSize)
 					dwSize = VIEW_RAW_MAX_BUFFER;
 
-				_stprintf_s(szTitle, MAX_PATH, TEXT("文本查看 - %s (RAW)"), lpszFile);
+				swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (RAW)", lpszFile);
 
 				break;
-
 
 			}
 
@@ -116,10 +115,10 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 
 	} else {
 
-		_stprintf_s(szTitle, MAX_PATH, TEXT("文本查看 - %s"), lpszFile);
+		swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s", lpszFile);
 	}
 
-	SetWindowText(szTitle);
+	SetWindowTextW(szTitle);
 
 	Show();
 

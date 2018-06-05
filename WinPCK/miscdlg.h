@@ -4,6 +4,8 @@
 
 #include "tlib.h"
 #include "resource.h"
+#include <tchar.h>
+#include <stdio.h>
 #include "PckHeader.h"
 
 class TLogDlg : public TDlg

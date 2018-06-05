@@ -20,6 +20,7 @@
 #include "globals.h"
 #include "winmain.h"
 #include <process.h>
+#include <tchar.h>
 #include "OpenSaveDlg.h"
 
 
@@ -179,9 +180,9 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 		//设定目标pck的版本
 		pThis->m_cPckCenter.SetPckVersion(nSelectFilter);
 
-		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), wcsrchr(szFilenameToSave, TEXT('\\')) + 1);
+		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
 	} else {
-		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), wcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
+		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 	}
 
 	//开始计时
@@ -284,7 +285,7 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 	TCHAR		szPrintf[64];
 	double		t1, t2;//计算时间
 
-	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), wcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
+	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 
 	//开始计时
 	t1 = GetTickCount();
@@ -352,9 +353,9 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 
 	_tcscpy_s(szFilenameToSave, pThis->m_Filename);
 
-	TCHAR		*lpszFileTitle = wcsrchr(szFilenameToSave, TEXT('\\')) + 1;
+	TCHAR		*lpszFileTitle = _tcsrchr(szFilenameToSave, TEXT('\\')) + 1;
 	_tcscpy(lpszFileTitle, TEXT("Rebuild_"));
-	_tcscat_s(szFilenameToSave, wcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
+	_tcscat_s(szFilenameToSave, _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 
 	//弹出选项对话框
 	//调用对话框
@@ -377,7 +378,7 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 
 	pThis->EnbaleButtons(ID_MENU_REBUILD, FALSE);
 
-	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_REBUILDING), wcsrchr(szFilenameToSave, TEXT('\\')) + 1);
+	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_REBUILDING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
 	pThis->SetStatusBarText(4, szPrintf);
 
 	pThis->m_cPckCenter.Reset(pThis->m_cPckCenter.GetPckFileCount());
@@ -459,7 +460,7 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 
 	pThis->EnbaleButtons(ID_MENU_NEW, FALSE);
 
-	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_COMPING), wcsrchr(szFilenameToSave, TEXT('\\')) + 1);
+	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_COMPING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
 	pThis->SetStatusBarText(4, szPrintf);
 
 	pThis->m_cPckCenter.Reset();
@@ -521,7 +522,7 @@ VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)
 
 	pThis->EnbaleButtons(ID_MENU_UNPACK_ALL, FALSE);
 
-	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPING), wcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
+	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 	pThis->SetStatusBarText(4, szPrintf);
 
 	pThis->m_cPckCenter.Reset(pThis->m_cPckCenter.m_lpPckRootNode->child->dwFilesCount);
@@ -635,7 +636,7 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 
 			pThis->EnbaleButtons(ID_MENU_UNPACK_SELECTED, FALSE);
 
-			_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPING), wcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
+			_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 			pThis->SetStatusBarText(4, szPrintf);
 
 			pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
@@ -760,7 +761,7 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 
 		pThis->EnbaleButtons(ID_MENU_DELETE, FALSE);
 
-		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), wcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
+		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 		pThis->SetStatusBarText(4, szPrintf);
 
 		pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);

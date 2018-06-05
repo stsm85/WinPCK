@@ -4,7 +4,7 @@ VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
 
 	//char	szFileMappingNameSpaceFormat[16];
 	//char	szFileMappingNameSpace[32];
-	int		level = pThis->lpPckParams->dwCompressLevel;
+	int		level = pThis->m_lpPckParams->dwCompressLevel;
 
 	//memcpy(szFileMappingNameSpaceFormat, pThis->m_szMapNameRead, 16);
 	//strcat_s(szFileMappingNameSpaceFormat, 16, "%d");

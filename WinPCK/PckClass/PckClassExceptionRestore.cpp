@@ -19,7 +19,7 @@ BOOL CPckClass::GetPckBasicInfo(LPTSTR lpszFile, PCKHEAD_V2020 *lpHead, LPBYTE &
 
 	BYTE	*lpFileBuffer;
 
-	dwPckFileIndexDataSize = m_PckAllInfo.qwPckSize - m_PckAllInfo.dwAddressName;
+	dwPckFileIndexDataSize = m_PckAllInfo.qwPckSize - m_PckAllInfo.dwAddressOfFilenameIndex;
 
 	//lstrcpy(lpszFile, m_Filename);
 	memcpy(lpszFile, m_PckAllInfo.szFilename, MAX_PATH * sizeof(TCHAR));
@@ -38,7 +38,7 @@ BOOL CPckClass::GetPckBasicInfo(LPTSTR lpszFile, PCKHEAD_V2020 *lpHead, LPBYTE &
 		return FALSE;
 	}
 
-	if(NULL == (lpFileBuffer = cReadfile.View(m_PckAllInfo.dwAddressName, dwPckFileIndexDataSize)))
+	if(NULL == (lpFileBuffer = cReadfile.View(m_PckAllInfo.dwAddressOfFilenameIndex, dwPckFileIndexDataSize)))
 	{
 		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		free(lpFileIndexData);

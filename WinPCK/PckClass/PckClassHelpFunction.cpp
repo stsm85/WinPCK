@@ -102,7 +102,7 @@ BOOL CPckClass::WritePckIndex(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRE
 	dwAddress += dwNumberOfBytesToMap;
 
 	//窗口中以显示的文件进度
-	lpPckParams->cVarParams.dwUIProgress++;
+	m_lpPckParams->cVarParams.dwUIProgress++;
 
 	return TRUE;
 }
@@ -112,7 +112,7 @@ BOOL CPckClass::WritePckIndexTable(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_C
 {
 
 	//窗口中以显示的文件进度，初始化，显示写索引进度
-	lpPckParams->cVarParams.dwUIProgress = 0;
+	m_lpPckParams->cVarParams.dwUIProgress = 0;
 
 	for(DWORD i = 0; i < dwFileCount; i++) {
 		if(!WritePckIndex(lpWrite, lpPckIndexTablePtr, dwAddress)) {
@@ -152,7 +152,7 @@ LPPCKINDEXTABLE_COMPRESS CPckClass::FillAndCompressIndexData(LPPCKINDEXTABLE_COM
 	BYTE pckFileIndexBuf[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
 	lpPckIndexTableComped->dwIndexDataLength = MAX_INDEXTABLE_CLEARTEXT_LENGTH;
 	compress(lpPckIndexTableComped->buffer, &lpPckIndexTableComped->dwIndexDataLength,
-		m_PckAllInfo.lpSaveAsPckVerFunc->FillIndexData(lpPckFileIndexToCompress, pckFileIndexBuf), m_PckAllInfo.lpSaveAsPckVerFunc->dwFileIndexSize, lpPckParams->dwCompressLevel);
+		m_PckAllInfo.lpSaveAsPckVerFunc->FillIndexData(lpPckFileIndexToCompress, pckFileIndexBuf), m_PckAllInfo.lpSaveAsPckVerFunc->dwFileIndexSize, m_lpPckParams->dwCompressLevel);
 	//将获取的
 	lpPckIndexTableComped->dwIndexValueHead = lpPckIndexTableComped->dwIndexDataLength ^ m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey1;
 	lpPckIndexTableComped->dwIndexValueTail = lpPckIndexTableComped->dwIndexDataLength ^ m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey2;

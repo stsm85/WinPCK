@@ -17,7 +17,7 @@
 static char  *hexstr = "0123456789abcdef";
 
 
-inline char hexchar2char(TCHAR ch)
+inline char hexchar2char(wchar_t ch)
 {
 	if(ch >= '0' && ch <= '9')
 		return ch - '0';
@@ -27,9 +27,9 @@ inline char hexchar2char(TCHAR ch)
 	return 0;
 }
 
-void decodeandcopy(TCHAR *dst, TCHAR *src)
+void decodeandcopy(wchar_t *dst, wchar_t *src)
 {
-	int len = lstrlen(src);
+	int len = wcslen(src);
 	while(*src) {
 		if('/' == *src) {
 
@@ -59,7 +59,7 @@ void decodeandcopy(TCHAR *dst, TCHAR *src)
 }
 
 //通过Com直接获取鼠标位置所在的explorer.exe的窗口，并获取路径
-BOOL GetWndPath(HWND hWnd, TCHAR * szPath)
+BOOL GetWndPath(HWND hWnd, wchar_t * szPath)
 {
 
 	tagVARIANT	vari;
@@ -100,7 +100,7 @@ BOOL GetWndPath(HWND hWnd, TCHAR * szPath)
 					pIE->get_LocationURL(&bstrURL);
 
 
-					if(0 == _tcsncmp(bstrURL.m_str, TEXT("file://"), 7)) {
+					if(0 == wcsncmp(bstrURL.m_str, L"file://", 7)) {
 						if('/' == *(bstrURL.m_str + 7))
 							//lstrcpy(szPath, bstrURL.m_str + 8);
 							decodeandcopy(szPath, bstrURL.m_str + 8);

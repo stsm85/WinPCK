@@ -13,7 +13,7 @@
 #define _CDICTHASH_H_
 
 #define	HASH_TABLE_LENGTH		0xffff
-#define	MAX_PATH_PCK			256
+#define	MAX_PATH_PCK			260
 
 
 typedef struct _ZUP_FILENAME_DICT {
@@ -21,6 +21,7 @@ typedef struct _ZUP_FILENAME_DICT {
 	char				base64str[MAX_PATH_PCK];
 	char				realbase64str[MAX_PATH_PCK];
 	char				realstr[MAX_PATH_PCK];
+	wchar_t				wrealstr[MAX_PATH_PCK];
 	unsigned char		realstrlength;
 
 	_ZUP_FILENAME_DICT	*next;

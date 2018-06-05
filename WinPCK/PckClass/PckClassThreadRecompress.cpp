@@ -7,7 +7,7 @@ VOID CPckClass::CompressThreadRecompress(VOID* pParam)
 
 	CPckClass *pThis = (CPckClass*)pParam;
 
-	int		level = pThis->lpPckParams->dwCompressLevel;
+	int		level = pThis->m_lpPckParams->dwCompressLevel;
 
 	//当文件大小为0小，使用1填充指针
 	BYTE	*bufCompressData = (BYTE*)1;
@@ -181,13 +181,13 @@ BOOL CPckClass::RecompressPckFile(LPCTSTR szRecompressPckFile)
 
 	CMapViewFileWrite	*lpFileWrite;
 	CMapViewFileRead	cFileRead;
-	int					threadnum = lpPckParams->dwMTThread;
+	int					threadnum = m_lpPckParams->dwMTThread;
 
 	//构造头和尾时需要的参数
 	PCK_ALL_INFOS		pckAllInfo;
 
 	//设置界面进度条总值
-	lpPckParams->cVarParams.dwUIProgressUpper = dwNoDupFileCount;
+	m_lpPckParams->cVarParams.dwUIProgressUpper = dwNoDupFileCount;
 
 	//打开源文件 
 	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
@@ -231,7 +231,7 @@ BOOL CPckClass::RecompressPckFile(LPCTSTR szRecompressPckFile)
 
 	WritePckIndexTable(lpFileWrite, mt_lpPckIndexTable, dwNoDupFileCount, dwAddress);
 
-	pckAllInfo.dwAddressName = dwAddressName;
+	pckAllInfo.dwAddressOfFilenameIndex = dwAddressName;
 	pckAllInfo.dwFileCount = dwNoDupFileCount;
 	AfterProcess(lpFileWrite, pckAllInfo, dwAddress);
 

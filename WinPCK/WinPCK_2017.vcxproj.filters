@@ -108,9 +108,6 @@
     <ClCompile Include=".\ZupClass\ZupClass.cpp">
       <Filter>源文件\ZupClass</Filter>
     </ClCompile>
-    <ClCompile Include=".\ZupClass\ZupClassThread.cpp">
-      <Filter>源文件\ZupClass</Filter>
-    </ClCompile>
     <ClCompile Include=".\ZupClass\ZupClassExtract.cpp">
       <Filter>源文件\ZupClass</Filter>
     </ClCompile>
@@ -125,12 +122,6 @@
     </ClCompile>
     <ClCompile Include="MapViewFile\MapViewFile.cpp">
       <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassMainFunction.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassAllocFunctions.cpp">
-      <Filter>源文件\PckClass</Filter>
     </ClCompile>
     <ClCompile Include="PckClass\PckClassHelpFunction.cpp">
       <Filter>源文件\PckClass</Filter>
@@ -267,6 +258,15 @@
     <ClCompile Include="MiscFuncs\ShowLogOnDlgListView.cpp">
       <Filter>源文件\MiscFuncs</Filter>
     </ClCompile>
+    <ClCompile Include="PckClass\PckClassNode.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassNodeRename.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassRebuild.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc">
@@ -323,9 +323,6 @@
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
     <ClInclude Include="PckClass\PckClassExceptionRestore.h">
-      <Filter>头文件\PckClass</Filter>
-    </ClInclude>
-    <ClInclude Include="PckClass\PckClassReader.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
     <ClInclude Include="..\tlib\tapi32ex.h">
@@ -409,10 +406,10 @@
     <ClInclude Include="PckClass\PckClassRebuildFilter.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
-    <ClInclude Include="PckClass\PckClassAllocFunctions.h">
+    <ClInclude Include="PckClass\PckClassLinkList.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
-    <ClInclude Include="PckClass\PckClassLinkList.h">
+    <ClInclude Include="PckClass\PckClassNode.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
   </ItemGroup>

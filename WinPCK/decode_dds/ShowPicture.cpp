@@ -11,11 +11,12 @@
 
 #include <Windows.h>
 #include "ShowPicture.h"
+#include <stdio.h>
 #include <tchar.h>
 
 #include <math.h>
 
-CShowPicture::CShowPicture(HWND hWndShow, LPBYTE &_buffer, size_t _bufsize, LPCTSTR _lpszFileTitle, PICFORMAT _picFormat) :
+CShowPicture::CShowPicture(HWND hWndShow, LPBYTE &_buffer, size_t _bufsize, LPCWSTR _lpszFileTitle, PICFORMAT _picFormat) :
 	m_hWndShow(hWndShow),
 	m_lpszFileTitle(_lpszFileTitle),
 	m_picFormat(_picFormat),
@@ -84,22 +85,18 @@ BOOL CShowPicture::isEqual(double d1, double d2)
 	return (EPSILON > fabs((d1-d2)));
 }
 
-LPCTSTR	CShowPicture::GetWindowTitle(LPTSTR	lpszTitle, size_t bufSize)
+LPCWSTR	CShowPicture::GetWindowTitle(LPWSTR	lpszTitle, size_t bufSize)
 {
-	static TCHAR szTitle[MAX_PATH];
+	static wchar_t szTitle[MAX_PATH];
 
 	if(NULL == lpszTitle)
 		lpszTitle = szTitle;
 
 	//窗口文字
 	if(FMT_RAW != m_picFormat) {
-#ifdef UNICODE
-		_stprintf_s(lpszTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d, %S"), m_lpszFileTitle, m_picWidth, m_picHeight, m_szPictureFormat);
-#else
-		_stprintf_s(lpszTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d, %s"), m_lpszFileTitle, m_picWidth, m_picHeight, m_szPictureFormat);
-#endif
+		swprintf_s(lpszTitle, MAX_PATH, L"图片查看 - %s, %dx%d, %S", m_lpszFileTitle, m_picWidth, m_picHeight, m_szPictureFormat);
 	} else {
-		_stprintf_s(lpszTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d"), m_lpszFileTitle, m_picWidth, m_picHeight);
+		swprintf_s(lpszTitle, MAX_PATH, L"图片查看 - %s, %dx%d", m_lpszFileTitle, m_picWidth, m_picHeight);
 	}
 
 	//SetWindowText(m_hWndShow, lpszTitle);
@@ -108,20 +105,18 @@ LPCTSTR	CShowPicture::GetWindowTitle(LPTSTR	lpszTitle, size_t bufSize)
 
 BOOL CShowPicture::ShowTitleOnWindow()
 {
-	TCHAR szTitle[MAX_PATH];
+	wchar_t szTitle[MAX_PATH];
 
 	//窗口文字
 	if(FMT_RAW != m_picFormat) {
-#ifdef UNICODE
-		_stprintf_s(szTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d, %S"), m_lpszFileTitle, m_picWidth, m_picHeight, m_szPictureFormat);
-#else
-		_stprintf_s(szTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d, %s"), m_lpszFileTitle, m_picWidth, m_picHeight, m_szPictureFormat);
-#endif
+
+		swprintf_s(szTitle, MAX_PATH, L"图片查看 - %s, %dx%d, %S", m_lpszFileTitle, m_picWidth, m_picHeight, m_szPictureFormat);
+
 	} else {
-		_stprintf_s(szTitle, MAX_PATH, TEXT("图片查看 - %s, %dx%d"), m_lpszFileTitle, m_picWidth, m_picHeight);
+		swprintf_s(szTitle, MAX_PATH, L"图片查看 - %s, %dx%d", m_lpszFileTitle, m_picWidth, m_picHeight);
 	}
 
-	SetWindowText(m_hWndShow, szTitle);
+	SetWindowTextW(m_hWndShow, szTitle);
 	return TRUE;
 }
 

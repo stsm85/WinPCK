@@ -90,23 +90,20 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 
 	BOOL	ret = TRUE;
 
-	TCHAR	szFilename[MAX_PATH_PCK_260], *szStrchr;
+	wchar_t	szFilename[MAX_PATH_PCK_260], *szStrchr;
 
 	LPPCKINDEXTABLE *lpIndexToExtractPtr = lpIndexToExtract;
 
 	for(int i = 0;i < nFileCount;i++) {
-		if(!lpPckParams->cVarParams.bThreadRunning) {
+		if(!m_lpPckParams->cVarParams.bThreadRunning) {
 			m_PckLog.PrintLogW(TEXT_USERCANCLE);
 
 			return FALSE;
 		}
 
-#ifdef UNICODE
 		CAnsi2Ucs cA2U;
 		cA2U.GetString((*lpIndexToExtractPtr)->cFileIndex.szFilename, szFilename, MAX_PATH_PCK_260);
-#else
-		memcpy(szFilename, (*lpIndexToExtractPtr)->cFileIndex.szFilename, MAX_PATH_PCK_260);
-#endif
+
 		szStrchr = szFilename;
 		for(int j = 0;j < MAX_PATH_PCK_260;j++) {
 			if(TEXT('\\') == *szStrchr)*szStrchr = TEXT('_');
@@ -121,7 +118,7 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 			return FALSE;
 		} else {
 			//dwCount++;
-			++(lpPckParams->cVarParams.dwUIProgress);
+			++(m_lpPckParams->cVarParams.dwUIProgress);
 		}
 
 		++lpIndexToExtractPtr;
@@ -146,7 +143,7 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 	LPPCK_PATH_NODE *lpNodeToExtractPtr = lpNodeToExtract;
 
 	for(int i = 0;i < nFileCount;i++) {
-		if(!lpPckParams->cVarParams.bThreadRunning) {
+		if(!m_lpPckParams->cVarParams.bThreadRunning) {
 			m_PckLog.PrintLogW(TEXT_USERCANCLE);
 			return FALSE;
 		}
@@ -154,18 +151,19 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 		if(NULL == (*lpNodeToExtractPtr)->child) {
 
 			//½âÑ¹ÎÄ¼þ
+			CUcs2Ansi cU2A;
 			if(!(DecompressFile((*lpNodeToExtractPtr)->szName, (*lpNodeToExtractPtr)->lpPckIndexTable, &cFileRead))) {
 				m_PckLog.PrintLogEL(TEXT_UNCOMP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 				return FALSE;
 			} else {
 				//dwCount++;
-				++(lpPckParams->cVarParams.dwUIProgress);
+				++(m_lpPckParams->cVarParams.dwUIProgress);
 			}
 
 		} else {
 
-			CreateDirectory((*lpNodeToExtractPtr)->szName, NULL);
-			SetCurrentDirectory((*lpNodeToExtractPtr)->szName);
+			CreateDirectoryW((*lpNodeToExtractPtr)->szName, NULL);
+			SetCurrentDirectoryW((*lpNodeToExtractPtr)->szName);
 			ret = StartExtract((*lpNodeToExtractPtr)->child->next, &cFileRead);
 			SetCurrentDirectoryA("..\\");
 		}
@@ -182,7 +180,7 @@ BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileR
 	CMapViewFileRead	*lpFileRead = (CMapViewFileRead*)lpvoidFileRead;
 
 	do {
-		if(!lpPckParams->cVarParams.bThreadRunning) {
+		if(!m_lpPckParams->cVarParams.bThreadRunning) {
 			m_PckLog.PrintLogW(TEXT_USERCANCLE);
 			return FALSE;
 		}
@@ -190,8 +188,8 @@ BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileR
 		//lpThisNodePtr = lpNodeToExtract;
 		if(NULL != lpNodeToExtract->child) {
 
-			CreateDirectory(lpNodeToExtract->szName, NULL);
-			SetCurrentDirectory(lpNodeToExtract->szName);
+			CreateDirectoryW(lpNodeToExtract->szName, NULL);
+			SetCurrentDirectoryW(lpNodeToExtract->szName);
 
 			StartExtract(lpNodeToExtract->child->next, lpFileRead);
 
@@ -206,7 +204,7 @@ BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileR
 				return FALSE;
 			} else {
 				//dwCount++;
-				++(lpPckParams->cVarParams.dwUIProgress);
+				++(m_lpPckParams->cVarParams.dwUIProgress);
 			}
 		}
 
@@ -217,7 +215,7 @@ BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileR
 	return TRUE;
 }
 
-BOOL CPckClass::DecompressFile(LPCTSTR	lpszFilename, LPPCKINDEXTABLE lpPckFileIndexTable, LPVOID lpvoidFileRead)
+BOOL CPckClass::DecompressFile(LPCWSTR	lpszFilename, LPPCKINDEXTABLE lpPckFileIndexTable, LPVOID lpvoidFileRead)
 {
 	LPPCKFILEINDEX lpPckFileIndex = &lpPckFileIndexTable->cFileIndex;
 

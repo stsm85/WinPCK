@@ -46,14 +46,14 @@ BOOL CPckClass::BeforeSingleOrMultiThreadProcess(LPPCK_ALL_INFOS lpPckAllInfo, C
 		return FALSE;
 	}
 
-	lpPckParams->cVarParams.dwUIProgress = 0;
+	m_lpPckParams->cVarParams.dwUIProgress = 0;
 
 	//多线程使用参数初始化
 
-	mt_lpbThreadRunning = &lpPckParams->cVarParams.bThreadRunning;	//监视线程暂停
-	mt_lpdwCount = &lpPckParams->cVarParams.dwUIProgress;			//dwCount;
-	mt_MaxMemory = lpPckParams->dwMTMaxMemory;						//可用最大缓存;
-	mt_lpMaxMemory = &lpPckParams->cVarParams.dwMTMemoryUsed;		//已使用缓存;
+	mt_lpbThreadRunning = &m_lpPckParams->cVarParams.bThreadRunning;	//监视线程暂停
+	mt_lpdwCount = &m_lpPckParams->cVarParams.dwUIProgress;			//dwCount;
+	mt_MaxMemory = m_lpPckParams->dwMTMaxMemory;						//可用最大缓存;
+	mt_lpMaxMemory = &m_lpPckParams->cVarParams.dwMTMemoryUsed;		//已使用缓存;
 	mt_nMallocBlocked = 0;											//等待的线程数
 	
 	return TRUE;
@@ -95,7 +95,7 @@ void CPckClass::MultiThreadInitialize(VOID CompressThread(VOID*), VOID WriteThre
 	CloseHandle(mt_evtAllCompressFinish);
 	CloseHandle(mt_evtAllWriteFinish);
 
-	if(!lpPckParams->cVarParams.bThreadRunning) {
+	if(!m_lpPckParams->cVarParams.bThreadRunning) {
 		m_PckLog.PrintLogW(TEXT_USERCANCLE);
 	}
 
@@ -107,7 +107,7 @@ BOOL CPckClass::RenameFilename()
 
 	m_PckLog.PrintLogI(TEXT_LOG_RENAME);
 
-	int			level = lpPckParams->dwCompressLevel;
+	int			level = m_lpPckParams->dwCompressLevel;
 	DWORD		IndexCompressedFilenameDataLengthCryptKey1 = m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey1;
 	DWORD		IndexCompressedFilenameDataLengthCryptKey2 = m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey2;
 
@@ -131,17 +131,17 @@ BOOL CPckClass::RenameFilename()
 	}
 
 	//写文件索引
-	QWORD dwAddress = m_PckAllInfo.dwAddressName;
+	QWORD dwAddress = m_PckAllInfo.dwAddressOfFilenameIndex;
 
 	//窗口中以显示的文件进度，初始化，显示写索引进度mt_hFileToWrite
-	lpPckParams->cVarParams.dwUIProgress = 0;
-	lpPckParams->cVarParams.dwUIProgressUpper = m_PckAllInfo.dwFileCount;
+	m_lpPckParams->cVarParams.dwUIProgress = 0;
+	m_lpPckParams->cVarParams.dwUIProgressUpper = m_PckAllInfo.dwFileCount;
 
 	//写原来的文件
 	LPPCKINDEXTABLE	lpPckIndexTableSrc = m_PckAllInfo.lpPckIndexTable;
 
 	//写入索引
-	for(DWORD i = 0; i < lpPckParams->cVarParams.dwUIProgressUpper; ++i) {
+	for(DWORD i = 0; i < m_lpPckParams->cVarParams.dwUIProgressUpper; ++i) {
 
 		PCKINDEXTABLE_COMPRESS	pckIndexTableTemp;
 
@@ -150,7 +150,7 @@ BOOL CPckClass::RenameFilename()
 			++lpPckIndexTableSrc;
 
 			//窗口中以显示的文件进度
-			++lpPckParams->cVarParams.dwUIProgress;
+			++m_lpPckParams->cVarParams.dwUIProgress;
 			continue;
 		}
 

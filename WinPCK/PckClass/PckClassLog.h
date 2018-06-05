@@ -29,7 +29,7 @@ public:
 	~CPckClassLog();
 
 	//注册LOG显示方式
-	void PckClass_log_register(ShowLogW _ShowLogW);
+	void PckClassLog_func_register(ShowLogW _ShowLogW);
 
 	//日志显示函数
 #define define_define_one_PrintLog(_loglvchar)	\

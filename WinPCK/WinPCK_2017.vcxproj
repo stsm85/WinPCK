@@ -468,15 +468,16 @@
     <ClCompile Include="MiscFuncs\OpenSaveDlg.cpp" />
     <ClCompile Include="MiscFuncs\Raw2HexString.cpp" />
     <ClCompile Include="MiscFuncs\ShowLogOnDlgListView.cpp" />
-    <ClCompile Include="PckClass\PckClassAllocFunctions.cpp" />
     <ClCompile Include="PckClass\PckClassCompress.cpp" />
     <ClCompile Include="PckClass\PckClassExceptionRestore.cpp" />
     <ClCompile Include="PckClass\PckClassLog.cpp" />
     <ClCompile Include="PckClass\PckClassFileDisk.cpp" />
     <ClCompile Include="PckClass\PckClassHelpFunction.cpp" />
     <ClCompile Include="PckClass\PckClassMount.cpp" />
+    <ClCompile Include="PckClass\PckClassNode.cpp" />
     <ClCompile Include="PckClass\PckClassReader.cpp" />
     <ClCompile Include="PckClass\PckClassRebuildFilter.cpp" />
+    <ClCompile Include="PckClass\PckClassNodeRename.cpp" />
     <ClCompile Include="PckClass\PckClassThreadAddFile.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -505,7 +506,7 @@
     <ClCompile Include="mainfunc.cpp" />
     <ClCompile Include=".\PckClass\PckClass.cpp" />
     <ClCompile Include=".\PckClass\PckClassExtract.cpp" />
-    <ClCompile Include="PckClass\PckClassMainFunction.cpp" />
+    <ClCompile Include="PckClass\PckClassRebuild.cpp" />
     <ClCompile Include=".\PckClass\PckClassThread.cpp" />
     <ClCompile Include="PreviewDlg.cpp" />
     <ClCompile Include="tAttrDlg.cpp" />
@@ -521,7 +522,6 @@
     <ClCompile Include=".\ZupClass\ZupClass.cpp" />
     <ClCompile Include=".\ZupClass\ZupClassExtract.cpp" />
     <ClCompile Include=".\ZupClass\ZupClassFunction.cpp" />
-    <ClCompile Include=".\ZupClass\ZupClassThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc" />
@@ -549,13 +549,12 @@
     <ClInclude Include="MiscFuncs\OpenSaveDlg.h" />
     <ClInclude Include="MiscFuncs\Raw2HexString.h" />
     <ClInclude Include="MiscFuncs\ShowLogOnDlgListView.h" />
-    <ClInclude Include="PckClass\PckClassAllocFunctions.h" />
     <ClInclude Include="PckClass\PckClassCompress.h" />
     <ClInclude Include="PckClass\PckClassExceptionRestore.h" />
     <ClInclude Include="PckClass\PckClassFileDisk.h" />
     <ClInclude Include="PckClass\PckClassLinkList.h" />
     <ClInclude Include="PckClass\PckClassLog.h" />
-    <ClInclude Include="PckClass\PckClassReader.h" />
+    <ClInclude Include="PckClass\PckClassNode.h" />
     <ClInclude Include="PckClass\PckClassRebuildFilter.h" />
     <ClInclude Include="PckClass\PckClassThreadCompressFunctions.h" />
     <ClInclude Include="PckClass\PckClassVersionDetect.h" />

@@ -10,13 +10,16 @@
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
 
+#include <windows.h>
+#include <stdio.h>
+#include <tchar.h>
 #include "MapViewFile.h"
 #include "PckHeader.h"
-#include <stdio.h>
 #include <assert.h>
 #include "CharsCodeConv.h"
 #include "PckClassVersionDetect.h"
 #include "PckClassLog.h"
+#include "PckClassNode.h"
 
 
 #if !defined(_PCKCLASS_H_)
@@ -87,10 +90,7 @@ public:
 
 	//重命名一个节点
 	virtual BOOL	RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
-protected:
-	virtual BOOL	RenameNodeEnum(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp);
-	virtual BOOL	RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp);
-public:
+
 	virtual VOID	RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
 	virtual VOID	RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
 
@@ -124,24 +124,15 @@ protected:
 	LPPCKINDEXTABLE_COMPRESS FillAndCompressIndexData(LPPCKINDEXTABLE_COMPRESS lpPckIndexTableComped, LPPCKFILEINDEX lpPckFileIndexToCompress);
 
 
-	//PckClassAllocFunctions.cpp
+	CPckClassNode	m_classNode;
 	virtual void	BuildDirTree();
-	//void*	AllocMemory(size_t	sizeStuct);
-	//VOID	DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode);
-	//VOID	DeallocateFileinfo();
-
-	BOOL	AddFileToNode(LPPCK_PATH_NODE lpRootNode, LPPCKINDEXTABLE	lpPckIndexNode);
-	LPPCK_PATH_NODE	FindFileNode(LPPCK_PATH_NODE lpBaseNode, char* lpszFile);
-
 
 	//PckClassExtract.cpp
-
 	BOOL	StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpMapAddress);
-	BOOL	DecompressFile(LPCTSTR lpszFilename, LPPCKINDEXTABLE lpPckFileIndexTable, LPVOID lpvoidFileRead);
+	BOOL	DecompressFile(LPCWSTR lpszFilename, LPPCKINDEXTABLE lpPckFileIndexTable, LPVOID lpvoidFileRead);
 
 
 	//PckClassThread.cpp
-
 	static	VOID CompressThreadCreate(VOID* pParam);
 	static	VOID WriteThread(VOID* pParam);
 
@@ -169,11 +160,10 @@ protected:
 	CPckClassLog	m_PckLog;
 
 	// 文件头、尾等结构体的读取
-	#include "PckClassReader.h"
+	BOOL	ReadPckFileIndexes();
 
 	//数据压缩算法
 	#include "PckClassCompress.h"
-
 
 	//PckClassRebuildFilter.cpp
 public:
@@ -181,12 +171,10 @@ public:
 
 protected:
 
-	LPPCK_RUNTIME_PARAMS	lpPckParams;
+	LPPCK_RUNTIME_PARAMS	m_lpPckParams;
 
 	BOOL					m_ReadCompleted;
 	PCK_ALL_INFOS			m_PckAllInfo;
-	//LPPCKINDEXTABLE			m_lpPckIndexTable;
-	//PCK_PATH_NODE			m_RootNode;
 
 	LPFILES_TO_COMPRESS		m_firstFile;		//添加待压缩文件时，遍历文件时使用的文件列表的第一个文件
 	

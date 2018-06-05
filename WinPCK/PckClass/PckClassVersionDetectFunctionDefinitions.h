@@ -14,7 +14,7 @@
 					(_id) = i; \
 					pckAllInfo->qwPckSize = ((LPPCKHEAD_V##_ver)&cPckHead)->dwPckSize; \
 					pckAllInfo->dwFileCount = dwTailVals[2];\
-					pckAllInfo->dwAddressName = PckTail_v##_ver.dwCryptedFileIndexesAddr ^ cPckKeys[(_id)].IndexesEntryAddressCryptKey;\
+					pckAllInfo->dwAddressOfFilenameIndex = PckTail_v##_ver.dwCryptedFileIndexesAddr ^ cPckKeys[(_id)].IndexesEntryAddressCryptKey;\
 					memcpy(pckAllInfo->szAdditionalInfo, PckTail_v##_ver.szAdditionalInfo, PCK_ADDITIONAL_INFO_SIZE);\
 					_tcscpy_s(pckAllInfo->szFilename, lpszPckFile); \
 					break; \
@@ -72,7 +72,7 @@
 			LPPCKTAIL_V##_ver lpTail = (LPPCKTAIL_V##_ver)tailbuf; \
 			lpTail->dwIndexTableCheckHead = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->TailVerifyKey1; \
 			lpTail->dwVersion0 = lpTail->dwVersion = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->Version; \
-			lpTail->dwCryptedFileIndexesAddr = lpPckAllInfo->dwAddressName ^ lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->IndexesEntryAddressCryptKey; \
+			lpTail->dwCryptedFileIndexesAddr = lpPckAllInfo->dwAddressOfFilenameIndex ^ lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->IndexesEntryAddressCryptKey; \
 			lpTail->dwNullDword = 0; \
 			memcpy(lpTail->szAdditionalInfo, lpPckAllInfo->szAdditionalInfo, sizeof(lpTail->szAdditionalInfo)); \
 			lpTail->dwIndexTableCheckTail = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->TailVerifyKey2; \

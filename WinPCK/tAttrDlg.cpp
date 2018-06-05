@@ -32,7 +32,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 	//ultoa(lpPckNode->lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szPrintf, 10));
 
 	char	*lpszFilename;
-	TCHAR	*lpsztFilename;
+	wchar_t	*lpszwFilename;
 	char	szPrintf[64];
 	char	szPrintfBytesize[16];
 	LPCSTR	lpszFormat = "%s (%llu 字节)";
@@ -99,7 +99,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 
 		LPPCK_PATH_NODE	lpPckNode = (LPPCK_PATH_NODE)lpPckInfo;
 
-		SetDlgItemText(IDC_EDIT_ATTR_NAME, lpsztFilename = lpPckNode->szName);
+		SetDlgItemTextW(IDC_EDIT_ATTR_NAME, lpszwFilename = lpPckNode->szName);
 		SetDlgItemTextA(IDC_EDIT_ATTR_PATH, lpszPath);
 
 		if(NULL == lpPckNode->child)//文件
@@ -200,7 +200,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 
 	//窗口文字
 	TCHAR	szTitle[MAX_PATH];
-	_stprintf_s(szTitle, MAX_PATH, TEXT("%s 属性"), lpsztFilename);
+	_stprintf_s(szTitle, MAX_PATH, TEXT("%s 属性"), lpszwFilename);
 	SetWindowText(szTitle);
 
 	Show();

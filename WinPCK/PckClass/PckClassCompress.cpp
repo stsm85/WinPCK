@@ -20,7 +20,7 @@
 void CPckClass::init_compressor()
 {
 
-	if(Z_BEST_COMPRESSION < lpPckParams->dwCompressLevel){
+	if(Z_BEST_COMPRESSION < m_lpPckParams->dwCompressLevel){
 
 		m_PckCompressFunc.compressBound = compressBound_libdeflate;
 		m_PckCompressFunc.compress = compress_libdeflate;

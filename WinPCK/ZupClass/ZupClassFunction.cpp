@@ -10,22 +10,19 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "ZupClass.h"
-
 #include "..\base64\base64.h"
+#include <intrin.h>
 
 _inline void CZupClass::DecodeDict(LPZUP_FILENAME_DICT lpZupDict)
 {
 	char			szUTF8str[MAX_PATH_PCK];
-	wchar_t			szUCS2Str[MAX_PATH_PCK];
 
 	//base64解码
-	DWORD	dwRealLen = lpZupDict->realstrlength/*strlen(lpZupDict->base64str)*/;
-	//Base64Decode((unsigned char *)szUTF8str, (unsigned char *)lpZupDict->realbase64str, dwRealLen);
+	DWORD	dwRealLen = lpZupDict->realstrlength;
 	base64_decode(lpZupDict->realbase64str, dwRealLen, szUTF8str);
 
-	MultiByteToWideChar(CP_UTF8, 0, szUTF8str, -1, szUCS2Str, MAX_PATH_PCK);
-	//UTF82WCS2(szUTF8str, -1, szUCS2Str, MAX_PATH_PCK);
-	lpZupDict->realstrlength = WideCharToMultiByte(CP_ACP, 0, szUCS2Str, -1, lpZupDict->realstr, MAX_PATH_PCK, "_", 0) - 1;
+	MultiByteToWideChar(CP_UTF8, 0, szUTF8str, -1, lpZupDict->wrealstr, MAX_PATH_PCK);
+	lpZupDict->realstrlength = WideCharToMultiByte(CP_ACP, 0, lpZupDict->wrealstr, -1, lpZupDict->realstr, MAX_PATH_PCK, "_", 0) - 1;
 
 }
 
@@ -88,15 +85,21 @@ VOID CZupClass::AddDict(char *&lpszStringToAdd)
 	lpszStringToAdd = lpszFilename;
 }
 
-void CZupClass::DecodeFilename(char *_dst, char *_src)
+void CZupClass::DecodeFilename(char *_dst, wchar_t *_wdst, char *_src)
 {
 	char	__srcbuf[MAX_PATH_PCK];
 	char	*__srcbufptr;
 
-	memset(_dst, 0, MAX_PATH_PCK);
+	memset(_dst + 8, 0, MAX_PATH_PCK - 8);
 	//复制"element\"
-	memcpy(_dst, _src, 8);
-	_dst += 8, _src += 8;
+	//memcpy(_dst, _src, 8);
+
+	__m128i xmm0 = _mm_setzero_si128();
+	__m128i xmm1 = _mm_loadl_epi64((__m128i*)_src);
+	__m128i xmm2 = _mm_unpacklo_epi8(xmm1, xmm0);
+	_mm_storeu_si128((__m128i*)_wdst, xmm2);
+
+	_dst += 8, _src += 8, _wdst += 8;
 
 	//char	*_srcptr = _src;
 	//DWORD	dwBase64Len;
@@ -116,9 +119,15 @@ void CZupClass::DecodeFilename(char *_dst, char *_src)
 		if(NULL != (lpZupDict = m_lpDictHash->find(__srcbuf))) {
 			memcpy(_dst, lpZupDict->realstr, lpZupDict->realstrlength);
 			_dst += lpZupDict->realstrlength;
-			*_dst++ = *_src++;
+
+			memcpy(_wdst, lpZupDict->wrealstr, lpZupDict->realstrlength * sizeof(wchar_t));
+			_wdst += lpZupDict->realstrlength;
+
+			*_dst++ = *_src;
+			*_wdst++ = *_src++;
 		} else {
-			*_dst++ = *_src++;
+			*_dst++ = *_src;
+			*_wdst++ = *_src++;
 		}
 	}
 }
@@ -248,43 +257,6 @@ BOOL CZupClass::BuildZupBaseDict()
 	//	return FALSE;
 	//else
 	return TRUE;
-}
-
-//删除一个节点
-VOID CZupClass::DeleteNode(LPPCK_PATH_NODE lpNode)
-{
-	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
-}
-
-//重命名一个节点
-BOOL CZupClass::RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
-{
-	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
-	return FALSE;
-}
-
-BOOL CZupClass::RenameNodeEnum(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp)
-{
-	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
-	return FALSE;
-}
-
-BOOL CZupClass::RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp)
-{
-	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
-	return FALSE;
-}
-
-VOID CZupClass::RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
-{
-	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
-	return;
-}
-
-VOID CZupClass::RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString)
-{
-	m_PckLog.PrintLogE(TEXT_NOTSUPPORT);
-	return;
 }
 
 LPPCKINDEXTABLE CZupClass::GetBaseFileIndex(LPPCKINDEXTABLE lpIndex, LPPCKINDEXTABLE lpZeroBaseIndex)

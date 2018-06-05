@@ -27,7 +27,7 @@ CPckClassLog::CPckClassLog() : m_dwLastError(0)
 CPckClassLog::~CPckClassLog()
 {}
 
-void CPckClassLog::PckClass_log_register(ShowLogW _ShowLogW)
+void CPckClassLog::PckClassLog_func_register(ShowLogW _ShowLogW)
 {
 	ShowLogExtern = _ShowLogW;
 }

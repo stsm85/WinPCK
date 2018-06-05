@@ -29,38 +29,30 @@ public:
 	CONST	LPPCKINDEXTABLE		GetPckIndexTable();
 	CONST	LPPCK_PATH_NODE		GetPckPathNode();
 
-	//解压文件
-	//virtual BOOL	ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount, DWORD &dwCount, BOOL	&bThreadRunning);
-	//virtual BOOL	ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount, DWORD &dwCount, BOOL	&bThreadRunning);
-	
-	//设置附加信息
-	//char*	GetAdditionalInfo();
-	//BOOL	SetAdditionalInfo();
-
 	//新建pck文件
-	virtual BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath/*, int level, int threadnum, int &nMaxMemory, DWORD &dwCount, DWORD &dwAllCount, BOOL	&bThreadRunning*/);
+	virtual BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 
 	//重建pck文件
-	virtual BOOL	RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress);
+	virtual BOOL	RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 
 public:
 	//更新pck文件//有bug
-	virtual BOOL	UpdatePckFile(LPTSTR szPckFile, TCHAR (*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert);
+	virtual BOOL	UpdatePckFile(LPTSTR szPckFile, TCHAR (*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 
 	//重命名文件
-	virtual BOOL	RenameFilename(/*int level, DWORD &dwCount, DWORD &dwAllCount*/);
+	virtual BOOL	RenameFilename() { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 
 	//删除一个节点
-	virtual VOID	DeleteNode(LPPCK_PATH_NODE lpNode);
+	virtual VOID	DeleteNode(LPPCK_PATH_NODE lpNode) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);}
 
 	//重命名一个节点
-	virtual BOOL	RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
+	virtual BOOL	RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString){m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE;}
 protected:
-	virtual BOOL	RenameNodeEnum(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp);
-	virtual BOOL	RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp);
+	virtual BOOL	RenameNodeEnum(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
+	virtual BOOL	RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 public:
-	virtual VOID	RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
-	virtual VOID	RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
+	virtual VOID	RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); }
+	virtual VOID	RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); }
 
 	//预览文件
 	BOOL	GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
@@ -68,29 +60,26 @@ public:
 
 protected:
 
-	PCK_PATH_NODE				m_RootNodeZup;
+	LPPCK_PATH_NODE				m_lpRootNodeZup;
 	LPPCKINDEXTABLE				m_lpZupIndexTable;
 
-	//LPZUP_FILENAME_DICT			m_lpZupDict;
 	CDictHash					*m_lpDictHash;
+
+	CPckClassNode				m_classNodeZup;
 
 
 protected:
 
 	virtual void	BuildDirTree();
 	BOOL	BuildZupBaseDict();
-	void	DecodeFilename(char *_dst, char *_src);
+	void	DecodeFilename(char *_dst, wchar_t *_wdst, char *_src);
 
 	_inline void	DecodeDict(LPZUP_FILENAME_DICT lpZupDict);
 	VOID	AddDict(char *&lpszStringToAdd);
-	//void	DeleteDictBuffer(LPZUP_FILENAME_DICT lpDictHead);
-	VOID	EnumAndDecodeNode(LPPCK_PATH_NODE lpNodeToDecodeZup, LPPCK_PATH_NODE lpNodeToDecodePck);
+	//VOID	EnumAndDecodeNode(LPPCK_PATH_NODE lpNodeToDecodeZup, LPPCK_PATH_NODE lpNodeToDecodePck);
 
 	LPPCKINDEXTABLE GetBaseFileIndex(LPPCKINDEXTABLE lpIndex, LPPCKINDEXTABLE lpZeroBaseIndex);
 
 };
-
-
-
 
 #endif

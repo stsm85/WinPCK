@@ -355,7 +355,7 @@ BOOL TInstDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 	case WM_LBUTTONUP:
 
 		if(m_isSearchWindow) {
-			TCHAR szPath[MAX_PATH];
+			wchar_t szPath[MAX_PATH];
 
 			//DoMouseUp();
 			SetCursor(m_hCursorOld);
@@ -368,7 +368,7 @@ BOOL TInstDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 					if(!lpPckParams->cVarParams.bThreadRunning) {
 						//mt_MaxMemoryCount = 0;
 						lpPckParams->cVarParams.dwMTMemoryUsed = 0;
-						SetCurrentDirectory(szPath);
+						SetCurrentDirectoryW(szPath);
 						_beginthread(ToExtractSelectedFiles, 0, this);
 					}
 				}
@@ -421,7 +421,7 @@ BOOL TInstDlg::EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight)
 	szPath 存放获取的目标窗口路径
 	isGetPath 是否需要获取目标窗口路径
 */
-BOOL TInstDlg::IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath)
+BOOL TInstDlg::IsValidWndAndGetPath(wchar_t * szPath, BOOL isGetPath)
 {
 
 	HWND	hwndFoundWindow = NULL, hWndParent = NULL, hRootHwnd = NULL;
@@ -438,7 +438,7 @@ BOOL TInstDlg::IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath)
 
 	if(GetShellWindow() == hRootHwnd) {
 		if(isGetPath) {
-			if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, szPath))) {
+			if(SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_DESKTOP, NULL, 0, szPath))) {
 				return TRUE;
 			}else{
 				return FALSE;
@@ -449,9 +449,9 @@ BOOL TInstDlg::IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath)
 	}
 
 	GetClassName(hRootHwnd, sRootClass, MAX_PATH);
-
+#ifdef _DEBUG
 	Debug(TEXT("sRootClass:%s\r\n"), sRootClass);
-
+#endif
 	if((0 == lstrcmp(sRootClass, SHELL_LISTVIEW_ROOT_CLASS2)) || \
 		(0 == lstrcmp(sRootClass, SHELL_LISTVIEW_ROOT_CLASS1))/* || \
 		(GetClassName(hWndParent, sParentClass, MAX_PATH), 0 == lstrcmp(sParentClass, SHELL_LISTVIEW_PARENT_CLASS))*/) {

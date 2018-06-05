@@ -1,2 +1,2 @@
 #pragma once
-BOOL GetWndPath(HWND hWnd, TCHAR * szPath);
+BOOL GetWndPath(HWND hWnd, wchar_t * szPath);

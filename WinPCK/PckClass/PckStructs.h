@@ -9,7 +9,7 @@
 // 2015.5.13
 //////////////////////////////////////////////////////////////////////
 
-#include "PckConf.h"
+#include "PckDefines.h"
 
 #if !defined(_PCKSTRUCTS_H_)
 #define _PCKSTRUCTS_H_
@@ -200,7 +200,7 @@ typedef struct _PCK_FILE_INDEX_V2031
 typedef struct _PCK_FILE_INDEX
 {
 	char		szFilename[MAX_PATH_PCK_260];
-	TCHAR		sztFilename[MAX_PATH_PCK_260];
+	wchar_t		szwFilename[MAX_PATH_PCK_260];
 	QWORD		dwAddressOffset;
 	DWORD		dwFileClearTextSize;
 	DWORD		dwFileCipherTextSize;
@@ -221,7 +221,7 @@ typedef struct _PCK_INDEX_TABLE
 
 typedef struct _PCK_PATH_NODE
 {
-	TCHAR			szName[MAX_PATH_PCK_260];
+	wchar_t			szName[MAX_PATH_PCK_260];
 	DWORD			dwFilesCount;
 	DWORD			dwDirsCount;
 	QWORD			qdwDirClearTextSize;
@@ -266,13 +266,13 @@ typedef struct _PCK_ALL_INFOS
 {
 	QWORD				qwPckSize;
 	DWORD				dwFileCount;
-	QWORD				dwAddressName;		//此值指向pck文件数据区的末尾，也就是文件索引的压缩数据的起始位置
+	QWORD				dwAddressOfFilenameIndex;		//此值指向pck文件数据区的末尾，也就是文件索引的压缩数据的起始位置
 	char				szAdditionalInfo[PCK_ADDITIONAL_INFO_SIZE];
 	TCHAR				szFilename[MAX_PATH];
-	TCHAR				*lpszFileTitle;
+	TCHAR				szFileTitle[MAX_PATH];
 
 	LPPCKINDEXTABLE		lpPckIndexTable;	//PCK文件的索引
-	PCK_PATH_NODE		lpRootNode;			//PCK文件节点的根节点
+	LPPCK_PATH_NODE		lpRootNode;			//PCK文件节点的根节点
 
 	const PCK_VERSION_FUNC*	lpDetectedPckVerFunc;
 	const PCK_VERSION_FUNC*	lpSaveAsPckVerFunc;

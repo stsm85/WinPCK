@@ -12,8 +12,6 @@
 #include "CharsCodeConv.h"
 #include "PckClassRebuildFilter.h"
 #include "PckClassLinkList.h"
-#include "PckClassAllocFunctions.h"
-using namespace NPckClassAllocFuncs;
 //chkfile
 //protect
 //delete
@@ -44,9 +42,9 @@ namespace NPckClassRebuildFilter
 	typedef struct _FILEOPS
 	{
 		SCRIPTOP op;
-		TCHAR	szFilename[MAX_PATH];
-		TCHAR	szFilenameBuffer[MAX_PATH];		//把路径中的\或/填0，分开的路径名称分别用lpszSepratedPaths指向
-		TCHAR*	lpszSepratedPaths[MAX_PATH];
+		wchar_t	szFilename[MAX_PATH];
+		wchar_t	szFilenameBuffer[MAX_PATH];		//把路径中的\或/填0，分开的路径名称分别用lpszSepratedPaths指向
+		wchar_t*	lpszSepratedPaths[MAX_PATH];
 		_FILEOPS * next;
 	}FILEOP;
 
@@ -174,19 +172,18 @@ namespace NPckClassRebuildFilter
 		if((MAX_PATH <= strlen(lpszSearch)) || (0 == *lpszSearch))
 			return FALSE;
 
-#ifdef UNICODE
 		CAnsi2Ucs cA2U;
 		cA2U.GetString(lpszSearch, pFileOp->szFilename, sizeof(pFileOp->szFilename) / sizeof(TCHAR));
 		wcscpy(pFileOp->szFilenameBuffer, pFileOp->szFilename);
-#else
-		strcpy_s(pFileOp->szFilename, lpszSearch);
-		strcpy_s(pFileOp->szFilenameBuffer, lpszSearch);
-#endif
 
 		//检查文件名是否正确
 		if(OP_CheckFile == pFileOp->op) {
-
-			if(0 == lstrcmpi(lpszFileName, pFileOp->szFilename))
+#ifdef UNICODE
+			if(0 == _tcsicmp(lpszFileName, pFileOp->szFilename))
+#else
+			CAnsi2Ucs cA2U;
+			if(0 == wcsicmp(cA2U.GetString(lpszFileName), pFileOp->szFilename))
+#endif
 				return TRUE;
 			else
 				return FALSE;
@@ -200,15 +197,15 @@ namespace NPckClassRebuildFilter
 	{
 		pFileOp->lpszSepratedPaths[0] = pFileOp->szFilenameBuffer;
 
-		TCHAR *lpszSearch = pFileOp->szFilenameBuffer;
+		wchar_t *lpszSearch = pFileOp->szFilenameBuffer;
 		int nPathDepthCount = 1;
 
 
 		while(*lpszSearch) {
 
-			TCHAR *test = _tcschr(lpszSearch, TEXT('\\'));
+			wchar_t *test = wcschr(lpszSearch, L'\\');
 			//这里没有考虑存在\\双斜杠的情况
-			if((TEXT('\\') == *lpszSearch) || (TEXT('/') == *lpszSearch)) {
+			if((L'\\' == *lpszSearch) || (L'/' == *lpszSearch)) {
 				*lpszSearch = 0;
 				++lpszSearch;
 				pFileOp->lpszSepratedPaths[nPathDepthCount] = lpszSearch;
@@ -219,9 +216,9 @@ namespace NPckClassRebuildFilter
 
 	}
 
-	LPPCK_PATH_NODE LocationFileIndex(LPTSTR *lpszPaths, LPPCK_PATH_NODE lpNode)
+	LPPCK_PATH_NODE LocationFileIndex(LPWSTR *lpszPaths, LPPCK_PATH_NODE lpNode)
 	{
-		LPCTSTR lpszSearchDir = *lpszPaths;
+		LPCWSTR lpszSearchDir = *lpszPaths;
 
 		if((NULL == lpszSearchDir) || (NULL == lpNode))
 			return NULL;
@@ -234,7 +231,7 @@ namespace NPckClassRebuildFilter
 			if(NULL == lpNodeSearch)
 				return NULL;
 
-			if(0 == lstrcmpi(lpszSearchDir, lpNodeSearch->szName)) {
+			if(0 == wcsicmp(lpszSearchDir, lpNodeSearch->szName)) {
 
 				//是否已经匹配完
 				if(NULL == *(lpszPaths + 1)) {
@@ -311,7 +308,7 @@ namespace NPckClassRebuildFilter
 				SepratePaths(pFileOp);
 
 				//定位文件索引
-				LPPCK_PATH_NODE lpFoundNode = LocationFileIndex(pFileOp->lpszSepratedPaths, _DstPckAllInfo.lpRootNode.child);
+				LPPCK_PATH_NODE lpFoundNode = LocationFileIndex(pFileOp->lpszSepratedPaths, _DstPckAllInfo.lpRootNode->child);
 				if(NULL == lpFoundNode) {
 
 					m_PckLog.PrintLogW(TEXT("已解析脚本失败在: %s, 跳过..."), pFileOp->szFilename);
@@ -400,7 +397,7 @@ namespace NPckClassRebuildFilter
 				if((szLine[0] != TEXT(';')) && (szLine[0] != TEXT('\0'))) {
 
 					//一行脚本分为两部分，操作和文件名
-					if(ParseOneLine(pFileOp, szLine, _DstPckAllInfo.lpszFileTitle)) {
+					if(ParseOneLine(pFileOp, szLine, _DstPckAllInfo.szFileTitle)) {
 
 						m_firstFileOp.insertNext();
 						pFileOp = m_firstFileOp.last();

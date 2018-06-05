@@ -4,7 +4,7 @@ class CShowPictureWithZoom :
 	public CShowPicture
 {
 public:
-	CShowPictureWithZoom(HWND hWndShow, LPBYTE &_buffer, size_t _bufsize, LPCTSTR _lpszFileTitle, PICFORMAT _picFormat);
+	CShowPictureWithZoom(HWND hWndShow, LPBYTE &_buffer, size_t _bufsize, LPCWSTR _lpszFileTitle, PICFORMAT _picFormat);
 	virtual ~CShowPictureWithZoom();
 
 	//恢复原始分辨率

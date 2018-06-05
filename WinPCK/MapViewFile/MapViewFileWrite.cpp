@@ -290,7 +290,18 @@ DWORD CMapViewFileWrite::Write(LPVOID buffer, DWORD dwBytesToWrite)
 
 #if ENABLE_PCK_PKX_FILE
 
-BOOL CMapViewFileWrite::OpenPckAndMappingWrite(LPCTSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap)
+BOOL CMapViewFileWrite::OpenPckAndMappingWrite(LPCSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap)
+{
+	if(!OpenPck(lpFileName, dwCreationDisposition))
+		return FALSE;
+
+	if(!Mapping(qdwSizeToMap))
+		return FALSE;
+
+	return TRUE;
+}
+
+BOOL CMapViewFileWrite::OpenPckAndMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap)
 {
 	if(!OpenPck(lpFileName, dwCreationDisposition))
 		return FALSE;

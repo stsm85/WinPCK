@@ -75,9 +75,9 @@ protected:
 
 	struct
 	{
-		TCHAR	szPaths[MAX_PATH];
+		TCHAR		szPaths[MAX_PATH];
 		TCHAR*	lpszDirNames[127];
-		int		nDirCount;
+		int			nDirCount;
 	}m_PathDirs;
 
 	HIMAGELIST	m_imageList;
@@ -94,7 +94,7 @@ protected:
 	//winmain.cpp
 	VOID SetStatusBarText(int iPart, LPCSTR lpszText);
 	VOID SetStatusBarText(int iPart, LPCWSTR lpszText);
-	BOOL IsValidWndAndGetPath(TCHAR * szPath, BOOL isGetPath = FALSE);
+	BOOL IsValidWndAndGetPath(wchar_t * szPath, BOOL isGetPath = FALSE);
 	void RefreshProgress();
 
 

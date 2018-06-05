@@ -3,6 +3,7 @@
 #include <tchar.h>
 #include "DdsTgaDecoderDefine.h"
 #include "PckControlCenter.h"
+#include "CharsCodeConv.h"
 
 CPriviewInDlg::CPriviewInDlg() : m_buffer(NULL), dlg(NULL) {};
 CPriviewInDlg::~CPriviewInDlg()
@@ -32,24 +33,24 @@ BOOL CPriviewInDlg::AllocBuffer(PICFORMAT fmt, DWORD dwSize)
 
 
 #pragma region 获取PICFORMAT
-PICFORMAT CPriviewInDlg::GetPicFormatFromFilename(LPCTSTR lpszFilename)
+PICFORMAT CPriviewInDlg::GetPicFormatFromFilename(LPCWSTR lpszFilename)
 {
-	LPCTSTR		lpszFileExt = _tcsrchr(lpszFilename, '.');
+	LPCWSTR		lpszFileExt = wcsrchr(lpszFilename, L'.');
 	PICFORMAT	picFormat = FMT_UNKNOWN;
 
 	if(NULL != lpszFileExt) {
-		TCHAR szExt[8] = { 0 };
+		wchar_t szExt[8] = { 0 };
 		//_tcscpy_s(szExt, lpszFileExt);
-		_tcsncpy(szExt, lpszFileExt, sizeof(szExt)/sizeof(TCHAR) - 1);
+		wcsncpy(szExt, lpszFileExt, sizeof(szExt)/sizeof(wchar_t) - 1);
 
 		//转化lpszFileExt为小写,当strlen(lpszFileExt) > 6 时报错，修改
-		if(4 == _tcslen(szExt)) {
-			_tcslwr_s(szExt, 6);
+		if(4 == wcslen(szExt)) {
+			_wcslwr_s(szExt, 6);
 
-			if(NULL != _tcsstr(TEXT(".dds.tga.bmp.jpg.png.gif.jpeg.tif.tiff.emf"), szExt)) {
-				if(0 == _tcscmp(szExt, TEXT(".dds")))
+			if(NULL != wcsstr(L".dds.tga.bmp.jpg.png.gif.jpeg.tif.tiff.emf", szExt)) {
+				if(0 == wcscmp(szExt, L".dds"))
 					picFormat = FMT_DDS;
-				else if(0 == _tcscmp(szExt, TEXT(".tga")))
+				else if(0 == wcscmp(szExt, L".tga"))
 					picFormat = FMT_TGA;
 				else
 					picFormat = FMT_RAW;
@@ -60,14 +61,20 @@ PICFORMAT CPriviewInDlg::GetPicFormatFromFilename(LPCTSTR lpszFilename)
 }
 #pragma endregion
 
-BOOL CPriviewInDlg::Show(LPCTSTR lpszFilename, DWORD dwSize, CPckControlCenter	*m_lpPckCenter, LPPCKINDEXTABLE lpPckFileIndexToShow, TWin *_win)
+BOOL CPriviewInDlg::Show(LPCSTR lpszFilename, DWORD dwSize, CPckControlCenter	*m_lpPckCenter, LPPCKINDEXTABLE lpPckFileIndexToShow, TWin *_win)
+{
+	CAnsi2Ucs cA2U;
+	return Show(cA2U.GetString(lpszFilename), dwSize, m_lpPckCenter, lpPckFileIndexToShow, _win);
+}
+
+BOOL CPriviewInDlg::Show(LPCWSTR lpszFilename, DWORD dwSize, CPckControlCenter	*m_lpPckCenter, LPPCKINDEXTABLE lpPckFileIndexToShow, TWin *_win)
 {
 #pragma region get FileTitle
 
-	LPCTSTR lpszFileTitle;
+	LPCWSTR lpszFileTitle;
 
-	if(NULL == (lpszFileTitle = _tcsrchr(lpszFilename, '\\')))
-		if(NULL == (lpszFileTitle = _tcsrchr(lpszFilename, '/')))
+	if(NULL == (lpszFileTitle = wcsrchr(lpszFilename, L'\\')))
+		if(NULL == (lpszFileTitle = wcsrchr(lpszFilename, L'/')))
 			lpszFileTitle = lpszFilename - 1;
 
 	//把前面的'\\'或'/'去掉

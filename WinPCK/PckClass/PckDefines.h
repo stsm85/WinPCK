@@ -14,10 +14,9 @@
 #if !defined(_PCKDEFINES_H_)
 #define _PCKDEFINES_H_
 
+#pragma warning ( disable : 4005 )
+#pragma warning ( disable : 4995 )
 
-typedef unsigned __int64	QWORD, *LPQWORD;
-typedef int                 BOOL;
-typedef unsigned char       BYTE;
 #define MAX_PATH			260
 
 //zlib
@@ -37,27 +36,8 @@ typedef unsigned char       BYTE;
 
 
 
-
 #define	PCK_ADDITIONAL_INFO				"Angelica File Package"
 #define	PCK_ADDITIONAL_INFO_STSM		"\r\nCreate by WinPCK"
-
-#if 0
-//日志
-#define	LOG_BUFFER						1024
-
-#define	LOG_FLAG_ERROR					'E'
-#define	LOG_FLAG_WARNING				'W'
-#define	LOG_FLAG_INFO					'I'
-#define	LOG_FLAG_DEBUG					'D'
-#define	LOG_FLAG_NOTICE					'N'
-
-#define LOG_IMAGE_NOTICE				0
-#define LOG_IMAGE_INFO					1
-#define LOG_IMAGE_WARNING				2
-#define LOG_IMAGE_ERROR					3
-#define LOG_IMAGE_DEBUG					4
-#define LOG_IMAGE_EMPTY					5
-#endif
 
 //LOG INFO STRING
 #define TEXT_LOG_OPENFILE				"打开文件 %s"

@@ -11,8 +11,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "PckClass.h"
-#include "PckClassAllocFunctions.h"
-using namespace NPckClassAllocFuncs;
 
 #pragma warning ( disable : 4244 )
 #pragma warning ( disable : 4267 )
@@ -26,13 +24,13 @@ BOOL CPckClass::ReadPckFileIndexes()
 		return FALSE;
 	}
 
-	if(NULL == (m_PckAllInfo.lpPckIndexTable = (LPPCKINDEXTABLE)AllocMemory(sizeof(PCKINDEXTABLE) * m_PckAllInfo.dwFileCount))) {
+	if(NULL == (m_PckAllInfo.lpPckIndexTable = (m_classNode.AllocPckIndexTableByFileCount(m_PckAllInfo.dwFileCount)))){
 		return FALSE;
 	}
 
 	//开始读文件
 	BYTE	*lpFileBuffer;
-	if(NULL == (lpFileBuffer = cRead.View(m_PckAllInfo.dwAddressName, cRead.GetFileSize() - m_PckAllInfo.dwAddressName))) {
+	if(NULL == (lpFileBuffer = cRead.View(m_PckAllInfo.dwAddressOfFilenameIndex, cRead.GetFileSize() - m_PckAllInfo.dwAddressOfFilenameIndex))) {
 		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
@@ -49,7 +47,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 
 	//pck是压缩时，文件名的压缩长度不会超过0x100，所以当
 	//开始一个字节，如果0x75，就没有压缩，如果是0x74就是压缩的	0x75->FILEINDEX_LEVEL0
-	cRead.SetFilePointer(m_PckAllInfo.dwAddressName, FILE_BEGIN);
+	cRead.SetFilePointer(m_PckAllInfo.dwAddressOfFilenameIndex, FILE_BEGIN);
 
 	byteLevelKey = (*(DWORD*)lpFileBuffer) ^ IndexCompressedFilenameDataLengthCryptKey[0];
 	isLevel0 = (m_PckAllInfo.lpDetectedPckVerFunc->dwFileIndexSize == byteLevelKey)/* ? TRUE : FALSE*/;

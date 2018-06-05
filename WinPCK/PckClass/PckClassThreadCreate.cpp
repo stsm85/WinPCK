@@ -4,8 +4,6 @@
 #define TARGET_PCK_MODE_COMPRESS PCK_MODE_COMPRESS_CREATE
 #include "PckClassThreadCompressFunctions.h"
 #include "PckClassFileDisk.h"
-#include "PckClassAllocFunctions.h"
-using namespace NPckClassAllocFuncs;
 
 
 VOID CPckClass::WriteThread(VOID* pParam)
@@ -105,8 +103,8 @@ VOID CPckClass::WriteThread(VOID* pParam)
 
 BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 {
-	CUcs2Ansi cU2A;
-	m_PckLog.PrintLogI(TEXT_LOG_CREATE, cU2A.GetString(szPckFile));
+
+	m_PckLog.PrintLogI(TEXT( TEXT_LOG_CREATE ), szPckFile);
 
 	DWORD		dwFileCount = 0;									//文件数量, 原pck文件中的文件数
 	QWORD		qwTotalFileSize = 0;								//未压缩时所有文件大小
@@ -117,8 +115,8 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 
 	char		szPathMbsc[MAX_PATH];
 
-	int			level = lpPckParams->dwCompressLevel;
-	int			threadnum = lpPckParams->dwMTThread;
+	int			level = m_lpPckParams->dwCompressLevel;
+	int			threadnum = m_lpPckParams->dwMTThread;
 
 	//LOG
 	m_PckLog.PrintLogI(TEXT_LOG_LEVEL_THREAD, level, threadnum);
@@ -130,13 +128,14 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	if('\\' == *(szPath + nLen))*(szPath + nLen) = 0;
 	BOOL	IsPatition = lstrlen(szPath) == 2 ? TRUE : FALSE;
 
+#ifdef UNICODE
+	CUcs2Ansi cU2A;
 	nLen = cU2A.GetStrlen(szPath, szPathMbsc, MAX_PATH) + 1;
+#else
+	strcpy(szPathMbsc, szPath);
+	nLen = strlen(szPathMbsc) + 1;
+#endif
 
-	if(NULL == (m_firstFile = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS)))) {
-
-		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-	}
 	m_firstFile = cFileLinkList.first();
 
 	//遍历所有文件
@@ -144,7 +143,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	if(0 == dwFileCount)return TRUE;
 
 	//文件数写入窗口类中保存以显示进度
-	mt_dwFileCount = lpPckParams->cVarParams.dwUIProgressUpper = dwFileCount;
+	mt_dwFileCount = m_lpPckParams->cVarParams.dwUIProgressUpper = dwFileCount;
 
 	//计算大概需要多大空间qwTotalFileSize
 	mt_CompressTotalFileSize = NPckClassFileDisk::GetPckFilesizeByCompressed(szPckFile, qwTotalFileSize, 0);
@@ -170,7 +169,7 @@ BOOL CPckClass::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 	m_PckLog.PrintLogI(TEXT_LOG_COMPRESSOK);
 
 	//写文件索引
-	pckAllInfo.dwAddressName = dwAddress;
+	pckAllInfo.dwAddressOfFilenameIndex = dwAddress;
 	WritePckIndexTable(mt_lpFileWrite, mt_lpPckIndexTable, mt_dwFileCountOfWriteTarget, dwAddress);
 
 	pckAllInfo.dwFileCount = mt_dwFileCountOfWriteTarget;

@@ -199,7 +199,8 @@ public:
 	BOOL	OpenPck(LPCSTR lpszFilename, DWORD dwCreationDisposition);
 	BOOL	OpenPck(LPCWSTR lpszFilename, DWORD dwCreationDisposition);
 
-	BOOL	OpenPckAndMappingWrite(LPCTSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
+	BOOL	OpenPckAndMappingWrite(LPCSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
+	BOOL	OpenPckAndMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
 #endif
 
 	BOOL	Open(LPCSTR lpszFilename, DWORD dwCreationDisposition);

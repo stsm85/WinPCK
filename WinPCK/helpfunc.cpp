@@ -102,7 +102,12 @@ void TInstDlg::DbClickListView(const int itemIndex)
 			if(NULL != lpNodeToShow->child) {
 				TCHAR **lpCurrentDir = m_PathDirs.lpszDirNames + m_PathDirs.nDirCount;
 
+#ifdef UNICODE
 				_tcscpy_s(*lpCurrentDir, MAX_PATH - (*lpCurrentDir - *m_PathDirs.lpszDirNames), lpNodeToShow->szName);
+#else
+				CUcs2Ansi cU2A;
+				strcpy_s(*lpCurrentDir, MAX_PATH - (*lpCurrentDir - *m_PathDirs.lpszDirNames), cU2A.GetString(lpNodeToShow->szName));
+#endif
 
 				*(lpCurrentDir + 1) = *lpCurrentDir + _tcslen(*lpCurrentDir) + 1;
 
@@ -227,7 +232,7 @@ VOID TInstDlg::ViewFile()
 	DWORD dwFilesizeToView = lpPckFileIndexToShow->cFileIndex.dwFileClearTextSize;
 
 	CPriviewInDlg cPreview;
-	cPreview.Show(lpPckFileIndexToShow->cFileIndex.sztFilename, lpPckFileIndexToShow->cFileIndex.dwFileClearTextSize, &m_cPckCenter, lpPckFileIndexToShow, this);
+	cPreview.Show(lpPckFileIndexToShow->cFileIndex.szwFilename, lpPckFileIndexToShow->cFileIndex.dwFileClearTextSize, &m_cPckCenter, lpPckFileIndexToShow, this);
 
 }
 
@@ -500,7 +505,7 @@ void TInstDlg::InitLogWindow()
 	SetLogMainWnd(hWnd);
 
 	//日志函数绑定
-	m_PckLog.PckClass_log_register(PreInsertLogToList);
+	m_PckLog.PckClassLog_func_register(PreInsertLogToList);
 
 	//启动日志
 	m_PckLog.PrintLogI(THIS_NAME \

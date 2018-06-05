@@ -10,7 +10,7 @@ using namespace Gdiplus;
 class CShowPicture
 {
 public:
-	CShowPicture(HWND hWndShow, LPBYTE &_buffer, size_t _bufsize, LPCTSTR _lpszFileTitle, PICFORMAT _picFormat);
+	CShowPicture(HWND hWndShow, LPBYTE &_buffer, size_t _bufsize, LPCWSTR _lpszFileTitle, PICFORMAT _picFormat);
 	~CShowPicture();
 
 	//返回图像的宽和高
@@ -19,7 +19,7 @@ public:
 
 	//开始解码
 	BOOL	Decode();
-	LPCTSTR	GetWindowTitle(LPTSTR	lpszTitle = NULL, size_t bufSize = 0);
+	LPCWSTR	GetWindowTitle(LPWSTR	lpszTitle = NULL, size_t bufSize = 0);
 
 	//在设备上显示图像
 	BOOL	Paint(__int64 nXOriginDest, __int64 nYOriginDest, int nXOriginSrc, int nYOriginSrc, double dZoomRatio = 1.00);
@@ -41,7 +41,7 @@ protected:
 	//enum { FMT_DDS, FMT_TGA, FMT_RAW} m_picFormat;
 	PICFORMAT	m_picFormat;
 	//输入的文件名，可以根据后缀判断类型
-	LPCTSTR		m_lpszFileTitle;
+	LPCWSTR		m_lpszFileTitle;
 	//绑定的用于显示的窗口的句柄
 	HWND		m_hWndShow;
 	//图片的宽和高

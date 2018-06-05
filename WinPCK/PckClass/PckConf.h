@@ -9,11 +9,9 @@
 // 2015.5.13
 //////////////////////////////////////////////////////////////////////
 
-#include <windows.h>
-#include <stdio.h>
-#include <tchar.h>
+typedef unsigned __int64	QWORD, *LPQWORD;
+//typedef int                 BOOL;
+//typedef unsigned char       BYTE;
 
-#pragma warning ( disable : 4005 )
-#pragma warning ( disable : 4995 )
 
 

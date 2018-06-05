@@ -21,7 +21,7 @@
 #define MIN_CX	640
 #define MIN_CY	480
 
-TPicDlg::TPicDlg(LPBYTE *_buf, UINT32 _dwSize, PICFORMAT _iFormat, const TCHAR *_lpszFile, TWin *_win) :
+TPicDlg::TPicDlg(LPBYTE *_buf, UINT32 _dwSize, PICFORMAT _iFormat, const wchar_t *_lpszFile, TWin *_win) :
 	TDlg(IDD_DIALOG_PIC, _win),
 	lpShowPicture(NULL),
 	isMouseDown(FALSE),
@@ -63,12 +63,7 @@ BOOL TPicDlg::SaveFile()
 		}
 
 		wcscat_s(szFilename, MAX_PATH, L"\\");
-#ifdef UNICODE
 		wcscat_s(szFilename, MAX_PATH, lpszFile);
-#else
-		CAnsi2Ucs cA2U;
-		wcscat_s(szFilename, MAX_PATH, cA2U.GetString(lpszFile));
-#endif
 		wcscpy(wcsrchr(szFilename, L'.'), L".png\0\0");
 
 		if(::SaveFile(hWnd, szFilename, L"png", TEXT_SAVE_FILTER)) {
@@ -101,9 +96,9 @@ void TPicDlg::InitFixedShowPositionAndShowWindow()
 
 void TPicDlg::FreshWindowTitle()
 {
-	TCHAR szTitle[MAX_PATH];
-	_stprintf_s(szTitle, TEXT("%s (%d%%)"), m_szTitle, (int)(lpShowPicture->GetZoomRatio() * 100.0 + 0.5));
-	SetWindowText(szTitle);
+	wchar_t szTitle[MAX_PATH];
+	swprintf_s(szTitle, L"%s (%d%%)", m_szTitle, (int)(lpShowPicture->GetZoomRatio() * 100.0 + 0.5));
+	SetWindowTextW(szTitle);
 }
 
 BOOL TPicDlg::EvCreate(LPARAM lParam)
@@ -114,7 +109,7 @@ BOOL TPicDlg::EvCreate(LPARAM lParam)
 	if (!lpShowPicture->Decode())
 		return FALSE;
 
-	lpShowPicture->GetWindowTitle(m_szTitle, sizeof(m_szTitle) / sizeof(TCHAR));
+	lpShowPicture->GetWindowTitle(m_szTitle, sizeof(m_szTitle) / sizeof(wchar_t));
 
 	InitFixedShowPositionAndShowWindow();
 

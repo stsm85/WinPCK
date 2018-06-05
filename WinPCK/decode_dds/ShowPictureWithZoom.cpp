@@ -14,7 +14,7 @@
 #define CHANGE_RATIO	1.2
 #define MAX_ZOOM_RATIO	32.0
 
-CShowPictureWithZoom::CShowPictureWithZoom(HWND hWndShow, LPBYTE &_buffer, size_t _bufsize, LPCTSTR _lpszFileTitle, PICFORMAT _picFormat) : 
+CShowPictureWithZoom::CShowPictureWithZoom(HWND hWndShow, LPBYTE &_buffer, size_t _bufsize, LPCWSTR _lpszFileTitle, PICFORMAT _picFormat) : 
 	CShowPicture( hWndShow, _buffer,  _bufsize, _lpszFileTitle, _picFormat),
 	m_fixedZoomRatio(1.0),
 	m_dZoomRatioShow(1.0),

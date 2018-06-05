@@ -276,7 +276,7 @@ int CALLBACK ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSo
 			switch(iLastSort) {
 				//文件名
 			case 0:
-				iResult = lstrcmpi(lpNodeToShow1->szName, lpNodeToShow2->szName);
+				iResult = wcsicmp(lpNodeToShow1->szName, lpNodeToShow2->szName);
 				break;
 			case 1:
 				if(NULL == lpNodeToShow1->lpPckIndexTable)
@@ -386,12 +386,10 @@ BOOL TInstDlg::ListView_BeginLabelEdit(const HWND hWndList, LPARAM lParam)
 		if(NULL == lpNodeToShow->child) {
 			nLen = strnlen(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260);
 			//StringCchLengthA(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
-#ifdef UNICODE
+
 			CUcs2Ansi cU2A;
 			nAllowMaxLength = MAX_PATH_PCK_260 - nLen + cU2A.GetStrlen(lpNodeToShow->szName) - 2;
-#else
-			nAllowMaxLength = MAX_PATH_PCK_260 - nLen + strlen(lpNodeToShow->szName) - 2;
-#endif
+
 		} else {
 			nAllowMaxLength = MAX_PATH_PCK_260 - 2;
 		}
@@ -418,8 +416,12 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 		if(0 == *pNmHdr->item.pszText)return FALSE;
 
 		//isSearchMode = 2 == ((NMLVDISPINFO*) pNmHdr)->item.iImage ? TRUE : FALSE;
+#ifdef UNICODE
 		CUcs2Ansi cU2A;
 		cU2A.GetString(pNmHdr->item.pszText, szEditedText, MAX_PATH_PCK_260);
+#else
+		strcpy_s(szEditedText, pNmHdr->item.pszText);
+#endif
 
 		if(m_cPckCenter.GetListInSearchMode()) {
 			lpIndexToShow = (LPPCKINDEXTABLE)pNmHdr->item.lParam;
@@ -428,9 +430,14 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 				return FALSE;
 		} else {
 			lpNodeToShow = (LPPCK_PATH_NODE)pNmHdr->item.lParam;
-
+#ifdef UNICODE
 			if(0 == _tcscmp(lpNodeToShow->szName, pNmHdr->item.pszText))
 				return FALSE;
+#else
+			CAnsi2Ucs cA2U;
+			if(0 == wcscmp(lpNodeToShow->szName, cA2U.GetString(pNmHdr->item.pszText)))
+				return FALSE;
+#endif
 		}
 
 		TCHAR*	lpszInvalid;
@@ -451,11 +458,9 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 			lpszInvalid++;
 		}
 
-		//size_t	nBytesAllowToWrite;
 		if(m_cPckCenter.GetListInSearchMode()) {
 			m_cPckCenter.RenameIndex(lpIndexToShow, szEditedText);
-			//lpszInvalid = lpIndexToShow->cFileIndex.szFilename;
-			//nBytesAllowToWrite = MAX_PATH_PCK;
+
 		} else {
 			if(NULL == lpNodeToShow->child)
 				m_cPckCenter.RenameIndex(lpNodeToShow, szEditedText);
@@ -584,9 +589,9 @@ void TInstDlg::InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMa
 
 	if(0 == nColCount)return;
 
-	LVITEM	item;
+	LVITEMW	item;
 
-	ZeroMemory(&item, sizeof(LVITEM));
+	ZeroMemory(&item, sizeof(item));
 
 	va_list	ap;
 	va_start(ap, nColCount);
@@ -595,22 +600,22 @@ void TInstDlg::InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMa
 	item.iImage = iImage;
 	item.iSubItem = 0;
 	item.mask = LVIF_TEXT | uiMask;
-	item.pszText = va_arg(ap, TCHAR*);
+	item.pszText = va_arg(ap, wchar_t*);
 	item.lParam = (LPARAM)lParam;
 
 	//ListView_InsertItem(hWndList,&item);
-	::SendMessage(hWndList, LVM_INSERTITEM, 0, (LPARAM)&item);
+	::SendMessageW(hWndList, LVM_INSERTITEMW, 0, (LPARAM)&item);
 
 	item.mask = LVIF_TEXT;
 
 	for(item.iSubItem = 1; item.iSubItem < nColCount; item.iSubItem++) {
 		//item.iItem = iIndex;			//从0开始
 		//item.iSubItem = i;
-		item.pszText = va_arg(ap, TCHAR*);
+		item.pszText = va_arg(ap, wchar_t*);
 
 		//item.pszText = _ultow(i, szID, 10);
 		//ListView_SetItem(hWndList,&item);
-		::SendMessage(hWndList, LVM_SETITEM, 0, (LPARAM)&item);
+		::SendMessageW(hWndList, LVM_SETITEMW, 0, (LPARAM)&item);
 	}
 
 	va_end(ap);
