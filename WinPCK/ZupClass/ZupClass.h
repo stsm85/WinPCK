@@ -47,10 +47,7 @@ public:
 
 	//重命名一个节点
 	virtual BOOL	RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString){m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE;}
-protected:
-	virtual BOOL	RenameNodeEnum(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
-	virtual BOOL	RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
-public:
+
 	virtual VOID	RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); }
 	virtual VOID	RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); }
 

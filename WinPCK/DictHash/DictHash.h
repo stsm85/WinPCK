@@ -22,7 +22,8 @@ typedef struct _ZUP_FILENAME_DICT {
 	char				realbase64str[MAX_PATH_PCK];
 	char				realstr[MAX_PATH_PCK];
 	wchar_t				wrealstr[MAX_PATH_PCK];
-	unsigned char		realstrlength;
+	unsigned int		realstrlength;
+	unsigned int		wrealstrlength;
 
 	_ZUP_FILENAME_DICT	*next;
 }ZUP_FILENAME_DICT, *LPZUP_FILENAME_DICT;

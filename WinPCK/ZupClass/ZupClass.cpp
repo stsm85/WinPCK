@@ -92,16 +92,13 @@ void CZupClass::BuildDirTree()
 		cA2U.GetString(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, sizeof(lpZupIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
 #endif
 
-		//建立目录
-		//AddFileToNode(&m_lpRootNodeZup, lpZupIndexTable);
-		//AddFileToNode(&m_PckAllInfo.lpRootNode, lpPckIndexTable);
-
 		lpPckIndexTable++;
 		lpZupIndexTable++;
 	}
 
-	m_lpRootNodeZup = m_classNodeZup.ParseIndexTableToNode();
-	m_PckAllInfo.lpRootNode = m_classNode.ParseIndexTableToNode();
+	//建立目录
+	m_classNodeZup.ParseIndexTableToNode();
+	//m_classNode.ParseIndexTableToNode();
 
 }
 

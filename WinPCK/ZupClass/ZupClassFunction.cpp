@@ -21,7 +21,7 @@ _inline void CZupClass::DecodeDict(LPZUP_FILENAME_DICT lpZupDict)
 	DWORD	dwRealLen = lpZupDict->realstrlength;
 	base64_decode(lpZupDict->realbase64str, dwRealLen, szUTF8str);
 
-	MultiByteToWideChar(CP_UTF8, 0, szUTF8str, -1, lpZupDict->wrealstr, MAX_PATH_PCK);
+	lpZupDict->wrealstrlength = MultiByteToWideChar(CP_UTF8, 0, szUTF8str, -1, lpZupDict->wrealstr, MAX_PATH_PCK) - 1;
 	lpZupDict->realstrlength = WideCharToMultiByte(CP_ACP, 0, lpZupDict->wrealstr, -1, lpZupDict->realstr, MAX_PATH_PCK, "_", 0) - 1;
 
 }
@@ -120,8 +120,8 @@ void CZupClass::DecodeFilename(char *_dst, wchar_t *_wdst, char *_src)
 			memcpy(_dst, lpZupDict->realstr, lpZupDict->realstrlength);
 			_dst += lpZupDict->realstrlength;
 
-			memcpy(_wdst, lpZupDict->wrealstr, lpZupDict->realstrlength * sizeof(wchar_t));
-			_wdst += lpZupDict->realstrlength;
+			memcpy(_wdst, lpZupDict->wrealstr, lpZupDict->wrealstrlength * sizeof(wchar_t));
+			_wdst += lpZupDict->wrealstrlength;
 
 			*_dst++ = *_src;
 			*_wdst++ = *_src++;

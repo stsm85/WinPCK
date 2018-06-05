@@ -9,8 +9,6 @@
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
 
-//#define _WIN32_WINNT 0x0501
-
 #ifndef _GLOBALS_H_
 #define _GLOBALS_H_
 
@@ -22,7 +20,7 @@
 
 
 #define	THIS_NAME			"WinPCK "
-#define	THIS_VERSION		"v1.23.1.6 "
+#define	THIS_VERSION		"v1.23.1.7 "
 #define	THIS_DESC			"完美世界系列游戏PCK文件包综合查看器 " 
 #define	THIS_AUTHOR			"程序编写: stsm/liqf/李秋枫\r\n" \
 							"E-Mail: stsm85@126.com "
