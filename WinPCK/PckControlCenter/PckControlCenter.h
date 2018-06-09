@@ -32,10 +32,8 @@ public:
 	void					Reset(DWORD dwUIProgressUpper = 1);
 
 	LPPCK_RUNTIME_PARAMS	GetParams();
-	//void					SetParams(LPPCK_RUNTIME_PARAMS in);
 
 	void					New();
-	//BOOL					Open(LPCSTR lpszFile);
 	BOOL					Open(LPCTSTR lpszFile);
 	void					Close();
 
@@ -93,16 +91,16 @@ public:
 
 	//重置PCK的压缩参数
 	void	ResetCompressor();
-
+#if 0
 	//新建pck文件
 	BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath);
-
+#endif
 	//重建pck文件
 	BOOL	ParseScript(LPCTSTR lpszScriptFile);
 	BOOL	RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress);
 
-	//更新pck文件
-	BOOL	UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert);
+	//新建、更新pck文件
+	BOOL	UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lpszFilePath, const LPPCK_PATH_NODE lpNodeToInsert);
 
 	//是否是支持更新的文件
 	BOOL	isSupportAddFileToPck();

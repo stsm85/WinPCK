@@ -14,6 +14,7 @@
 #pragma warning ( disable : 4267 )
 #pragma warning ( disable : 4996 )
 
+#if 0
 void CPckClass::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional)
 {
 
@@ -65,7 +66,8 @@ void CPckClass::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllIn
 	lpWrite->SetEndOfFile();
 
 }
-
+#endif
+#if 0
 //重建时计算有效文件数量，排除重复的文件
 DWORD CPckClass::ReCountFiles()
 {
@@ -81,7 +83,9 @@ DWORD CPckClass::ReCountFiles()
 	}
 	return deNewFileCount;
 }
-
+#endif
+#if 0
+//写入单个索引
 BOOL CPckClass::WritePckIndex(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, QWORD &dwAddress)
 {
 
@@ -107,7 +111,7 @@ BOOL CPckClass::WritePckIndex(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRE
 	return TRUE;
 }
 
-
+//写入全部索引
 BOOL CPckClass::WritePckIndexTable(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, DWORD &dwFileCount, QWORD &dwAddress)
 {
 
@@ -127,7 +131,8 @@ BOOL CPckClass::WritePckIndexTable(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_C
 
 	return TRUE;
 }
-
+#endif
+#if 0
 //写线程失败后的处理
 void CPckClass::AfterWriteThreadFailProcess(BOOL *lpbThreadRunning, HANDLE hevtAllCompressFinish, DWORD &dwFileCount, DWORD dwFileHasBeenWritten, QWORD &dwAddressFinal, QWORD dwAddress, BYTE **bufferPtrToWrite)
 {
@@ -146,20 +151,22 @@ void CPckClass::AfterWriteThreadFailProcess(BOOL *lpbThreadRunning, HANDLE hevtA
 	}
 
 }
-
+#endif
+#if 0
 LPPCKINDEXTABLE_COMPRESS CPckClass::FillAndCompressIndexData(LPPCKINDEXTABLE_COMPRESS lpPckIndexTableComped, LPPCKFILEINDEX lpPckFileIndexToCompress)
 {
 	BYTE pckFileIndexBuf[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
 	lpPckIndexTableComped->dwIndexDataLength = MAX_INDEXTABLE_CLEARTEXT_LENGTH;
 	compress(lpPckIndexTableComped->buffer, &lpPckIndexTableComped->dwIndexDataLength,
-		m_PckAllInfo.lpSaveAsPckVerFunc->FillIndexData(lpPckFileIndexToCompress, pckFileIndexBuf), m_PckAllInfo.lpSaveAsPckVerFunc->dwFileIndexSize, m_lpPckParams->dwCompressLevel);
+		m_PckAllInfo.lpSaveAsPckVerFunc->FillIndexData(lpPckFileIndexToCompress, pckFileIndexBuf), m_PckAllInfo.lpSaveAsPckVerFunc->dwFileIndexSize);
 	//将获取的
 	lpPckIndexTableComped->dwIndexValueHead = lpPckIndexTableComped->dwIndexDataLength ^ m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey1;
 	lpPckIndexTableComped->dwIndexValueTail = lpPckIndexTableComped->dwIndexDataLength ^ m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->IndexCompressedFilenameDataLengthCryptKey2;
 
 	return lpPckIndexTableComped;
 }
-
+#endif
+#if 0
 DWORD CPckClass::GetCompressBoundSizeByFileSize(LPPCKFILEINDEX	lpPckFileIndex, DWORD dwFileSize)
 {
 	if(PCK_BEGINCOMPRESS_SIZE < dwFileSize) {
@@ -171,3 +178,4 @@ DWORD CPckClass::GetCompressBoundSizeByFileSize(LPPCKFILEINDEX	lpPckFileIndex, D
 
 	return lpPckFileIndex->dwFileCipherTextSize;
 }
+#endif

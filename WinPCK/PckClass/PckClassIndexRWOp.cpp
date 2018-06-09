@@ -1,30 +1,17 @@
-//////////////////////////////////////////////////////////////////////
-// PckClassReader.cpp: 用于解析完美世界公司的pck文件中的数据，并显示在List中
-// 文件头、尾等结构体的读取
-//
-// 此程序由 李秋枫/stsm/liqf 编写，pck结构参考若水的pck结构.txt，并
-// 参考了其易语言代码中并于读pck文件列表的部分
-//
-// 此代码预计将会开源，任何基于此代码的修改发布请保留原作者信息
-// 
-// 2017.6.23
-//////////////////////////////////////////////////////////////////////
+#include "PckClassIndex.h"
+#include "PckClassZlib.h"
 
-#include "PckClass.h"
-
-#pragma warning ( disable : 4244 )
-#pragma warning ( disable : 4267 )
-
-BOOL CPckClass::ReadPckFileIndexes()
+BOOL CPckClassIndex::ReadPckFileIndexes()
 {
 	CMapViewFileRead cRead;
+	CPckClassZlib	zlib;
 
 	if(!cRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
 		m_PckLog.PrintLogEL(TEXT_OPENNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 
-	if(NULL == (m_PckAllInfo.lpPckIndexTable = (m_classNode.AllocPckIndexTableByFileCount(m_PckAllInfo.dwFileCount)))){
+	if(!(NULL != (m_PckAllInfo.lpPckIndexTable = AllocPckIndexTableByFileCount()))) {
 		return FALSE;
 	}
 
@@ -91,7 +78,7 @@ BOOL CPckClass::ReadPckFileIndexes()
 			DWORD dwFileBytesRead = dwFileIndexTableClearDataLength;
 			BYTE pckFileIndexBuf[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
 
-			decompress(pckFileIndexBuf, &dwFileBytesRead,
+			zlib.decompress(pckFileIndexBuf, &dwFileBytesRead,
 				lpFileBuffer, dwFileIndexTableCryptedDataLength[0]);
 
 			m_PckAllInfo.lpDetectedPckVerFunc->PickIndexData(&lpPckIndexTable->cFileIndex, pckFileIndexBuf);

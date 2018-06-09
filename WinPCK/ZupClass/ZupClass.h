@@ -12,6 +12,7 @@
 #include "PckClass.h"
 #include "ZupHeader.h"
 #include "DictHash.h"
+#include "PckClassLog.h"
 
 #if !defined(_ZUPCLASS_H_)
 #define _ZUPCLASS_H_
@@ -27,17 +28,16 @@ public:
 	BOOL	Init(LPCTSTR	szFile);
 
 	CONST	LPPCKINDEXTABLE		GetPckIndexTable();
-	CONST	LPPCK_PATH_NODE		GetPckPathNode();
+	//CONST	LPPCK_PATH_NODE		GetPckPathNode();
 
 	//新建pck文件
-	virtual BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
+	//virtual BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 
 	//重建pck文件
 	virtual BOOL	RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 
-public:
-	//更新pck文件//有bug
-	virtual BOOL	UpdatePckFile(LPTSTR szPckFile, TCHAR (*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
+	//新建、更新pck文件
+	virtual BOOL	UpdatePckFile(LPTSTR szPckFile, vector<tstring> &lpszFilePath, LPPCK_PATH_NODE lpNodeToInsert) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 
 	//重命名文件
 	virtual BOOL	RenameFilename() { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
@@ -57,13 +57,10 @@ public:
 
 protected:
 
-	LPPCK_PATH_NODE				m_lpRootNodeZup;
+	//LPPCK_PATH_NODE				m_lpRootNodeZup;
 	LPPCKINDEXTABLE				m_lpZupIndexTable;
 
 	CDictHash					*m_lpDictHash;
-
-	CPckClassNode				m_classNodeZup;
-
 
 protected:
 
@@ -73,7 +70,6 @@ protected:
 
 	_inline void	DecodeDict(LPZUP_FILENAME_DICT lpZupDict);
 	VOID	AddDict(char *&lpszStringToAdd);
-	//VOID	EnumAndDecodeNode(LPPCK_PATH_NODE lpNodeToDecodeZup, LPPCK_PATH_NODE lpNodeToDecodePck);
 
 	LPPCKINDEXTABLE GetBaseFileIndex(LPPCKINDEXTABLE lpIndex, LPPCKINDEXTABLE lpZeroBaseIndex);
 

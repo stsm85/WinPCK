@@ -9,7 +9,6 @@
 // 2018.5.29
 //////////////////////////////////////////////////////////////////////
 
-#include <Windows.h>
 #include "CharsCodeConv.h"
 
 inline int AtoW(const char *src, WCHAR *dst, int bufsize, int max_len = -1)

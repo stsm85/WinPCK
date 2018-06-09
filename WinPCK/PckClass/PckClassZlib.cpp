@@ -1,31 +1,31 @@
-//////////////////////////////////////////////////////////////////////
-// PckClassCompress.cpp: 用于解析完美世界公司的pck文件中的数据，并显示在List中
-// 文件头、尾等结构体的读取
-//
-// 此程序由 李秋枫/stsm/liqf 编写，pck结构参考若水的pck结构.txt，并
-// 参考了其易语言代码中并于读pck文件列表的部分
-//
-// 此代码预计将会开源，任何基于此代码的修改发布请保留原作者信息
-// 
-// 2017.7.3
-//////////////////////////////////////////////////////////////////////
-
-#include "PckClass.h"
 
 #include "zlib.h"
 #include "libdeflate.h"
+#include <Windows.h>
+#include "PckClassZlib.h"
+#include <assert.h>
+#include "PckClassLog.h"
 
 #pragma warning ( disable : 4267 )
 
-void CPckClass::init_compressor()
-{
+int	CPckClassZlib::m_compress_level = Z_BEST_COMPRESSION;
 
-	if(Z_BEST_COMPRESSION < m_lpPckParams->dwCompressLevel){
+CPckClassZlib::CPckClassZlib()
+{
+	init_compressor();
+}
+
+CPckClassZlib::~CPckClassZlib()
+{}
+
+void CPckClassZlib::init_compressor()
+{
+	if(Z_BEST_COMPRESSION < m_compress_level) {
 
 		m_PckCompressFunc.compressBound = compressBound_libdeflate;
 		m_PckCompressFunc.compress = compress_libdeflate;
 
-	}else{
+	} else {
 
 		m_PckCompressFunc.compressBound = compressBound_zlib;
 		m_PckCompressFunc.compress = compress_zlib;
@@ -33,32 +33,37 @@ void CPckClass::init_compressor()
 	}
 }
 
-int CPckClass::check_zlib_header(void *data)
+void CPckClassZlib::set_level(int level)
+{
+	m_compress_level = level;
+}
+
+int CPckClassZlib::check_zlib_header(void *data)
 {
 	char cDeflateFlag = (*(char*)data) & 0xf;
-	if (Z_DEFLATED != cDeflateFlag)
+	if(Z_DEFLATED != cDeflateFlag)
 		return 0;
 
 	unsigned short header = _byteswap_ushort(*(unsigned short*)data);
 	return (0 == (header % 31));
 }
 
-unsigned long CPckClass::compressBound(unsigned long sourceLen)
+unsigned long CPckClassZlib::compressBound(unsigned long sourceLen)
 {
 	return m_PckCompressFunc.compressBound(sourceLen);
 }
 
-int	CPckClass::compress(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen, int level)
+int	CPckClassZlib::compress(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen)
 {
-	return m_PckCompressFunc.compress(dest, destLen, source, sourceLen, level);
+	return m_PckCompressFunc.compress(dest, destLen, source, sourceLen, m_compress_level);
 }
 
-unsigned long CPckClass::compressBound_zlib(unsigned long sourceLen)
+unsigned long CPckClassZlib::compressBound_zlib(unsigned long sourceLen)
 {
 	return ::compressBound(sourceLen);
 }
 
-int	CPckClass::compress_zlib(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen, int level)
+int	CPckClassZlib::compress_zlib(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen, int level)
 {
 	assert(0 != *destLen);
 	int rtnc = compress2((Bytef*)dest, destLen, (Bytef*)source, sourceLen, level);
@@ -67,12 +72,12 @@ int	CPckClass::compress_zlib(void *dest, unsigned long *destLen, const void *sou
 	return (rtnc == Z_OK);
 }
 
-unsigned long CPckClass::compressBound_libdeflate(unsigned long sourceLen)
+unsigned long CPckClassZlib::compressBound_libdeflate(unsigned long sourceLen)
 {
 	return libdeflate_zlib_compress_bound(NULL, sourceLen);
 }
 
-int	CPckClass::compress_libdeflate(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen, int level)
+int	CPckClassZlib::compress_libdeflate(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen, int level)
 {
 	struct libdeflate_compressor* compressor;
 	compressor = libdeflate_alloc_compressor(level);
@@ -84,13 +89,13 @@ int	CPckClass::compress_libdeflate(void *dest, unsigned long *destLen, const voi
 
 	assert(0 != *destLen);
 
-	if (!(*destLen))
+	if(!(*destLen))
 		return 0;
 
 	return 1;
 }
 
-int CPckClass::decompress(void *dest, unsigned long  *destLen, const void *source, unsigned long sourceLen)
+int CPckClassZlib::decompress(void *dest, unsigned long  *destLen, const void *source, unsigned long sourceLen)
 {
 	assert(0 != *destLen);
 	int rtnd = uncompress((Bytef*)dest, destLen, (Bytef*)source, sourceLen);
@@ -100,27 +105,30 @@ int CPckClass::decompress(void *dest, unsigned long  *destLen, const void *sourc
 }
 
 //如果只需要解压一部分数据
-int CPckClass::decompress_part(void *dest, unsigned long  *destLen, const void *source, unsigned long sourceLen, unsigned long  fullDestLen)
+int CPckClassZlib::decompress_part(void *dest, unsigned long  *destLen, const void *source, unsigned long sourceLen, unsigned long  fullDestLen)
 {
-/*
-#define Z_OK            0
-#define Z_STREAM_END    1
-#define Z_NEED_DICT     2
-#define Z_ERRNO        (-1)
-#define Z_STREAM_ERROR (-2)
-#define Z_DATA_ERROR   (-3)
-#define Z_MEM_ERROR    (-4)
-#define Z_BUF_ERROR    (-5)
-#define Z_VERSION_ERROR (-6)
-*/
+	/*
+	#define Z_OK            0
+	#define Z_STREAM_END    1
+	#define Z_NEED_DICT     2
+	#define Z_ERRNO        (-1)
+	#define Z_STREAM_ERROR (-2)
+	#define Z_DATA_ERROR   (-3)
+	#define Z_MEM_ERROR    (-4)
+	#define Z_BUF_ERROR    (-5)
+	#define Z_VERSION_ERROR (-6)
+	*/
+
+	CPckClassLog m_PckLog;
+
 	unsigned long partlen = *destLen;
 	assert(0 != *destLen);
 	int rtn = uncompress((Bytef*)dest, destLen, (Bytef*)source, sourceLen);
 	assert(0 != *destLen);
 
-	if (Z_OK != rtn && !((Z_BUF_ERROR == rtn) && ((partlen == (*destLen)) || ((*destLen) < fullDestLen)))) {
+	if(Z_OK != rtn && !((Z_BUF_ERROR == rtn) && ((partlen == (*destLen)) || ((*destLen) < fullDestLen)))) {
 		char *lpReason;
-		switch (rtn) {
+		switch(rtn) {
 		case Z_NEED_DICT:
 			lpReason = "需要字典";
 			break;

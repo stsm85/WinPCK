@@ -57,6 +57,77 @@ BOOL OpenSingleFile(HWND hWnd, TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD 
 }
 
 
+BOOL OpenFiles(HWND hWnd, vector<tstring> &lpszFilePathArray)
+{
+
+	OPENFILENAME ofn;
+	TCHAR * szBuffer, *szBufferPart;
+	size_t stStringLength;
+
+	szBuffer = (TCHAR *)malloc(MAX_BUFFER_SIZE_OFN * sizeof(TCHAR));
+	if(szBuffer == NULL) {
+		//m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		return FALSE;
+	}
+
+	_tcscpy_s(szBuffer, MAX_BUFFER_SIZE_OFN, TEXT(""));
+
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFilter = TEXT("所有文件\0*.*\0\0");
+	ofn.lpstrFile = szBuffer;
+	ofn.nMaxFile = MAX_BUFFER_SIZE_OFN;
+	ofn.Flags = OFN_ALLOWMULTISELECT | OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST;
+
+	if(!GetOpenFileName(&ofn)) {
+		if(CommDlgExtendedError() == FNERR_BUFFERTOOSMALL) {
+			MessageBox(hWnd, TEXT("选择的文件太多. 缓冲区无法装下所有文件的文件名。"),
+				TEXT("缓冲区不够"), MB_OK);
+		}
+		free(szBuffer);
+		return FALSE;
+	}
+
+	lpszFilePathArray.clear();
+
+	// if first part of szBuffer is a directory the user selected multiple files
+	// otherwise szBuffer is filename + path
+	if(GetFileAttributes(szBuffer) & FILE_ATTRIBUTE_DIRECTORY) {
+		// szBuffer 中第一个部分是目录 
+		// 其他部分是 FileTitle
+
+		szBufferPart = szBuffer + ofn.nFileOffset;
+
+		//根目录下时目录名中会带'\'
+		if(4 == ofn.nFileOffset) {
+			ofn.nFileOffset--;
+			szBuffer[2] = 0;
+		}
+
+		while(0 != *szBufferPart) {
+
+			stStringLength = _tcsnlen(szBufferPart, MAX_PATH);
+			szBufferPart += stStringLength + 1;
+
+			TCHAR szFullPath[MAX_PATH] = { 0 };
+			_stprintf_s(szFullPath, TEXT("%s\\%s"), szBuffer, szBufferPart);
+
+			lpszFilePathArray.push_back(szFullPath);
+		}
+
+	} else { // 中选中了一个文件
+
+		lpszFilePathArray.push_back(szBuffer);
+
+	}
+
+	// 删除缓冲区
+	free(szBuffer);
+
+	return TRUE;
+}
+
 DWORD SaveFile(HWND hWnd, char * lpszFileName, LPCSTR lpszDefaultExt , LPCSTR lpstrFilter, DWORD nFilterIndex)
 {
 	OPENFILENAMEA ofn;

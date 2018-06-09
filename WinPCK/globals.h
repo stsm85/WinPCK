@@ -14,13 +14,15 @@
 
 #include <windows.h>
 #include <assert.h>
+#include <vector>
+using namespace std;
 
 //****** some defines *******
 #define _USE_CUSTOMDRAW_
 
 
 #define	THIS_NAME			"WinPCK "
-#define	THIS_VERSION		"v1.23.1.7 "
+#define	THIS_VERSION		"v1.24.0.0 "
 #define	THIS_DESC			"完美世界系列游戏PCK文件包综合查看器 " 
 #define	THIS_AUTHOR			"程序编写: stsm/liqf/李秋枫\r\n" \
 							"E-Mail: stsm85@126.com "
@@ -47,7 +49,6 @@
 //#define	SHELL_EXENAME					TEXT("\\explorer.exe")
 
 #define	TEXT_INVALID_PATHCHAR			"\\/:*?\"<>|"
-//#define	FILE_EXT_PIC					".dds.tga.bmp.jpg.png.gif.jpeg.tif.tiff.emf"
 
 #define	TEXT_FILE_FILTER				TEXT(	"PCK压缩文件(*.pck;*.zup)\0*.pck;*.zup\0")	\
 										TEXT(	"所有文件\0*.*\0\0")
@@ -60,7 +61,6 @@
 
 #define	TIMER_PROGRESS				100
 
-#define	MAX_BUFFER_SIZE_OFN			0xFFFFF
 #define	MT_MAX_MEMORY				0x80000000	//2048MB
 
 #define MAX_COMPRESS_LEVEL	12
@@ -69,6 +69,10 @@
 #define SE_CREATE_SYMBOLIC_LINK_NAME  TEXT("SeCreateSymbolicLinkPrivilege")
 #endif
 
-
+#ifdef _UNICODE
+#define tstring wstring
+#else
+#define tstring string
+#endif
 
 #endif

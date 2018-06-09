@@ -1,48 +1,42 @@
 #pragma once
+#include "PckClassIndex.h"
 
-class CPckClassNode
+class CPckClassNode :
+	public virtual CPckClassIndex
 {
 public:
 	CPckClassNode();
 	~CPckClassNode();
 
-
-	LPPCK_PATH_NODE		GetRootNode();
 	//将PckIndex文件进行路径分析后放入Node
-	LPPCK_PATH_NODE		ParseIndexTableToNode();
+	void			ParseIndexTableToNode(LPPCKINDEXTABLE lpMainIndexTable);
 	//查找相同的节点
-	LPPCK_PATH_NODE		FindFileNode(LPPCK_PATH_NODE lpBaseNode, char* lpszFile);
+	LPPCK_PATH_NODE	FindFileNode(LPPCK_PATH_NODE lpBaseNode, char* lpszFile);
 
 	//删除一个节点
-	VOID	DeleteNode(LPPCK_PATH_NODE lpNode);
+	virtual VOID	DeleteNode(LPPCK_PATH_NODE lpNode);
 
 	//重命名一个节点
-	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
+	virtual	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
 protected:
 	BOOL	RenameNodeEnum(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp);
 	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp);
 public:
-	VOID	RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
-	VOID	RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
+	virtual	VOID	RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
+	virtual	VOID	RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
 
 	//获取node路径
 	BOOL	GetCurrentNodeString(char*szCurrentNodePathString, LPPCK_PATH_NODE lpNode);
 
-	//Indexes
-	LPPCKINDEXTABLE		AllocPckIndexTableByFileCount(DWORD dwFileCount);
-	//将lpPckIndexTable->cFileIndex.szFilename 中的Ansi字符转换志Unicode并写到lpPckIndexTable->cFileIndex.szwFilename中
-	void				GenerateUnicodeStringToIndex();
+protected:
+	BOOL	FindDuplicateNodeFromFileList(LPPCK_PATH_NODE lpNodeToInsertPtr, DWORD &_in_out_FileCount);
 
 private:
 
-	LPPCKINDEXTABLE		m_lpPckIndexTable;	//PCK文件的索引
-	PCK_PATH_NODE		m_cRootNode;		//PCK文件节点的根节点
-	DWORD				m_dwFileCount;		//文件数量
+	LPPCK_PATH_NODE		m_lpRootNode;		//PCK文件节点的根节点
 
 	//将PckIndex文件进行路径分析后放入Node
 	BOOL	AddFileToNode(LPPCKINDEXTABLE	lpPckIndexNode);
-
-	void*	AllocMemory(size_t	sizeStuct);
 
 	//释放内存
 	VOID	DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode);

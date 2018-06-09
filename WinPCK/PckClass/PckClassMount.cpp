@@ -15,17 +15,19 @@
 
 BOOL CPckClass::MountPckFile(LPCTSTR	szFile)
 {
-	if(!cVerDetect.DetectPckVerion(szFile, &m_PckAllInfo))
+	if(!DetectPckVerion(szFile))
 		return FALSE;
 
 	if(!ReadPckFileIndexes())
 		return FALSE;
+
+	BuildDirTree();
 
 	return TRUE;
 }
 
 void CPckClass::BuildDirTree()
 {
-	m_classNode.GenerateUnicodeStringToIndex();
-	m_classNode.ParseIndexTableToNode();
+	GenerateUnicodeStringToIndex();
+	ParseIndexTableToNode(m_PckAllInfo.lpPckIndexTable);
 }

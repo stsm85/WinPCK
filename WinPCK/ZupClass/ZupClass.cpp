@@ -8,29 +8,31 @@
 // 
 // 2012.5.23
 //////////////////////////////////////////////////////////////////////
-//#include "zlib.h"
+
 #include "ZupClass.h"
 
 CZupClass::CZupClass(LPPCK_RUNTIME_PARAMS inout) : 
 	CPckClass(inout),
 	m_lpZupIndexTable(NULL)
-{
-	m_lpRootNodeZup = m_classNodeZup.GetRootNode();
-}
+{}
 
 CZupClass::~CZupClass()
-{}
+{
+	if(NULL != m_lpZupIndexTable)
+		free(m_lpZupIndexTable);
+}
 
 CONST	LPPCKINDEXTABLE CZupClass::GetPckIndexTable()
 {
 	return m_lpZupIndexTable;
 }
 
+#if 0
 CONST	LPPCK_PATH_NODE CZupClass::GetPckPathNode()
 {
-	return m_lpRootNodeZup;
+	return &m_PckAllInfo.cRootNode/*m_lpRootNodeZup*/;
 }
-
+#endif
 
 void CZupClass::BuildDirTree()
 {
@@ -97,7 +99,7 @@ void CZupClass::BuildDirTree()
 	}
 
 	//½¨Á¢Ä¿Â¼
-	m_classNodeZup.ParseIndexTableToNode();
+	ParseIndexTableToNode(m_lpZupIndexTable);
 	//m_classNode.ParseIndexTableToNode();
 
 }
@@ -107,9 +109,9 @@ BOOL CZupClass::Init(LPCTSTR szFile)
 	_tcscpy(m_PckAllInfo.szFilename, szFile);
 	GetFileTitle(m_PckAllInfo.szFilename, m_PckAllInfo.szFileTitle, MAX_PATH);
 
-	if(m_ReadCompleted = MountPckFile(m_PckAllInfo.szFilename)) {
+	if(MountPckFile(m_PckAllInfo.szFilename)) {
 
-		if(NULL == (m_lpZupIndexTable = (m_classNodeZup.AllocPckIndexTableByFileCount(m_PckAllInfo.dwFileCount)))) {
+		if(NULL == (m_lpZupIndexTable = AllocPckIndexTableByFileCount())) {
 			return FALSE;
 		}
 
@@ -123,8 +125,9 @@ BOOL CZupClass::Init(LPCTSTR szFile)
 
 		//É¾³ý×Öµä
 		delete m_lpDictHash;
-		return TRUE;
+		return (m_PckAllInfo.isPckFileLoaded = TRUE);
 	} else {
+		ResetPckInfos();
 		return FALSE;
 	}
 }

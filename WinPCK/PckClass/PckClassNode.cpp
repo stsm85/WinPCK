@@ -1,10 +1,5 @@
-
-#include <Windows.h>
-#include "PckStructs.h"
 #include "PckClassNode.h"
-
 #include "CharsCodeConv.h"
-
 
 template <typename T>
 _inline int __fastcall strpathcmp(const T * src, T * &dst)
@@ -26,17 +21,14 @@ _inline void __fastcall strpathcpy(T * dst, T * &src)
 }
 #pragma region 类函数
 
-CPckClassNode::CPckClassNode() : 
-	m_cRootNode({ 0 }),
-	m_lpPckIndexTable(NULL)
-{}
+CPckClassNode::CPckClassNode()
+{
+	m_lpRootNode = &m_PckAllInfo.cRootNode;
+}
 
 CPckClassNode::~CPckClassNode()
 {
-	DeAllocMultiNodes(m_cRootNode.child);
-
-	if(NULL != m_lpPckIndexTable)
-		free(m_lpPckIndexTable);
+	DeAllocMultiNodes(m_lpRootNode->child);
 }
 
 VOID CPckClassNode::DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode)
@@ -56,25 +48,21 @@ VOID CPckClassNode::DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode)
 	}
 	//memset(&m_cRootNode, 0, sizeof(m_cRootNode));
 }
-LPPCK_PATH_NODE	CPckClassNode::GetRootNode()
-{
-	return &m_cRootNode;
-}
+
 #pragma endregion
 #pragma region ParseIndexTableToNode
 
-LPPCK_PATH_NODE	CPckClassNode::ParseIndexTableToNode()
+void CPckClassNode::ParseIndexTableToNode(LPPCKINDEXTABLE lpMainIndexTable)
 {
-	LPPCKINDEXTABLE lpPckIndexTable = m_lpPckIndexTable;
+	LPPCKINDEXTABLE lpPckIndexTable = lpMainIndexTable;
 
-	for(DWORD i = 0;i < m_dwFileCount;++i) {
+	for(DWORD i = 0;i < m_PckAllInfo.dwFileCount;++i) {
 		//建立目录
 
 		AddFileToNode(lpPckIndexTable);
 		++lpPckIndexTable;
 	}
 
-	return &m_cRootNode;
 }
 
 /********************************
@@ -86,7 +74,7 @@ LPPCK_PATH_NODE	CPckClassNode::ParseIndexTableToNode()
 
 BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 {
-	LPPCK_PATH_NODE lpChildNode = &m_cRootNode;
+	LPPCK_PATH_NODE lpChildNode = &m_PckAllInfo.cRootNode;
 	LPPCK_PATH_NODE	lpFirstNode = NULL;
 
 	size_t			sizePckPathNode = sizeof(PCK_PATH_NODE);
@@ -344,37 +332,27 @@ BOOL CPckClassNode::GetCurrentNodeString(char *szCurrentNodePathString, LPPCK_PA
 
 #pragma endregion
 
-#pragma region MyRegion
 
-void* CPckClassNode::AllocMemory(size_t	sizeStuct)
+BOOL CPckClassNode::FindDuplicateNodeFromFileList(LPPCK_PATH_NODE lpNodeToInsertPtr, DWORD &_in_out_FileCount)
 {
-	void*		lpMallocNode;
+	LPFILES_TO_COMPRESS lpfirstFile = m_firstFile;
+	while(NULL != lpfirstFile->next) {
+		LPPCK_PATH_NODE lpDuplicateNode;
+		lpDuplicateNode = FindFileNode(lpNodeToInsertPtr, lpfirstFile->lpszFileTitle);
 
-	if(NULL == (lpMallocNode = malloc(sizeStuct))) {
-		return lpMallocNode;
+		if(-1 == (int)lpDuplicateNode) {
+			m_PckLog.PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
+			assert(FALSE);
+			return FALSE;
+		}
+
+		if(NULL != lpDuplicateNode) {
+			lpfirstFile->samePtr = lpDuplicateNode->lpPckIndexTable;
+			_in_out_FileCount--;
+		}
+
+		lpfirstFile = lpfirstFile->next;
+
 	}
-	//初始化内存
-	memset(lpMallocNode, 0, sizeStuct);
-	return lpMallocNode;
+	return TRUE;
 }
-
-LPPCKINDEXTABLE	CPckClassNode::AllocPckIndexTableByFileCount(DWORD dwFileCount)
-{
-	m_dwFileCount = dwFileCount;
-	return m_lpPckIndexTable = (LPPCKINDEXTABLE)AllocMemory(sizeof(PCKINDEXTABLE) * dwFileCount);
-}
-
-void CPckClassNode::GenerateUnicodeStringToIndex()
-{
-	LPPCKINDEXTABLE lpPckIndexTable = m_lpPckIndexTable;
-
-	for(DWORD i = 0;i < m_dwFileCount;++i) {
-		//建立目录
-
-		CAnsi2Ucs cA2U;
-		cA2U.GetString(lpPckIndexTable->cFileIndex.szFilename, lpPckIndexTable->cFileIndex.szwFilename, sizeof(lpPckIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
-
-		++lpPckIndexTable;
-	}
-}
-#pragma endregion

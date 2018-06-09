@@ -249,9 +249,15 @@ typedef struct _FILES_TO_COMPRESS
 
 typedef struct _PCK_INDEX_TABLE_COMPRESS
 {
-	DWORD			dwIndexValueHead;
-	DWORD			dwIndexValueTail;
-	BYTE			buffer[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
+	union{
+		BYTE			compressed_index_data[1];
+		struct
+		{
+			DWORD			dwIndexValueHead;
+			DWORD			dwIndexValueTail;
+			BYTE			buffer[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
+		};
+	};
 	DWORD			dwIndexDataLength;					//文件索引压缩后的大小
 	DWORD			dwCompressedFilesize;				//压缩后的文件大小
 	DWORD			dwMallocSize;						//申请空间使用的大小（>=压缩后的文件大小）
@@ -259,11 +265,13 @@ typedef struct _PCK_INDEX_TABLE_COMPRESS
 	DWORD			dwAddressOfDuplicateOldDataArea;	//如果使用老数据区，其地址
 	BOOL			bInvalid;							//添加模式时，文件名如果重复，使用已存在的文件索引，这个作废
 	QWORD			dwAddressAddStep;					//写完文件后，dwAddress的指针应该加上的数字
+	LPBYTE			compressed_file_data;				//此index对应的压缩数据
 }PCKINDEXTABLE_COMPRESS, *LPPCKINDEXTABLE_COMPRESS;
 
 
 typedef struct _PCK_ALL_INFOS
 {
+	BOOL				isPckFileLoaded;	//是否已成功加载PCK文件 
 	QWORD				qwPckSize;
 	DWORD				dwFileCount;
 	QWORD				dwAddressOfFilenameIndex;		//此值指向pck文件数据区的末尾，也就是文件索引的压缩数据的起始位置
@@ -272,7 +280,12 @@ typedef struct _PCK_ALL_INFOS
 	TCHAR				szFileTitle[MAX_PATH];
 
 	LPPCKINDEXTABLE		lpPckIndexTable;	//PCK文件的索引
-	LPPCK_PATH_NODE		lpRootNode;			//PCK文件节点的根节点
+	PCK_PATH_NODE		cRootNode;			//PCK文件节点的根节点
+
+	TCHAR				szNewFilename[MAX_PATH];
+	//TCHAR				szNewFileTitle[MAX_PATH];
+	DWORD				dwFileCountToAdd;
+	LPPCKINDEXTABLE		lpPckIndexTableToAdd;	
 
 	const PCK_VERSION_FUNC*	lpDetectedPckVerFunc;
 	const PCK_VERSION_FUNC*	lpSaveAsPckVerFunc;

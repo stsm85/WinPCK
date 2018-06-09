@@ -69,8 +69,6 @@ void TInstDlg::initParams()
 	lpPckParams->dwCompressLevel = Z_DEFAULT_COMPRESS_LEVEL;
 	lpPckParams->dwMTMaxMemory = MT_MAX_MEMORY;
 
-	m_DropFileCount = 0;
-
 	//π‚±Íº”‘ÿ
 	m_isSearchWindow = FALSE;
 
@@ -209,6 +207,126 @@ void TInstDlg::initToolbar()
 	//SendDlgItemMessage(IDC_TOOLBAR, TB_SETBUTTONINFO, /*ID_MENU_OPEN*/ID_MENU_EXIT, (LPARAM)&tbbtninfo);
 
 }
+
+void TInstDlg::EnbaleButtons(int ctlExceptID, BOOL bEnbale)
+{
+
+	WORD wToolBarTextList[] = { IDS_STRING_OPEN,
+		IDS_STRING_CLOSE,
+		IDS_STRING_NEW,
+		0,
+		IDS_STRING_UNPACK_SELECTED,
+		IDS_STRING_UNPACK_ALL,
+		0,
+		IDS_STRING_ADD,
+		IDS_STRING_REBUILD,
+		IDS_STRING_INFO,
+		IDS_STRING_SEARCH,
+		IDS_STRING_COMPRESS_OPT,
+		0,
+		IDS_STRING_ABOUT,
+		IDS_STRING_EXIT };
+
+
+	WORD ctlMenuIDs[] = { ID_MENU_OPEN,
+		ID_MENU_CLOSE,
+		ID_MENU_NEW,
+		1,
+		ID_MENU_UNPACK_SELECTED,
+		ID_MENU_UNPACK_ALL,
+		1,
+		ID_MENU_ADD,
+		ID_MENU_REBUILD,
+		ID_MENU_INFO,
+		ID_MENU_SEARCH,
+		ID_MENU_COMPRESS_OPT,
+		0 };
+
+	WORD ctlRMenuIDs[] = { ID_MENU_VIEW,
+		ID_MENU_UNPACK_SELECTED,
+		ID_MENU_RENAME,
+		ID_MENU_DELETE,
+		ID_MENU_ATTR,
+		0 };
+
+	TBBUTTONINFO tbbtninfo = { 0 };
+	tbbtninfo.cbSize = sizeof(TBBUTTONINFO);
+	tbbtninfo.dwMask = TBIF_IMAGE | /*TBIF_TEXT | */TBIF_LPARAM;
+
+	WORD	*pctlIDs = ctlMenuIDs;
+	WORD	*pctlStrings = wToolBarTextList;
+
+	while(0 != *pctlIDs) {
+
+		if(ctlExceptID == *pctlIDs) {
+			SendDlgItemMessage(IDC_TOOLBAR, TB_GETBUTTONINFO, ctlExceptID, (LPARAM)&tbbtninfo);
+
+			if(bEnbale) {
+				tbbtninfo.dwMask = TBIF_IMAGE | TBIF_TEXT;
+				tbbtninfo.iImage = (int)tbbtninfo.lParam;
+				tbbtninfo.pszText = GetLoadStr(*pctlStrings);
+
+				EnableButton(ctlExceptID, bEnbale);
+
+			} else {
+
+				tbbtninfo.dwMask = TBIF_IMAGE | TBIF_TEXT | TBIF_LPARAM;
+				tbbtninfo.lParam = tbbtninfo.iImage;
+				tbbtninfo.iImage = 16;
+				tbbtninfo.pszText = GetLoadStr(IDS_STRING_CANCEL);
+
+			}
+
+			SendDlgItemMessage(IDC_TOOLBAR, TB_SETBUTTONINFO, ctlExceptID, (LPARAM)&tbbtninfo);
+
+		} else {
+			EnableButton(*pctlIDs, bEnbale);
+		}
+
+		pctlStrings++;
+		pctlIDs++;
+	}
+
+
+	HMENU	hMenu = ::GetMenu(hWnd);
+	HMENU	hSubMenu = ::GetSubMenu(hMenu, 0);
+	pctlIDs = ctlMenuIDs;
+
+	while(1 != *pctlIDs) {
+		::EnableMenuItem(hSubMenu, *pctlIDs, bEnbale ? MF_ENABLED : MF_GRAYED);
+		pctlIDs++;
+	}
+
+	hSubMenu = ::GetSubMenu(hMenu, 1);
+
+	pctlIDs++;
+	while(1 != *pctlIDs) {
+		::EnableMenuItem(hSubMenu, *pctlIDs, bEnbale ? MF_ENABLED : MF_GRAYED);
+		pctlIDs++;
+}
+
+	hSubMenu = ::GetSubMenu(hMenu, 2);
+
+	pctlIDs++;
+	while(0 != *pctlIDs) {
+		::EnableMenuItem(hSubMenu, *pctlIDs, bEnbale ? MF_ENABLED : MF_GRAYED);
+		pctlIDs++;
+	}
+
+	hMenu = ::LoadMenu(TApp::GetInstance(), (LPCTSTR)IDR_MENU_RCLICK);
+	hSubMenu = ::GetSubMenu(hMenu, 0);
+
+	pctlIDs = ctlRMenuIDs;
+
+	while(0 != *pctlIDs) {
+		::EnableMenuItem(hSubMenu, *pctlIDs, bEnbale ? MF_ENABLED : MF_GRAYED);
+		pctlIDs++;
+	}
+
+	return;
+}
+
+
 #if 0
 #ifdef UNICODE
 #define CommandLineToArgv CommandLineToArgvW

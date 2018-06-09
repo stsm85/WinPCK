@@ -10,7 +10,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "MapViewFile.h"
-#include "PckClass.h"
 #include "PckClassVersionDetect.h"
 
 #pragma warning ( disable : 4996 )
@@ -98,25 +97,6 @@ xxxxxxxxxx 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
 
 */
 
-#pragma region CPckClass
-
-LPCTSTR CPckClass::GetSaveDlgFilterString()
-{
-	return cVerDetect.GetSaveDlgFilterString();
-}
-
-const PCK_KEYS* CPckClass::GetPckVersion()
-{
-	return m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys;
-}
-
-void CPckClass::SetSavePckVersion(int verID)
-{
-	if(!cVerDetect.SetPckVersion(m_PckAllInfo.lpSaveAsPckVerFunc, verID))
-		m_PckLog.PrintLogW(TEXT_INVALID_VERSION);
-}
-
-#pragma endregion
 #pragma region CPckClassVersionDetect
 
 CPckClassVersionDetect::CPckClassVersionDetect()
@@ -178,15 +158,18 @@ LPCTSTR CPckClassVersionDetect::GetSaveDlgFilterString()
 	return szSaveDlgFilterString;
 }
 
-BOOL CPckClassVersionDetect::SetPckVersion(const PCK_VERSION_FUNC* &lpPckVerFunc, int verID)
+const PCK_KEYS* CPckClassVersionDetect::GetPckVersion()
+{
+	return m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys;
+}
+
+
+void CPckClassVersionDetect::SetSavePckVersion(int verID)
 {
 	if(0 <= verID && PCK_VERSION_NUMS > verID) {
-		lpPckVerFunc = &cPckVersionFunc[verID];
-		return TRUE;
+		m_PckAllInfo.lpSaveAsPckVerFunc = &cPckVersionFunc[verID];
 	} else
-		return FALSE;
-
-	return TRUE;
+		m_PckLog.PrintLogW(TEXT_INVALID_VERSION);;
 }
 
 
@@ -264,7 +247,7 @@ dect_err:
 #undef PRINT_TAIL_SIZE
 
 //读取文件头和尾确定pck文件版本，返回版本ID
-BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo)
+BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile)
 {
 	PCKHEAD_V2020 cPckHead;
 	DWORD		dwTailVals[4];
@@ -354,12 +337,12 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFO
 		goto dect_err;
 	}
 
-	pckAllInfo->lpSaveAsPckVerFunc = pckAllInfo->lpDetectedPckVerFunc = &cPckVersionFunc[iDetectedPckID];
+	m_PckAllInfo.lpSaveAsPckVerFunc = m_PckAllInfo.lpDetectedPckVerFunc = &cPckVersionFunc[iDetectedPckID];
 
 	return TRUE;
 
 dect_err:
-	pckAllInfo->lpSaveAsPckVerFunc = NULL;
+	m_PckAllInfo.lpSaveAsPckVerFunc = NULL;
 	PrintInvalidVersionDebugInfo(lpszPckFile);
 	return FALSE;
 }

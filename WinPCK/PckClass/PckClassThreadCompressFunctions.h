@@ -1,6 +1,6 @@
-VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
+VOID CPckClassThreadHelper::COMPRESSTHREADFUNC(VOID* pParam)
 {
-	CPckClass *pThis = (CPckClass*)pParam;
+	CPckClassThreadHelper *pThis = (CPckClassThreadHelper*)pParam;
 
 	//char	szFileMappingNameSpaceFormat[16];
 	//char	szFileMappingNameSpace[32];
@@ -23,7 +23,7 @@ VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
 	LPFILES_TO_COMPRESS			lpfirstFile = pThis->m_firstFile;
 	PCKINDEXTABLE_COMPRESS		cPckIndexTableComp;
 
-	memset(pckFileIndex.szFilename, 0, MAX_PATH_PCK_260);
+	memset(pckFileIndex.szFilename, 0, sizeof(pckFileIndex.szFilename));
 
 	//patch 140424
 	CMapViewFileRead	*lpFileRead = new CMapViewFileRead();
@@ -83,7 +83,7 @@ VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
 			if (PCK_BEGINCOMPRESS_SIZE < pckFileIndex.dwFileClearTextSize)
 			{
 				pThis->compress(bufCompressData, &pckFileIndex.dwFileCipherTextSize,
-					lpBufferToRead, pckFileIndex.dwFileClearTextSize, level);
+					lpBufferToRead, pckFileIndex.dwFileClearTextSize);
 			}
 			else {
 				memcpy(bufCompressData, lpBufferToRead, pckFileIndex.dwFileClearTextSize);
@@ -91,8 +91,7 @@ VOID CPckClass::COMPRESSTHREADFUNC(VOID* pParam)
 
 			lpFileRead->clear();
 
-		}
-		else {
+		} else {
 			bufCompressData = (BYTE*)1;
 		}
 

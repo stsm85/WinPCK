@@ -25,153 +25,33 @@
 
 
 //VOID EnumAndDeleteIndex(LPPCK_PATH_NODE lpNode);
-VOID GetPckFileNameBySource(TCHAR *dst, TCHAR *src, BOOL isDirectory);
-
-_inline void TInstDlg::EnbaleButtons(int ctlExceptID, BOOL bEnbale)
-{
-
-	WORD wToolBarTextList[] = { IDS_STRING_OPEN,
-								IDS_STRING_CLOSE,
-								IDS_STRING_NEW,
-								0,
-								IDS_STRING_UNPACK_SELECTED,
-								IDS_STRING_UNPACK_ALL,
-								0,
-								IDS_STRING_ADD,
-								IDS_STRING_REBUILD,
-								IDS_STRING_INFO,
-								IDS_STRING_SEARCH,
-								IDS_STRING_COMPRESS_OPT,
-								0,
-								IDS_STRING_ABOUT,
-								IDS_STRING_EXIT };
-
-
-	WORD ctlMenuIDs[] = { ID_MENU_OPEN,
-						ID_MENU_CLOSE,
-						ID_MENU_NEW,
-						1,
-						ID_MENU_UNPACK_SELECTED,
-						ID_MENU_UNPACK_ALL,
-						1,
-						ID_MENU_ADD,
-						ID_MENU_REBUILD,
-						ID_MENU_INFO,
-						ID_MENU_SEARCH,
-						ID_MENU_COMPRESS_OPT,
-						0 };
-
-	WORD ctlRMenuIDs[] = { ID_MENU_VIEW,
-						ID_MENU_UNPACK_SELECTED,
-						ID_MENU_RENAME,
-						ID_MENU_DELETE,
-						ID_MENU_ATTR,
-						0 };
-
-	TBBUTTONINFO tbbtninfo = { 0 };
-	tbbtninfo.cbSize = sizeof(TBBUTTONINFO);
-	tbbtninfo.dwMask = TBIF_IMAGE | /*TBIF_TEXT | */TBIF_LPARAM;
-
-	WORD	*pctlIDs = ctlMenuIDs;
-	WORD	*pctlStrings = wToolBarTextList;
-
-	while(0 != *pctlIDs) {
-
-		if(ctlExceptID == *pctlIDs) {
-			SendDlgItemMessage(IDC_TOOLBAR, TB_GETBUTTONINFO, ctlExceptID, (LPARAM)&tbbtninfo);
-
-			if(bEnbale) {
-				tbbtninfo.dwMask = TBIF_IMAGE | TBIF_TEXT;
-				tbbtninfo.iImage = (int)tbbtninfo.lParam;
-				tbbtninfo.pszText = GetLoadStr(*pctlStrings);
-
-				EnableButton(ctlExceptID, bEnbale);
-
-			} else {
-
-				tbbtninfo.dwMask = TBIF_IMAGE | TBIF_TEXT | TBIF_LPARAM;
-				tbbtninfo.lParam = tbbtninfo.iImage;
-				tbbtninfo.iImage = 16;
-				tbbtninfo.pszText = GetLoadStr(IDS_STRING_CANCEL);
-
-			}
-
-			SendDlgItemMessage(IDC_TOOLBAR, TB_SETBUTTONINFO, ctlExceptID, (LPARAM)&tbbtninfo);
-
-		} else {
-			EnableButton(*pctlIDs, bEnbale);
-		}
-
-		pctlStrings++;
-		pctlIDs++;
-	}
-
-
-	HMENU	hMenu = ::GetMenu(hWnd);
-	HMENU	hSubMenu = ::GetSubMenu(hMenu, 0);
-	pctlIDs = ctlMenuIDs;
-
-	while(1 != *pctlIDs) {
-		::EnableMenuItem(hSubMenu, *pctlIDs, bEnbale ? MF_ENABLED : MF_GRAYED);
-		pctlIDs++;
-	}
-
-	hSubMenu = ::GetSubMenu(hMenu, 1);
-
-	pctlIDs++;
-	while(1 != *pctlIDs) {
-		::EnableMenuItem(hSubMenu, *pctlIDs, bEnbale ? MF_ENABLED : MF_GRAYED);
-		pctlIDs++;
-	}
-
-	hSubMenu = ::GetSubMenu(hMenu, 2);
-
-	pctlIDs++;
-	while(0 != *pctlIDs) {
-		::EnableMenuItem(hSubMenu, *pctlIDs, bEnbale ? MF_ENABLED : MF_GRAYED);
-		pctlIDs++;
-	}
-
-	hMenu = ::LoadMenu(TApp::GetInstance(), (LPCTSTR)IDR_MENU_RCLICK);
-	hSubMenu = ::GetSubMenu(hMenu, 0);
-
-	pctlIDs = ctlRMenuIDs;
-
-	while(0 != *pctlIDs) {
-		::EnableMenuItem(hSubMenu, *pctlIDs, bEnbale ? MF_ENABLED : MF_GRAYED);
-		pctlIDs++;
-	}
-
-	return;
-}
-
+VOID GetPckFileNameBySource(LPTSTR dst, LPCTSTR src, BOOL isDirectory);
 
 VOID TInstDlg::UpdatePckFile(VOID *pParam)
 {
 
 	TInstDlg	*pThis = (TInstDlg*)pParam;
-	BOOL		bDeleteClass = !pThis->m_cPckCenter.IsValidPck();
+	BOOL		bHasPckOpened = !pThis->m_cPckCenter.IsValidPck();
 	TCHAR		szFilenameToSave[MAX_PATH];
 	LPPCK_RUNTIME_PARAMS	lpParams = pThis->lpPckParams;
 	BOOL		*lpbThreadRunning = &lpParams->cVarParams.bThreadRunning;
 	TCHAR		szPrintf[320];
 	double		t1, t2;//计算时间
 
-	if(bDeleteClass)
+	if(bHasPckOpened)
 		pThis->m_cPckCenter.New();
 
 	*szFilenameToSave = 0;
 
-	if(bDeleteClass) {
+	if(bHasPckOpened) {
 		//此时没有打开文件，这时的操作相当于新建文档
-		if(1 == pThis->m_DropFileCount) {
-			GetPckFileNameBySource(szFilenameToSave, *pThis->m_lpszFilePath, FALSE);
+		if(1 == pThis->m_lpszFilePath.size()) {
+			GetPckFileNameBySource(szFilenameToSave, pThis->m_lpszFilePath[0].c_str(), FALSE);
 		}
 
 		//选择保存的文件名
 		int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->m_cPckCenter.GetSaveDlgFilterString());
 		if(!nSelectFilter) {
-			//pThis->DeleteClass();
 			pThis->m_cPckCenter.Close();
 
 			return;
@@ -182,6 +62,7 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 
 		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
 	} else {
+		_tcscpy_s(szFilenameToSave, pThis->m_Filename);
 		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 	}
 
@@ -193,12 +74,12 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 
 	pThis->SetStatusBarText(4, szPrintf);
 
-	pThis->m_cPckCenter.Reset(pThis->m_DropFileCount);
+	pThis->m_cPckCenter.Reset(pThis->m_lpszFilePath.size());
 	*lpbThreadRunning = TRUE;
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
-	if(pThis->m_cPckCenter.UpdatePckFile(szFilenameToSave, pThis->m_lpszFilePath, pThis->m_DropFileCount, pThis->m_currentNodeOnShow)) {
+	if(pThis->m_cPckCenter.UpdatePckFile(szFilenameToSave, pThis->m_lpszFilePath, pThis->m_currentNodeOnShow)) {
 		if(*lpbThreadRunning) {
 			//计时结束
 			t2 = GetTickCount() - t1;
@@ -209,7 +90,7 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
-		if(bDeleteClass) {
+		if(bHasPckOpened) {
 
 			pThis->OpenPckFile(szFilenameToSave, TRUE);
 		} else {
@@ -220,7 +101,7 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 
 		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 
-		if(bDeleteClass) {
+		if(bHasPckOpened) {
 			pThis->m_cPckCenter.Close();
 		}
 	}
@@ -238,7 +119,7 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 	*lpbThreadRunning = FALSE;
 
 	//还原Drop状态
-	pThis->m_DropFileCount = 0;
+	pThis->m_lpszFilePath.clear();
 	DragAcceptFiles(pThis->hWnd, TRUE);
 
 	//整合报告
@@ -429,7 +310,8 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 
 	BOOL		bDeleteClass = !pThis->m_cPckCenter.IsValidPck();
-	TCHAR		szPathToCompress[MAX_PATH], szFilenameToSave[MAX_PATH];
+	TCHAR		/*szPathToCompress[MAX_PATH], */szFilenameToSave[MAX_PATH];
+	//TCHAR	*	lpszPathToCompress = (TCHAR*)malloc (MAX_PATH * sizeof(TCHAR));
 
 	TCHAR		szPrintf[64];
 	BOOL		*lpbThreadRunning = &pThis->lpPckParams->cVarParams.bThreadRunning;
@@ -440,9 +322,10 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 	if(!BrowseForFolderByPath(pThis->hWnd, pThis->m_CurrentPath))
 		return;
 
-	_tcscpy_s(szPathToCompress, pThis->m_CurrentPath);
+	//_tcscpy_s(szPathToCompress, pThis->m_CurrentPath);
+	pThis->m_lpszFilePath.push_back(pThis->m_CurrentPath);
 
-	GetPckFileNameBySource(szFilenameToSave, szPathToCompress, TRUE);
+	GetPckFileNameBySource(szFilenameToSave, pThis->m_CurrentPath, TRUE);
 
 	if(bDeleteClass)
 		pThis->m_cPckCenter.New();
@@ -468,7 +351,7 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
-	if(pThis->m_cPckCenter.CreatePckFile(szFilenameToSave, szPathToCompress)) {
+	if(pThis->m_cPckCenter.UpdatePckFile(szFilenameToSave, pThis->m_lpszFilePath, pThis->m_currentNodeOnShow)) {
 
 		if(*lpbThreadRunning) {
 			//计时结束
@@ -502,7 +385,7 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 	*lpbThreadRunning = FALSE;
 
 	//还原Drop状态
-	pThis->m_DropFileCount = 0;
+	pThis->m_lpszFilePath.clear();
 	return;
 
 }
@@ -799,7 +682,7 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 }
 
 //从拖入的源文件名推出预保存的pck文件名
-VOID GetPckFileNameBySource(TCHAR *dst, TCHAR *src, BOOL isDirectory)
+VOID GetPckFileNameBySource(LPTSTR dst, LPCTSTR src, BOOL isDirectory)
 {
 	int szPathToCompressLen;
 	_tcscpy(dst, src);

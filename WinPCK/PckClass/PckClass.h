@@ -10,17 +10,17 @@
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
 
-#include <windows.h>
-#include <stdio.h>
-#include <tchar.h>
-#include "MapViewFile.h"
-#include "PckHeader.h"
 #include <assert.h>
 #include "CharsCodeConv.h"
-#include "PckClassVersionDetect.h"
-#include "PckClassLog.h"
-#include "PckClassNode.h"
 
+#include "PckClassVersionDetect.h"
+//#include "PckClassNode.h"
+//#include "PckClassHeadTail.h"
+
+#include "PckClassAppendFiles.h"
+#include "PckClassCreateNew.h"
+#include "PckClassRebuild.h"
+#include "PckClassRenamer.h"
 
 #if !defined(_PCKCLASS_H_)
 #define _PCKCLASS_H_
@@ -30,24 +30,21 @@ int logOutput(const char *file, const char *text);
 char *formatString(const char *format, ...);
 #endif
 
-class CPckClass  
+class CPckClass : 
+	public CPckClassRenamer,
+	public CPckClassRebuild,
+	public CPckClassAppendFiles,
+	public CPckClassVersionDetect
 {
 //函数
 public:
-	void	CPckClassInit();
 	CPckClass(LPPCK_RUNTIME_PARAMS inout);
 	virtual ~CPckClass();
 
 	virtual BOOL	Init(LPCTSTR szFile);
-
+#if 0
 	virtual CONST	LPPCKINDEXTABLE		GetPckIndexTable();
 	virtual CONST	LPPCK_PATH_NODE		GetPckPathNode();
-
-	//设置版本
-	CPckClassVersionDetect cVerDetect;
-	const	PCK_KEYS*	GetPckVersion();
-	void	SetSavePckVersion(int verID);
-	LPCTSTR	GetSaveDlgFilterString();
 
 	//文件大小
 	QWORD	GetPckSize();
@@ -60,45 +57,32 @@ public:
 
 	//数据区冗余数据大小
 	QWORD	GetPckRedundancyDataSize();
-	
+#endif
 	//解压文件
 	BOOL	ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount);
 	BOOL	ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount);
-	
-	//设置附加信息
-	char*	GetAdditionalInfo();
-	BOOL	SetAdditionalInfo();
-
+#if 0
 	//新建pck文件
 	virtual BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath);
-
+#endif
+#if 0
 	//重建pck文件
 	virtual BOOL	RebuildPckFile(LPCTSTR szRebuildPckFile, BOOL bUseRecompress);
 protected:
 	BOOL	RebuildPckFile(LPCTSTR szRebuildPckFile);
 	BOOL	RecompressPckFile(LPCTSTR szRecompressPckFile);
-
+#endif
 public:
+#if 0
 	//更新pck文件
 	virtual BOOL	UpdatePckFile(LPTSTR szPckFile, TCHAR (*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert);
-
+#endif
+#if 0
 	//重命名文件
 	virtual BOOL	RenameFilename();
-
-	//删除一个节点
-	virtual VOID	DeleteNode(LPPCK_PATH_NODE lpNode);
-
-	//重命名一个节点
-	virtual BOOL	RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
-
-	virtual VOID	RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
-	virtual VOID	RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
-
+#endif
 	//预览文件
 	virtual BOOL	GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
-
-	//获取node路径
-	BOOL	GetCurrentNodeString(char*szCurrentNodePathString, LPPCK_PATH_NODE lpNode);
 
 	//获取基本信息，用于写入文件后造成的文件损坏的恢复
 	#include "PckClassExceptionRestore.h"
@@ -107,81 +91,87 @@ protected:
 
 	//PckClass.cpp
 	BOOL	MountPckFile(LPCTSTR	szFile);
+	virtual void	BuildDirTree();
 
 	//PckClassFunction.cpp
+
+#if 0
 	//重建时重新计算文件数量，除去无效的和文件名重复的
 	DWORD	ReCountFiles();
-	DWORD GetCompressBoundSizeByFileSize(LPPCKFILEINDEX	lpPckFileIndex, DWORD dwFileSize);
 
+#endif
+#if 0
+	DWORD GetCompressBoundSizeByFileSize(LPPCKFILEINDEX	lpPckFileIndex, DWORD dwFileSize);
+#endif
+#if 0
 	//函数
 	BOOL BeforeSingleOrMultiThreadProcess(LPPCK_ALL_INFOS lpPckAllInfo, CMapViewFileWrite* &lpWrite, LPCTSTR szPckFile, DWORD dwCreationDisposition, QWORD qdwSizeToMap, int threadnum);
-
+#endif
+#if 0
 	void MultiThreadInitialize(VOID CompressThread(VOID*), VOID WriteThread(VOID*), int threadnum);
+#endif
+#if 0
 	BOOL WritePckIndex(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, QWORD &dwAddress);
-	void AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional = TRUE);
 	BOOL WritePckIndexTable(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, DWORD &dwFileCount, QWORD &dwAddress);
+#endif
+#if 0
+	void AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional = TRUE);
+
 	void AfterWriteThreadFailProcess(BOOL *lpbThreadRunning, HANDLE hevtAllCompressFinish, DWORD &dwFileCount, DWORD dwFileHasBeenWritten, QWORD &dwAddressFinal, QWORD dwAddress, BYTE **bufferPtrToWrite);
+#endif
+#if 0
 	LPPCKINDEXTABLE_COMPRESS FillAndCompressIndexData(LPPCKINDEXTABLE_COMPRESS lpPckIndexTableComped, LPPCKFILEINDEX lpPckFileIndexToCompress);
-
-
-	CPckClassNode	m_classNode;
-	virtual void	BuildDirTree();
+#endif
 
 	//PckClassExtract.cpp
 	BOOL	StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpMapAddress);
 	BOOL	DecompressFile(LPCWSTR lpszFilename, LPPCKINDEXTABLE lpPckFileIndexTable, LPVOID lpvoidFileRead);
 
-
+#if 0
 	//PckClassThread.cpp
 	static	VOID CompressThreadCreate(VOID* pParam);
 	static	VOID WriteThread(VOID* pParam);
 
 	//添加模式
-
 	static	VOID CompressThreadAdd(VOID* pParam);
 
+#endif
+#if 0
 	//重压缩模式
 	static	VOID CompressThreadRecompress(VOID* pParam);
-
-	//压缩数据队列
+#endif
+#if 0
+	//压缩时内存使用
 	void	detectMaxAndAddMemory(DWORD dwMallocSize);
 	void	freeMaxAndSubtractMemory(DWORD dwMallocSize);
-
+#endif
+#if 0
+	//压缩数据队列
 	BOOL	initCompressedDataQueue(int threadnum, DWORD dwFileCount, QWORD dwAddressStartAt);
 	BOOL	putCompressedDataQueue(LPBYTE lpBuffer, LPPCKINDEXTABLE_COMPRESS lpPckIndexTable, LPPCKFILEINDEX lpPckFileIndexToCompress);
 	BOOL	getCompressedDataQueue(LPBYTE &lpBuffer, LPPCKINDEXTABLE_COMPRESS &lpPckIndexTable);
 	void	uninitCompressedDataQueue(int threadnum);
-
+#endif
 
 	///代码测试
 	//virtual void test();
-
-	//打印日志
-	CPckClassLog	m_PckLog;
-
-	// 文件头、尾等结构体的读取
-	BOOL	ReadPckFileIndexes();
-
-	//数据压缩算法
-	#include "PckClassCompress.h"
-
+#if 0
+public:
+	void	init_compressor();
+#endif
 	//PckClassRebuildFilter.cpp
 public:
 	BOOL	ParseScript(LPCTSTR lpszScriptFile);
 
 protected:
 
-	LPPCK_RUNTIME_PARAMS	m_lpPckParams;
-
-	BOOL					m_ReadCompleted;
-	PCK_ALL_INFOS			m_PckAllInfo;
-
-	LPFILES_TO_COMPRESS		m_firstFile;		//添加待压缩文件时，遍历文件时使用的文件列表的第一个文件
 	
+	
+#if 0
 	char			m_szEventAllWriteFinish[16];
 	char			m_szEventAllCompressFinish[16];
 	char			m_szEventMaxMemory[16];
-
+#endif
 };
 
 #endif

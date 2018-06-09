@@ -515,14 +515,13 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 
 	if(lpPckParams->cVarParams.bThreadRunning)goto END_DROP;
 
-	TCHAR(*lpszFilePathPtr)[MAX_PATH];
 	TCHAR	szFirstFile[MAX_PATH];
 
-	m_DropFileCount = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+	DWORD dwDropFileCount = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
 
-	if(0 == m_DropFileCount)goto END_DROP;
+	if(0 == dwDropFileCount)goto END_DROP;
 
-	if(1 == m_DropFileCount) {
+	if(1 == dwDropFileCount) {
 		if(!m_cPckCenter.IsValidPck()) {
 			size_t	nFirstFileLength;
 			DragQueryFile(hDrop, 0, szFirstFile, MAX_PATH);
@@ -547,18 +546,13 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 
 	DragAcceptFiles(hWnd, FALSE);
 
-	if(NULL == (m_lpszFilePath = (TCHAR(*)[MAX_PATH]) malloc(sizeof(TCHAR) * MAX_PATH * m_DropFileCount))) {
-		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		goto END_DROP;
-	}
+	m_lpszFilePath.clear();
 
-	lpszFilePathPtr = m_lpszFilePath;
+	for(DWORD i = 0; i < dwDropFileCount; i++) {
 
-	for(DWORD i = 0; i < m_DropFileCount; i++) {
-
-		DragQueryFile(hDrop, i, *lpszFilePathPtr, MAX_PATH);
-
-		lpszFilePathPtr++;
+		TCHAR szFile[MAX_PATH];
+		DragQueryFile(hDrop, i, szFile, MAX_PATH);
+		m_lpszFilePath.push_back(szFile);
 	}
 
 	_beginthread(UpdatePckFile, 0, this);

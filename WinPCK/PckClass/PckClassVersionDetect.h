@@ -9,6 +9,7 @@
 // 2017.6.27
 //////////////////////////////////////////////////////////////////////
 #pragma once
+#include "PckClassBaseFeatures.h"
 
 //PckVersion
 #define PCK_VERSION_INVALID		(-1)
@@ -19,18 +20,20 @@
 #define PCK_VERSION_SM			4
 #define	PCK_VERSION_NUMS		5
 
-class CPckClassVersionDetect
+class CPckClassVersionDetect :
+	public virtual CPckClassBaseFeatures
 {
 public:
 	CPckClassVersionDetect();
 	~CPckClassVersionDetect();
 
 	//设置版本
-	BOOL	SetPckVersion(const PCK_VERSION_FUNC* &lpSaveAsPckVerFunc, int verID);
+	const	PCK_KEYS*	GetPckVersion();
+	void	SetSavePckVersion(int verID);
 	LPCTSTR	GetSaveDlgFilterString();
 
 	//检测pck的版本并写入到iDetectedPckID，同时读取文件头和尾
-	BOOL	DetectPckVerion(LPCTSTR lpszPckFile, LPPCK_ALL_INFOS pckAllInfo);
+	BOOL	DetectPckVerion(LPCTSTR lpszPckFile);
 
 private:
 

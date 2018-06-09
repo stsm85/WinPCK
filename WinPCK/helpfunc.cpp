@@ -243,140 +243,16 @@ BOOL TInstDlg::AddFiles()
 
 	if(IDCANCEL == MessageBoxA("确定添加文件吗？", "询问", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2))return FALSE;
 
-	//TCHAR	(*lpszFilePathPtr)[MAX_PATH];
-	//DWORD	dwFileCount;
+	if(OpenFiles(hWnd, m_lpszFilePath)) {
 
-	LPVOID	lpszFilePathPtr;
-
-	if(OpenFiles(lpszFilePathPtr, m_DropFileCount)) {
-
-		m_lpszFilePath = (TCHAR(*)[MAX_PATH])lpszFilePathPtr;
 		DragAcceptFiles(hWnd, FALSE);
-
-		//mt_MaxMemoryCount = mt_MaxMemory;
 		_beginthread(UpdatePckFile, 0, this);
-
 
 	}
 
 	return FALSE;
 }
 
-
-BOOL TInstDlg::OpenFiles(LPVOID &lpszFilePathArray, DWORD &dwFileCount)
-{
-
-	OPENFILENAME ofn;
-	TCHAR * szBuffer, *szBufferPart;
-	//FILEINFO * pFileinfo, * pFileinfo_previtem;
-	size_t stStringLength;
-
-	szBuffer = (TCHAR *)malloc(MAX_BUFFER_SIZE_OFN * sizeof(TCHAR));
-	if(szBuffer == NULL) {
-		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-	}
-
-	_tcscpy_s(szBuffer, MAX_BUFFER_SIZE_OFN, TEXT(""));
-
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = hWnd;
-	ofn.lpstrFilter = TEXT("所有文件\0*.*\0\0");
-	ofn.lpstrFile = szBuffer;
-	ofn.nMaxFile = MAX_BUFFER_SIZE_OFN;
-	ofn.Flags = OFN_ALLOWMULTISELECT | OFN_EXPLORER | OFN_ENABLESIZING | OFN_FILEMUSTEXIST;
-
-	if(!GetOpenFileName(&ofn)) {
-		if(CommDlgExtendedError() == FNERR_BUFFERTOOSMALL) {
-			MessageBox(TEXT("选择的文件太多. 缓冲区无法装下所有文件的文件名。"),
-				TEXT("缓冲区不够"), MB_OK);
-		}
-		free(szBuffer);
-		return FALSE;
-	}
-
-	dwFileCount = 0;
-
-	// if first part of szBuffer is a directory the user selected multiple files
-	// otherwise szBuffer is filename + path
-	if(GetFileAttributes(szBuffer) & FILE_ATTRIBUTE_DIRECTORY) {
-		// szBuffer 中第一个部分是目录 
-		// 其他部分是 FileTitle
-
-
-		TCHAR		**szFilenamePtrArray, **szFilenamePtrArrayPtr;
-		if(NULL == (szFilenamePtrArray = (TCHAR**)malloc(MAX_BUFFER_SIZE_OFN * sizeof(TCHAR**)))) {
-			m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-			free(szBuffer);
-			return FALSE;
-
-		}
-
-		szFilenamePtrArrayPtr = szFilenamePtrArray;
-
-		szBufferPart = szBuffer + ofn.nFileOffset;
-		*szFilenamePtrArrayPtr = szBuffer + ofn.nFileOffset;
-
-		//根目录下时目录名中会带'\'
-		if(4 == ofn.nFileOffset) {
-			ofn.nFileOffset--;
-			szBuffer[2] = 0;
-		}
-
-
-		while(0 != *szBufferPart) {
-
-			stStringLength = _tcsnlen(szBufferPart, MAX_PATH);
-			szBufferPart += stStringLength + 1;
-
-			*(++szFilenamePtrArrayPtr) = szBufferPart;
-
-			dwFileCount++;
-
-		}
-
-		*szFilenamePtrArrayPtr = 0;
-
-		if(NULL == (lpszFilePathArray = /*(TCHAR(*)[MAX_PATH])*/ malloc(sizeof(TCHAR) * MAX_PATH * dwFileCount))) {
-			m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-			free(szFilenamePtrArray);
-			free(szBuffer);
-			return	FALSE;
-		}
-
-		TCHAR(*lpszFilePathArrayPtr)[MAX_PATH] = (TCHAR(*)[MAX_PATH])lpszFilePathArray;
-
-		szFilenamePtrArrayPtr = szFilenamePtrArray;
-
-		while(0 != *szFilenamePtrArrayPtr) {
-			_stprintf_s(*lpszFilePathArrayPtr, MAX_PATH, TEXT("%s\\%s"), szBuffer, *szFilenamePtrArrayPtr);
-
-			lpszFilePathArrayPtr++;
-			szFilenamePtrArrayPtr++;
-		}
-
-		free(szFilenamePtrArray);
-	} else { // 中选中了一个文件
-
-		dwFileCount = 1;
-
-		if(NULL == (lpszFilePathArray = /*(TCHAR(*)[MAX_PATH])*/ malloc(sizeof(TCHAR) * MAX_PATH))) {
-			m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-			free(szBuffer);
-			return	FALSE;
-		}
-
-		_tcscpy_s((TCHAR*)lpszFilePathArray, MAX_PATH, szBuffer);
-
-	}
-
-	// 删除缓冲区
-
-	free(szBuffer);
-
-	return TRUE;
-}
 
 void TInstDlg::AddSetupReg()
 {

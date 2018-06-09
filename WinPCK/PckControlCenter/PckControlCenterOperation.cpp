@@ -13,6 +13,7 @@
 
 #include "PckControlCenter.h"
 #include "ZupClass.h"
+#include "PckClassZlib.h"
 #include <strsafe.h>
 
 
@@ -173,10 +174,10 @@ BOOL	CPckControlCenter::RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceStri
 	return m_lpClassPck->RenameNode(lpNode, lpszReplaceString);
 }
 
-//更新pck文件
-BOOL	CPckControlCenter::UpdatePckFile(LPTSTR szPckFile, TCHAR(*lpszFilePath)[MAX_PATH], int nFileCount, LPPCK_PATH_NODE lpNodeToInsert)
+//新建、更新pck文件
+BOOL	CPckControlCenter::UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lpszFilePath, const LPPCK_PATH_NODE lpNodeToInsert)
 {
-	return m_lpClassPck->UpdatePckFile(szPckFile, lpszFilePath, nFileCount, lpNodeToInsert);
+	return m_lpClassPck->UpdatePckFile(szPckFile, lpszFilePath, lpNodeToInsert);
 }
 
 //重命名文件
@@ -193,13 +194,13 @@ BOOL	CPckControlCenter::RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompr
 {
 	return m_lpClassPck->RebuildPckFile(szRebuildPckFile, bUseRecompress);
 }
-
+#if 0
 //新建pck文件--
 BOOL	CPckControlCenter::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
 {
 	return m_lpClassPck->CreatePckFile(szPckFile, szPath);
 }
-
+#endif
 //解压文件
 BOOL	CPckControlCenter::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 {
@@ -223,7 +224,7 @@ VOID	CPckControlCenter::DeleteNode(LPPCK_PATH_NODE lpNode)
 //重置PCK的压缩参数
 void	CPckControlCenter::ResetCompressor()
 {
-	m_lpClassPck->init_compressor();
+	CPckClassZlib::set_level(cParams.dwCompressLevel);
 }
 
 //重建时的文件过滤

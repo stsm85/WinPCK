@@ -13,7 +13,6 @@
 #if !defined(_PCKHEADER_H_)
 #define _PCKHEADER_H_
 
-#include "PckDefines.h"
 #include "PckStructs.h"
 #include "PckXchgDef.h"
 

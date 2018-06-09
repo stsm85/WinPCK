@@ -308,7 +308,7 @@ namespace NPckClassRebuildFilter
 				SepratePaths(pFileOp);
 
 				//定位文件索引
-				LPPCK_PATH_NODE lpFoundNode = LocationFileIndex(pFileOp->lpszSepratedPaths, _DstPckAllInfo.lpRootNode->child);
+				LPPCK_PATH_NODE lpFoundNode = LocationFileIndex(pFileOp->lpszSepratedPaths, _DstPckAllInfo.cRootNode.child);
 				if(NULL == lpFoundNode) {
 
 					m_PckLog.PrintLogW(TEXT("已解析脚本失败在: %s, 跳过..."), pFileOp->szFilename);

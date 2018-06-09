@@ -3,6 +3,7 @@
 #include "miscdlg.h"
 #include "PckClassLog.h"
 
+
 class TInstDlg : public TDlg
 {
 protected:
@@ -64,9 +65,7 @@ protected:
 	char	m_szStrToSearch[256];
 
 	///addmode
-	TCHAR(*m_lpszFilePath)[MAX_PATH];
-	DWORD	m_DropFileCount;
-
+	vector<tstring>	m_lpszFilePath;
 
 	//用于找窗口的变量
 	BOOL	m_isSearchWindow;
@@ -99,7 +98,7 @@ protected:
 
 
 	//threadproc.cpp
-	_inline void EnbaleButtons(int ctlExceptID, BOOL bEnbale);
+	void EnbaleButtons(int ctlExceptID, BOOL bEnbale);
 	static VOID UpdatePckFile(VOID *pParam);
 	static VOID RenamePckFile(VOID *pParam);
 	static VOID RebuildPckFile(VOID	*pParam);
@@ -127,7 +126,6 @@ protected:
 	VOID ViewFileAttribute();
 	VOID ViewFile();
 	BOOL AddFiles();
-	BOOL OpenFiles(/*TCHAR &((*lpszFilePathArray)[MAX_PATH])*/LPVOID &lpszFilePathArray, DWORD &dwFileCount);
 	void AddSetupReg();
 	void DeleteSetupReg();
 

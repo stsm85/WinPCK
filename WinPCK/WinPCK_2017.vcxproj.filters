@@ -99,9 +99,6 @@
     <ClCompile Include=".\PckClass\PckClass.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
-    <ClCompile Include=".\PckClass\PckClassThread.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
     <ClCompile Include=".\PckClass\PckClassExtract.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
@@ -153,9 +150,6 @@
     <ClCompile Include="PckClass\PckClassExceptionRestore.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
-    <ClCompile Include="PckClass\PckClassReader.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
     <ClCompile Include="..\tlib\tini.cpp">
       <Filter>源文件\tlib</Filter>
     </ClCompile>
@@ -164,21 +158,6 @@
     </ClCompile>
     <ClCompile Include="..\tlib\tregist.cpp">
       <Filter>源文件\tlib</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassCompress.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassThreadVariables.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassThreadCreate.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassThreadAddFile.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassThreadRecompress.cpp">
-      <Filter>源文件\PckClass</Filter>
     </ClCompile>
     <ClCompile Include="listViewFunc.cpp">
       <Filter>源文件</Filter>
@@ -261,10 +240,61 @@
     <ClCompile Include="PckClass\PckClassNode.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
-    <ClCompile Include="PckClass\PckClassNodeRename.cpp">
+    <ClCompile Include="PckClass\PckClassIndex.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassHeadTail.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassZlib.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassIndexRWOp.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassIndexWriter.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassBodyWriter.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassHeadTailWriter.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassThreadHelper.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassRestore.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassAppendFiles.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassCreateNew.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassFileRemover.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassRenamer.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
     <ClCompile Include="PckClass\PckClassRebuild.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassThreadHelperMemory.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassThreadHelperQueue.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassBaseFeatures.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassThreadHelperVarsInit.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassIndexDataAppend.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
   </ItemGroup>
@@ -346,13 +376,7 @@
     <ClInclude Include="..\tlib\tregist.h">
       <Filter>头文件\tlib</Filter>
     </ClInclude>
-    <ClInclude Include="PckClass\PckClassCompress.h">
-      <Filter>头文件\PckClass</Filter>
-    </ClInclude>
     <ClInclude Include="PckClass\PckClassVersionDetectFunctionDefinitions.h">
-      <Filter>头文件\PckClass</Filter>
-    </ClInclude>
-    <ClInclude Include="PckClass\PckClassThreadCompressFunctions.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
     <ClInclude Include="MiscFuncs\Raw2HexString.h">
@@ -411,6 +435,54 @@
     </ClInclude>
     <ClInclude Include="PckClass\PckClassNode.h">
       <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassIndex.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassHeadTail.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassZlib.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassBaseFeatures.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassIndexWriter.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassBodyWriter.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassHeadTailWriter.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassThreadHelper.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassRestore.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassAppendFiles.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassCreateNew.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassFileRemover.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassRenamer.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassRebuild.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassThreadCompressFunctions.h">
+      <Filter>源文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassIndexDataAppend.h">
+      <Filter>源文件\PckClass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
