@@ -10,7 +10,7 @@ void CPckClassHeadTailWriter::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_I
 {
 
 	assert(NULL != dwAddress);
-	assert(0 != PckAllInfo.dwFileCount);
+	assert(0 != (PckAllInfo.dwFileCount + PckAllInfo.dwFileCountToAdd));
 
 	LPBYTE lpBufferToWrite;
 

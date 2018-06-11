@@ -169,18 +169,19 @@ BOOL CPckClassAppendFiles::UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lps
 
 	}
 
-	pckAllInfo.dwAddressOfFilenameIndex = dwAddressName;
-	AfterProcess(mt_lpFileWrite, pckAllInfo, dwAddress);
+	m_PckAllInfo.dwAddressOfFilenameIndex = dwAddressName;
+	//pckAllInfo.dwFileCount = dwFileCount + dwOldPckFileCount;
+	AfterProcess(mt_lpFileWrite, m_PckAllInfo, dwAddress);
 
 	uninitCompressedDataQueue(threadnum);
 
 	//在这里重新打开一次，或者直接打开，由界面线程完成
 	m_lpPckParams->cVarParams.dwOldFileCount = dwOldPckFileCount;
-	m_lpPckParams->cVarParams.dwPrepareToAddFileCount = pckAllInfo.dwFileCountToAdd;
+	m_lpPckParams->cVarParams.dwPrepareToAddFileCount = m_PckAllInfo.dwFileCountToAdd;
 	m_lpPckParams->cVarParams.dwChangedFileCount = mt_dwFileCount;
 	m_lpPckParams->cVarParams.dwDuplicateFileCount = mt_dwFileCount - dwNewFileCount;
 	m_lpPckParams->cVarParams.dwUseNewDataAreaInDuplicateFileSize = dwUseNewDataAreaInDuplicateFile;
-	m_lpPckParams->cVarParams.dwFinalFileCount = pckAllInfo.dwFileCount + pckAllInfo.dwFileCountToAdd;
+	m_lpPckParams->cVarParams.dwFinalFileCount = m_PckAllInfo.dwFileCount + m_PckAllInfo.dwFileCountToAdd;
 
 	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
 

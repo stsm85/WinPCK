@@ -161,8 +161,8 @@ QWORD CPckClassFileDisk::GetPckFilesizeByCompressed(LPCSTR lpszFilename, QWORD q
 	}
 }
 #pragma endregion
-#pragma region 文件打开、遍历操作等
-
+#pragma region Open file,enum
+//文件打开、遍历操作等
 QWORD CPckClassFileDisk::GetPckFilesizeByCompressed(LPCWSTR lpszFilename, QWORD qwToCompressFilesize, QWORD qwCurrentPckFilesize)
 {
 	//查看磁盘空间
