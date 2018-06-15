@@ -443,6 +443,7 @@
     </ClCompile>
     <Link>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -468,31 +469,26 @@
     <ClCompile Include="MiscFuncs\OpenSaveDlg.cpp" />
     <ClCompile Include="MiscFuncs\Raw2HexString.cpp" />
     <ClCompile Include="MiscFuncs\ShowLogOnDlgListView.cpp" />
+    <ClCompile Include="PckClassThreadData.cpp" />
     <ClCompile Include="PckClass\PckClassAppendFiles.cpp" />
-    <ClCompile Include="PckClass\PckClassBodyWriter.cpp" />
-    <ClCompile Include="PckClass\PckClassCreateNew.cpp" />
     <ClCompile Include="PckClass\PckClassExceptionRestore.cpp" />
     <ClCompile Include="PckClass\PckClassBaseFeatures.cpp" />
-    <ClCompile Include="PckClass\PckClassFileRemover.cpp" />
     <ClCompile Include="PckClass\PckClassHeadTail.cpp" />
     <ClCompile Include="PckClass\PckClassHeadTailWriter.cpp" />
     <ClCompile Include="PckClass\PckClassIndex.cpp" />
-    <ClCompile Include="PckClass\PckClassIndexDataAppend.cpp" />
-    <ClCompile Include="PckClass\PckClassIndexRWOp.cpp" />
+    <ClCompile Include="PckClass\PckClassIndexRead.cpp" />
     <ClCompile Include="PckClass\PckClassIndexWriter.cpp" />
     <ClCompile Include="PckClass\PckClassLog.cpp" />
     <ClCompile Include="PckClass\PckClassFileDisk.cpp" />
-    <ClCompile Include="PckClass\PckClassHelpFunction.cpp" />
     <ClCompile Include="PckClass\PckClassMount.cpp" />
     <ClCompile Include="PckClass\PckClassNode.cpp" />
     <ClCompile Include="PckClass\PckClassRebuild.cpp" />
     <ClCompile Include="PckClass\PckClassRebuildFilter.cpp" />
     <ClCompile Include="PckClass\PckClassRenamer.cpp" />
-    <ClCompile Include="PckClass\PckClassRestore.cpp" />
-    <ClCompile Include="PckClass\PckClassThreadHelper.cpp" />
-    <ClCompile Include="PckClass\PckClassThreadHelperMemory.cpp" />
-    <ClCompile Include="PckClass\PckClassThreadHelperQueue.cpp" />
-    <ClCompile Include="PckClass\PckClassThreadHelperVarsInit.cpp" />
+    <ClCompile Include="PckClass\PckClassThread.cpp" />
+    <ClCompile Include="PckClass\PckClassThreadMemory.cpp" />
+    <ClCompile Include="PckClass\PckClassThreadQueue.cpp" />
+    <ClCompile Include="PckClass\PckClassThreadVarsInit.cpp" />
     <ClCompile Include="PckClass\PckClassVersionDetect.cpp" />
     <ClCompile Include="PckClass\PckClassZlib.cpp" />
     <ClCompile Include="PckControlCenter\PckControlCenter.cpp" />
@@ -551,27 +547,17 @@
     <ClInclude Include="MiscFuncs\OpenSaveDlg.h" />
     <ClInclude Include="MiscFuncs\Raw2HexString.h" />
     <ClInclude Include="MiscFuncs\ShowLogOnDlgListView.h" />
-    <ClInclude Include="PckClass\PckClassAppendFiles.h" />
-    <ClInclude Include="PckClass\PckClassBodyWriter.h" />
-    <ClInclude Include="PckClass\PckClassCreateNew.h" />
-    <ClInclude Include="PckClass\PckClassExceptionRestore.h" />
     <ClInclude Include="PckClass\PckClassFileDisk.h" />
     <ClInclude Include="PckClass\PckClassBaseFeatures.h" />
-    <ClInclude Include="PckClass\PckClassFileRemover.h" />
     <ClInclude Include="PckClass\PckClassHeadTail.h" />
     <ClInclude Include="PckClass\PckClassHeadTailWriter.h" />
     <ClInclude Include="PckClass\PckClassIndex.h" />
-    <ClInclude Include="PckClass\PckClassIndexDataAppend.h" />
     <ClInclude Include="PckClass\PckClassIndexWriter.h" />
     <ClInclude Include="PckClass\PckClassLinkList.h" />
     <ClInclude Include="PckClass\PckClassLog.h" />
     <ClInclude Include="PckClass\PckClassNode.h" />
-    <ClInclude Include="PckClass\PckClassRebuild.h" />
-    <ClInclude Include="PckClass\PckClassRebuildFilter.h" />
-    <ClInclude Include="PckClass\PckClassRenamer.h" />
-    <ClInclude Include="PckClass\PckClassRestore.h" />
-    <ClInclude Include="PckClass\PckClassThreadCompressFunctions.h" />
-    <ClInclude Include="PckClass\PckClassThreadHelper.h" />
+    <ClInclude Include="PckClass\PckClassWriteOperator.h" />
+    <ClInclude Include="PckClass\PckClassThread.h" />
     <ClInclude Include="PckClass\PckClassVersionDetect.h" />
     <ClInclude Include="PckClass\PckClassVersionDetectFunctionDefinitions.h" />
     <ClInclude Include="PckClass\PckClassZlib.h" />

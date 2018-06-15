@@ -27,13 +27,6 @@ CONST	LPPCKINDEXTABLE CZupClass::GetPckIndexTable()
 	return m_lpZupIndexTable;
 }
 
-#if 0
-CONST	LPPCK_PATH_NODE CZupClass::GetPckPathNode()
-{
-	return &m_PckAllInfo.cRootNode/*m_lpRootNodeZup*/;
-}
-#endif
-
 void CZupClass::BuildDirTree()
 {
 	CMapViewFileRead	cReadfile;
@@ -89,18 +82,12 @@ void CZupClass::BuildDirTree()
 
 		}
 
-#if 0
-		CAnsi2Ucs cA2U;
-		cA2U.GetString(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, sizeof(lpZupIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
-#endif
-
 		lpPckIndexTable++;
 		lpZupIndexTable++;
 	}
 
 	//½¨Á¢Ä¿Â¼
 	ParseIndexTableToNode(m_lpZupIndexTable);
-	//m_classNode.ParseIndexTableToNode();
 
 }
 

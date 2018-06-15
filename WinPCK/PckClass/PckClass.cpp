@@ -35,6 +35,8 @@ BOOL CPckClass::Init(LPCTSTR	szFile)
 
 		return FALSE;
 	} else {
+
+		BuildDirTree();
 		return (m_PckAllInfo.isPckFileLoaded = TRUE);
 	}
 }

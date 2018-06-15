@@ -1,8 +1,10 @@
 #pragma once
 #include "PckClassIndex.h"
 
+#define INVALID_NODE	( -1 )
+
 class CPckClassNode :
-	public virtual CPckClassIndex
+	protected virtual CPckClassIndex
 {
 public:
 	CPckClassNode();
@@ -11,10 +13,11 @@ public:
 	//将PckIndex文件进行路径分析后放入Node
 	void			ParseIndexTableToNode(LPPCKINDEXTABLE lpMainIndexTable);
 	//查找相同的节点
-	LPPCK_PATH_NODE	FindFileNode(LPPCK_PATH_NODE lpBaseNode, char* lpszFile);
+	LPPCK_PATH_NODE	FindFileNode(const LPPCK_PATH_NODE lpBaseNode, char* lpszFile);
 
 	//删除一个节点
 	virtual VOID	DeleteNode(LPPCK_PATH_NODE lpNode);
+	virtual VOID	DeleteNode(LPPCKINDEXTABLE lpIndex);
 
 	//重命名一个节点
 	virtual	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
@@ -29,7 +32,7 @@ public:
 	BOOL	GetCurrentNodeString(char*szCurrentNodePathString, LPPCK_PATH_NODE lpNode);
 
 protected:
-	BOOL	FindDuplicateNodeFromFileList(LPPCK_PATH_NODE lpNodeToInsertPtr, DWORD &_in_out_FileCount);
+	BOOL	FindDuplicateNodeFromFileList(const LPPCK_PATH_NODE lpNodeToInsertPtr, DWORD &_in_out_FileCount);
 
 private:
 

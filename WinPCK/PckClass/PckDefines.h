@@ -14,6 +14,12 @@
 #if !defined(_PCKDEFINES_H_)
 #define _PCKDEFINES_H_
 
+#ifdef _UNICODE
+#define tstring wstring
+#else
+#define tstring string
+#endif
+
 #pragma warning ( disable : 4005 )
 #pragma warning ( disable : 4995 )
 
@@ -105,11 +111,5 @@
 
 
 #define	TEXT_EVENT_WRITE_PCK_DATA_FINISH			"WPckDataF%d"
-#define	TEXT_EVENT_COMPRESS_PCK_DATA_FINISH			"CPckDataF%d"
-#define	TEXT_EVENT_PCK_MAX_MEMORY					"PckMaxMem%d"
-
-#define	TEXT_MAP_NAME_READ							"PckRead%d"
-#define	TEXT_MAP_NAME_WRITE							"PckWrite%d"
-
 
 #endif

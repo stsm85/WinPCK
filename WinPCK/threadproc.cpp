@@ -137,16 +137,12 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 			TEXT("计划更新文件数： %d\r\n")
 			TEXT("实际更新文件数： %d\r\n")
 			TEXT("重名文件数： %d\r\n")
-			TEXT("重名文件中使用新数据区的数量： %d\r\n")
-			TEXT("重名文件中使用老数据区的数量： %d\r\n")
 			TEXT("未更新文件数： %d\r\n")
 			TEXT("更新后 PCK 包中文件数： %d"),
 			lpParams->cVarParams.dwOldFileCount,
 			lpParams->cVarParams.dwPrepareToAddFileCount,
 			lpParams->cVarParams.dwChangedFileCount,
 			lpParams->cVarParams.dwDuplicateFileCount,
-			lpParams->cVarParams.dwUseNewDataAreaInDuplicateFileSize,
-			lpParams->cVarParams.dwChangedFileCount - lpParams->cVarParams.dwUseNewDataAreaInDuplicateFileSize,
 			lpParams->cVarParams.dwPrepareToAddFileCount - lpParams->cVarParams.dwChangedFileCount,
 			lpParams->cVarParams.dwFinalFileCount);
 
@@ -610,8 +606,7 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 				if(item.state & LVIS_SELECTED) {
 
 					lpIndexToShow = (LPPCKINDEXTABLE)item.lParam;
-					lpIndexToShow->bSelected = TRUE;
-
+					pThis->m_cPckCenter.DeleteNode(lpIndexToShow);
 					uiSelectCount++;
 				}
 			}
@@ -624,9 +619,8 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 					lpNodeToShow = (LPPCK_PATH_NODE)item.lParam;
 
 					if(NULL == lpNodeToShow->child) {
-						lpNodeToShow->lpPckIndexTable->bSelected = TRUE;
+						pThis->m_cPckCenter.DeleteNode(lpNodeToShow->lpPckIndexTable);
 					} else {
-						//EnumAndDeleteIndex(lpNodeToShow);
 						pThis->m_cPckCenter.DeleteNode(lpNodeToShow);
 					}
 

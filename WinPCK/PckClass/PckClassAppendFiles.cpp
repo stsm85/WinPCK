@@ -1,35 +1,28 @@
 
-#include "PckClassAppendFiles.h"
-#include "PckClassFileDisk.h"
-#include "CharsCodeConv.h"
-
-CPckClassAppendFiles::CPckClassAppendFiles()
-{}
-
-CPckClassAppendFiles::~CPckClassAppendFiles()
-{}
-
+#include "PckClassWriteOperator.h"
 
 //新建、更新pck包
-BOOL CPckClassAppendFiles::UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lpszFilePath, const LPPCK_PATH_NODE lpNodeToInsert)
+BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstring> &lpszFilePath, const LPPCK_PATH_NODE lpNodeToInsert)
 {
-	DWORD		dwNewFileCount = 0, dwOldPckFileCount;			//文件数量, 原pck文件中的文件数
+	DWORD		dwNewFileCount = 0;			//文件数量, 原pck文件中的文件数
+	DWORD		dwDuplicateFileCount = 0;
 	QWORD		qwTotalNewFileSize = 0;						//未压缩时所有文件大小
 
 	int			level = m_lpPckParams->dwCompressLevel;
 	int			threadnum = m_lpPckParams->dwMTThread;
 
 	QWORD		dwAddress;
+	THREAD_PARAMS		cThreadParams;
 
 	//开始查找文件
-	LinkList<FILES_TO_COMPRESS> cFileLinkList;
+	//LinkList<FILES_TO_COMPRESS> cFileLinkList;
 	LPPCK_PATH_NODE		lpNodeToInsertPtr;
 
 #pragma region 设置参数
+	
+	m_PckAllInfo.lpFilesToBeAdded = &m_FilesToBeAdded;
 
 	if(m_PckAllInfo.isPckFileLoaded) {
-
-		dwOldPckFileCount = m_PckAllInfo.dwFileCount;
 
 		lpNodeToInsertPtr = lpNodeToInsert;
 
@@ -48,7 +41,6 @@ BOOL CPckClassAppendFiles::UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lps
 	} else {
 
 		m_PckAllInfo.dwAddressOfFilenameIndex = PCK_DATA_START_AT;
-		dwOldPckFileCount = 0;
 		lpNodeToInsertPtr = m_PckAllInfo.cRootNode.child;
 		*mt_szCurrentNodeString = 0;
 		mt_nCurrentNodeStringLen = 0;
@@ -60,12 +52,12 @@ BOOL CPckClassAppendFiles::UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lps
 	}
 
 	_tcscpy_s(m_PckAllInfo.szNewFilename, szPckFile);
-	m_firstFile = cFileLinkList.first();
+	//m_firstFile = cFileLinkList.first();
 
 #pragma endregion
 
 #pragma region 遍历待添加的文件 
-	if(!EnumAllFilesByPathList(lpszFilePath, dwNewFileCount, qwTotalNewFileSize, &cFileLinkList))
+	if(!EnumAllFilesByPathList(lpszFilePath, dwNewFileCount, qwTotalNewFileSize, m_PckAllInfo.lpFilesToBeAdded))
 		return FALSE;
 
 	if(0 == dwNewFileCount)return TRUE;
@@ -77,7 +69,7 @@ BOOL CPckClassAppendFiles::UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lps
 	// dwFileCount		计算过程使用参数，在下面的计算过程中将使用此参数表示添加的文件总数，不计重复
 
 	//文件数写入窗口类中保存以显示进度
-	SetParams_ProgressUpper(mt_dwFileCount = dwNewFileCount);
+	SetParams_ProgressUpper(dwNewFileCount);
 
 	//计算大概需要多大空间qwTotalFileSize
 	mt_CompressTotalFileSize = GetPckFilesizeByCompressed(szPckFile, qwTotalNewFileSize, m_PckAllInfo.qwPckSize);
@@ -92,15 +84,12 @@ BOOL CPckClassAppendFiles::UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lps
 
 	//dwFileCount变量在此处指的是添加的文件除去重名的数量 
 	if(m_PckAllInfo.isPckFileLoaded) {
-		if(!FindDuplicateNodeFromFileList(lpNodeToInsertPtr, dwNewFileCount))
+		if(!FindDuplicateNodeFromFileList(lpNodeToInsertPtr, dwDuplicateFileCount))
 			return FALSE;
 	}
 
 	//日志
 	m_PckLog.PrintLogI(TEXT_UPDATE_FILE_INFO, m_PckAllInfo.dwFileCountToAdd, mt_CompressTotalFileSize);
-
-	//PCK_ALL_INFOS	pckAllInfo;
-	//OPEN_ALWAYS，新建新的pck(CREATE_ALWAYS)或更新存在的pck(OPEN_EXISTING)
 
 #pragma region 创建目标文件
 	CMapViewFileWrite cFileWriter(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
@@ -112,76 +101,39 @@ BOOL CPckClassAppendFiles::UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lps
 
 #pragma endregion
 
-	if(!BeforeMultiThreadProcess(&cFileWriter)) {
-		assert(FALSE);
-		return FALSE;
-	}
-	if(!initCompressedDataQueue(threadnum, mt_dwFileCountOfWriteTarget = mt_dwFileCount, dwAddress = m_PckAllInfo.dwAddressOfFilenameIndex)) {
-		delete mt_lpFileWrite;
+	cThreadParams.pThis = (CPckClassThreadWorker*)this;
+	cThreadParams.cDataFetchMethod.lpFileToCompress = m_firstFile;
+	cThreadParams.GetUncompressedData = &GetUncompressedDataFromFile;
+
+	if(!initMultiThreadVars(&cFileWriter)) {
 		assert(FALSE);
 		return FALSE;
 	}
 
-	MultiThreadInitialize(CompressThreadAdd, WriteThread, threadnum);
-	dwAddress = mt_dwAddressQueue;
+	if(!initCompressedDataQueue(mt_dwFileCountOfWriteTarget = dwNewFileCount, dwAddress = m_PckAllInfo.dwAddressOfFilenameIndex)) {
+		assert(FALSE);
+		return FALSE;
+	}
 
-	//打印报告用参数
-	DWORD	dwUseNewDataAreaInDuplicateFile = 0;
+	ExecuteMainThreadGroup(m_PckAllInfo, threadnum, &cThreadParams);
+	dwAddress = m_PckAllInfo.dwAddressOfFilenameIndex;
 
 	//写文件索引
-	QWORD	dwAddressName = dwAddress;
+	m_PckAllInfo.dwFileCount = m_PckAllInfo.dwFileCountOld - dwDuplicateFileCount;
 
-	//窗口中以显示的文件进度，初始化，显示写索引进度mt_hFileToWrite
-	SetParams_ProgressUpper(dwNewFileCount + dwOldPckFileCount);
+	WriteAllIndex(mt_lpFileWrite, &m_PckAllInfo, dwAddress);
 
-	//写原来的文件
-	LPPCKINDEXTABLE	lpPckIndexTableSrc = m_PckAllInfo.lpPckIndexTable;
-
-	for(DWORD i = 0; i < dwOldPckFileCount; i++) {
-
-		PCKINDEXTABLE_COMPRESS	pckIndexTableTemp;
-		WritePckIndex(mt_lpFileWrite, FillAndCompressIndexData(&pckIndexTableTemp, &lpPckIndexTableSrc->cFileIndex), dwAddress);
-		lpPckIndexTableSrc++;
-
-	}
-
-	//写添加的文件
-	LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr = mt_lpPckIndexTable;
-
-	mt_dwFileCount = dwNewFileCount = mt_dwFileCountOfWriteTarget;
-	for(DWORD i = 0; i < mt_dwFileCountOfWriteTarget; i++) {
-		////处理lpPckFileIndex->dwAddressOffset
-
-		if(!lpPckIndexTablePtr->bInvalid) {
-
-			WritePckIndex(mt_lpFileWrite, lpPckIndexTablePtr, dwAddress);
-
-		} else {
-
-			assert(0 != dwNewFileCount);
-			dwNewFileCount--;
-		}
-
-		if(0 == lpPckIndexTablePtr->dwAddressOfDuplicateOldDataArea)
-			dwUseNewDataAreaInDuplicateFile++;
-
-		lpPckIndexTablePtr++;
-
-	}
-
-	m_PckAllInfo.dwAddressOfFilenameIndex = dwAddressName;
-	//pckAllInfo.dwFileCount = dwFileCount + dwOldPckFileCount;
 	AfterProcess(mt_lpFileWrite, m_PckAllInfo, dwAddress);
 
 	uninitCompressedDataQueue(threadnum);
 
 	//在这里重新打开一次，或者直接打开，由界面线程完成
-	m_lpPckParams->cVarParams.dwOldFileCount = dwOldPckFileCount;
-	m_lpPckParams->cVarParams.dwPrepareToAddFileCount = m_PckAllInfo.dwFileCountToAdd;
-	m_lpPckParams->cVarParams.dwChangedFileCount = mt_dwFileCount;
-	m_lpPckParams->cVarParams.dwDuplicateFileCount = mt_dwFileCount - dwNewFileCount;
-	m_lpPckParams->cVarParams.dwUseNewDataAreaInDuplicateFileSize = dwUseNewDataAreaInDuplicateFile;
-	m_lpPckParams->cVarParams.dwFinalFileCount = m_PckAllInfo.dwFileCount + m_PckAllInfo.dwFileCountToAdd;
+	m_lpPckParams->cVarParams.dwOldFileCount = m_PckAllInfo.dwFileCountOld;
+	m_lpPckParams->cVarParams.dwPrepareToAddFileCount = dwNewFileCount;
+	m_lpPckParams->cVarParams.dwChangedFileCount = m_PckAllInfo.dwFileCountToAdd;
+	m_lpPckParams->cVarParams.dwDuplicateFileCount = dwDuplicateFileCount;
+	//m_lpPckParams->cVarParams.dwUseNewDataAreaInDuplicateFileSize = m_PckAllInfo.dwFinalFileCount - m_PckAllInfo.dwFileCountOld;
+	m_lpPckParams->cVarParams.dwFinalFileCount = m_PckAllInfo.dwFinalFileCount;
 
 	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
 

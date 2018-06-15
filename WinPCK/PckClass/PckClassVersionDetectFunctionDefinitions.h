@@ -13,7 +13,7 @@
 					isFoundVer = TRUE; \
 					(_id) = i; \
 					m_PckAllInfo.qwPckSize = ((LPPCKHEAD_V##_ver)&cPckHead)->dwPckSize; \
-					m_PckAllInfo.dwFileCount = dwTailVals[2];\
+					m_PckAllInfo.dwFileCountOld = m_PckAllInfo.dwFileCount = dwTailVals[2];\
 					m_PckAllInfo.dwAddressOfFilenameIndex = PckTail_v##_ver.dwCryptedFileIndexesAddr ^ cPckKeys[(_id)].IndexesEntryAddressCryptKey;\
 					memcpy(m_PckAllInfo.szAdditionalInfo, PckTail_v##_ver.szAdditionalInfo, PCK_ADDITIONAL_INFO_SIZE);\
 					_tcscpy_s(m_PckAllInfo.szFilename, lpszPckFile); \
@@ -76,6 +76,6 @@
 			lpTail->dwNullDword = 0; \
 			memcpy(lpTail->szAdditionalInfo, lpPckAllInfo->szAdditionalInfo, sizeof(lpTail->szAdditionalInfo)); \
 			lpTail->dwIndexTableCheckTail = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->TailVerifyKey2; \
-			lpTail->dwFileCount = lpPckAllInfo->dwFileCount + lpPckAllInfo->dwFileCountToAdd; \
+			lpTail->dwFileCount = lpPckAllInfo->dwFinalFileCount; \
 			return tailbuf; \
 		}

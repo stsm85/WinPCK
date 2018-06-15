@@ -1,5 +1,5 @@
 #pragma once
-#define Z_BEST_COMPRESSION 9
+#define Z_BEST_COMPRESSION				9
 
 #include "PckClassLog.h"
 #include "PckDefines.h"
@@ -31,6 +31,9 @@ public:
 	int	compress(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen);
 	int decompress(void *dest, unsigned long  *destLen, const void *source, unsigned long sourceLen);
 	int decompress_part(void *dest, unsigned long  *destLen, const void *source, unsigned long sourceLen, unsigned long  fullDestLen);
+
+	//获取数据压缩后的大小，如果源大小小于一定值就不压缩
+	unsigned long GetCompressBoundSizeByFileSize(unsigned long &dwFileClearTextSize, unsigned long &dwFileCipherTextSize, unsigned long dwFileSize);
 
 protected:
 

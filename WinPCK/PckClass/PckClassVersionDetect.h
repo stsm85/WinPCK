@@ -21,7 +21,7 @@
 #define	PCK_VERSION_NUMS		5
 
 class CPckClassVersionDetect :
-	public virtual CPckClassBaseFeatures
+	private virtual CPckClassBaseFeatures
 {
 public:
 	CPckClassVersionDetect();

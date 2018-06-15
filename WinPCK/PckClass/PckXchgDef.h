@@ -21,7 +21,7 @@ typedef struct _PCK_VARIETY_PARAMS {
 	DWORD		dwDuplicateFileCount;
 	DWORD		dwFinalFileCount;
 
-	DWORD		dwUseNewDataAreaInDuplicateFileSize;
+	//DWORD		dwUseNewDataAreaInDuplicateFileSize;
 	DWORD		dwDataAreaSize;
 	DWORD		dwRedundancyDataSize;
 

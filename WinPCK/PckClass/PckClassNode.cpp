@@ -156,7 +156,7 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 #pragma endregion
 
 #pragma region FindFileNode
-LPPCK_PATH_NODE CPckClassNode::FindFileNode(LPPCK_PATH_NODE lpBaseNode, char* lpszFile)
+LPPCK_PATH_NODE CPckClassNode::FindFileNode(const LPPCK_PATH_NODE lpBaseNode, char* lpszFile)
 {
 	LPPCK_PATH_NODE lpChildNode = lpBaseNode;
 
@@ -181,7 +181,7 @@ LPPCK_PATH_NODE CPckClassNode::FindFileNode(LPPCK_PATH_NODE lpBaseNode, char* lp
 				if(NULL == lpChildNode->child && 0 == *lpszFilename)return lpChildNode;
 
 				if((NULL == lpChildNode->child && (TEXT('\\') == *lpszFilename || TEXT('/') == *lpszFilename)) || (NULL != lpChildNode->child && 0 == *lpszFilename)) {
-					return (LPPCK_PATH_NODE)-1;
+					return (LPPCK_PATH_NODE)INVALID_NODE;
 				}
 
 				break;
@@ -208,20 +208,24 @@ LPPCK_PATH_NODE CPckClassNode::FindFileNode(LPPCK_PATH_NODE lpBaseNode, char* lp
 #pragma endregion
 #pragma region DeleteNode
 
+VOID CPckClassNode::DeleteNode(LPPCKINDEXTABLE lpIndex)
+{
+	lpIndex->isInvalid = TRUE;
+}
+
 VOID CPckClassNode::DeleteNode(LPPCK_PATH_NODE lpNode)
 {
 	lpNode = lpNode->child->next;
 
 	while(NULL != lpNode) {
 		if(NULL == lpNode->child) {
-			lpNode->lpPckIndexTable->bSelected = TRUE;
+			DeleteNode(lpNode->lpPckIndexTable);
 		} else {
 			DeleteNode(lpNode);
 		}
 
 		lpNode = lpNode->next;
 	}
-
 }
 
 #pragma endregion
@@ -333,14 +337,14 @@ BOOL CPckClassNode::GetCurrentNodeString(char *szCurrentNodePathString, LPPCK_PA
 #pragma endregion
 
 
-BOOL CPckClassNode::FindDuplicateNodeFromFileList(LPPCK_PATH_NODE lpNodeToInsertPtr, DWORD &_in_out_FileCount)
+BOOL CPckClassNode::FindDuplicateNodeFromFileList(const LPPCK_PATH_NODE lpNodeToInsertPtr, DWORD &_in_out_DuplicateFileCount)
 {
 	LPFILES_TO_COMPRESS lpfirstFile = m_firstFile;
 	while(NULL != lpfirstFile->next) {
 		LPPCK_PATH_NODE lpDuplicateNode;
 		lpDuplicateNode = FindFileNode(lpNodeToInsertPtr, lpfirstFile->lpszFileTitle);
 
-		if(-1 == (int)lpDuplicateNode) {
+		if(INVALID_NODE == (int)lpDuplicateNode) {
 			m_PckLog.PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
 			assert(FALSE);
 			return FALSE;
@@ -348,7 +352,8 @@ BOOL CPckClassNode::FindDuplicateNodeFromFileList(LPPCK_PATH_NODE lpNodeToInsert
 
 		if(NULL != lpDuplicateNode) {
 			lpfirstFile->samePtr = lpDuplicateNode->lpPckIndexTable;
-			_in_out_FileCount--;
+			lpDuplicateNode->lpPckIndexTable->isInvalid = TRUE;
+			++_in_out_DuplicateFileCount;
 		}
 
 		lpfirstFile = lpfirstFile->next;

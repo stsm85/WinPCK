@@ -3,8 +3,8 @@
 #include "PckClassZlib.h"
 
 class CPckClassHeadTail :
-	public virtual CPckClassBaseFeatures,
-	public virtual CPckClassZlib
+	protected virtual CPckClassBaseFeatures,
+	protected virtual CPckClassZlib
 {
 public:
 	CPckClassHeadTail();

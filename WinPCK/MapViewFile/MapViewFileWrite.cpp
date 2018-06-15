@@ -175,20 +175,7 @@ BOOL CMapViewFileWrite::Mapping(QWORD qwMaxSize)
 		}
 
 		dwPkxSize.qwValue = qwMaxSize - uqdwMaxPckSize.qwValue;
-		//dwPckSize = dwMaxPckSize;
-
-		//if(dwMaxPckSize < dwPkxSize){
-		//	int a= 1;
-		//	if(dwMaxPckSize < dwMaxSize){
-		//		a=2;
-		//	}
-		//}
-
 		uqwFullSize.qwValue = qwMaxSize;
-
-		//char szNamespace_2[16];
-		//memcpy(szNamespace_2, lpszNamespace, 16);
-		//strcat_s(szNamespace_2, 16, "_2");
 
 		if(NULL == (hFileMapping2 = CreateFileMappingA(hFile2, NULL, PAGE_READWRITE, dwPkxSize.dwValueHigh, dwPkxSize.dwValue, GenerateMapName()))){
 			assert(FALSE);

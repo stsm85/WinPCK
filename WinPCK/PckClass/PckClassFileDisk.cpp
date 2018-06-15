@@ -10,9 +10,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include <windows.h>
-#include "MapViewFile.h"
 #include "PckClassFileDisk.h"
-
 #include "CharsCodeConv.h"
 
 
@@ -80,7 +78,9 @@ BOOL CPckClassFileDisk::IsNeedExpandWritingFile(
 	//1mb=0x100000
 	//64mb=0x4000000
 	if((dwWritingAddressPointer + dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) > dwExpectedTotalCompressedFileSize) {
-		lpWrite->UnMaping();
+		
+		//打印日志
+		CPckClassLog			m_PckLogFD;
 
 		QWORD qwSizeToExpand = ((dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) > PCK_STEP_ADD_SIZE ? (dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) : PCK_STEP_ADD_SIZE);
 		ULARGE_INTEGER lpfree;
@@ -92,13 +92,18 @@ BOOL CPckClassFileDisk::IsNeedExpandWritingFile(
 			qwSizeToExpand = GetPckFilesizeByCompressed(-1, qwSizeToExpand, 0);
 		}
 
-		if(dwFileSizeToWrite > qwSizeToExpand)
+		if(dwFileSizeToWrite > qwSizeToExpand) {
+			m_PckLogFD.PrintLogW("磁盘空间不足，申请空间：%d，剩余空间：%d", dwFileSizeToWrite, qwSizeToExpand);
 			return FALSE;
+		}
 
 		QWORD qwNewExpectedTotalCompressedFileSize = dwExpectedTotalCompressedFileSize + qwSizeToExpand;
 
+		lpWrite->UnMaping();
+
 		if(!lpWrite->Mapping(qwNewExpectedTotalCompressedFileSize)) {
 
+			m_PckLogFD.PrintLogW(TEXT_VIEWMAP_FAIL);
 			lpWrite->Mapping(dwExpectedTotalCompressedFileSize);
 			return FALSE;
 		}
@@ -182,7 +187,7 @@ QWORD CPckClassFileDisk::GetPckFilesizeByCompressed(LPCWSTR lpszFilename, QWORD 
 }
 
 //////////////////////////以下是程序过程中需要调用的过程///////////////////////////////
-VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, LinkList<FILES_TO_COMPRESS> *lpFileLinkList, QWORD &qwTotalFileSize, size_t nLen)
+VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, vector<FILES_TO_COMPRESS> *lpFileLinkList, QWORD &qwTotalFileSize, size_t nLen)
 {
 
 	char		szPath[MAX_PATH], szFile[MAX_PATH];
@@ -245,7 +250,7 @@ VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFil
 
 }
 
-BOOL CPckClassFileDisk::EnumAllFilesByPathList(vector<tstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, LinkList<FILES_TO_COMPRESS> *lpFileLinkList)
+BOOL CPckClassFileDisk::EnumAllFilesByPathList(const vector<tstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList)
 {
 	char		szPathMbsc[MAX_PATH];
 	DWORD		dwAppendCount = lpszFilePath.size();
@@ -274,7 +279,8 @@ BOOL CPckClassFileDisk::EnumAllFilesByPathList(vector<tstring> &lpszFilePath, DW
 				return FALSE;
 			}
 
-			LPFILES_TO_COMPRESS	lpfirstFile = lpFileLinkList->last();
+			lpFileLinkList->push_back(FILES_TO_COMPRESS{ 0 });
+			LPFILES_TO_COMPRESS	lpfirstFile = &lpFileLinkList->back();
 
 			strcpy(lpfirstFile->szFilename, szPathMbsc);
 
@@ -283,10 +289,7 @@ BOOL CPckClassFileDisk::EnumAllFilesByPathList(vector<tstring> &lpszFilePath, DW
 
 			_out_TotalFileSize += (lpfirstFile->dwFileSize = cFileRead.GetFileSize());
 
-			lpFileLinkList->insertNext();
-
-			//cFileRead.clear();
-
+			//lpFileLinkList->insertNext();
 			_out_FileCount++;
 		}
 	}

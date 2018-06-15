@@ -14,43 +14,40 @@
 #include "PckControlCenter.h"
 #include "ZupClass.h"
 #include "PckClassZlib.h"
-#include <strsafe.h>
+//#include <strsafe.h>
 
 
 void CPckControlCenter::New()
 {
 	Close();
 	m_lpClassPck = new CPckClass(&cParams);
-
 }
 
-BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
+FMTPCK	CPckControlCenter::GetPckTypeFromFilename(LPCTSTR lpszFile)
 {
+	size_t nFileLength = _tcsnlen(lpszFile, MAX_PATH);
 
-	//判断文件格式
-	FMTPCK emunFileFormat = FMTPCK_UNKNOWN;
-	size_t	nFileLength;
-
-	StringCchLength(lpszFile, MAX_PATH, &nFileLength);
-
-	if(0 == lstrcmpi(lpszFile + nFileLength - 4, TEXT(".pck"))) {
-		emunFileFormat = FMTPCK_PCK;
-	} else if(0 == lstrcmpi(lpszFile + nFileLength - 4, TEXT(".zup"))) {
-		emunFileFormat = FMTPCK_ZUP;
+	if(0 == _tcsicmp(lpszFile + nFileLength - 4, TEXT(".pck"))) {
+		return FMTPCK_PCK;
+	} else if(0 == _tcsicmp(lpszFile + nFileLength - 4, TEXT(".zup"))) {
+		return FMTPCK_ZUP;
 	}
+	return FMTPCK_UNKNOWN;
+}
+
+BOOL CPckControlCenter::Open(LPCTSTR lpszFile, BOOL isOpenAfterRestore)
+{
+	//判断文件格式
+	FMTPCK emunFileFormat = GetPckTypeFromFilename(lpszFile);
 
 	while(1) {
 
 		Close();
 		switch(emunFileFormat) {
-		case FMTPCK_PCK:
-			m_lpClassPck = new CPckClass(&cParams);
-			break;
-
 		case FMTPCK_ZUP:
 			m_lpClassPck = new CZupClass(&cParams);
 			break;
-
+		case FMTPCK_PCK:
 		default:
 			m_lpClassPck = new CPckClass(&cParams);
 			break;
@@ -60,37 +57,33 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 
 		if(m_lpClassPck->Init(lpszFile)) {
 
+			m_emunFileFormat = emunFileFormat;
+
 			DeleteRestoreData();
 
-			m_lpPckRootNode = m_lpClassPck->GetPckPathNode();
+			//创建一个备份，用于失败后恢复
+			CreateRestoreData();
 
-			m_emunFileFormat = emunFileFormat;
+			m_lpPckRootNode = m_lpClassPck->GetPckPathNode();
 
 			//打开成功，刷新标题
 			SendMessage(m_hWndMain, WM_FRESH_MAIN_CAPTION, 1, 0);
 			return TRUE;
 
 		} else {
+			if((FALSE == isOpenAfterRestore) && RestoreData(lpszFile, emunFileFormat)) {
 
-
-			if(hasRestoreData) {
-				if(IDYES == MessageBoxA(m_hWndMain, TEXT_ERROR_OPEN_AFTER_UPDATE, TEXT_ERROR, MB_YESNO | MB_ICONHAND)) {
-
-					RestoreData(lpszFile);
-				} else {
-					//Close();
-					return FALSE;
-				}
-
+				return Open(lpszFile, TRUE);
 			} else {
-
-				//Close();
 				return FALSE;
 			}
-
 		}
 	}
+}
 
+BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
+{
+	return Open(lpszFile, FALSE);
 }
 
 void CPckControlCenter::SetPckVersion(int verID)
@@ -125,38 +118,46 @@ void CPckControlCenter::Close()
 
 void CPckControlCenter::CreateRestoreData()
 {
-
-	if(m_lpClassPck->GetPckBasicInfo(m_lpszFile4Restore, &m_PckHeadForRestore, m_lpPckFileIndexData, m_dwPckFileIndexDataSize)) {
-		hasRestoreData = TRUE;
-	} else {
-		m_PckLog.PrintLogE(TEXT_ERROR_GET_RESTORE_DATA);
-	}
-
-}
-
-void CPckControlCenter::RestoreData(LPCTSTR lpszFile)
-{
-	if(hasRestoreData) {
-		if(0 == lstrcmpi(m_lpszFile4Restore, lpszFile)) {
-
-			if(!m_lpClassPck->SetPckBasicInfo(&m_PckHeadForRestore, m_lpPckFileIndexData, m_dwPckFileIndexDataSize))
-				m_PckLog.PrintLogE(TEXT_ERROR_RESTORING);
-			else
-				m_PckLog.PrintLogI(TEXT_LOG_RESTOR_OK);
+	if(FMTPCK_PCK == m_emunFileFormat) {
+		if(!m_lpClassPck->GetPckBasicInfo(&m_RestoreInfomation)) {
+			m_PckLog.PrintLogE(TEXT_ERROR_GET_RESTORE_DATA);
 		}
 	}
-	DeleteRestoreData();
+}
+
+BOOL CPckControlCenter::RestoreData(LPCTSTR lpszFile, FMTPCK emunFileFormat)
+{
+	BOOL rtn = FALSE;
+	if(FMTPCK_PCK == emunFileFormat) {
+		if(m_RestoreInfomation.isValid) {
+
+			if(IDYES == MessageBoxA(m_hWndMain, TEXT_ERROR_OPEN_AFTER_UPDATE, TEXT_ERROR, MB_YESNO | MB_ICONHAND)) {
+				if(0 == _tcsicmp(m_RestoreInfomation.szFile, lpszFile)) {
+
+					if(!m_lpClassPck->SetPckBasicInfo(&m_RestoreInfomation))
+						m_PckLog.PrintLogE(TEXT_ERROR_RESTORING);
+					else {
+						m_PckLog.PrintLogI(TEXT_LOG_RESTOR_OK);
+						rtn = TRUE;
+					}
+				}
+			}
+			DeleteRestoreData();
+		}
+	}
+	return rtn;
 }
 
 void CPckControlCenter::DeleteRestoreData()
 {
-	if(NULL != m_lpPckFileIndexData) {
+	if(m_RestoreInfomation.isValid) {
+		if(NULL != m_RestoreInfomation.lpIndexTailBuffer) {
 
-		free(m_lpPckFileIndexData);
-		m_lpPckFileIndexData = NULL;
+			free(m_RestoreInfomation.lpIndexTailBuffer);
+			m_RestoreInfomation.lpIndexTailBuffer = NULL;
+		}
+		m_RestoreInfomation.isValid = FALSE;
 	}
-
-	hasRestoreData = FALSE;
 }
 
 VOID	CPckControlCenter::RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
@@ -175,7 +176,7 @@ BOOL	CPckControlCenter::RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceStri
 }
 
 //新建、更新pck文件
-BOOL	CPckControlCenter::UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lpszFilePath, const LPPCK_PATH_NODE lpNodeToInsert)
+BOOL	CPckControlCenter::UpdatePckFile(LPCTSTR szPckFile, const vector<tstring> &lpszFilePath, const LPPCK_PATH_NODE lpNodeToInsert)
 {
 	return m_lpClassPck->UpdatePckFile(szPckFile, lpszFilePath, lpNodeToInsert);
 }
@@ -183,9 +184,6 @@ BOOL	CPckControlCenter::UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lpszFi
 //重命名文件
 BOOL	CPckControlCenter::RenameFilename()
 {
-	//创建一个备份，用于失败后恢复
-	CreateRestoreData();
-
 	return m_lpClassPck->RenameFilename();
 }
 
@@ -194,13 +192,7 @@ BOOL	CPckControlCenter::RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompr
 {
 	return m_lpClassPck->RebuildPckFile(szRebuildPckFile, bUseRecompress);
 }
-#if 0
-//新建pck文件--
-BOOL	CPckControlCenter::CreatePckFile(LPTSTR szPckFile, LPTSTR szPath)
-{
-	return m_lpClassPck->CreatePckFile(szPckFile, szPath);
-}
-#endif
+
 //解压文件
 BOOL	CPckControlCenter::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 {
@@ -213,11 +205,14 @@ BOOL	CPckControlCenter::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFile
 }
 
 //删除一个节点
+VOID	CPckControlCenter::DeleteNode(LPPCKINDEXTABLE lpNode)
+{
+	return m_lpClassPck->DeleteNode(lpNode);
+}
+
+//删除一个节点
 VOID	CPckControlCenter::DeleteNode(LPPCK_PATH_NODE lpNode)
 {
-	//创建一个备份，用于失败后恢复
-	CreateRestoreData();
-
 	return m_lpClassPck->DeleteNode(lpNode);
 }
 

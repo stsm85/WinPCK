@@ -18,8 +18,7 @@ CPckControlCenter::CPckControlCenter():
 	m_lpClassPck(NULL),
 	m_isSearchMode(FALSE),
 	m_lpPckRootNode(NULL),
-	hasRestoreData(FALSE),
-	m_lpPckFileIndexData(NULL),
+	m_RestoreInfomation({ 0 }),
 	m_emunFileFormat(FMTPCK_UNKNOWN),
 	cParams({ 0 })
 {
@@ -27,23 +26,9 @@ CPckControlCenter::CPckControlCenter():
 	Reset();
 }
 
-#if 0
-CPckControlCenter::CPckControlCenter(HWND hWnd): 
-	m_hWndMain(hWnd),
-	m_lpClassPck(NULL),
-	m_isSearchMode(FALSE),
-	m_lpPckRootNode(NULL),
-	hasRestoreData(FALSE),
-	m_lpPckFileIndexData(NULL),
-	m_emunFileFormat(FMTPCK_UNKNOWN)
-{
-	init();
-	Reset();
-}
-#endif
-
 CPckControlCenter::~CPckControlCenter()
 {
+	DeleteRestoreData();
 }
 
 void CPckControlCenter::setMainWnd(HWND _hWnd)

@@ -55,16 +55,16 @@ public:
 	BOOL	GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
 
 
-protected:
+private:
 
 	//LPPCK_PATH_NODE				m_lpRootNodeZup;
 	LPPCKINDEXTABLE				m_lpZupIndexTable;
 
 	CDictHash					*m_lpDictHash;
 
-protected:
+private:
 
-	virtual void	BuildDirTree();
+	void	BuildDirTree();
 	BOOL	BuildZupBaseDict();
 	void	DecodeFilename(char *_dst, wchar_t *_wdst, char *_src);
 

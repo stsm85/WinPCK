@@ -56,18 +56,23 @@ void TInstDlg::initParams()
 	//bThreadRunning = FALSE;			//线程运行标记
 	bGoingToExit = FALSE;			//是否准备退出
 
+#ifdef _DEBUG
+	lpPckParams->dwMTThread = 8;	//获取当前机器的CPU个数;
+	lpPckParams->dwMTMaxThread = 50;
+#else
 	//获取当前机器的CPU个数
 	SYSTEM_INFO sysinfo;								//定义结构对象
 	GetSystemInfo(&sysinfo);							//获取当前机器的信息
 	lpPckParams->dwMTThread = sysinfo.dwNumberOfProcessors;	//获取当前机器的CPU个数;
-#ifdef _DEBUG
-	lpPckParams->dwMTMaxThread = 50;
-#else
 	lpPckParams->dwMTMaxThread = sysinfo.dwNumberOfProcessors + ((sysinfo.dwNumberOfProcessors + (sysinfo.dwNumberOfProcessors & 1)) >> 1);
 #endif
 
 	lpPckParams->dwCompressLevel = Z_DEFAULT_COMPRESS_LEVEL;
+#ifdef _DEBUG
+	lpPckParams->dwMTMaxMemory = (128 * 1024 * 1024);
+#else
 	lpPckParams->dwMTMaxMemory = MT_MAX_MEMORY;
+#endif
 
 	//光标加载
 	m_isSearchWindow = FALSE;

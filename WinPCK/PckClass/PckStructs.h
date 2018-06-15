@@ -10,6 +10,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "PckDefines.h"
+#include <vector>
+using namespace std;
 
 #if !defined(_PCKSTRUCTS_H_)
 #define _PCKSTRUCTS_H_
@@ -211,11 +213,13 @@ typedef struct _PCK_FILE_INDEX
 typedef struct _PCK_INDEX_TABLE
 {
 	PCKFILEINDEX	cFileIndex;
-	BOOL			bSelected;			//界面上被选择时置1，一般如界面操作删除、重命名节点时使用
-	BOOL			isRecompressed;		//压缩重建时使用，在进行多线程操作时，已经进行过重压缩操作的文件此值置TRUE
+	//BOOL			bSelected;			//界面上被选择时置1，一般如界面操作删除、重命名节点时使用
+	//BOOL			isRecompressed;		//压缩重建时使用，在进行多线程操作时，已经进行过重压缩操作的文件此值置TRUE
 	BOOL			isInvalid;			//添加文件时，如果文件名重复，则被覆盖的文件设置为TRUE（在打开文件建立文件目录树时，同名的文件，后面的会覆盖前面的，被覆盖的此值设为TRUE)
 	BOOL			isProtected;		//文件设置保护，不允许删除
 	BOOL			isToDeDelete;		//设置为TRUE后，文件会被删除，isProtected为TRUE的除外
+	DWORD			dwMallocSize;						//申请空间使用的大小（>=压缩后的文件大小）
+	LPBYTE			compressed_file_data;				//此index对应的压缩数据
 }PCKINDEXTABLE, *LPPCKINDEXTABLE;
 
 
@@ -236,6 +240,9 @@ typedef struct _PCK_PATH_NODE
 
 typedef struct _FILES_TO_COMPRESS
 {
+#ifdef _DEBUG
+	int				id;
+#endif
 	DWORD			dwCompressedflag;
 	DWORD			dwFileSize;
 	char			*lpszFileTitle;
@@ -263,9 +270,8 @@ typedef struct _PCK_INDEX_TABLE_COMPRESS
 	DWORD			dwMallocSize;						//申请空间使用的大小（>=压缩后的文件大小）
 	QWORD			dwAddressFileDataToWrite;			//压缩后的数据写入文件的地址
 	DWORD			dwAddressOfDuplicateOldDataArea;	//如果使用老数据区，其地址
-	BOOL			bInvalid;							//添加模式时，文件名如果重复，使用已存在的文件索引，这个作废
-	QWORD			dwAddressAddStep;					//写完文件后，dwAddress的指针应该加上的数字
-	LPBYTE			compressed_file_data;				//此index对应的压缩数据
+	//BOOL			bInvalid;							//添加模式时，文件名如果重复，使用已存在的文件索引，这个作废
+	//QWORD			dwAddressAddStep;					//写完文件后，dwAddress的指针应该加上的数字
 }PCKINDEXTABLE_COMPRESS, *LPPCKINDEXTABLE_COMPRESS;
 
 
@@ -284,23 +290,28 @@ typedef struct _PCK_ALL_INFOS
 
 	TCHAR				szNewFilename[MAX_PATH];
 	//TCHAR				szNewFileTitle[MAX_PATH];
+	DWORD				dwFileCountOld;
 	DWORD				dwFileCountToAdd;
-	LPPCKINDEXTABLE		lpPckIndexTableToAdd;	
+	DWORD				dwFinalFileCount;
+
+	vector<FILES_TO_COMPRESS>				*lpFilesToBeAdded;
+	const vector<PCKINDEXTABLE_COMPRESS>	*lpPckIndexTableToAdd;
 
 	const PCK_VERSION_FUNC*	lpDetectedPckVerFunc;
 	const PCK_VERSION_FUNC*	lpSaveAsPckVerFunc;
 
 }PCK_ALL_INFOS, *LPPCK_ALL_INFOS;
 
-typedef struct _PCK_WRITING_VARS
+typedef struct _RESTORE_INFOS
 {
-
-	QWORD	dwAddress;		//压缩算法中使用的参数，当前写入地址或文件大小
-	void*	lpFileRead;
-	void*	lpFileWrite;
-	int		level;
-
-}PCK_WRITING_VARS, *LPPCK_WRITING_VARS;
+	BOOL			isValid;
+	TCHAR			szFile[MAX_PATH];
+	DWORD			dwMaxSinglePckSize;
+	PCKHEAD_V2020	Head;
+	QWORD			dwAddressOfFilenameIndex;
+	size_t			sizeOfIndexTailBuffer;
+	LPBYTE			lpIndexTailBuffer;
+}RESTORE_INFOS, *LPRESTORE_INFOS;
 
 
 #endif

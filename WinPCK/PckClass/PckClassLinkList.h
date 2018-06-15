@@ -1,5 +1,7 @@
 #pragma once
-
+#if 1
+#include <Windows.h>
+#include "PckStructs.h"
 template<typename Type>
 class LinkList
 {
@@ -44,6 +46,9 @@ template<typename Type>
 BOOL LinkList<Type>::insertNext()
 {
 	tail->next = AllocMemory();
+#ifdef _DEBUG
+	tail->next->id = tail->id + 1;
+#endif
 	tail = tail->next;
 	tail->next = NULL;
 	return (NULL != tail);
@@ -73,3 +78,4 @@ LinkList<Type>::~LinkList()
 	}
 	head = NULL;
 }
+#endif

@@ -9,8 +9,11 @@ public:
 	~CPckClassIndexWriter();
 
 protected:
+	BOOL WriteAllIndex(CMapViewFileWrite *lpWrite, LPPCK_ALL_INFOS lpPckAllInfo, QWORD &dwAddress);
 
-	BOOL WritePckIndex(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, QWORD &dwAddress);
-	BOOL WritePckIndexTable(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, DWORD &dwFileCount, QWORD &dwAddress);
+private:
+	BOOL WritePckIndex(CMapViewFileWrite *lpWrite, const PCKINDEXTABLE_COMPRESS *lpPckIndexTablePtr, QWORD &dwAddress);
+	//BOOL WritePckIndexTable(CMapViewFileWrite *lpWrite, LPPCKINDEXTABLE_COMPRESS lpPckIndexTablePtr, DWORD &dwFileCount, QWORD &dwAddress);
+
 };
 

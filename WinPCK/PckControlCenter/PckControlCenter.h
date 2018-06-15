@@ -24,83 +24,81 @@ class CPckControlCenter
 	//函数
 public:
 	CPckControlCenter();
-	//CPckControlCenter(HWND hWnd);
 	virtual ~CPckControlCenter();
-
-	void					setMainWnd(HWND _hWnd);
-	void					init();
-	void					Reset(DWORD dwUIProgressUpper = 1);
 
 	LPPCK_RUNTIME_PARAMS	GetParams();
 
-	void					New();
-	BOOL					Open(LPCTSTR lpszFile);
-	void					Close();
+	void	setMainWnd(HWND _hWnd);
+	void	init();
+	void	Reset(DWORD dwUIProgressUpper = 1);
 
-	int						GetPckVersion();
-	void					SetPckVersion(int verID);
+	void	New();
+private:
+	BOOL	Open(LPCTSTR lpszFile, BOOL isOpenAfterRestore);
+public:
+	BOOL	Open(LPCTSTR lpszFile);
+	void	Close();
+
+	int		GetPckVersion();
+	void	SetPckVersion(int verID);
 
 	//获取当前配置名称
-	LPCTSTR					GetCurrentVersionName();
+	LPCTSTR	GetCurrentVersionName();
 
-	LPCTSTR					GetSaveDlgFilterString();
+	LPCTSTR	GetSaveDlgFilterString();
 
 
 	//界面交互
 	//当前操作的列表的index
-	CONST INT				GetListCurrentHotItem();
-	void					SetListCurrentHotItem(int _val);
+	CONST INT GetListCurrentHotItem();
+	void	SetListCurrentHotItem(int _val);
 	//列表显示模式 ，文件夹显示or 搜索显示模式
-	CONST BOOL				GetListInSearchMode();
-	void					SetListInSearchMode(BOOL _val);
+	CONST BOOL GetListInSearchMode();
+	void	SetListInSearchMode(BOOL _val);
 
 
 	///pck 类的交互
 	CONST	LPPCKINDEXTABLE		GetPckIndexTable();
 
 
-	BOOL						IsValidPck();
+	BOOL		IsValidPck();
 
 	//获取node路径
-	BOOL						GetCurrentNodeString(char* szCurrentNodePathString, LPPCK_PATH_NODE lpNode);
+	BOOL		GetCurrentNodeString(char* szCurrentNodePathString, LPPCK_PATH_NODE lpNode);
 
 	//获取文件数
-	DWORD						GetPckFileCount();
+	DWORD		GetPckFileCount();
 
-	QWORD						GetPckSize();
-	QWORD						GetPckDataAreaSize();
-	QWORD						GetPckRedundancyDataSize();
+	QWORD		GetPckSize();
+	QWORD		GetPckDataAreaSize();
+	QWORD		GetPckRedundancyDataSize();
 
 	//预览文件
-	BOOL						GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
-
+	BOOL		GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
 
 	//设置附加信息
-	char*						GetAdditionalInfo();
-	BOOL						SetAdditionalInfo();
+	char*		GetAdditionalInfo();
+	BOOL		SetAdditionalInfo();
 
-	VOID						RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
-	VOID						RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
+	VOID		RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
+	VOID		RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
 
 	//重命名一个节点
-	BOOL						RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
+	BOOL		RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
 
 	//解压文件
-	BOOL						ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount);
-	BOOL						ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount);
+	BOOL		ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount);
+	BOOL		ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount);
 
 	//重置PCK的压缩参数
 	void	ResetCompressor();
-#if 0
-	//新建pck文件
-	BOOL	CreatePckFile(LPTSTR szPckFile, LPTSTR szPath);
-#endif
+
 	//重建pck文件
 	BOOL	ParseScript(LPCTSTR lpszScriptFile);
 	BOOL	RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress);
 
 	//新建、更新pck文件
-	BOOL	UpdatePckFile(LPCTSTR szPckFile, vector<tstring> &lpszFilePath, const LPPCK_PATH_NODE lpNodeToInsert);
+	BOOL	UpdatePckFile(LPCTSTR szPckFile, const vector<tstring> &lpszFilePath, const LPPCK_PATH_NODE lpNodeToInsert);
 
 	//是否是支持更新的文件
 	BOOL	isSupportAddFileToPck();
@@ -109,12 +107,15 @@ public:
 	BOOL	RenameFilename();
 
 	//删除一个节点
+	VOID	DeleteNode(LPPCKINDEXTABLE lpNode);
 	VOID	DeleteNode(LPPCK_PATH_NODE lpNode);
 
 private:
 
+	FMTPCK	GetPckTypeFromFilename(LPCTSTR lpszFile);
+
 	void	CreateRestoreData();
-	void	RestoreData(LPCTSTR lpszFile);
+	BOOL	RestoreData(LPCTSTR lpszFile, FMTPCK emunFileFormat);
 	void	DeleteRestoreData();
 
 public:
@@ -130,14 +131,7 @@ private:
 	CPckClass					*m_lpClassPck;
 	CPckClassLog				m_PckLog;
 
-	BOOL						hasRestoreData;
-
-	TCHAR						m_lpszFile4Restore[MAX_PATH];
-
-	PCKHEAD_V2020				m_PckHeadForRestore;
-	LPBYTE						m_lpPckFileIndexData;
-	DWORD						m_dwPckFileIndexDataSize;
-
+	RESTORE_INFOS				m_RestoreInfomation;
 	//LOG
 	HWND						m_hWndMain;
 

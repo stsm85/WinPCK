@@ -154,3 +154,16 @@ int CPckClassZlib::decompress_part(void *dest, unsigned long  *destLen, const vo
 		return Z_OK;
 	}
 }
+
+//获取数据压缩后的大小，如果源大小小于一定值就不压缩
+unsigned long CPckClassZlib::GetCompressBoundSizeByFileSize(unsigned long &dwFileClearTextSize, unsigned long &dwFileCipherTextSize, unsigned long dwFileSize)
+{
+	if(PCK_BEGINCOMPRESS_SIZE < dwFileSize) {
+		dwFileClearTextSize = dwFileSize;
+		dwFileCipherTextSize = compressBound(dwFileSize);
+	} else {
+		dwFileCipherTextSize = dwFileClearTextSize = dwFileSize;
+	}
+
+	return dwFileCipherTextSize;
+}

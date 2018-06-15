@@ -3,18 +3,17 @@
 typedef unsigned __int64	QWORD;
 #include "PckDefines.h"
 #include "PckClassLinkList.h"
-#include "PckClassBaseFeatures.h"
+#include "PckClassLog.h"
+#include "MapViewFile.h"
 
 class CPckClassFileDisk
 {
 public:
 	CPckClassFileDisk();
 	~CPckClassFileDisk();
-	//
 
-	BOOL		EnumAllFilesByPathList(vector<tstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, LinkList<FILES_TO_COMPRESS> *lpFileLinkList);
-
-
+protected:
+	BOOL		EnumAllFilesByPathList(const vector<tstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList);
 	//压缩重建、压缩写入空间不够时扩展空间
 	BOOL		IsNeedExpandWritingFile(
 		CMapViewFileWrite *lpWrite,
@@ -37,7 +36,7 @@ private:
 	//qwCurrentPckFilesize为已经存在的文件大小，qwToAddSpace是需要扩大的大小，返回值为（qwCurrentPckFilesize + 可以再扩大的最大大小）
 	QWORD	GetPckFilesizeByCompressed(QWORD qwDiskFreeSpace, QWORD qwToAddSpace, QWORD qwCurrentPckFilesize);
 	//遍历文件夹
-	VOID	EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, LinkList<FILES_TO_COMPRESS> *lpFileLinkList, QWORD &qwTotalFileSize, size_t nLen);
+	VOID	EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, vector<FILES_TO_COMPRESS> *lpFileLinkList, QWORD &qwTotalFileSize, size_t nLen);
 
 };
 

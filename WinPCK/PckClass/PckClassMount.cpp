@@ -21,8 +21,6 @@ BOOL CPckClass::MountPckFile(LPCTSTR	szFile)
 	if(!ReadPckFileIndexes())
 		return FALSE;
 
-	BuildDirTree();
-
 	return TRUE;
 }
 

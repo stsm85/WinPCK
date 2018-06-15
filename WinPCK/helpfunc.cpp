@@ -396,7 +396,7 @@ void TInstDlg::RefreshProgress()
 	TCHAR		szString[MAX_PATH];
 	INT			iNewPos;
 
-	//if(0 == lpPckParams->cVarParams.dwUIProgressUpper)lpPckParams->cVarParams.dwUIProgressUpper = 1;
+	if(0 == lpPckParams->cVarParams.dwUIProgressUpper)lpPckParams->cVarParams.dwUIProgressUpper = 1;
 	iNewPos = (INT)((lpPckParams->cVarParams.dwUIProgress << 10) /
 		lpPckParams->cVarParams.dwUIProgressUpper);
 
