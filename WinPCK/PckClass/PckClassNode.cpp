@@ -339,8 +339,14 @@ BOOL CPckClassNode::GetCurrentNodeString(char *szCurrentNodePathString, LPPCK_PA
 
 BOOL CPckClassNode::FindDuplicateNodeFromFileList(const LPPCK_PATH_NODE lpNodeToInsertPtr, DWORD &_in_out_DuplicateFileCount)
 {
-	LPFILES_TO_COMPRESS lpfirstFile = m_firstFile;
-	while(NULL != lpfirstFile->next) {
+	vector<FILES_TO_COMPRESS> *lpFilesList = m_PckAllInfo.lpFilesToBeAdded;
+	size_t sizeOfFileList = lpFilesList->size();
+
+	//LPFILES_TO_COMPRESS lpfirstFile = m_firstFile;
+	//while(NULL != lpfirstFile->next) {
+	for(size_t i=0;i<sizeOfFileList;i++){
+
+		FILES_TO_COMPRESS *lpfirstFile = &(*lpFilesList)[i];
 		LPPCK_PATH_NODE lpDuplicateNode;
 		lpDuplicateNode = FindFileNode(lpNodeToInsertPtr, lpfirstFile->lpszFileTitle);
 
@@ -356,7 +362,7 @@ BOOL CPckClassNode::FindDuplicateNodeFromFileList(const LPPCK_PATH_NODE lpNodeTo
 			++_in_out_DuplicateFileCount;
 		}
 
-		lpfirstFile = lpfirstFile->next;
+		//lpfirstFile = lpfirstFile->next;
 
 	}
 	return TRUE;

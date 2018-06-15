@@ -3,8 +3,7 @@
 #include <tchar.h>
 
 CPckClassBaseFeatures::CPckClassBaseFeatures():
-	m_PckAllInfo({ 0 }),
-	m_firstFile(NULL)
+	m_PckAllInfo({ 0 })
 {
 #ifdef _DEBUG
 	InitializeSRWLock(&m_LockLogFile);

@@ -11,11 +11,11 @@
 
 #pragma warning ( disable : 4996 )
 
-#include <Windows.h>
+#include <stdio.h>
 #include "PckClassLog.h"
 #include "CharsCodeConv.h"
 #include <assert.h>
-#include <stdio.h>
+
 
 const char	CPckClassLog::m_szLogPrefix[LOG_IMAGE_COUNT] = { 'N', 'I', 'W', 'E', 'D', ' ' };
 ShowLogW	CPckClassLog::ShowLogExtern = NULL;

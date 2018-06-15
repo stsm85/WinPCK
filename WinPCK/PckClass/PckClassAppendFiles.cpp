@@ -20,6 +20,7 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 
 #pragma region ÉèÖÃ²ÎÊý
 	
+	m_FilesToBeAdded.clear();
 	m_PckAllInfo.lpFilesToBeAdded = &m_FilesToBeAdded;
 
 	if(m_PckAllInfo.isPckFileLoaded) {
@@ -102,7 +103,7 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 #pragma endregion
 
 	cThreadParams.pThis = (CPckClassThreadWorker*)this;
-	cThreadParams.cDataFetchMethod.lpFileToCompress = m_firstFile;
+	cThreadParams.cDataFetchMethod.lpFilesList = m_PckAllInfo.lpFilesToBeAdded;
 	cThreadParams.GetUncompressedData = &GetUncompressedDataFromFile;
 
 	if(!initMultiThreadVars(&cFileWriter)) {

@@ -1,4 +1,5 @@
 #pragma once
+#include <Windows.h>
 
 //»’÷æ
 #define	LOG_BUFFER						8192

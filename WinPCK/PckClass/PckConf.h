@@ -8,7 +8,8 @@
 // 
 // 2015.5.13
 //////////////////////////////////////////////////////////////////////
-
+#pragma once
+#include <Windows.h>
 typedef unsigned __int64	QWORD, *LPQWORD;
 //typedef int                 BOOL;
 //typedef unsigned char       BYTE;

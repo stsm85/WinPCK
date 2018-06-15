@@ -7,21 +7,30 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThread
 	while(1) {
 
 		AcquireSRWLockExclusive(&g_mt_LockCompressedflag);
-		LPFILES_TO_COMPRESS		lpfirstFile = lpDataFetchMethod->lpFileToCompress;
-		if(NULL == lpfirstFile->next) {
+		size_t sizeOfFilesList = lpDataFetchMethod->lpFilesList->size();
+		if(0 == sizeOfFilesList) {
 			ReleaseSRWLockExclusive(&g_mt_LockCompressedflag);
 			return FD_END;
 		}
-		lpDataFetchMethod->lpFileToCompress = lpfirstFile->next;
+
+		//LPFILES_TO_COMPRESS		lpfirstFile = lpDataFetchMethod->lpFilesList;
+		FILES_TO_COMPRESS cOneFile;
+		memcpy(&cOneFile, &lpDataFetchMethod->lpFilesList->back(), sizeof(FILES_TO_COMPRESS));
+		lpDataFetchMethod->lpFilesList->pop_back();
+		//if(NULL == lpfirstFile->next) {
+		//	ReleaseSRWLockExclusive(&g_mt_LockCompressedflag);
+		//	return FD_END;
+		//}
+		//lpDataFetchMethod->lpFileToCompress = lpfirstFile->next;
 		ReleaseSRWLockExclusive(&g_mt_LockCompressedflag);
 
 #ifdef _DEBUG
-		logOutput(__FUNCTION__, "lpfirstFile_id=%d\r\n", lpfirstFile->id);
+		logOutput(__FUNCTION__, "lpfirstFile_id=%d\r\n", sizeOfFilesList);
 #endif
 		LPBYTE lpCompressedBuffer = (BYTE*)MALLOCED_EMPTY_DATA;
-		pckFileIndex.dwMallocSize = pThis->GetCompressBoundSizeByFileSize(pckFileIndex.cFileIndex.dwFileClearTextSize, pckFileIndex.cFileIndex.dwFileCipherTextSize,lpfirstFile->dwFileSize);
+		pckFileIndex.dwMallocSize = pThis->GetCompressBoundSizeByFileSize(pckFileIndex.cFileIndex.dwFileClearTextSize, pckFileIndex.cFileIndex.dwFileCipherTextSize, cOneFile.dwFileSize);
 
-		memcpy(mystrcpy(pckFileIndex.cFileIndex.szFilename, mt_szCurrentNodeString), lpfirstFile->lpszFileTitle, lpfirstFile->nBytesToCopy - mt_nCurrentNodeStringLen);
+		memcpy(mystrcpy(pckFileIndex.cFileIndex.szFilename, mt_szCurrentNodeString), cOneFile.lpszFileTitle, cOneFile.nBytesToCopy - mt_nCurrentNodeStringLen);
 
 		//如果文件大小为0，则跳过打开文件步骤
 		if(0 != pckFileIndex.cFileIndex.dwFileClearTextSize) {
@@ -29,7 +38,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThread
 			LPBYTE					lpBufferToRead;
 			//文件不为0时的处理
 			//打开要进行压缩的文件
-			if(NULL == (lpBufferToRead = cFileRead.OpenMappingAndViewAllRead(lpfirstFile->szFilename))) {
+			if(NULL == (lpBufferToRead = cFileRead.OpenMappingAndViewAllRead(cOneFile.szFilename))) {
 				return FD_ERR;
 			}
 

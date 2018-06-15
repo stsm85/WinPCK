@@ -3,8 +3,6 @@
 #include "PckClassIndexWriter.h"
 #include "PckClassThread.h"
 
-#include "PckClassLinkList.h"
-
 typedef enum { OP_CheckFile = 0, OP_Protect, OP_Delete, OP_Rmdir, OP_Unknown } SCRIPTOP;
 
 typedef struct

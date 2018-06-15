@@ -12,7 +12,8 @@ class CPckClassThreadWorker;
 typedef struct _DataFetchMethod
 {
 	
-	LPFILES_TO_COMPRESS		lpFileToCompress;
+	//LPFILES_TO_COMPRESS		lpFileToCompress;
+	vector<FILES_TO_COMPRESS> *lpFilesList;
 
 	CMapViewFileRead		*lpFileReadPCK;
 	LPPCKINDEXTABLE			lpPckIndexTablePtrSrc;

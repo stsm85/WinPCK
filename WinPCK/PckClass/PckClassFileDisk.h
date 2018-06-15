@@ -1,10 +1,10 @@
 #pragma once
 
 typedef unsigned __int64	QWORD;
-#include "PckDefines.h"
-#include "PckClassLinkList.h"
+#include "PckStructs.h"
 #include "PckClassLog.h"
 #include "MapViewFile.h"
+
 
 class CPckClassFileDisk
 {

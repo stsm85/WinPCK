@@ -406,9 +406,6 @@
     <ClInclude Include="MiscFuncs\ShowLogOnDlgListView.h">
       <Filter>头文件\MiscFuncs</Filter>
     </ClInclude>
-    <ClInclude Include="PckClass\PckClassLinkList.h">
-      <Filter>头文件\PckClass</Filter>
-    </ClInclude>
     <ClInclude Include="PckClass\PckClassNode.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>

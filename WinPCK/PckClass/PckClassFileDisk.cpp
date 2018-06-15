@@ -220,7 +220,8 @@ VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFil
 
 				++dwFileCount;
 
-				LPFILES_TO_COMPRESS pFileinfo = lpFileLinkList->last();
+				lpFileLinkList->push_back(FILES_TO_COMPRESS{ 0 });
+				LPFILES_TO_COMPRESS	pFileinfo = &lpFileLinkList->back();
 
 				if(MAX_PATH_PCK_260 < nLenBytePath + strlen(WFD.cFileName)) {
 					mystrcpy(mystrcpy(mystrcpy(pFileinfo->szFilename, szPath), "\\"), WFD.cAlternateFileName);
@@ -237,7 +238,7 @@ VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFil
 
 				qwTotalFileSize += (pFileinfo->dwFileSize = WFD.nFileSizeLow);
 
-				lpFileLinkList->insertNext();
+				//lpFileLinkList->insertNext();
 				//pFileinfo->next = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS));
 				//pFileinfo = pFileinfo->next;
 

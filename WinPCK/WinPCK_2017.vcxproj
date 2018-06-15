@@ -553,7 +553,6 @@
     <ClInclude Include="PckClass\PckClassHeadTailWriter.h" />
     <ClInclude Include="PckClass\PckClassIndex.h" />
     <ClInclude Include="PckClass\PckClassIndexWriter.h" />
-    <ClInclude Include="PckClass\PckClassLinkList.h" />
     <ClInclude Include="PckClass\PckClassLog.h" />
     <ClInclude Include="PckClass\PckClassNode.h" />
     <ClInclude Include="PckClass\PckClassWriteOperator.h" />
