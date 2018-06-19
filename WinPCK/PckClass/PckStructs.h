@@ -289,7 +289,6 @@ typedef struct _PCK_ALL_INFOS
 	PCK_PATH_NODE		cRootNode;			//PCK文件节点的根节点
 
 	TCHAR				szNewFilename[MAX_PATH];
-	//TCHAR				szNewFileTitle[MAX_PATH];
 	DWORD				dwFileCountOld;
 	DWORD				dwFileCountToAdd;
 	DWORD				dwFinalFileCount;
