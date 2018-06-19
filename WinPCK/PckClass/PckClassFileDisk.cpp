@@ -229,18 +229,14 @@ VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFil
 					mystrcpy(mystrcpy(mystrcpy(pFileinfo->szFilename, szPath), "\\"), WFD.cFileName);
 				}
 
-#if 0
-				logOutput(__FUNCTION__, formatString("pFileinfo add:(%d)\t%s\r\n", (int)pFileinfo, pFileinfo->szFilename));
+#ifdef _DEBUG
+				pFileinfo->id = lpFileLinkList->size();
 #endif
 
-				pFileinfo->lpszFileTitle = pFileinfo->szFilename + nLen;
+				pFileinfo->nFileTitleLen = nLen;
 				pFileinfo->nBytesToCopy = MAX_PATH - nLen;
 
 				qwTotalFileSize += (pFileinfo->dwFileSize = WFD.nFileSizeLow);
-
-				//lpFileLinkList->insertNext();
-				//pFileinfo->next = (LPFILES_TO_COMPRESS)AllocMemory(sizeof(FILES_TO_COMPRESS));
-				//pFileinfo = pFileinfo->next;
 
 			}
 
@@ -285,12 +281,13 @@ BOOL CPckClassFileDisk::EnumAllFilesByPathList(const vector<tstring> &lpszFilePa
 
 			strcpy(lpfirstFile->szFilename, szPathMbsc);
 
-			lpfirstFile->lpszFileTitle = lpfirstFile->szFilename + nLen;
+			lpfirstFile->nFileTitleLen = nLen;
 			lpfirstFile->nBytesToCopy = MAX_PATH - nLen;
 
+#ifdef _DEBUG
+			lpfirstFile->id = lpFileLinkList->size();
+#endif
 			_out_TotalFileSize += (lpfirstFile->dwFileSize = cFileRead.GetFileSize());
-
-			//lpFileLinkList->insertNext();
 			_out_FileCount++;
 		}
 	}

@@ -160,14 +160,14 @@ void CPckControlCenter::DeleteRestoreData()
 	}
 }
 
-VOID	CPckControlCenter::RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
+BOOL	CPckControlCenter::RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 {
-	m_lpClassPck->RenameIndex(lpNode, lpszReplaceString);
+	return m_lpClassPck->RenameIndex(lpNode, lpszReplaceString);
 }
 
-VOID	CPckControlCenter::RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString)
+BOOL	CPckControlCenter::RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString)
 {
-	m_lpClassPck->RenameIndex(lpIndex, lpszReplaceString);
+	return m_lpClassPck->RenameIndex(lpIndex, lpszReplaceString);
 }
 
 BOOL	CPckControlCenter::RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)

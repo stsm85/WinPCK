@@ -11,14 +11,16 @@ class CPckClassThreadWorker;
 
 typedef struct _DataFetchMethod
 {
-	
-	//LPFILES_TO_COMPRESS		lpFileToCompress;
-	vector<FILES_TO_COMPRESS> *lpFilesList;
+	vector<FILES_TO_COMPRESS>::const_iterator ciFilesList;
+	vector<FILES_TO_COMPRESS>::const_iterator ciFilesListEnd;
 
 	CMapViewFileRead		*lpFileReadPCK;
 	LPPCKINDEXTABLE			lpPckIndexTablePtrSrc;
 	DWORD					dwProcessIndex;
-	DWORD					dwtotalIndexCount;
+	DWORD					dwTotalIndexCount;
+
+	char					szCurrentNodeString[MAX_PATH_PCK_260];						//（界面线程中当前显示的）节点对应的pck中的文件路径
+	int						nCurrentNodeStringLen;										//其长度
 
 }DATA_FETCH_METHOD, *LPDATA_FETCH_METHOD;
 
@@ -87,7 +89,6 @@ private:
 
 protected:
 
-	static	CMapViewFileRead	*mt_lpFileRead;													//全局读文件的句柄,目前仅用于重压缩
 	static	CMapViewFileWrite	*mt_lpFileWrite;												//全局写文件的句柄
 	static	QWORD				mt_CompressTotalFileSize;										//预计的压缩文件大小
 	static	DWORD				mt_dwFileCountOfWriteTarget;									//写入数据的目标数量,一般=mt_dwFileCount，添加时=重压缩时的有效文件数量
@@ -101,10 +102,6 @@ private:
 protected:
 	static	QWORD				mt_dwAddressQueue;												//全局压缩过程的写文件的位置，只由Queue控制
 	static	QWORD				mt_dwAddressNameQueue;											//读出的pck文件的压缩文件名索引起始位置
-
-																						//添加时使用变
-	static	char				mt_szCurrentNodeString[MAX_PATH_PCK_260];						//（界面线程中当前显示的）节点对应的pck中的文件路径
-	static	int					mt_nCurrentNodeStringLen;										//其长度
 
 
 //private:

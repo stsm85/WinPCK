@@ -292,7 +292,7 @@ BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 }
 
 
-VOID CPckClassNode::RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
+BOOL CPckClassNode::RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 {
 	size_t nBytesReadayToWrite;
 	char	*lpszPosToWrite;
@@ -305,13 +305,15 @@ VOID CPckClassNode::RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 
 	memset(lpszPosToWrite, 0, MAX_PATH_PCK_260 - nBytesReadayToWrite);
 	strcpy(lpszPosToWrite, lpszReplaceString);
+	return TRUE;
 
 }
 
-VOID CPckClassNode::RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString)
+BOOL CPckClassNode::RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString)
 {
 	memset(lpIndex->cFileIndex.szFilename, 0, MAX_PATH_PCK_260);
 	strcpy(lpIndex->cFileIndex.szFilename, lpszReplaceString);
+	return TRUE;
 
 }
 
@@ -348,7 +350,7 @@ BOOL CPckClassNode::FindDuplicateNodeFromFileList(const LPPCK_PATH_NODE lpNodeTo
 
 		FILES_TO_COMPRESS *lpfirstFile = &(*lpFilesList)[i];
 		LPPCK_PATH_NODE lpDuplicateNode;
-		lpDuplicateNode = FindFileNode(lpNodeToInsertPtr, lpfirstFile->lpszFileTitle);
+		lpDuplicateNode = FindFileNode(lpNodeToInsertPtr, lpfirstFile->szFilename + lpfirstFile->nFileTitleLen);
 
 		if(INVALID_NODE == (int)lpDuplicateNode) {
 			m_PckLog.PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);

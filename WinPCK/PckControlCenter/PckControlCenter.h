@@ -80,8 +80,8 @@ public:
 	char*		GetAdditionalInfo();
 	BOOL		SetAdditionalInfo();
 
-	VOID		RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
-	VOID		RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
+	BOOL		RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
+	BOOL		RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
 
 	//重命名一个节点
 	BOOL		RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);

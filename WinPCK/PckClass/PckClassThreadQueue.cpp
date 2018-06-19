@@ -16,6 +16,17 @@ BOOL CPckClassThreadWorker::initCompressedDataQueue(DWORD dwFileCount, QWORD dwA
 
 BOOL CPckClassThreadWorker::putCompressedDataQueue(PCKINDEXTABLE &cPckFileIndexToCompress)
 {
+#pragma region ¼õÉÙÄÚ´æÏûºÄ
+	DWORD dwUnusedMemory = cPckFileIndexToCompress.dwMallocSize - cPckFileIndexToCompress.cFileIndex.dwFileCipherTextSize;
+	if((10 * 1024 * 1024) < dwUnusedMemory) {
+		LPBYTE newbuf = (LPBYTE)realloc(cPckFileIndexToCompress.compressed_file_data, cPckFileIndexToCompress.cFileIndex.dwFileCipherTextSize);
+		if(NULL != newbuf) {
+			cPckFileIndexToCompress.compressed_file_data = newbuf;
+			cPckFileIndexToCompress.dwMallocSize = cPckFileIndexToCompress.cFileIndex.dwFileCipherTextSize;
+		}
+		freeMaxToSubtractMemory(dwUnusedMemory);
+	}
+#pragma endregion
 
 	AcquireSRWLockExclusive(&m_LockQueue);
 	m_QueueContent.push_back(cPckFileIndexToCompress);

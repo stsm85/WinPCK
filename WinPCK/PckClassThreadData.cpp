@@ -7,30 +7,22 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThread
 	while(1) {
 
 		AcquireSRWLockExclusive(&g_mt_LockCompressedflag);
-		size_t sizeOfFilesList = lpDataFetchMethod->lpFilesList->size();
-		if(0 == sizeOfFilesList) {
+		if(lpDataFetchMethod->ciFilesList == lpDataFetchMethod->ciFilesListEnd) {
 			ReleaseSRWLockExclusive(&g_mt_LockCompressedflag);
 			return FD_END;
 		}
-
-		//LPFILES_TO_COMPRESS		lpfirstFile = lpDataFetchMethod->lpFilesList;
-		FILES_TO_COMPRESS cOneFile;
-		memcpy(&cOneFile, &lpDataFetchMethod->lpFilesList->back(), sizeof(FILES_TO_COMPRESS));
-		lpDataFetchMethod->lpFilesList->pop_back();
-		//if(NULL == lpfirstFile->next) {
-		//	ReleaseSRWLockExclusive(&g_mt_LockCompressedflag);
-		//	return FD_END;
-		//}
-		//lpDataFetchMethod->lpFileToCompress = lpfirstFile->next;
+		vector<FILES_TO_COMPRESS>::const_pointer lpOneFile = &lpDataFetchMethod->ciFilesList[0];
+		lpDataFetchMethod->ciFilesList++;
 		ReleaseSRWLockExclusive(&g_mt_LockCompressedflag);
 
 #ifdef _DEBUG
-		logOutput(__FUNCTION__, "lpfirstFile_id=%d\r\n", sizeOfFilesList);
+		logOutput(__FUNCTION__, "lpfirstFile_id=%d\r\n", lpOneFile->id);
 #endif
 		LPBYTE lpCompressedBuffer = (BYTE*)MALLOCED_EMPTY_DATA;
-		pckFileIndex.dwMallocSize = pThis->GetCompressBoundSizeByFileSize(pckFileIndex.cFileIndex.dwFileClearTextSize, pckFileIndex.cFileIndex.dwFileCipherTextSize, cOneFile.dwFileSize);
+		pckFileIndex.dwMallocSize = pThis->GetCompressBoundSizeByFileSize(pckFileIndex.cFileIndex.dwFileClearTextSize, pckFileIndex.cFileIndex.dwFileCipherTextSize, lpOneFile->dwFileSize);
 
-		memcpy(mystrcpy(pckFileIndex.cFileIndex.szFilename, mt_szCurrentNodeString), cOneFile.lpszFileTitle, cOneFile.nBytesToCopy - mt_nCurrentNodeStringLen);
+		//bug lpszFileTitle不应该用指针
+		memcpy(mystrcpy(pckFileIndex.cFileIndex.szFilename, lpDataFetchMethod->szCurrentNodeString), lpOneFile->szFilename + lpOneFile->nFileTitleLen, lpOneFile->nBytesToCopy - lpDataFetchMethod->nCurrentNodeStringLen);
 
 		//如果文件大小为0，则跳过打开文件步骤
 		if(0 != pckFileIndex.cFileIndex.dwFileClearTextSize) {
@@ -38,7 +30,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThread
 			LPBYTE					lpBufferToRead;
 			//文件不为0时的处理
 			//打开要进行压缩的文件
-			if(NULL == (lpBufferToRead = cFileRead.OpenMappingAndViewAllRead(cOneFile.szFilename))) {
+			if(NULL == (lpBufferToRead = cFileRead.OpenMappingAndViewAllRead(lpOneFile->szFilename))) {
 				return FD_ERR;
 			}
 
@@ -69,7 +61,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromPCK(CPckClassThreadW
 	while(1) {
 
 		AcquireSRWLockExclusive(&g_mt_LockCompressedflag);
-		if(lpDataFetchMethod->dwProcessIndex >= lpDataFetchMethod->dwtotalIndexCount) {
+		if(lpDataFetchMethod->dwProcessIndex >= lpDataFetchMethod->dwTotalIndexCount) {
 			ReleaseSRWLockExclusive(&g_mt_LockCompressedflag);
 			return FD_END;
 		}
@@ -127,7 +119,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromPCK(CPckClassThreadW
 
 
 				AcquireSRWLockExclusive(&g_mt_LockReadFileMap);
-				if(NULL == (lpBufferToRead = mt_lpFileRead->View(lpPckIndexTablePtrSrc->cFileIndex.dwAddressOffset, dwNumberOfBytesToMap))) {
+				if(NULL == (lpBufferToRead = cDataFetchMethod.lpFileReadPCK->View(lpPckIndexTablePtrSrc->cFileIndex.dwAddressOffset, dwNumberOfBytesToMap))) {
 					ReleaseSRWLockExclusive(&g_mt_LockReadFileMap);
 					pThis->freeMaxAndSubtractMemory(lpSourceBuffer, dwNumberOfBytesToMap);
 					pThis->freeMaxAndSubtractMemory(lpDecompressBuffer, dwFileClearTextSize);
@@ -137,7 +129,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromPCK(CPckClassThreadW
 				}
 
 				memcpy(lpSourceBuffer, lpBufferToRead, dwNumberOfBytesToMap);
-				mt_lpFileRead->UnmapView();
+				cDataFetchMethod.lpFileReadPCK->UnmapView();
 				ReleaseSRWLockExclusive(&g_mt_LockReadFileMap);
 
 				pThis->decompress(lpDecompressBuffer, &dwFileClearTextSize, lpSourceBuffer, dwNumberOfBytesToMap);
@@ -155,13 +147,13 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromPCK(CPckClassThreadW
 			} else {
 #pragma region 文件过小不需要压缩时
 				AcquireSRWLockExclusive(&g_mt_LockReadFileMap);
-				if(NULL == (lpBufferToRead = mt_lpFileRead->View(lpPckIndexTablePtrSrc->cFileIndex.dwAddressOffset, dwNumberOfBytesToMap))) {
+				if(NULL == (lpBufferToRead = cDataFetchMethod.lpFileReadPCK->View(lpPckIndexTablePtrSrc->cFileIndex.dwAddressOffset, dwNumberOfBytesToMap))) {
 					ReleaseSRWLockExclusive(&g_mt_LockReadFileMap);
 					return FD_ERR;
 					break;
 				}
 				memcpy(lpCompressedBuffer, lpBufferToRead, dwNumberOfBytesToMap);
-				mt_lpFileRead->UnmapView();
+				cDataFetchMethod.lpFileReadPCK->UnmapView();
 				ReleaseSRWLockExclusive(&g_mt_LockReadFileMap);
 #pragma endregion
 			}

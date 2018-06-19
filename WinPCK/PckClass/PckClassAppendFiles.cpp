@@ -28,12 +28,12 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 		lpNodeToInsertPtr = lpNodeToInsert;
 
 		//取得当前节点的相对路径
-		if(!GetCurrentNodeString(mt_szCurrentNodeString, lpNodeToInsert)) {
+		if(!GetCurrentNodeString(cThreadParams.cDataFetchMethod.szCurrentNodeString, lpNodeToInsert)) {
 			assert(FALSE);
 			return FALSE;
 		}
 
-		mt_nCurrentNodeStringLen = strlen(mt_szCurrentNodeString);
+		cThreadParams.cDataFetchMethod.nCurrentNodeStringLen = strlen(cThreadParams.cDataFetchMethod.szCurrentNodeString);
 
 		m_PckLog.PrintLogI(TEXT_LOG_UPDATE_ADD
 			"-"
@@ -43,8 +43,8 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 
 		m_PckAllInfo.dwAddressOfFilenameIndex = PCK_DATA_START_AT;
 		lpNodeToInsertPtr = m_PckAllInfo.cRootNode.child;
-		*mt_szCurrentNodeString = 0;
-		mt_nCurrentNodeStringLen = 0;
+		*cThreadParams.cDataFetchMethod.szCurrentNodeString = 0;
+		cThreadParams.cDataFetchMethod.nCurrentNodeStringLen = 0;
 
 		m_PckLog.PrintLogI(TEXT_LOG_UPDATE_NEW
 			"-"
@@ -103,7 +103,9 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 #pragma endregion
 
 	cThreadParams.pThis = (CPckClassThreadWorker*)this;
-	cThreadParams.cDataFetchMethod.lpFilesList = m_PckAllInfo.lpFilesToBeAdded;
+	cThreadParams.cDataFetchMethod.ciFilesList = m_PckAllInfo.lpFilesToBeAdded->cbegin();
+	cThreadParams.cDataFetchMethod.ciFilesListEnd = m_PckAllInfo.lpFilesToBeAdded->cend();
+
 	cThreadParams.GetUncompressedData = &GetUncompressedDataFromFile;
 
 	if(!initMultiThreadVars(&cFileWriter)) {

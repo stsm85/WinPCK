@@ -245,10 +245,10 @@ typedef struct _FILES_TO_COMPRESS
 #endif
 	DWORD			dwCompressedflag;
 	DWORD			dwFileSize;
-	char			*lpszFileTitle;
 	DWORD			nBytesToCopy;
 	//char			szBase64Name[MAX_PATH_PCK];
 	char			szFilename[MAX_PATH];
+	size_t			nFileTitleLen;
 	_FILES_TO_COMPRESS	*next;
 	_PCK_INDEX_TABLE	*samePtr;
 }FILES_TO_COMPRESS, *LPFILES_TO_COMPRESS;

@@ -459,11 +459,13 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 		}
 
 		if(m_cPckCenter.GetListInSearchMode()) {
-			m_cPckCenter.RenameIndex(lpIndexToShow, szEditedText);
+			if(!m_cPckCenter.RenameIndex(lpIndexToShow, szEditedText))
+				return FALSE;
 
 		} else {
 			if(NULL == lpNodeToShow->child)
-				m_cPckCenter.RenameIndex(lpNodeToShow, szEditedText);
+				if(!m_cPckCenter.RenameIndex(lpNodeToShow, szEditedText))
+					return FALSE;
 			else {
 				if(!m_cPckCenter.RenameNode(lpNodeToShow, szEditedText)) {
 					MessageBox(GetLoadStr(IDS_STRING_RENAMEERROR), GetLoadStr(IDS_STRING_ERROR), MB_OK | MB_ICONERROR);

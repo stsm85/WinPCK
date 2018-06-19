@@ -25,8 +25,8 @@ protected:
 	BOOL	RenameNodeEnum(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp);
 	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp);
 public:
-	virtual	VOID	RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
-	virtual	VOID	RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
+	virtual	BOOL	RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
+	virtual	BOOL	RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
 
 	//»ñÈ¡nodeÂ·¾¶
 	BOOL	GetCurrentNodeString(char*szCurrentNodePathString, LPPCK_PATH_NODE lpNode);

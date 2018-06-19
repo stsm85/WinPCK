@@ -171,7 +171,7 @@ BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile)
 	cThreadParams.pThis = (CPckClassThreadWorker*)this;
 	cThreadParams.cDataFetchMethod.lpFileReadPCK = &cFileRead;
 	cThreadParams.cDataFetchMethod.dwProcessIndex = 0;
-	cThreadParams.cDataFetchMethod.dwtotalIndexCount = pckAllInfo.dwFileCount;
+	cThreadParams.cDataFetchMethod.dwTotalIndexCount = pckAllInfo.dwFileCount;
 	cThreadParams.cDataFetchMethod.lpPckIndexTablePtrSrc = pckAllInfo.lpPckIndexTable;
 	cThreadParams.GetUncompressedData = &GetUncompressedDataFromPCK;
 
@@ -185,7 +185,7 @@ BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile)
 		return FALSE;
 	}
 
-	mt_lpFileRead = &cFileRead;
+	//mt_lpFileRead = &cFileRead;
 	//mt_dwFileCount = dwFileCount;
 	mt_dwFileCountOfWriteTarget = dwNoDupFileCount;
 
