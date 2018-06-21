@@ -282,6 +282,9 @@
     <ClCompile Include="PckClass\PckClassIndexRead.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
+    <ClCompile Include="MiscFuncs\StopWatch.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc">
@@ -435,6 +438,9 @@
     </ClInclude>
     <ClInclude Include="PckClass\PckClassWriteOperator.h">
       <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="MiscFuncs\StopWatch.h">
+      <Filter>头文件\MiscFuncs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -452,6 +452,7 @@
     <ClCompile Include="MiscFuncs\OpenSaveDlg.cpp" />
     <ClCompile Include="MiscFuncs\Raw2HexString.cpp" />
     <ClCompile Include="MiscFuncs\ShowLogOnDlgListView.cpp" />
+    <ClCompile Include="MiscFuncs\StopWatch.cpp" />
     <ClCompile Include="PckClassThreadData.cpp" />
     <ClCompile Include="PckClass\PckClassAppendFiles.cpp" />
     <ClCompile Include="PckClass\PckClassExceptionRestore.cpp" />
@@ -530,6 +531,7 @@
     <ClInclude Include="MiscFuncs\OpenSaveDlg.h" />
     <ClInclude Include="MiscFuncs\Raw2HexString.h" />
     <ClInclude Include="MiscFuncs\ShowLogOnDlgListView.h" />
+    <ClInclude Include="MiscFuncs\StopWatch.h" />
     <ClInclude Include="PckClass\PckClassFileDisk.h" />
     <ClInclude Include="PckClass\PckClassBaseFeatures.h" />
     <ClInclude Include="PckClass\PckClassHeadTail.h" />

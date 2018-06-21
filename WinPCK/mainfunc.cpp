@@ -22,6 +22,7 @@
 #include "OpenSaveDlg.h"
 #include "CharsCodeConv.h"
 #include <stdio.h>
+#include "StopWatch.h"
 
 LPPCK_PATH_NODE	TInstDlg::GetLastShowNode()
 {
@@ -67,7 +68,7 @@ LPPCK_PATH_NODE	TInstDlg::GetLastShowNode()
 BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 {
 
-	double	t1, t2;
+	CStopWatch	timer;
 	TCHAR	szString[64];
 	int		iListTopView;
 
@@ -86,12 +87,12 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 	}
 
 	if(0 != *lpszFileToOpen || OpenSingleFile(hWnd, m_Filename, TEXT_FILE_FILTER)) {
-		t1 = GetTickCount();
+		timer.start();
 
 		//转换文件名格式 
 		if(m_cPckCenter.Open(m_Filename)) {
-			t2 = GetTickCount() - t1;
-			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENOK), t2);
+			timer.stop();
+			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENOK), timer.getElapsedTime());
 			SetStatusBarText(4, szString);
 
 			SetStatusBarText(0, _tcsrchr(m_Filename, TEXT('\\')) + 1);
