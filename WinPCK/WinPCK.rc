@@ -24,8 +24,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,24,0,2
- PRODUCTVERSION 1,24,0,2
+ FILEVERSION 1,24,0,3
+ PRODUCTVERSION 1,24,0,3
  FILEFLAGSMASK 0x37L
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -41,12 +41,12 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "FileDescription", "WinPCK"
-            VALUE "FileVersion", "1.24.0.2"
+            VALUE "FileVersion", "1.24.0.3"
             VALUE "InternalName", "WinPCK"
             VALUE "LegalCopyright", "Copyright (C) 2012-2018 stsm"
             VALUE "OriginalFilename", "WinPCK.exe"
             VALUE "ProductName", "WinPCK"
-            VALUE "ProductVersion", "1.24.0.2"
+            VALUE "ProductVersion", "1.24.0.3"
             VALUE "SpecialBuild", "WinPCK by stsm"
         END
     END
@@ -452,14 +452,14 @@ BEGIN
     IDS_STRING_ISEXITTITLE  "退出？"
     IDS_STRING_EXITING      "正在退出，请稍候..."
     IDS_STRING_RENEWING     "正在更新...%s"
-    IDS_STRING_RENEWOK      "更新完成，用时 %.0fms"
+    IDS_STRING_RENEWOK      "更新完成，用时 %.2fms"
     IDS_STRING_REBUILDING   "正在重建...%s"
-    IDS_STRING_REBUILDOK    "重建完成，用时 %.0fms"
+    IDS_STRING_REBUILDOK    "重建完成，用时 %.2fms"
     IDS_STRING_COMPING      "正在压缩...%s"
-    IDS_STRING_COMPOK       "压缩完成，用时 %.0fms"
+    IDS_STRING_COMPOK       "压缩完成，用时 %.2fms"
     IDS_STRING_EXPING       "正在解压...%s"
-    IDS_STRING_EXPOK        "解压完成，用时 %.0fms"
-    IDS_STRING_OPENOK       "已打开文件，用时 %.0fms"
+    IDS_STRING_EXPOK        "解压完成，用时 %.2fms"
+    IDS_STRING_OPENOK       "已打开文件，用时 %.2fms"
     IDS_STRING_OPENFAIL     "打开文件失败！"
 END
 
