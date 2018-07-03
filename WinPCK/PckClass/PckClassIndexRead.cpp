@@ -3,7 +3,7 @@
 
 BOOL CPckClassIndex::ReadPckFileIndexes()
 {
-	CMapViewFileRead cRead;
+	CMapViewFileMultiPckRead cRead;
 	CPckClassZlib	zlib;
 
 	if(!cRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {

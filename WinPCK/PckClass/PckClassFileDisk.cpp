@@ -67,7 +67,7 @@ QWORD CPckClassFileDisk::GetPckFilesizeByCompressed(QWORD qwDiskFreeSpace, QWORD
 }
 
 BOOL CPckClassFileDisk::IsNeedExpandWritingFile(
-	CMapViewFileWrite *lpWrite,
+	CMapViewFileMultiPckWrite *lpWrite,
 	QWORD dwWritingAddressPointer,
 	QWORD dwFileSizeToWrite,
 	QWORD &dwExpectedTotalCompressedFileSize)

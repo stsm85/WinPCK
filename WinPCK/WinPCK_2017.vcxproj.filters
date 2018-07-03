@@ -111,15 +111,6 @@
     <ClCompile Include=".\ZupClass\ZupClassFunction.cpp">
       <Filter>源文件\ZupClass</Filter>
     </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFileWrite.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFileRead.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFile.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
     <ClCompile Include="PckControlCenter\PckControlCenterAttribute.cpp">
       <Filter>源文件\PckControlCenter</Filter>
     </ClCompile>
@@ -285,6 +276,33 @@
     <ClCompile Include="MiscFuncs\StopWatch.cpp">
       <Filter>源文件\MiscFuncs</Filter>
     </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFile.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMulti.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMultiPck.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMultiPckRead.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMultiPckWrite.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMultiRead.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMultiWrite.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileRead.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileWrite.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc">
@@ -441,6 +459,12 @@
     </ClInclude>
     <ClInclude Include="MiscFuncs\StopWatch.h">
       <Filter>头文件\MiscFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="MapViewFile\MapViewFileMulti.h">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClInclude>
+    <ClInclude Include="MapViewFile\MapViewFileMultiPck.h">
+      <Filter>源文件\MapViewFile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

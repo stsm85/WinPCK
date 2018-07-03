@@ -8,7 +8,7 @@ CPckClassIndexWriter::~CPckClassIndexWriter()
 {}
 
 //写入单个索引
-BOOL CPckClassIndexWriter::WritePckIndex(CMapViewFileWrite *lpWrite, const PCKINDEXTABLE_COMPRESS *lpPckIndexTablePtr, QWORD &dwAddress)
+BOOL CPckClassIndexWriter::WritePckIndex(CMapViewFileMultiPckWrite *lpWrite, const PCKINDEXTABLE_COMPRESS *lpPckIndexTablePtr, QWORD &dwAddress)
 {
 
 	LPBYTE	lpBufferToWrite;
@@ -22,7 +22,7 @@ BOOL CPckClassIndexWriter::WritePckIndex(CMapViewFileWrite *lpWrite, const PCKIN
 	}
 
 	memcpy(lpBufferToWrite, lpPckIndexTablePtr->compressed_index_data, dwNumberOfBytesToMap);
-	lpWrite->UnmapView();
+	lpWrite->UnmapViewAll();
 
 	dwAddress += dwNumberOfBytesToMap;
 
@@ -34,7 +34,7 @@ BOOL CPckClassIndexWriter::WritePckIndex(CMapViewFileWrite *lpWrite, const PCKIN
 }
 
 //写入全部索引
-BOOL CPckClassIndexWriter::WriteAllIndex(CMapViewFileWrite *lpWrite, LPPCK_ALL_INFOS lpPckAllInfo,  QWORD &dwAddress)
+BOOL CPckClassIndexWriter::WriteAllIndex(CMapViewFileMultiPckWrite *lpWrite, LPPCK_ALL_INFOS lpPckAllInfo,  QWORD &dwAddress)
 {
 
 	//窗口中以显示的文件进度，初始化，显示写索引进度

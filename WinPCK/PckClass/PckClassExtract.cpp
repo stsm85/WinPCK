@@ -13,16 +13,17 @@
 #pragma warning ( disable : 4267 )
 
 #include "PckClass.h"
+//#include "MapViewFile.h"
 
 BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer)
 {
 
-	CMapViewFileRead	*lpFileRead = (CMapViewFileRead*)lpvoidFileRead;
+	CMapViewFileMultiPckRead	*lpFileRead = (CMapViewFileMultiPckRead*)lpvoidFileRead;
 
 	LPPCKFILEINDEX lpPckFileIndex = &lpPckFileIndexTable->cFileIndex;
 
 	if(NULL == lpvoidFileRead) {
-		lpFileRead = new CMapViewFileRead();
+		lpFileRead = new CMapViewFileMultiPckRead();
 
 		if(!lpFileRead->OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
 			delete lpFileRead;
@@ -57,7 +58,7 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFi
 
 				m_PckLog.PrintLogEL(TEXT_UNCOMPRESSDATA_FAIL, lpPckFileIndex->szFilename, __FILE__, __FUNCTION__, __LINE__);
 				assert(FALSE);
-				lpFileRead->UnmapView();
+				lpFileRead->UnmapViewAll();
 
 				if(NULL == lpvoidFileRead)
 					delete lpFileRead;
@@ -69,7 +70,7 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFi
 		memcpy(buffer, lpMapAddress, dwFileLengthToWrite);
 	}
 
-	lpFileRead->UnmapView();
+	lpFileRead->UnmapViewAll();
 
 	if(NULL == lpvoidFileRead)
 		delete lpFileRead;
@@ -83,7 +84,7 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 
 	m_PckLog.PrintLogI(TEXT_LOG_EXTRACT);
 
-	CMapViewFileRead	cFileRead;
+	CMapViewFileMultiPckRead	cFileRead;
 
 	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) 
 		return FALSE;
@@ -133,7 +134,7 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 
 	m_PckLog.PrintLogI(TEXT_LOG_EXTRACT);
 
-	CMapViewFileRead	cFileRead;
+	CMapViewFileMultiPckRead	cFileRead;
 
 	if(!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) 
 		return FALSE;
@@ -177,7 +178,7 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileRead)
 {
 
-	CMapViewFileRead	*lpFileRead = (CMapViewFileRead*)lpvoidFileRead;
+	CMapViewFileMultiPckRead	*lpFileRead = (CMapViewFileMultiPckRead*)lpvoidFileRead;
 
 	do {
 		if(!m_lpPckParams->cVarParams.bThreadRunning) {
@@ -219,7 +220,7 @@ BOOL CPckClass::DecompressFile(LPCWSTR	lpszFilename, LPPCKINDEXTABLE lpPckFileIn
 {
 	LPPCKFILEINDEX lpPckFileIndex = &lpPckFileIndexTable->cFileIndex;
 
-	CMapViewFileWrite cFileWrite(0xffffffff);
+	CMapViewFileWrite cFileWrite;
 
 	LPBYTE	lpMapAddressToWrite;
 	DWORD	dwFileLengthToWrite;

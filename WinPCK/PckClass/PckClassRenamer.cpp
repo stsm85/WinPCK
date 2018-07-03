@@ -7,7 +7,7 @@ BOOL CPckClassWriteOperator::RenameFilename()
 	m_PckLog.PrintLogI(TEXT_LOG_RENAME);
 
 	//以下是创建一个文件，用来保存压缩后的文件
-	CMapViewFileWrite cFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
+	CMapViewFileMultiPckWrite cFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
 	if(!cFileWrite.OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
 

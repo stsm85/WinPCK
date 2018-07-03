@@ -9,7 +9,7 @@
 // 2017.6.27
 //////////////////////////////////////////////////////////////////////
 
-#include "MapViewFile.h"
+#include "MapViewFileMultiPck.h"
 #include "PckClassVersionDetect.h"
 
 #pragma warning ( disable : 4996 )
@@ -187,7 +187,7 @@ void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 	BYTE buf[PRINT_HEAD_SIZE + PRINT_TAIL_SIZE + 0x10];
 
 	//读取文件头
-	CMapViewFileRead *lpRead = new CMapViewFileRead();
+	CMapViewFileMultiPckRead *lpRead = new CMapViewFileMultiPckRead();
 
 	if(!lpRead->OpenPck(lpszPckFile)) {
 		PrintLogEL(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
@@ -254,7 +254,7 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile)
 
 	int iDetectedPckID = PCK_VERSION_INVALID;
 	//读取文件头
-	CMapViewFileRead cRead;
+	CMapViewFileMultiPckRead cRead;
 
 	if(!cRead.OpenPck(lpszPckFile)) {
 		PrintLogEL(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);

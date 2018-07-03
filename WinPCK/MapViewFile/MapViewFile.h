@@ -1,3 +1,4 @@
+#pragma once
 //////////////////////////////////////////////////////////////////////
 // MapViewFile.h: 用于映射文件视图
 // 
@@ -11,6 +12,8 @@
 
 #include <windows.h>
 #include <assert.h>
+#include <vector>
+using namespace std;
 
 #define TEST_T 1
 /*
@@ -29,34 +32,34 @@
 #pragma warning ( disable : 4996 )
 #endif
 
-#define ENABLE_PCK_PKX_FILE 1
+#ifdef _WIN64
+typedef unsigned __int64  uintptr_t;
+#else
+typedef unsigned int uintptr_t;
+#endif
 
 #if !defined(_MAPVIEWFILE_H_)
 #define _MAPVIEWFILE_H_
 
 typedef unsigned __int64	QWORD;
 
-typedef union _QWORD{
+//LARGE_INTEGER
+typedef union _QWORD
+{
 	QWORD qwValue;
 	LONGLONG llwValue;
-	struct {
+	struct
+	{
 		DWORD dwValue;
 		DWORD dwValueHigh;
 	};
-	struct {
+	struct
+	{
 		LONG lValue;
 		LONG lValueHigh;
 	};
 }UNQWORD, *LPUNQWORD;
 
-#define PATH_LOCAL_PREFIX			"\\\\?\\"
-#define PATH_UNC_PREFIX				"\\\\?\\UNC"
-
-#define PATHW_LOCAL_PREFIX			L"\\\\?\\"
-#define PATHW_UNC_PREFIX			L"\\\\?\\UNC"
-
-#define PATH_LOCAL_PREFIX_LEN		(strlen(PATH_LOCAL_PREFIX))
-#define PATH_UNC_PREFIX_LEN			(strlen(PATH_UNC_PREFIX))
 
 class CMapViewFile
 {
@@ -67,93 +70,56 @@ public:
 	BOOL FileExists(LPCSTR szName);
 	BOOL FileExists(LPCWSTR szName);
 
-	BOOL	Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes);
-	BOOL	Open(HANDLE &hFile, LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes);
+	BOOL	Open(LPCSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes);
+	BOOL	Open(LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes);
 
-	LPBYTE	View(QWORD dwAddress, DWORD dwSize = 0);
-	virtual LPBYTE	ReView(QWORD dwAddress, DWORD dwSize = 0);
+	void	SetFilePointer(QWORD lDistanceToMove, DWORD dwMoveMethod = FILE_BEGIN);
+	QWORD	GetFilePointer();
 
-	virtual void	SetFilePointer(QWORD lDistanceToMove, DWORD dwMoveMethod = FILE_BEGIN);
-
-	virtual DWORD	Read(LPVOID buffer, DWORD dwBytesToRead);
+	DWORD	Read(LPVOID buffer, DWORD dwBytesToRead);
 
 	QWORD	GetFileSize();
 
-	void	UnmapView();
+	virtual LPBYTE	View(QWORD dwAddress, DWORD dwSize);
+	//virtual LPBYTE	ReView(LPVOID lpMapAddressOld, QWORD dwAddress, DWORD dwSize);
+
+	void	UnmapView(LPVOID lpTargetAddress);
+	void	UnmapViewAll();
 	void	UnMaping();
 	void	clear();
 
 	//获取当前文件的磁盘名
 	const char*	GetFileDiskName();
 
-#if ENABLE_PCK_PKX_FILE
-
-	BOOL	SetPckPackSize(QWORD qwPckSize);
-#endif
-
 protected:
 	////自动生成CreateFileMappingA时所需要的name
 	LPCSTR	GenerateMapName();
-	
-	BOOL isWinNt();
+
 	void MakeUnlimitedPath(LPWSTR _dst, LPCWSTR	_src, size_t size);
 	void MakeUnlimitedPath(LPSTR _dst, LPCSTR _src, size_t size);
-
-#if ENABLE_PCK_PKX_FILE
-	void GetPkxName(LPSTR dst, LPCSTR src);
-	void GetPkxName(LPWSTR dst, LPCWSTR src);
-#endif
 
 	template <typename T>
 	void GetDiskNameFromFilename(T* lpszFilename);
 
-	LPBYTE	ViewReal(LPVOID & lpMapAddress, HANDLE hFileMapping, QWORD qwAddress, DWORD dwSize);
-
-public:
-
-	LPBYTE	lpTargetBuffer;
+	LPBYTE	ViewReal(QWORD qwAddress, DWORD dwSize, DWORD dwDesiredAccess);
 
 protected:
 
 	HANDLE	hFile;
 	HANDLE	hFileMapping;
-	LPVOID	lpMapAddress;
+	//LPVOID	lpMapAddress;
+	vector<LPVOID> vMapAddress;
 
-#if ENABLE_PCK_PKX_FILE
 
-	HANDLE	hFile2;
-	HANDLE	hFileMapping2;
-	LPVOID	lpMapAddress2;
-
-	UNQWORD	dwPckSize, dwPkxSize;
-	UNQWORD	uqdwMaxPckSize;				//pck文件的最大值
-
-	UNQWORD	uqwFullSize;				//pck+pkx文件的大小，以PCKHEAD中的dwPckSize为准
-
-	BOOL	IsPckFile, hasPkx;
-
-	BOOL	isCrossView;	//是否是跨文件的VIEW
-	LPBYTE	lpCrossBuffer, lpCrossAddressPck;
-
-	DWORD	dwViewSizePck, dwViewSizePkx;
-
-	//char	m_szPckFileName[MAX_PATH];
-	//wchar_t	m_tszPckFileName[MAX_PATH];
-
-	char	m_szPkxFileName[MAX_PATH];
-	wchar_t	m_tszPkxFileName[MAX_PATH];
-#endif
 	//文件对应的磁盘
 	char	m_szDisk[8];
-	//char	m_szFullFilename[MAX_PATH];
-	//wchar_t	m_wszFullFilename[MAX_PATH];
-
-	UNQWORD	uqwCurrentPos;		//当前文件指针位置
-
-	BOOL	isWriteMode;
 
 	//用于存放MapName
 	char szFileMappingName[32];
+
+private:
+	
+	
 };
 
 
@@ -164,23 +130,19 @@ public:
 	CMapViewFileRead();
 	virtual ~CMapViewFileRead();
 
-#if ENABLE_PCK_PKX_FILE
-
-	BOOL	OpenPck(LPCSTR lpszFilename);
-	BOOL	OpenPck(LPCWSTR lpszFilename);
-
-	BOOL	OpenPckAndMappingRead(LPCSTR lpFileName);
-	BOOL	OpenPckAndMappingRead(LPCWSTR lpFileName);
-
-	LPBYTE OpenMappingAndViewAllRead(LPCSTR lpFileName);
-	LPBYTE OpenMappingAndViewAllRead(LPCWSTR lpFileName);
-#endif
-
 	BOOL	Open(LPCSTR lpszFilename);
 	BOOL	Open(LPCWSTR lpszFilename);
 
 	BOOL	Mapping();
 
+	LPBYTE	View(QWORD dwAddress, DWORD dwSize);
+	virtual LPBYTE	ReView(LPVOID lpMapAddressOld, QWORD dwAddress, DWORD dwSize);
+
+	BOOL	OpenMappingRead(LPCSTR lpFileName);
+	BOOL	OpenMappingRead(LPCWSTR lpFileName);
+
+	LPBYTE OpenMappingViewAllRead(LPCSTR lpFileName);
+	LPBYTE OpenMappingViewAllRead(LPCWSTR lpFileName);
 
 protected:
 
@@ -191,42 +153,25 @@ protected:
 class CMapViewFileWrite : public CMapViewFile
 {
 public:
-	CMapViewFileWrite(DWORD);
+	CMapViewFileWrite();
 	virtual ~CMapViewFileWrite();
-	
-#if ENABLE_PCK_PKX_FILE
-	//void	SetMaxSinglePckSize(QWORD qwMaxPckSize);
-	BOOL	OpenPck(LPCSTR lpszFilename, DWORD dwCreationDisposition);
-	BOOL	OpenPck(LPCWSTR lpszFilename, DWORD dwCreationDisposition);
-
-	BOOL	OpenPckAndMappingWrite(LPCSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
-	BOOL	OpenPckAndMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
-#endif
 
 	BOOL	Open(LPCSTR lpszFilename, DWORD dwCreationDisposition);
 	BOOL	Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition);
 
 	BOOL	Mapping(QWORD dwMaxSize);
-	void	SetEndOfFile();
+
+	LPBYTE	View(QWORD dwAddress, DWORD dwSize);
+	virtual LPBYTE	ReView(LPVOID lpMapAddressOld, QWORD dwAddress, DWORD dwSize);
+
+	BOOL	SetEndOfFile();
 
 	DWORD	Write(LPVOID buffer, DWORD dwBytesToWrite);
 
+	BOOL	OpenMappingWrite(LPCSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
+	BOOL	OpenMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
+
 	//BOOL	FlushViewOfFile();
-
-protected:
-
-#if ENABLE_PCK_PKX_FILE
-	void	OpenPkx(LPCSTR lpszFilename, DWORD dwCreationDisposition);
-	void	OpenPkx(LPCWSTR lpszFilename, DWORD dwCreationDisposition);
-#endif
-
-public:
-
-protected:
-#if ENABLE_PCK_PKX_FILE
-	//一个大文件需要分块成2个小文件时，分块的大小
-	QWORD	m_Max_PckFile_Size;
-#endif
 
 };
 

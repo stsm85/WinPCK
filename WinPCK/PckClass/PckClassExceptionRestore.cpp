@@ -11,7 +11,7 @@
 
 #pragma warning ( disable : 4244 )
 #include "PckClassBaseFeatures.h"
-#include "MapViewFile.h"
+#include "MapViewFileMultiPck.h"
 
 BOOL CPckClassBaseFeatures::GetPckBasicInfo(LPRESTORE_INFOS lpRestoreInfo)
 {
@@ -31,7 +31,7 @@ BOOL CPckClassBaseFeatures::GetPckBasicInfo(LPRESTORE_INFOS lpRestoreInfo)
 		return FALSE;
 	}
 
-	CMapViewFileRead	cReadfile;
+	CMapViewFileMultiPckRead	cReadfile;
 
 	if(!cReadfile.OpenPckAndMappingRead(m_PckAllInfo.szFilename))
 	{
@@ -59,7 +59,7 @@ BOOL CPckClassBaseFeatures::SetPckBasicInfo(LPRESTORE_INFOS lpRestoreInfo)
 {
 	BYTE	*lpFileBuffer;
 
-	CMapViewFileWrite	cWritefile(lpRestoreInfo->dwMaxSinglePckSize);
+	CMapViewFileMultiPckWrite	cWritefile(lpRestoreInfo->dwMaxSinglePckSize);
 
 	if(!cWritefile.OpenPckAndMappingWrite(lpRestoreInfo->szFile, OPEN_EXISTING, lpRestoreInfo->Head.dwPckSize)){
 		return FALSE;

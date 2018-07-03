@@ -49,13 +49,13 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
 	SetParams_ProgressUpper(dwValidFileCount);
 
 	//打开源文件 
-	CMapViewFileRead	cFileRead;
+	CMapViewFileMultiPckRead	cFileRead;
 	if(!cFileRead.OpenPckAndMappingRead(pckAllInfo.szFilename)) 
 		return FALSE;
 
 	//打开目标文件 
 	//以下是创建一个文件，用来保存重建后的文件
-	CMapViewFileWrite	cFileWrite(pckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
+	CMapViewFileMultiPckWrite	cFileWrite(pckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
 	if(!cFileWrite.OpenPckAndMappingWrite(szRebuildPckFile, CREATE_ALWAYS, dwTotalFileSizeAfterRebuild))
 		return FALSE;
@@ -97,8 +97,8 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
 
 		memcpy(lpBufferToWrite, lpBufferToRead, dwNumberOfBytesToMap);
 
-		cFileRead.UnmapView();
-		cFileWrite.UnmapView();
+		cFileRead.UnmapViewAll();
+		cFileWrite.UnmapViewAll();
 
 		//写入此文件的PckFileIndex文件压缩信息并压缩
 		lpPckIndexTableSource->cFileIndex.dwAddressOffset = dwAddress;	//此文件的压缩数据起始地址
@@ -144,7 +144,7 @@ BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile)
 	QWORD	dwTotalFileSizeAfterRebuild = GetPckFilesizeRebuild(szRecompressPckFile, m_PckAllInfo.qwPckSize);
 
 	THREAD_PARAMS		cThreadParams;
-	CMapViewFileRead	cFileRead;
+	CMapViewFileMultiPckRead	cFileRead;
 	int					threadnum = m_lpPckParams->dwMTThread;
 
 	//构造头和尾时需要的参数
@@ -160,7 +160,7 @@ BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile)
 		return FALSE;
 
 #pragma region 创建目标文件
-	CMapViewFileWrite cFileWriter(pckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
+	CMapViewFileMultiPckWrite cFileWriter(pckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
 
 	//OPEN_ALWAYS，新建新的pck(CREATE_ALWAYS)或更新存在的pck(OPEN_EXISTING)
 	if(!cFileWriter.OpenPckAndMappingWrite(pckAllInfo.szNewFilename, CREATE_ALWAYS, dwTotalFileSizeAfterRebuild))

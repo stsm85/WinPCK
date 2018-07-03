@@ -1,7 +1,7 @@
 #pragma once
 #include "PckClassBaseFeatures.h"
 #include "PckClassZlib.h"
-#include "MapViewFile.h"
+#include "MapViewFileMultiPck.h"
 
 class CPckClassIndex :
 	public virtual CPckClassBaseFeatures,

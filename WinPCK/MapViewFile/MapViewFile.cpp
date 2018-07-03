@@ -11,11 +11,47 @@
 
 #include "MapViewFile.h"
 #include <stdio.h>
+//#include <algorithm>
 
-BOOL CMapViewFile::isWinNt()
+#define PATH_LOCAL_PREFIX			"\\\\?\\"
+#define PATH_UNC_PREFIX				"\\\\?\\UNC"
+
+#define PATHW_LOCAL_PREFIX			L"\\\\?\\"
+#define PATHW_UNC_PREFIX			L"\\\\?\\UNC"
+
+#define PATH_LOCAL_PREFIX_LEN		(strlen(PATH_LOCAL_PREFIX))
+#define PATH_UNC_PREFIX_LEN			(strlen(PATH_UNC_PREFIX))
+
+
+
+CMapViewFile::CMapViewFile()
 {
-	DWORD dwWinVersion = ::GetVersion();
-	return (LOBYTE(LOWORD(dwWinVersion)) >= 4 && dwWinVersion < 0x80000000);
+	hFile = hFileMapping = NULL;
+	vMapAddress.clear();
+
+	memset(m_szDisk, 0, sizeof(m_szDisk));
+
+}
+
+CMapViewFile::~CMapViewFile()
+{
+	clear();
+}
+
+void CMapViewFile::clear()
+{
+	UnmapViewAll();
+
+	if(NULL != hFileMapping) {
+		CloseHandle(hFileMapping);
+		hFileMapping = NULL;
+	}
+
+	if(NULL != hFile && INVALID_HANDLE_VALUE != hFile) {
+		CloseHandle(hFile);
+		hFile = NULL;
+	}
+
 }
 
 void CMapViewFile::MakeUnlimitedPath(LPWSTR _dst, LPCWSTR	_src, size_t size)
@@ -66,19 +102,19 @@ szName	: (IN) string
 Return Value:
 returns TRUE if szName exists and is not a directory; FALSE otherwise
 *****************************************************************************/
-BOOL CMapViewFile::FileExists(LPCSTR szName)
+BOOL CMapViewFile::FileExists(LPCSTR szFileName)
 {
-	DWORD dwResult = GetFileAttributesA(szName);
+	DWORD dwResult = GetFileAttributesA(szFileName);
 	return (dwResult != INVALID_FILE_ATTRIBUTES && !(dwResult & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-BOOL CMapViewFile::FileExists(LPCWSTR szName)
+BOOL CMapViewFile::FileExists(LPCWSTR szFileName)
 {
-	DWORD dwResult = GetFileAttributesW(szName);
+	DWORD dwResult = GetFileAttributesW(szFileName);
 	return (dwResult != INVALID_FILE_ATTRIBUTES && !(dwResult & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
+BOOL CMapViewFile::Open(LPCSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
 {
 	char m_szFullFilename[MAX_PATH];
 
@@ -89,13 +125,8 @@ BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAcces
 		((OPEN_EXISTING != dwCreationDisposition) && (TRUNCATE_EXISTING != dwCreationDisposition))) {
 		char szFilename[MAX_PATH];
 		if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(m_szFullFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
-			if(isWinNt()) {
-				MakeUnlimitedPath(szFilename, m_szFullFilename, MAX_PATH);
-				if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(szFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
-					assert(FALSE);
-					return FALSE;
-				}
-			} else {
+			MakeUnlimitedPath(szFilename, m_szFullFilename, MAX_PATH);
+			if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(szFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
 				assert(FALSE);
 				return FALSE;
 			}
@@ -107,7 +138,7 @@ BOOL CMapViewFile::Open(HANDLE &hFile, LPCSTR lpszFilename, DWORD dwDesiredAcces
 	return TRUE;
 }
 
-BOOL CMapViewFile::Open(HANDLE &hFile, LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
+BOOL CMapViewFile::Open(LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
 {
 	wchar_t	m_wszFullFilename[MAX_PATH];
 
@@ -119,16 +150,13 @@ BOOL CMapViewFile::Open(HANDLE &hFile, LPCWSTR lpszFilename, DWORD dwDesiredAcce
 		WCHAR szFilename[MAX_PATH];
 
 		if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(m_wszFullFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
-			if(isWinNt()) {
-				MakeUnlimitedPath(szFilename, m_wszFullFilename, MAX_PATH);
-				if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(szFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
-					assert(FALSE);
-					return FALSE;
-				}
-			} else {
+
+			MakeUnlimitedPath(szFilename, m_wszFullFilename, MAX_PATH);
+			if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(szFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
 				assert(FALSE);
 				return FALSE;
 			}
+
 		}
 	} else {
 		return FALSE;
@@ -137,96 +165,7 @@ BOOL CMapViewFile::Open(HANDLE &hFile, LPCWSTR lpszFilename, DWORD dwDesiredAcce
 	return TRUE;
 }
 
-#if ENABLE_PCK_PKX_FILE
-
-void CMapViewFile::GetPkxName(LPSTR dst, LPCSTR src)
-{
-
-	strcpy_s(dst, MAX_PATH, src);
-	int slen = strlen(dst);
-	char *lpszDst = dst + slen - 2;
-
-	//.pck -> .pkx
-	*(__int16*)lpszDst = *(__int16*)"kx";
-
-
-}
-
-void CMapViewFile::GetPkxName(LPWSTR dst, LPCWSTR src)
-{
-	wcscpy_s(dst, MAX_PATH, src);
-	int slen = wcslen(dst);
-	wchar_t *lpszDst = dst + slen - 2;
-
-	//.pck -> .pkx
-	*(__int32*)lpszDst = *(__int32*)L"kx";
-
-}
-
-#endif
-
-CMapViewFile::CMapViewFile()
-{
-	hFile = hFileMapping = NULL;
-	lpMapAddress = NULL;
-
-#if ENABLE_PCK_PKX_FILE
-	hFile2 = hFileMapping2 = NULL;
-	IsPckFile = hasPkx = isCrossView = FALSE;
-	lpMapAddress2 = NULL;
-	lpCrossBuffer = NULL;
-#endif
-	uqwCurrentPos.qwValue = 0;
-	memset(m_szDisk, 0, sizeof(m_szDisk));
-
-}
-
-CMapViewFile::~CMapViewFile()
-{
-	clear();
-}
-
-void CMapViewFile::clear()
-{
-
-
-	UnmapView();
-	//UnMaping();
-
-	if(NULL != hFileMapping) {
-		CloseHandle(hFileMapping);
-		hFileMapping = NULL;
-	}
-
-	if(NULL != hFile && INVALID_HANDLE_VALUE != hFile) {
-		CloseHandle(hFile);
-		hFile = NULL;
-	}
-#if ENABLE_PCK_PKX_FILE
-	if(hasPkx) {
-
-		if(NULL != hFileMapping2) {
-			CloseHandle(hFileMapping2);
-			hFileMapping2 = NULL;
-		}
-
-		if(NULL != hFile2 && INVALID_HANDLE_VALUE != hFile2) {
-			CloseHandle(hFile2);
-			hFile2 = NULL;
-		}
-
-		//pkx文件为0时，删除
-		if(0 == dwPkxSize.qwValue) {
-			if(0 != *m_szPkxFileName)
-				DeleteFileA(m_szPkxFileName);
-			else if(0 != *m_tszPkxFileName)
-				DeleteFileW(m_tszPkxFileName);
-		}
-	}
-#endif
-}
-
-LPBYTE CMapViewFile::ViewReal(LPVOID & lpMapAddress, HANDLE hFileMapping, QWORD qwAddress, DWORD dwSize)
+LPBYTE CMapViewFile::ViewReal(QWORD qwAddress, DWORD dwSize, DWORD dwDesiredAccess)
 {
 	//文件映射地址必须是64k(0x10000)的整数
 
@@ -239,185 +178,76 @@ LPBYTE CMapViewFile::ViewReal(LPVOID & lpMapAddress, HANDLE hFileMapping, QWORD 
 	dwMapViewBlockLow = qwViewAddress.dwValue & 0xffff;
 	dwNumberOfBytesToMap = dwMapViewBlockLow + dwSize;
 
-	DWORD dwDesiredAccess = isWriteMode ? FILE_MAP_WRITE : FILE_MAP_READ;
+	//DWORD dwDesiredAccess = isWriteMode ? FILE_MAP_WRITE : FILE_MAP_READ;
 
-	lpMapAddress = MapViewOfFile(hFileMapping, // Handle to mapping object.
+	LPVOID lpMapAddress = MapViewOfFile(
+		hFileMapping, // Handle to mapping object.
 		dwDesiredAccess, // Read/write permission
 		qwViewAddress.dwValueHigh, // Max. object size.
 		dwMapViewBlock64KAlignd, // Size of hFile.
 		dwNumberOfBytesToMap); // Map entire file.
+
 	if(NULL == lpMapAddress)
-		return (lpTargetBuffer = NULL);
-	else
-		return (lpTargetBuffer = ((LPBYTE)lpMapAddress + dwMapViewBlockLow));
-}
-
-LPBYTE CMapViewFile::View(QWORD qdwAddress, DWORD dwSize)
-{
-
-	//当dwSize=0时，VIEW整个文件，
-	//当hasPkx=1时，dwSize=0不会发生
-#if ENABLE_PCK_PKX_FILE
-	if(hasPkx) {
-
-		//当起始地址大于pck文件时
-		if(qdwAddress >= uqdwMaxPckSize.qwValue) {
-			QWORD	dwAddressPkx = qdwAddress - uqdwMaxPckSize.qwValue;
-			return ViewReal(lpMapAddress2, hFileMapping2, dwAddressPkx, dwSize);
-		} else {
-
-			QWORD	dwViewEndAT = qdwAddress + dwSize;
-
-			//当View的块全在文件pck内时
-			if(dwViewEndAT < uqdwMaxPckSize.qwValue) {
-
-				return ViewReal(lpMapAddress, hFileMapping, qdwAddress, dwSize);
-			} else {
-
-				//当View的块在文件pck内和pkx内
-
-				if(NULL == (lpCrossBuffer = (LPBYTE)malloc(dwSize))) {
-
-					return NULL;
-				}
-
-				dwViewSizePck = (DWORD)(uqdwMaxPckSize.qwValue - qdwAddress);
-				dwViewSizePkx = dwSize - dwViewSizePck;
-				//dwCrossAddress = dwAddress;
-
-				LPBYTE buf;
-
-				if(NULL == (buf = ViewReal(lpMapAddress, hFileMapping, qdwAddress, dwViewSizePck))) {
-
-					free(lpCrossBuffer);
-					lpCrossBuffer = NULL;
-
-					return NULL;
-				}
-
-				memcpy(lpCrossBuffer, buf, dwViewSizePck);
-				//保存pck的buf，在unmap时用于回写数据
-				lpCrossAddressPck = buf;
-
-				if(NULL == (buf = ViewReal(lpMapAddress2, hFileMapping2, 0, dwViewSizePkx))) {
-
-					free(lpCrossBuffer);
-					lpCrossBuffer = NULL;
-
-					UnmapView();
-
-					return NULL;
-				}
-
-				isCrossView = TRUE;
-
-				memcpy(lpCrossBuffer + dwViewSizePck, buf, dwViewSizePkx);
-
-				return lpCrossBuffer;
-			}
-		}
-	} else
-#endif
-	{
-		return ViewReal(lpMapAddress, hFileMapping, qdwAddress, dwSize);
+		return NULL;
+	else {
+		vMapAddress.push_back(lpMapAddress);
+		return ((LPBYTE)lpMapAddress + dwMapViewBlockLow);
 	}
 }
 
-
-LPBYTE CMapViewFile::ReView(QWORD dwAddress, DWORD dwSize)
+LPBYTE CMapViewFile::View(QWORD dwAddress, DWORD dwSize)
 {
-	UnmapView();
-	return View(dwAddress, dwSize);
+	assert(FALSE);
+	return NULL;
 }
 
 void CMapViewFile::SetFilePointer(QWORD lDistanceToMove, DWORD dwMoveMethod)
 {
-	DWORD rtn;
-#if ENABLE_PCK_PKX_FILE
-	if(hasPkx) {
+	UNQWORD uqwCurrentPos;
+	uqwCurrentPos.qwValue = lDistanceToMove;
+	DWORD rtn = ::SetFilePointer(hFile, uqwCurrentPos.dwValue, &uqwCurrentPos.lValueHigh, dwMoveMethod);
+	assert(INVALID_SET_FILE_POINTER != rtn);
 
-		UNQWORD	uqdwSetRealPointerAt;
-
-		switch(dwMoveMethod) {
-		case FILE_BEGIN:
-			uqwCurrentPos.qwValue = lDistanceToMove;
-			break;
-
-		case FILE_CURRENT:
-			uqwCurrentPos.qwValue += (LONGLONG)lDistanceToMove;
-			break;
-
-		case FILE_END:
-			uqwCurrentPos.qwValue = uqwFullSize.qwValue + (LONGLONG)lDistanceToMove;
-			break;
-		}
-
-		if(uqwCurrentPos.qwValue >= uqdwMaxPckSize.qwValue) {
-			uqdwSetRealPointerAt.qwValue = uqwCurrentPos.qwValue - uqdwMaxPckSize.qwValue;
-
-
-			rtn = ::SetFilePointer(hFile, uqdwMaxPckSize.dwValue, &uqdwMaxPckSize.lValueHigh, FILE_BEGIN);
-			assert(INVALID_SET_FILE_POINTER != rtn);
-			rtn = ::SetFilePointer(hFile2, uqdwSetRealPointerAt.dwValue, &uqdwSetRealPointerAt.lValueHigh, FILE_BEGIN);
-			assert(INVALID_SET_FILE_POINTER != rtn);
-		} else {
-			rtn = ::SetFilePointer(hFile, uqwCurrentPos.dwValue, &uqwCurrentPos.lValueHigh, FILE_BEGIN);
-			assert(INVALID_SET_FILE_POINTER != rtn);
-			rtn = ::SetFilePointer(hFile2, 0, 0, FILE_BEGIN);
-			assert(INVALID_SET_FILE_POINTER != rtn);
-		}
-
-	} else
-#endif
-	{
-		//dwPosHigh = HIWORD(lDistanceToMove);
-		uqwCurrentPos.qwValue = lDistanceToMove;
-		rtn = ::SetFilePointer(hFile, uqwCurrentPos.dwValue, &uqwCurrentPos.lValueHigh, dwMoveMethod);
-		assert(INVALID_SET_FILE_POINTER != rtn);
-	}
 }
 
-void CMapViewFile::UnmapView()
+QWORD CMapViewFile::GetFilePointer()
 {
-#if ENABLE_PCK_PKX_FILE
-	if(hasPkx) {
+	LARGE_INTEGER uqwCurrentPos, uqwNewCurrentPos;
+	uqwCurrentPos.QuadPart = 0;
+	uqwNewCurrentPos.QuadPart = 0;
 
-		if(isCrossView) {
-
-			if(NULL != lpCrossBuffer) {
-
-				//当跨文件View时，写入的数据需要手动回写
-				if(isWriteMode) {
-					memcpy(lpCrossAddressPck, lpCrossBuffer, dwViewSizePck);
-					memcpy(lpMapAddress2, lpCrossBuffer + dwViewSizePck, dwViewSizePkx);
-				}
-				free(lpCrossBuffer);
-			}
-			isCrossView = FALSE;
-		}
-
-		if(NULL != lpMapAddress2)
-			UnmapViewOfFile(lpMapAddress2);
-		lpMapAddress2 = NULL;
+	if(::SetFilePointerEx(hFile, uqwCurrentPos, &uqwNewCurrentPos, FILE_CURRENT)) {
+		return uqwNewCurrentPos.QuadPart;
 	}
-#endif
-	if(NULL != lpMapAddress)
+	return INVALID_SET_FILE_POINTER;
+}
+
+void CMapViewFile::UnmapView(LPVOID lpTargetAddress)
+{
+
+	if(NULL != lpTargetAddress) {
+		LPVOID lpMapAddress = (LPVOID)(((uintptr_t)lpTargetAddress) & ~(0xffff));
 		UnmapViewOfFile(lpMapAddress);
 
-	lpMapAddress = NULL;
+		vector<LPVOID>::const_iterator result = find(vMapAddress.begin(), vMapAddress.end(), lpMapAddress);
+		if(result != vMapAddress.end())
+			vMapAddress.erase(result);
+	}
+
+}
+
+void CMapViewFile::UnmapViewAll()
+{
+	size_t count = vMapAddress.size();
+	for(int i = 0;i < count;i++) {
+
+		UnmapViewOfFile(vMapAddress[i]);
+	}
+	vMapAddress.clear();
 }
 
 void CMapViewFile::UnMaping()
 {
-#if ENABLE_PCK_PKX_FILE
-	if(hasPkx) {
-
-		if(NULL != hFileMapping2)
-			CloseHandle(hFileMapping2);
-		hFileMapping2 = NULL;
-
-	}
-#endif
 	if(NULL != hFileMapping)
 		CloseHandle(hFileMapping);
 	hFileMapping = NULL;
@@ -426,73 +256,14 @@ void CMapViewFile::UnMaping()
 DWORD CMapViewFile::Read(LPVOID buffer, DWORD dwBytesToRead)
 {
 	DWORD	dwFileBytesRead = 0;
-#if ENABLE_PCK_PKX_FILE
-	if(hasPkx) {
 
-		//当起始地址大于pck文件时
-		if(uqwCurrentPos.qwValue >= uqdwMaxPckSize.qwValue) {
-
-			if(!ReadFile(hFile2, buffer, dwBytesToRead, &dwFileBytesRead, NULL)) {
-				return 0;
-			}
-
-		} else {
-			QWORD qwReadEndAT = uqwCurrentPos.qwValue + dwBytesToRead;
-
-			//当Read的块全在文件pck内时
-			if(qwReadEndAT < uqdwMaxPckSize.qwValue) {
-
-				if(!ReadFile(hFile, buffer, dwBytesToRead, &dwFileBytesRead, NULL)) {
-					return 0;
-				}
-			} else {
-
-				//当Read的块在文件pck内和pkx内
-				//读pck
-				DWORD dwReadInPck = (DWORD)(uqdwMaxPckSize.qwValue - uqwCurrentPos.qwValue);
-				DWORD dwReadInPkx = dwBytesToRead - dwReadInPck;
-
-				if(!ReadFile(hFile, buffer, dwReadInPck, &dwFileBytesRead, NULL)) {
-					return 0;
-				}
-
-				dwReadInPck = dwFileBytesRead;
-				//读pkx
-				if(!ReadFile(hFile2, ((LPBYTE)buffer) + dwReadInPck, dwReadInPkx, &dwFileBytesRead, NULL)) {
-					return 0;
-				}
-
-				dwFileBytesRead += dwReadInPck;
-			}
-		}
-
-		uqwCurrentPos.qwValue += dwFileBytesRead;
-	} else
-#endif
-	{
-		if(!ReadFile(hFile, buffer, dwBytesToRead, &dwFileBytesRead, NULL)) {
-			return 0;
-		}
+	if(!ReadFile(hFile, buffer, dwBytesToRead, &dwFileBytesRead, NULL)) {
+		return 0;
 	}
 
 	return dwFileBytesRead;
 }
 
-
-#if ENABLE_PCK_PKX_FILE
-
-QWORD CMapViewFile::GetFileSize()
-{
-	UNQWORD cqwSize;
-
-	if(!IsPckFile) {
-		cqwSize.dwValue = ::GetFileSize(hFile, &cqwSize.dwValueHigh);
-		return cqwSize.qwValue;
-	} else
-		return uqwFullSize.qwValue;
-}
-
-#else
 
 QWORD CMapViewFile::GetFileSize()
 {
@@ -501,32 +272,12 @@ QWORD CMapViewFile::GetFileSize()
 	return cqwSize.qwValue;
 }
 
-#endif
-
-#if ENABLE_PCK_PKX_FILE
-BOOL CMapViewFile::SetPckPackSize(QWORD qwPckSize)
-{
-	if(uqwFullSize.qwValue < qwPckSize) {
-		//pck标注的文件大小比实际文件要大，文件不全
-		return FALSE;
-	} else if(uqwFullSize.qwValue > qwPckSize) {
-		//pck标注的文件大小比实际文件要小，重新指定文件大小
-		uqwFullSize.qwValue = qwPckSize;
-		if(hasPkx) {
-			dwPkxSize.qwValue = qwPckSize - dwPckSize.qwValue;
-		}
-	}
-
-	return TRUE;
-}
-#endif
-
 //自动生成CreateFileMappingA时所需要的name，要求同时正在使用的FileMapping的name不可重复
 LPCSTR CMapViewFile::GenerateMapName()
 {
 	//
 	static unsigned int dwDupRemover = 0;
-	
+
 	LARGE_INTEGER counter;
 	QueryPerformanceCounter(&counter);
 
@@ -535,7 +286,7 @@ LPCSTR CMapViewFile::GenerateMapName()
 	OutputDebugStringA(__FUNCTION__);
 	OutputDebugStringA(": ");
 	OutputDebugStringA(szFileMappingName);
-	OutputDebugStringA("\r\n");	
+	OutputDebugStringA("\r\n");
 #endif
 	return szFileMappingName;
 }

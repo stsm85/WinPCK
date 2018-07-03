@@ -23,7 +23,7 @@ BOOL CPckClassThreadWorker::isThreadWorkerStillWorking()
 	return m_lpPckParams->cVarParams.bThreadRunning;
 }
 
-BOOL CPckClassThreadWorker::initMultiThreadVars(CMapViewFileWrite *lpFileWriter)
+BOOL CPckClassThreadWorker::initMultiThreadVars(CMapViewFileMultiPckWrite *lpFileWriter)
 {
 	//多线程使用参数初始化
 	mt_lpFileWrite = lpFileWriter;
@@ -125,7 +125,7 @@ VOID CPckClassThreadWorker::WriteThread(VOID* pParam)
 			dwAddressDataAreaEndAt += lpPckIndexTableComp.dwCompressedFilesize;
 
 			pThis->freeMaxAndSubtractMemory(dataToWrite, lpPckIndexTableComp.dwMallocSize);
-			mt_lpFileWrite->UnmapView();
+			mt_lpFileWrite->UnmapViewAll();
 		}
 
 	}

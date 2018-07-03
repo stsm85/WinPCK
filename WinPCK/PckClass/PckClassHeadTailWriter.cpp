@@ -6,7 +6,7 @@ CPckClassHeadTailWriter::CPckClassHeadTailWriter()
 CPckClassHeadTailWriter::~CPckClassHeadTailWriter()
 {}
 
-void CPckClassHeadTailWriter::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional)
+BOOL CPckClassHeadTailWriter::AfterProcess(CMapViewFileMultiPckWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional)
 {
 
 	assert(NULL != dwAddress);
@@ -22,15 +22,16 @@ void CPckClassHeadTailWriter::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_I
 	if(NULL == (lpBufferToWrite = lpWrite->View(dwAddress, m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize))) {
 
 		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		lpWrite->SetFilePointer(dwAddress, FILE_BEGIN);
-		dwAddress += lpWrite->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&PckAllInfo), \
-			m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize);
+		//lpWrite->SetFilePointer(dwAddress, FILE_BEGIN);
+		//dwAddress += lpWrite->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&PckAllInfo), \
+		//	m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize);
+		return FALSE;
 	} else {
 
 		memcpy(lpBufferToWrite, m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&PckAllInfo), \
 			m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize);
 		dwAddress += m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize;
-		lpWrite->UnmapView();
+		lpWrite->UnmapViewAll();
 	}
 
 	//写pckHead
@@ -41,13 +42,14 @@ void CPckClassHeadTailWriter::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_I
 	if(NULL == (lpBufferToWrite = lpWrite->View(0, m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize))) {
 
 		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		lpWrite->SetFilePointer(0, FILE_BEGIN);
-		lpWrite->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(&PckAllInfo), \
-			m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize);
+		//lpWrite->SetFilePointer(0, FILE_BEGIN);
+		//lpWrite->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(&PckAllInfo), \
+		//	m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize);
+		return FALSE;
 	} else {
 		memcpy(lpBufferToWrite, m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(&PckAllInfo), \
 			m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize);
-		lpWrite->UnmapView();
+		lpWrite->UnmapViewAll();
 	}
 
 	lpWrite->UnMaping();
@@ -55,5 +57,6 @@ void CPckClassHeadTailWriter::AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_I
 	//这里将文件大小重新设置一下
 	lpWrite->SetFilePointer(dwAddress, FILE_BEGIN);
 	lpWrite->SetEndOfFile();
+	return TRUE;
 
 }

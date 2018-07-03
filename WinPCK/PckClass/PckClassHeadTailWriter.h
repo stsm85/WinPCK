@@ -1,6 +1,6 @@
 #pragma once
 #include "PckClassHeadTail.h"
-#include "MapViewFile.h"
+#include "MapViewFileMultiPck.h"
 
 
 class CPckClassHeadTailWriter :
@@ -12,7 +12,7 @@ public:
 
 protected:
 
-	void AfterProcess(CMapViewFileWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional = TRUE);
+	BOOL AfterProcess(CMapViewFileMultiPckWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional = TRUE);
 
 
 };

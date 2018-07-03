@@ -29,7 +29,7 @@ CONST	LPPCKINDEXTABLE CZupClass::GetPckIndexTable()
 
 void CZupClass::BuildDirTree()
 {
-	CMapViewFileRead	cReadfile;
+	CMapViewFileMultiPckRead	cReadfile;
 
 	if(!cReadfile.OpenPckAndMappingRead(m_PckAllInfo.szFilename))
 		return;
@@ -48,7 +48,7 @@ void CZupClass::BuildDirTree()
 			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));
 			DecodeFilename(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, lpPckIndexTable->cFileIndex.szFilename);
 
-			BYTE	*lpbuffer = cReadfile.ReView(lpZupIndexTable->cFileIndex.dwAddressOffset, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
+			BYTE	*lpbuffer = cReadfile.View(lpZupIndexTable->cFileIndex.dwAddressOffset, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
 			if(NULL == lpbuffer) {
 
 				m_PckLog.PrintLogEL(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
@@ -74,6 +74,8 @@ void CZupClass::BuildDirTree()
 
 				lpZupIndexTable->cFileIndex.dwFileCipherTextSize = lpPckIndexTable->cFileIndex.dwFileClearTextSize;
 			}
+
+			cReadfile.UnmapViewAll();
 		} else {
 			//Ö±½Ó¸´ÖÆ
 			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));

@@ -30,7 +30,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThread
 			LPBYTE					lpBufferToRead;
 			//文件不为0时的处理
 			//打开要进行压缩的文件
-			if(NULL == (lpBufferToRead = cFileRead.OpenMappingAndViewAllRead(lpOneFile->szFilename))) {
+			if(NULL == (lpBufferToRead = cFileRead.OpenMappingViewAllRead(lpOneFile->szFilename))) {
 				return FD_ERR;
 			}
 
@@ -129,7 +129,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromPCK(CPckClassThreadW
 				}
 
 				memcpy(lpSourceBuffer, lpBufferToRead, dwNumberOfBytesToMap);
-				cDataFetchMethod.lpFileReadPCK->UnmapView();
+				cDataFetchMethod.lpFileReadPCK->UnmapViewAll();
 				ReleaseSRWLockExclusive(&g_mt_LockReadFileMap);
 
 				pThis->decompress(lpDecompressBuffer, &dwFileClearTextSize, lpSourceBuffer, dwNumberOfBytesToMap);
@@ -153,7 +153,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromPCK(CPckClassThreadW
 					break;
 				}
 				memcpy(lpCompressedBuffer, lpBufferToRead, dwNumberOfBytesToMap);
-				cDataFetchMethod.lpFileReadPCK->UnmapView();
+				cDataFetchMethod.lpFileReadPCK->UnmapViewAll();
 				ReleaseSRWLockExclusive(&g_mt_LockReadFileMap);
 #pragma endregion
 			}

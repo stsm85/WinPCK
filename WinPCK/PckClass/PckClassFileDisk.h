@@ -3,7 +3,7 @@
 typedef unsigned __int64	QWORD;
 #include "PckStructs.h"
 #include "PckClassLog.h"
-#include "MapViewFile.h"
+#include "MapViewFileMultiPck.h"
 
 
 class CPckClassFileDisk
@@ -16,7 +16,7 @@ protected:
 	BOOL		EnumAllFilesByPathList(const vector<tstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList);
 	//压缩重建、压缩写入空间不够时扩展空间
 	BOOL		IsNeedExpandWritingFile(
-		CMapViewFileWrite *lpWrite,
+		CMapViewFileMultiPckWrite *lpWrite,
 		QWORD dwWritingAddressPointer,
 		QWORD dwFileSizeToWrite,
 		QWORD &dwExpectedTotalCompressedFileSize);

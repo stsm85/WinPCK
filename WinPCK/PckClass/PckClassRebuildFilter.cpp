@@ -308,7 +308,7 @@ BOOL CPckClassWriteOperator::ParseScript(LPCTSTR lpszScriptFile, PCK_ALL_INFOS &
 	m_PckLog.PrintLogI("开始解析脚本...");
 
 	//读取文件所有字符
-	if(NULL == (lpBufferToRead = cFileRead.OpenMappingAndViewAllRead(lpszScriptFile))) {
+	if(NULL == (lpBufferToRead = cFileRead.OpenMappingViewAllRead(lpszScriptFile))) {
 
 		return FALSE;
 	}

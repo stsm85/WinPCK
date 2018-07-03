@@ -14,7 +14,7 @@ typedef struct _DataFetchMethod
 	vector<FILES_TO_COMPRESS>::const_iterator ciFilesList;
 	vector<FILES_TO_COMPRESS>::const_iterator ciFilesListEnd;
 
-	CMapViewFileRead		*lpFileReadPCK;
+	CMapViewFileMultiPckRead		*lpFileReadPCK;
 	LPPCKINDEXTABLE			lpPckIndexTablePtrSrc;
 	DWORD					dwProcessIndex;
 	DWORD					dwTotalIndexCount;
@@ -55,7 +55,7 @@ private:
 protected:
 
 //函数
-	BOOL initMultiThreadVars(CMapViewFileWrite* lpFileWriter);
+	BOOL initMultiThreadVars(CMapViewFileMultiPckWrite* lpFileWriter);
 protected:
 	void	ExecuteMainThreadGroup(PCK_ALL_INFOS &pckAllInfo, int threadnum, void* threadparams);
 
@@ -89,7 +89,7 @@ private:
 
 protected:
 
-	static	CMapViewFileWrite	*mt_lpFileWrite;												//全局写文件的句柄
+	static	CMapViewFileMultiPckWrite	*mt_lpFileWrite;												//全局写文件的句柄
 	static	QWORD				mt_CompressTotalFileSize;										//预计的压缩文件大小
 	static	DWORD				mt_dwFileCountOfWriteTarget;									//写入数据的目标数量,一般=mt_dwFileCount，添加时=重压缩时的有效文件数量
 
