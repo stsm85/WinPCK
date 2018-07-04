@@ -94,7 +94,9 @@ void CMapViewFileMulti::UnmapViewAll()
 
 	size_t cross_view_count = m_cross_view.size();
 	for(int i = 0;i < cross_view_count;i++) {
-		memcpy(m_cross_view[i].lpMapAddress, m_cross_view[i].lpBufferTargetPtr, m_cross_view[i].size);
+
+		if(NULL != m_cross_view[i].lpBufferTargetPtr)
+			memcpy(m_cross_view[i].lpMapAddress, m_cross_view[i].lpBufferTargetPtr, m_cross_view[i].size);
 
 		if(lastBuffer != m_cross_view[i].lpBufferTarget) {
 			lastBuffer = m_cross_view[i].lpBufferTarget;
@@ -215,7 +217,7 @@ LPBYTE CMapViewFileMulti::View(QWORD dwAddress, DWORD dwSize, BOOL isReadOnly)
 
 BOOL CMapViewFileMulti::BuildCrossViewBuffer(LPBYTE lpCrossBuffer, LPBYTE &lpCrossBufferPtr, int cell_id, QWORD qwAddress, DWORD dwSize, BOOL isReadOnly)
 {
-	CROSS_VIEW cCrossView;
+	CROSS_VIEW cCrossView = { 0 };
 
 	LPBYTE lpMapAddressCell = m_file_cell[cell_id].lpMapView->View(qwAddress, dwSize);
 
@@ -227,6 +229,10 @@ BOOL CMapViewFileMulti::BuildCrossViewBuffer(LPBYTE lpCrossBuffer, LPBYTE &lpCro
 	
 	if(isReadOnly) {
 		m_file_cell[cell_id].lpMapView->UnmapView(lpMapAddressCell);
+
+		cCrossView.lpMapAddress = lpMapAddressCell;
+		m_cross_view.push_back(cCrossView);
+
 	} else {
 		cCrossView.iCellID = cell_id;
 		cCrossView.lpBufferTarget = lpCrossBuffer;

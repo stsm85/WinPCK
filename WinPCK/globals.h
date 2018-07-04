@@ -22,7 +22,7 @@ using namespace std;
 
 
 #define	THIS_NAME			"WinPCK "
-#define	THIS_VERSION		"v1.25.0.0 Alpha"
+#define	THIS_VERSION		"v1.25.0.1 Alpha"
 #define	THIS_DESC			"完美世界系列游戏PCK文件包综合查看器 " 
 #define	THIS_AUTHOR			"程序编写: stsm/liqf/李秋枫\r\n" \
 							"E-Mail: stsm85@126.com "
