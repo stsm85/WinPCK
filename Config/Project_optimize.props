@@ -4,9 +4,12 @@
     <!--检测是否是Debug编译-->
     <UseDebugLibraries Condition="('$(UseDebugLibraries)'=='') And ('$(Configuration)'=='Debug')">true</UseDebugLibraries>
     <UseDebugLibraries Condition="('$(UseDebugLibraries)'!='true')">false</UseDebugLibraries>
+    <!-- 全程序优化 -->
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(UseDebugLibraries)'=='false'">
     <ClCompile>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <!-- 优化 /O1=MinSpace /O2=MaxSpeed /Ox=Full -->
       <Optimization>Full</Optimization>
       <!-- 优选大小或速度 /Ot=Speed /Os=Size 均不=Neither -->

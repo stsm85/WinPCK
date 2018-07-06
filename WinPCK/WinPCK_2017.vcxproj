@@ -93,7 +93,6 @@
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -208,7 +207,6 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <WarningLevel>Level3</WarningLevel>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
       <EnablePREfast>false</EnablePREfast>
       <Parallelization>false</Parallelization>
       <GenerateAlternateCodePaths>SSE2</GenerateAlternateCodePaths>
@@ -219,7 +217,6 @@
       </PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <LargeAddressAware>
@@ -229,8 +226,6 @@
       <SwapRunFromCD>false</SwapRunFromCD>
       <AssemblyDebug>
       </AssemblyDebug>
-      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <MASM>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -258,10 +253,8 @@
       </CompileAsManaged>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
     </ClCompile>
     <Link>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <LargeAddressAware>
@@ -271,8 +264,6 @@
       <SwapRunFromCD>false</SwapRunFromCD>
       <AssemblyDebug>
       </AssemblyDebug>
-      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <MASM>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -308,11 +299,9 @@
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
       <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -336,13 +325,11 @@
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
       <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -361,11 +348,9 @@
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
       <UseProcessorExtensions>SSE3</UseProcessorExtensions>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -381,7 +366,6 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <WarningLevel>Level3</WarningLevel>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
       <EnablePREfast>false</EnablePREfast>
       <Parallelization>false</Parallelization>
       <GenerateAlternateCodePaths>SSE2</GenerateAlternateCodePaths>
@@ -392,7 +376,6 @@
       </PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <LargeAddressAware>
@@ -402,8 +385,6 @@
       <SwapRunFromCD>false</SwapRunFromCD>
       <AssemblyDebug>
       </AssemblyDebug>
-      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <MASM>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -421,11 +402,9 @@
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
       <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -454,6 +433,7 @@
     <ClCompile Include="MapViewFile\MapViewFileRead.cpp" />
     <ClCompile Include="MapViewFile\MapViewFileWrite.cpp" />
     <ClCompile Include="MiscFuncs\CharsCodeConv.cpp" />
+    <ClCompile Include="MiscFuncs\COpenFileListener.cpp" />
     <ClCompile Include="MiscFuncs\GetDragPath.cpp" />
     <ClCompile Include="MiscFuncs\OpenSaveDlg.cpp" />
     <ClCompile Include="MiscFuncs\Raw2HexString.cpp" />
@@ -535,6 +515,7 @@
     <ClInclude Include="MapViewFile\MapViewFileMulti.h" />
     <ClInclude Include="MapViewFile\MapViewFileMultiPck.h" />
     <ClInclude Include="MiscFuncs\CharsCodeConv.h" />
+    <ClInclude Include="MiscFuncs\COpenFileListener.h" />
     <ClInclude Include="MiscFuncs\GetDragPath.h" />
     <ClInclude Include="MiscFuncs\OpenSaveDlg.h" />
     <ClInclude Include="MiscFuncs\Raw2HexString.h" />

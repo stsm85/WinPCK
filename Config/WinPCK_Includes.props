@@ -4,6 +4,12 @@
     <WinPCK_Include>$(ProjectDir)MiscFuncs;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(ProjectDir)decode_dds;$(SolutionDir)zlib;$(SolutionDir)tlib;$(ProjectDir)base64;$(ProjectDir)MapViewFile;$(ProjectDir);$(SolutionDir)libdeflate;</WinPCK_Include>
     <IncludePath Condition="'$(ConfigurationType)'=='Application'">$(IncludePath);$(WinPCK_Include)</IncludePath>
   </PropertyGroup>
+    <ItemDefinitionGroup>
+      <ClCompile>
+        <!-- 结构成员对齐 -->
+        <StructMemberAlignment>16Bytes</StructMemberAlignment>
+      </ClCompile>
+    </ItemDefinitionGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(SolutionDir)\Config\Project_paths.props" Condition=" ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_paths.props'))"/>
   </ImportGroup>

@@ -237,9 +237,6 @@
     <ClCompile Include="PckClass\PckClassZlib.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
-    <ClCompile Include="PckClass\PckClassIndexWriter.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
     <ClCompile Include="PckClass\PckClassHeadTailWriter.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
@@ -302,6 +299,12 @@
     </ClCompile>
     <ClCompile Include="MapViewFile\MapViewFileWrite.cpp">
       <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MiscFuncs\COpenFileListener.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassIndexWriter.cpp">
+      <Filter>源文件\PckClass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -460,11 +463,14 @@
     <ClInclude Include="MiscFuncs\StopWatch.h">
       <Filter>头文件\MiscFuncs</Filter>
     </ClInclude>
+    <ClInclude Include="MiscFuncs\COpenFileListener.h">
+      <Filter>头文件\MiscFuncs</Filter>
+    </ClInclude>
     <ClInclude Include="MapViewFile\MapViewFileMulti.h">
-      <Filter>源文件\MapViewFile</Filter>
+      <Filter>头文件\MapViewFile</Filter>
     </ClInclude>
     <ClInclude Include="MapViewFile\MapViewFileMultiPck.h">
-      <Filter>源文件\MapViewFile</Filter>
+      <Filter>头文件\MapViewFile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

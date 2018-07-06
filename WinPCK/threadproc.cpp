@@ -303,9 +303,8 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 {
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 
-	BOOL		bDeleteClass = !pThis->m_cPckCenter.IsValidPck();
-	TCHAR		/*szPathToCompress[MAX_PATH], */szFilenameToSave[MAX_PATH];
-	//TCHAR	*	lpszPathToCompress = (TCHAR*)malloc (MAX_PATH * sizeof(TCHAR));
+	BOOL		isNotOpenedPck = !pThis->m_cPckCenter.IsValidPck();
+	TCHAR		szFilenameToSave[MAX_PATH];
 
 	TCHAR		szPrintf[64];
 	BOOL		*lpbThreadRunning = &pThis->lpPckParams->cVarParams.bThreadRunning;
@@ -313,15 +312,14 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 	CStopWatch	timer;
 
 	//选择目录
-	if(!BrowseForFolderByPath(pThis->hWnd, pThis->m_CurrentPath))
+	if(!OpenFilesVistaUp(pThis->hWnd, pThis->m_CurrentPath))
 		return;
 
-	//_tcscpy_s(szPathToCompress, pThis->m_CurrentPath);
 	pThis->m_lpszFilePath.push_back(pThis->m_CurrentPath);
 
 	GetPckFileNameBySource(szFilenameToSave, pThis->m_CurrentPath, TRUE);
 
-	if(bDeleteClass)
+	if(isNotOpenedPck)
 		pThis->m_cPckCenter.New();
 
 	//选择保存的文件名
@@ -352,7 +350,6 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 			timer.stop();
 
 			pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_COMPOK), timer.getElapsedTime());
-			//pThis->SetStatusBarText(4, szPrintf);
 		} else {
 			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
@@ -364,7 +361,7 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 
 	pThis->EnbaleButtons(ID_MENU_NEW, TRUE);
 
-	if(bDeleteClass)
+	if(isNotOpenedPck)
 		pThis->m_cPckCenter.Close();
 
 	pThis->KillTimer(WM_TIMER_PROGRESS_100);
@@ -436,13 +433,10 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 {
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 
-	LVITEM item;
-
 	BOOL		*lpbThreadRunning = &pThis->lpPckParams->cVarParams.bThreadRunning;
 	LPDWORD		lpdwUIProgressUpper = &pThis->lpPckParams->cVarParams.dwUIProgressUpper;
 
 	pThis->m_cPckCenter.Reset(0);
-
 
 	HWND	hList = pThis->GetDlgItem(IDC_LIST);
 
@@ -460,8 +454,9 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 			lpIndexToShow = (LPPCKINDEXTABLE*)lpNodeToShow;
 
 			//取lpNodeToShow
-
 			int	nCurrentItemCount = ListView_GetItemCount(hList);
+
+			LVITEM item;
 
 			item.mask = LVIF_PARAM | LVIF_STATE;
 			item.iSubItem = 0;
@@ -565,13 +560,9 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 {
 	TInstDlg	*pThis = (TInstDlg*)pParam;
-
-	LVITEM item;
-
 	BOOL		*lpbThreadRunning = &pThis->lpPckParams->cVarParams.bThreadRunning;
 
 	pThis->m_cPckCenter.Reset();
-
 
 	HWND	hList = pThis->GetDlgItem(IDC_LIST);
 
@@ -588,6 +579,7 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 
 		int	nCurrentItemCount = ListView_GetItemCount(hList);
 
+		LVITEM item;
 		item.mask = LVIF_PARAM | LVIF_STATE;
 		item.iSubItem = 0;
 		item.stateMask = LVIS_SELECTED;		// get all state flags

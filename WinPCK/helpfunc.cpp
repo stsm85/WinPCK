@@ -37,7 +37,7 @@ void TInstDlg::UnpackAllFiles()
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
 			EnableButton(ID_MENU_UNPACK_ALL, FALSE);
 		} else {
-			if(BrowseForFolderByPath(hWnd, m_CurrentPath)) {
+			if(OpenFilesVistaUp(hWnd, m_CurrentPath)) {
 				lpPckParams->cVarParams.dwMTMemoryUsed = 0;
 				SetCurrentDirectory(m_CurrentPath);
 				_beginthread(ToExtractAllFiles, 0, this);
@@ -53,7 +53,7 @@ void TInstDlg::UnpackSelectedFiles()
 			lpPckParams->cVarParams.bThreadRunning = FALSE;
 			EnableButton(ID_MENU_UNPACK_SELECTED, FALSE);
 		} else {
-			if(BrowseForFolderByPath(hWnd, m_CurrentPath)) {
+			if(OpenFilesVistaUp(hWnd, m_CurrentPath)) {
 				lpPckParams->cVarParams.dwMTMemoryUsed = 0;
 				SetCurrentDirectory(m_CurrentPath);
 				_beginthread(ToExtractSelectedFiles, 0, this);

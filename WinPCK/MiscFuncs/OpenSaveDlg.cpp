@@ -13,9 +13,57 @@
 #include "OpenSaveDlg.h"
 #include <tchar.h>
 #include <shlobj.h>
+#include "COpenFileListener.h"
 
 #define DEFAULT_FILTER	"所有文件\0*.*\0\0"
 #define __L(quote) L#quote
+
+
+BOOL OpenFilesVistaUp(HWND hwnd, TCHAR lpszPathName[MAX_PATH])
+{
+	IFileOpenDialog *pfd;
+	FILEOPENDIALOGOPTIONS dwOptions;
+	DWORD dwCookie = 0;
+
+	CoInitialize(NULL);
+
+	// CoCreate the dialog object.
+	HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog,
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_PPV_ARGS(&pfd));
+
+	if(SUCCEEDED(hr)) {
+
+		hr = pfd->GetOptions(&dwOptions);
+
+		if(SUCCEEDED(hr)) {
+			hr = pfd->SetOptions(dwOptions | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
+
+			if(SUCCEEDED(hr)) {
+				COpenFileListener *ofl = new COpenFileListener(lpszPathName);
+				hr = pfd->Advise(ofl, &dwCookie);
+
+				if(SUCCEEDED(hr)) {
+					hr = pfd->Show(hwnd);
+
+					if(SUCCEEDED(hr)) {
+
+					}
+
+					pfd->Unadvise(dwCookie);
+				}
+			}
+		}
+
+		pfd->Release();
+	}
+
+	CoUninitialize();
+
+	return SUCCEEDED(hr);
+}
+
 
 /******************************************************
 只打开一个文件
@@ -172,7 +220,7 @@ DWORD SaveFile(HWND hWnd, wchar_t * lpszFileName, LPCWSTR lpszDefaultExt, LPCWST
 	return ofn.nFilterIndex;
 
 }
-
+#if 0
 BOOL BrowseForFolderByPath(HWND hWnd, TCHAR * lpszPathName)
 {
 
@@ -218,3 +266,4 @@ int CALLBACK BFFCallBack(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 
 	return 0;
 }
+#endif
