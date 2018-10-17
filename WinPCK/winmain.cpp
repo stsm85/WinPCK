@@ -72,7 +72,6 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 	MoveWindow((cx - xsize) / 2, (cy - ysize) / 2, xsize, ysize, TRUE);
 
 	//界面和数据初始化
-	//MessageBoxA("语言测试");
 	SetWindowTextA(THIS_MAIN_CAPTION);
 	//初始化数据
 	initParams();
