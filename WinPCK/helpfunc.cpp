@@ -22,7 +22,7 @@
 //#include <shlobj.h>
 //#include <strsafe.h>
 #include <process.h>
-#include "CharsCodeConv.h"
+//#include "CharsCodeConv.h"
 #include "OpenSaveDlg.h"
 #include "ShowLogOnDlgListView.h"
 
@@ -105,7 +105,7 @@ void TInstDlg::DbClickListView(const int itemIndex)
 #ifdef UNICODE
 				_tcscpy_s(*lpCurrentDir, MAX_PATH - (*lpCurrentDir - *m_PathDirs.lpszDirNames), lpNodeToShow->szName);
 #else
-				CUcs2Ansi cU2A;
+				CUcs2Ansi cU2A(code_page);
 				strcpy_s(*lpCurrentDir, MAX_PATH - (*lpCurrentDir - *m_PathDirs.lpszDirNames), cU2A.GetString(lpNodeToShow->szName));
 #endif
 
@@ -195,7 +195,7 @@ VOID TInstDlg::ViewFileAttribute()
 
 
 	if(m_cPckCenter.IsValidPck()) {
-		char	szPath[MAX_PATH_PCK_260];
+		wchar_t	szPath[MAX_PATH_PCK_260];
 
 		m_cPckCenter.GetCurrentNodeString(szPath, m_currentNodeOnShow);
 
@@ -241,7 +241,7 @@ BOOL TInstDlg::AddFiles()
 
 	if(lpPckParams->cVarParams.bThreadRunning)return FALSE;
 
-	if(IDCANCEL == MessageBoxA("确定添加文件吗？", "询问", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2))return FALSE;
+	if(IDCANCEL == MessageBoxW(L"确定添加文件吗？", L"询问", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2))return FALSE;
 
 	if(OpenFiles(hWnd, m_lpszFilePath)) {
 

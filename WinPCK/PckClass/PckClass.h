@@ -11,7 +11,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include <assert.h>
-#include "CharsCodeConv.h"
 
 #include "PckClassVersionDetect.h"
 #include "PckClassWriteOperator.h"

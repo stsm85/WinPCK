@@ -27,6 +27,9 @@ BOOL TCompressOptDlg::EvCreate(LPARAM lParam)
 	SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETPOS, TRUE, (LPARAM)lpParams->dwCompressLevel);
 	SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_SETPOS, TRUE, (LPARAM)lpParams->dwMTThread);
 
+	SendDlgItemMessageA(IDC_CBO_CODEPAGE, CB_ADDSTRING, 0, (LPARAM)"CP936");
+	SendDlgItemMessageA(IDC_CBO_CODEPAGE, CB_SETCURSEL, 0, 0);
+
 	SetDlgItemTextA(IDC_STATIC_LEVEL, ultoa(lpParams->dwCompressLevel, szStr, 10));
 	SetDlgItemTextA(IDC_STATIC_THREAD, ultoa(lpParams->dwMTThread, szStr, 10));
 	SetDlgItemTextA(IDC_EDIT_MEM, ultoa((lpParams->dwMTMaxMemory) >> 20, szStr, 10));

@@ -19,7 +19,7 @@ typedef struct _DataFetchMethod
 	DWORD					dwProcessIndex;
 	DWORD					dwTotalIndexCount;
 
-	char					szCurrentNodeString[MAX_PATH_PCK_260];						//（界面线程中当前显示的）节点对应的pck中的文件路径
+	wchar_t					szCurrentNodeString[MAX_PATH_PCK_260];						//（界面线程中当前显示的）节点对应的pck中的文件路径
 	int						nCurrentNodeStringLen;										//其长度
 
 }DATA_FETCH_METHOD, *LPDATA_FETCH_METHOD;
@@ -33,7 +33,8 @@ typedef struct _ThreadParams
 
 #define MALLOCED_EMPTY_DATA			(1)
 
-_inline char * __fastcall mystrcpy(char * dest, const char *src)
+template <typename T>
+_inline T * __fastcall mystrcpy(T * dest, const T *src)
 {
 	while((*dest = *src))
 		dest++, src++;

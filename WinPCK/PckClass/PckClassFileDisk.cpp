@@ -11,7 +11,6 @@
 
 #include <windows.h>
 #include "PckClassFileDisk.h"
-#include "CharsCodeConv.h"
 
 
 //创建时，剩余文件的空间量不够时，添加量
@@ -187,21 +186,21 @@ QWORD CPckClassFileDisk::GetPckFilesizeByCompressed(LPCWSTR lpszFilename, QWORD 
 }
 
 //////////////////////////以下是程序过程中需要调用的过程///////////////////////////////
-VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, vector<FILES_TO_COMPRESS> *lpFileLinkList, QWORD &qwTotalFileSize, size_t nLen)
+VOID CPckClassFileDisk::EnumFile(LPWSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, vector<FILES_TO_COMPRESS> *lpFileLinkList, QWORD &qwTotalFileSize, size_t nLen)
 {
 
-	char		szPath[MAX_PATH], szFile[MAX_PATH];
+	wchar_t		szPath[MAX_PATH], szFile[MAX_PATH];
 
 	size_t nLenBytePath = mystrcpy(szPath, szFilename) - szPath + 1;
-	strcat(szFilename, "\\*.*");
+	wcscat(szFilename, L"\\*.*");
 
 	HANDLE					hFile;
-	WIN32_FIND_DATAA		WFD;
+	WIN32_FIND_DATAW		WFD;
 
-	if((hFile = FindFirstFileA(szFilename, &WFD)) != INVALID_HANDLE_VALUE) {
+	if((hFile = FindFirstFileW(szFilename, &WFD)) != INVALID_HANDLE_VALUE) {
 		if(!IsPatition) {
-			FindNextFileA(hFile, &WFD);
-			if(!FindNextFileA(hFile, &WFD)) {
+			FindNextFileW(hFile, &WFD);
+			if(!FindNextFileW(hFile, &WFD)) {
 				return;
 			}
 		}
@@ -209,7 +208,7 @@ VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFil
 		do {
 			if((WFD.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) {
 
-				if((MAX_PATH_PCK_260 - 13) >= mystrcpy(mystrcpy(mystrcpy(szFile, szPath), "\\"), WFD.cFileName) - szFile) {
+				if((MAX_PATH_PCK_260 - 13) >= mystrcpy(mystrcpy(mystrcpy(szFile, szPath), L"\\"), WFD.cFileName) - szFile) {
 					EnumFile(szFile, FALSE, dwFileCount, lpFileLinkList, qwTotalFileSize, nLen);
 				}
 
@@ -223,10 +222,10 @@ VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFil
 				lpFileLinkList->push_back(FILES_TO_COMPRESS{ 0 });
 				LPFILES_TO_COMPRESS	pFileinfo = &lpFileLinkList->back();
 
-				if(MAX_PATH_PCK_260 < nLenBytePath + strlen(WFD.cFileName)) {
-					mystrcpy(mystrcpy(mystrcpy(pFileinfo->szFilename, szPath), "\\"), WFD.cAlternateFileName);
+				if(MAX_PATH_PCK_260 < nLenBytePath + wcslen(WFD.cFileName)) {
+					mystrcpy(mystrcpy(mystrcpy(pFileinfo->szwFilename, szPath), L"\\"), WFD.cAlternateFileName);
 				} else {
-					mystrcpy(mystrcpy(mystrcpy(pFileinfo->szFilename, szPath), "\\"), WFD.cFileName);
+					mystrcpy(mystrcpy(mystrcpy(pFileinfo->szwFilename, szPath), L"\\"), WFD.cFileName);
 				}
 
 #ifdef _DEBUG
@@ -240,7 +239,7 @@ VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFil
 
 			}
 
-		} while(FindNextFileA(hFile, &WFD));
+		} while(FindNextFileW(hFile, &WFD));
 
 		FindClose(hFile);
 	}
@@ -249,20 +248,23 @@ VOID CPckClassFileDisk::EnumFile(LPSTR szFilename, BOOL IsPatition, DWORD &dwFil
 
 BOOL CPckClassFileDisk::EnumAllFilesByPathList(const vector<tstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList)
 {
-	char		szPathMbsc[MAX_PATH];
+	wchar_t		szPathMbsc[MAX_PATH];
 	DWORD		dwAppendCount = lpszFilePath.size();
 
 	for(DWORD i = 0; i < dwAppendCount; i++) {
 
 #ifdef UNICODE
-		CUcs2Ansi cU2A;
-		cU2A.GetString(lpszFilePath[i].c_str(), szPathMbsc, MAX_PATH);
+		
+		//cU2A.GetString(lpszFilePath[i].c_str(), szPathMbsc, MAX_PATH);
+		wcscpy_s(szPathMbsc, lpszFilePath[i].c_str());
 #else
-		strcpy_s(szPathMbsc, lpszFilePath[i].c_str());
+		CAnsi2Ucs cA2U(CP_ACP);
+		cA2U.GetString(lpszFilePath[i].c_str(), szPathMbsc, MAX_PATH);
+		//strcpy_s(szPathMbsc, lpszFilePath[i].c_str());
 #endif
-		size_t nLen = (size_t)(strrchr(szPathMbsc, '\\') - szPathMbsc) + 1;
+		size_t nLen = (size_t)(wcsrchr(szPathMbsc, L'\\') - szPathMbsc) + 1;
 
-		if(FILE_ATTRIBUTE_DIRECTORY == (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributesA(szPathMbsc))) {
+		if(FILE_ATTRIBUTE_DIRECTORY == (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributesW(szPathMbsc))) {
 			//文件夹
 			EnumFile(szPathMbsc, FALSE, _out_FileCount, lpFileLinkList, _out_TotalFileSize, nLen);
 		} else {
@@ -279,7 +281,7 @@ BOOL CPckClassFileDisk::EnumAllFilesByPathList(const vector<tstring> &lpszFilePa
 			lpFileLinkList->push_back(FILES_TO_COMPRESS{ 0 });
 			LPFILES_TO_COMPRESS	lpfirstFile = &lpFileLinkList->back();
 
-			strcpy(lpfirstFile->szFilename, szPathMbsc);
+			wcscpy(lpfirstFile->szwFilename, szPathMbsc);
 
 			lpfirstFile->nFileTitleLen = nLen;
 			lpfirstFile->nBytesToCopy = MAX_PATH - nLen;

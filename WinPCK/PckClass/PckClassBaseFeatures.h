@@ -42,7 +42,7 @@ protected:
 	void	SetParams_Progress(DWORD dwUIProgres);
 
 	//设置进度信息中的最大值
-	void	SetParams_ProgressUpper(DWORD dwUIProgressUpper);
+	void	SetParams_ProgressUpper(DWORD dwUIProgressUpper, BOOL bReset = TRUE);
 
 #ifdef _DEBUG
 	static SRWLOCK	m_LockLogFile;
@@ -50,8 +50,6 @@ protected:
 #else
 	static void logOutput(...){}
 #endif
-	//添加待压缩文件时，遍历文件时使用的文件列表的第一个文件
-	//LPFILES_TO_COMPRESS		m_firstFile;
 
 	//打印日志
 	CPckClassLog			m_PckLog;

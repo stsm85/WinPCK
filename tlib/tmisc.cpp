@@ -503,7 +503,7 @@ int strncmpi(const char *str1, const char *str2, int num)
 	return	0;
 }
 
-
+#ifdef _USE_T_CHARCONV_
 /*=========================================================================
 	UCS2(W) - ANSI(A) ‘ŠŒÝ•ÏŠ·
 =========================================================================*/
@@ -525,6 +525,7 @@ WCHAR *AtoW(const char *src, BOOL noStatic) {
 	}
 	return	wbuf;
 }
+#endif
 
 char *strdupNew(const char *_s)
 {

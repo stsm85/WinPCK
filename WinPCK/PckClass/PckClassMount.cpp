@@ -26,6 +26,8 @@ BOOL CPckClass::MountPckFile(LPCTSTR	szFile)
 
 void CPckClass::BuildDirTree()
 {
+	//将读取的index中的ansi文本全部转换为Unicode
 	GenerateUnicodeStringToIndex();
+	//根据index中的文件名建立目录树
 	ParseIndexTableToNode(m_PckAllInfo.lpPckIndexTable);
 }

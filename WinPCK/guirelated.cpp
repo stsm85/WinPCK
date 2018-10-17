@@ -18,7 +18,6 @@
 #include <tchar.h>
 #pragma comment(lib,"comctl32.lib")
 
-
 int initArgumentException(int code);
 
 void TInstDlg::initCommctrls()
@@ -73,6 +72,10 @@ void TInstDlg::initParams()
 #else
 	lpPckParams->dwMTMaxMemory = MT_MAX_MEMORY;
 #endif
+
+	lpPckParams->code_page = 936;
+
+	m_isListviewRenaming = FALSE;
 
 	//π‚±Íº”‘ÿ
 	m_isSearchWindow = FALSE;

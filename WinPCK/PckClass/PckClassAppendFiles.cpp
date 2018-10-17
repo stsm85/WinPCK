@@ -33,7 +33,7 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 			return FALSE;
 		}
 
-		cThreadParams.cDataFetchMethod.nCurrentNodeStringLen = strlen(cThreadParams.cDataFetchMethod.szCurrentNodeString);
+		cThreadParams.cDataFetchMethod.nCurrentNodeStringLen = wcslen(cThreadParams.cDataFetchMethod.szCurrentNodeString);
 
 		m_PckLog.PrintLogI(TEXT_LOG_UPDATE_ADD
 			"-"

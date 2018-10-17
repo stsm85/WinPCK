@@ -11,7 +11,6 @@ public:
 	CPriviewInDlg();
 	~CPriviewInDlg();
 
-	BOOL Show(LPCSTR lpszFilename, DWORD dwSize, CPckControlCenter	*m_lpPckCenter, LPPCKINDEXTABLE lpPckFileIndexToShow, TWin *_win);
 	BOOL Show(LPCWSTR lpszFilename, DWORD dwSize, CPckControlCenter	*m_lpPckCenter, LPPCKINDEXTABLE lpPckFileIndexToShow, TWin *_win);
 
 protected:

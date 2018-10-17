@@ -36,7 +36,7 @@ BOOL CMapViewFileMultiRead::AddFile(LPCSTR lpszFilename)
 		return FALSE;
 	}
 
-	CAnsi2Ucs cA2U;
+	CAnsi2Ucs cA2U(CP_ACP);
 	return AddFile(lpRead, cA2U.GetString(lpszFilename));
 }
 

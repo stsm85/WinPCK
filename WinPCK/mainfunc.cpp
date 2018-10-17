@@ -20,7 +20,7 @@
 //#include <strsafe.h>
 #include <shlwapi.h>
 #include "OpenSaveDlg.h"
-#include "CharsCodeConv.h"
+//#include "CharsCodeConv.h"
 #include <stdio.h>
 #include "StopWatch.h"
 
@@ -42,7 +42,7 @@ LPPCK_PATH_NODE	TInstDlg::GetLastShowNode()
 #ifdef UNICODE
 			if(0 == _tcscmp(lpCurrentNodeToFind->szName, *lpCurrentDir)) {
 #else
-			CAnsi2Ucs cA2U;
+			CAnsi2Ucs cA2U(CP_ACP);
 			if(0 == wcscmp(lpCurrentNodeToFind->szName, cA2U.GetString(*lpCurrentDir))) {
 #endif
 				lpCurrentNode = lpCurrentNodeToFind = lpCurrentNodeToFind->child;

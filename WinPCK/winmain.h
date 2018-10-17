@@ -48,10 +48,12 @@ public:
 
 
 //用户变量
-protected:
+private:
 
 	TCHAR	m_MyFileName[MAX_PATH];
 	TCHAR	m_Filename[MAX_PATH], m_CurrentPath[MAX_PATH];
+
+	BOOL	m_isListviewRenaming;
 
 
 	CPckControlCenter	m_cPckCenter;
@@ -86,9 +88,8 @@ protected:
 	TCHAR		szTimerProcessingFormatString[64];
 	TCHAR		szTimerProcessedFormatString[64];
 
-
 	//用户函数
-protected:
+private:
 
 	//winmain.cpp
 	VOID SetStatusBarText(int iPart, LPCSTR lpszText);
@@ -153,6 +154,22 @@ protected:
 
 	void ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlistview, DWORD& dwSortStatus);
 
+	//menu
+	void MenuClose();
+	void MenuInfo();
+	void MenuSearch();
+	void MenuNew(WORD wID);
+	void MenuAdd(WORD wID);
+	void MenuRebuild(WORD wID);
+	void MenuCompressOpt();
+	void MenuRename();
+	void MenuDelete();
+	void MenuSelectAll();
+	void MenuSelectReverse();
+	void MenuAttribute();
+	void MenuView();
+	void MenuAbout();
+	void ListViewEnter();
 
 };
 

@@ -201,8 +201,8 @@ typedef struct _PCK_FILE_INDEX_V2031
 
 typedef struct _PCK_FILE_INDEX
 {
-	char		szFilename[MAX_PATH_PCK_260];
-	wchar_t		szwFilename[MAX_PATH_PCK_260];
+	char		szFilename[MAX_PATH_PCK_260];		//使用pck内部ansi编码，默认CP936
+	wchar_t		szwFilename[MAX_PATH_PCK_260];		//通用Unicode编码
 	QWORD		dwAddressOffset;
 	DWORD		dwFileClearTextSize;
 	DWORD		dwFileCipherTextSize;
@@ -220,6 +220,8 @@ typedef struct _PCK_INDEX_TABLE
 	BOOL			isToDeDelete;		//设置为TRUE后，文件会被删除，isProtected为TRUE的除外
 	DWORD			dwMallocSize;						//申请空间使用的大小（>=压缩后的文件大小）
 	LPBYTE			compressed_file_data;				//此index对应的压缩数据
+	size_t			nFilelenBytes;			//文件名(pck ansi)长度字节数
+	size_t			nFilelenLeftBytes;		//文件名(pck ansi)剩余可用字节数，重命名时用，使用MAX_PATH_PCK_256
 }PCKINDEXTABLE, *LPPCKINDEXTABLE;
 
 
@@ -228,6 +230,8 @@ typedef struct _PCK_PATH_NODE
 	wchar_t			szName[MAX_PATH_PCK_260];
 	DWORD			dwFilesCount;
 	DWORD			dwDirsCount;
+	size_t			nNameSizeAnsi;		//节点名的pck ansi 长度
+	size_t			nMaxNameSizeAnsi;	//
 	QWORD			qdwDirClearTextSize;
 	QWORD			qdwDirCipherTextSize;
 	LPPCKINDEXTABLE	lpPckIndexTable;
@@ -248,6 +252,7 @@ typedef struct _FILES_TO_COMPRESS
 	DWORD			nBytesToCopy;
 	//char			szBase64Name[MAX_PATH_PCK];
 	char			szFilename[MAX_PATH];
+	wchar_t			szwFilename[MAX_PATH];
 	size_t			nFileTitleLen;
 	_FILES_TO_COMPRESS	*next;
 	_PCK_INDEX_TABLE	*samePtr;

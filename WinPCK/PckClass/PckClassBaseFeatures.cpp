@@ -100,9 +100,11 @@ void CPckClassBaseFeatures::SetParams_Progress(DWORD dwUIProgress)
 	m_lpPckParams->cVarParams.dwUIProgress = dwUIProgress;
 }
 
-void CPckClassBaseFeatures::SetParams_ProgressUpper(DWORD dwUIProgressUpper)
+void CPckClassBaseFeatures::SetParams_ProgressUpper(DWORD dwUIProgressUpper, BOOL bReset)
 {
-	m_lpPckParams->cVarParams.dwUIProgress = 0;
+	if(bReset)
+		m_lpPckParams->cVarParams.dwUIProgress = 0;
 	m_lpPckParams->cVarParams.dwUIProgressUpper = dwUIProgressUpper;
 }
 #pragma endregion
+

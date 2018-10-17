@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <tchar.h>
 #include "OpenSaveDlg.h"
-#include "CharsCodeConv.h"
+//#include "CharsCodeConv.h"
 
 #define MIN_CX	640
 #define MIN_CY	480

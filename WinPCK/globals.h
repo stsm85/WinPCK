@@ -17,16 +17,20 @@
 #include <vector>
 using namespace std;
 
+#ifndef UNICODE
+#error("please use Unicode charset") 
+#endif
+
 //****** some defines *******
 #define _USE_CUSTOMDRAW_
 
 
 #define	THIS_NAME			"WinPCK "
-#define	THIS_VERSION		"v1.25.1.0 Alpha"
-#define	THIS_DESC			"完美世界系列游戏PCK文件包综合查看器 " 
-#define	THIS_AUTHOR			"程序编写: stsm/liqf/李秋枫\r\n" \
+#define	THIS_VERSION		"v1.26.0.0 "
+#define	THIS_DESC			L"完美世界系列游戏PCK文件包综合查看器 " 
+#define	THIS_AUTHOR			L"程序编写: stsm/liqf/李秋枫\r\n" \
 							"E-Mail: stsm85@126.com "
-#define THIS_UESDLIB		"本软件开源，源代码地址：\r\nhttps://github.com/stsm85\r\n\r\n" \
+#define THIS_UESDLIB		L"本软件开源，源代码地址：\r\nhttps://github.com/stsm85\r\n\r\n" \
 							"使用开源库：\r\n" \
 							"VC LTL(Copyright (C) Chuyu-Team)\r\n" \
 							"libdeflate(Copyright (C) 2016 Eric Biggers)\r\n" \

@@ -38,7 +38,8 @@ BOOL CPckClassIndexWriter::WriteAllIndex(CMapViewFileMultiPckWrite *lpWrite, LPP
 {
 
 	//窗口中以显示的文件进度，初始化，显示写索引进度
-	SetParams_ProgressUpper(lpPckAllInfo->dwFileCount + lpPckAllInfo->dwFileCountToAdd);
+	DWORD dwValidFileCount = lpPckAllInfo->dwFileCount + lpPckAllInfo->dwFileCountToAdd;
+	SetParams_ProgressUpper(dwValidFileCount);
 
 	//写原来的文件
 	LPPCKINDEXTABLE	lpPckIndexTableOld = lpPckAllInfo->lpPckIndexTable;
@@ -52,9 +53,14 @@ BOOL CPckClassIndexWriter::WriteAllIndex(CMapViewFileMultiPckWrite *lpWrite, LPP
 			WritePckIndex(lpWrite, FillAndCompressIndexData(&pckIndexTableTemp, &lpPckIndexTableOld->cFileIndex), dwAddress);
 			++dwFinalFileCount;
 		}
+		else {
+			--dwValidFileCount;
+		}
 		lpPckIndexTableOld++;
 
 	}
+
+	SetParams_ProgressUpper(dwValidFileCount, FALSE);
 
 	lpPckAllInfo->dwFileCount = dwFinalFileCount;
 

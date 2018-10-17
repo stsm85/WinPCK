@@ -33,7 +33,7 @@ BOOL	CPckControlCenter::IsValidPck()
 	return (NULL != m_lpClassPck);
 }
 
-BOOL	CPckControlCenter::GetCurrentNodeString(char* szCurrentNodePathString, LPPCK_PATH_NODE lpNode)
+BOOL	CPckControlCenter::GetCurrentNodeString(wchar_t* szCurrentNodePathString, LPPCK_PATH_NODE lpNode)
 {
 	return m_lpClassPck->GetCurrentNodeString(szCurrentNodePathString, lpNode);
 }

@@ -13,7 +13,6 @@
 #include "winmain.h"
 #include <process.h>
 #include <CommCtrl.h>
-#include "CharsCodeConv.h"
 
 #define DEBUG_THIS 0
 #if !DEBUG_THIS
@@ -56,7 +55,7 @@ DWORD dwSortStatus = 0;
 BOOL TInstDlg::EvNotifyListView(const NMHDR *pNmHdr)
 {
 	int iCurrentHotItem = ((LPNMLISTVIEW)pNmHdr)->iItem;
-	Debug(L"D ListView:LVN_FIRST %d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
+	//Debug(L"D ListView:LVN_FIRST %d,all:NM_FIRST-%d\r\n", LVN_FIRST-pNmHdr->code, NM_FIRST - pNmHdr->code);
 	switch(pNmHdr->code) {
 	case LVN_COLUMNCLICK:
 		ProcessColumnClick(((LPNMLISTVIEW)pNmHdr)->hdr.hwndFrom, (LPNMLISTVIEW)pNmHdr, dwSortStatus);
@@ -65,6 +64,28 @@ BOOL TInstDlg::EvNotifyListView(const NMHDR *pNmHdr)
 	case NM_CLICK:
 		if(-1 != iCurrentHotItem) {
 			m_cPckCenter.SetListCurrentHotItem(iCurrentHotItem);
+#ifdef _DEBUG
+			LPPCK_PATH_NODE		lpNodeToShow;
+			LPPCKINDEXTABLE		lpIndexToShow;
+			LVITEM				item = { 0 };
+			item.mask = LVIF_PARAM;
+			item.iItem = iCurrentHotItem;
+			ListView_GetItem(pNmHdr->hwndFrom, &item);
+
+			if (m_cPckCenter.GetListInSearchMode()) {
+				lpIndexToShow = (LPPCKINDEXTABLE)(item.lParam);
+				DebugA("lpIndexToShow->nFilelenLeftBytes = %d\r\n", lpIndexToShow->nFilelenLeftBytes);
+			} else {
+
+				lpNodeToShow = (LPPCK_PATH_NODE)(item.lParam);
+
+				if (NULL == lpNodeToShow->child) {
+					DebugA("lpIndexToShow->nFilelenLeftBytes = %d\r\n", lpNodeToShow->nMaxNameSizeAnsi);
+				} else {
+					DebugA("(dir)lpIndexToShow->nFilelenLeftBytes = %d\r\n", lpNodeToShow->nMaxNameSizeAnsi);
+				}
+			}
+#endif
 		}
 		break;
 	case NM_RCLICK:
@@ -373,31 +394,24 @@ BOOL TInstDlg::ListView_BeginLabelEdit(const HWND hWndList, LPARAM lParam)
 	if(NULL == lParam)return TRUE;
 	//isSearchMode = 2 == ((NMLVDISPINFO*) pNmHdr)->item.iImage ? TRUE : FALSE;
 
-	size_t nLen, nAllowMaxLength;
+	size_t nAllowMaxLength;
 
 	if(m_cPckCenter.GetListInSearchMode()) {
 		lpIndexToShow = (LPPCKINDEXTABLE)lParam;
-		nLen = strnlen(lpIndexToShow->cFileIndex.szFilename, MAX_PATH_PCK_260);
-		//StringCchLengthA(lpIndexToShow->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
-		nAllowMaxLength = MAX_PATH_PCK_260 - 2;
+
+		nAllowMaxLength = MAX_PATH_PCK_256;
 	} else {
 
 		lpNodeToShow = (LPPCK_PATH_NODE)lParam;
-		if(NULL == lpNodeToShow->child) {
-			nLen = strnlen(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260);
-			//StringCchLengthA(lpNodeToShow->lpPckIndexTable->cFileIndex.szFilename, MAX_PATH_PCK_260, &nLen);
+		nAllowMaxLength = lpNodeToShow->nMaxNameSizeAnsi + lpNodeToShow->nNameSizeAnsi;
 
-			CUcs2Ansi cU2A;
-			nAllowMaxLength = MAX_PATH_PCK_260 - nLen + cU2A.GetStrlen(lpNodeToShow->szName) - 2;
-
-		} else {
-			nAllowMaxLength = MAX_PATH_PCK_260 - 2;
-		}
 	}
 
 	HWND	hEdit;
 	if(NULL == (hEdit = ListView_GetEditControl(hWndList)))return TRUE;
 	::SendMessage(hEdit, EM_LIMITTEXT, nAllowMaxLength, 0);
+
+	m_isListviewRenaming = TRUE;
 
 	return FALSE;
 }
@@ -407,37 +421,25 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 	LPPCK_PATH_NODE		lpNodeToShow;
 	LPPCKINDEXTABLE		lpIndexToShow;
 
+	m_isListviewRenaming = FALSE;
+
 	::SetWindowLong(pNmHdr->hdr.hwndFrom, GWL_STYLE, ::GetWindowLong(pNmHdr->hdr.hwndFrom, GWL_STYLE) & (LVS_EDITLABELS ^ 0xffffffff));
 
-	char	szEditedText[MAX_PATH_PCK_260];
-	memset(szEditedText, 0, MAX_PATH_PCK_260);
+	//wchar_t	szEditedText[MAX_PATH_PCK_260] = { 0 };
 
 	if(NULL != pNmHdr->item.pszText) {
 		if(0 == *pNmHdr->item.pszText)return FALSE;
 
-		//isSearchMode = 2 == ((NMLVDISPINFO*) pNmHdr)->item.iImage ? TRUE : FALSE;
-#ifdef UNICODE
-		CUcs2Ansi cU2A;
-		cU2A.GetString(pNmHdr->item.pszText, szEditedText, MAX_PATH_PCK_260);
-#else
-		strcpy_s(szEditedText, pNmHdr->item.pszText);
-#endif
-
 		if(m_cPckCenter.GetListInSearchMode()) {
 			lpIndexToShow = (LPPCKINDEXTABLE)pNmHdr->item.lParam;
 
-			if(0 == strcmp(lpIndexToShow->cFileIndex.szFilename, szEditedText))
+			if(0 == wcscmp(lpIndexToShow->cFileIndex.szwFilename, pNmHdr->item.pszText))
 				return FALSE;
 		} else {
 			lpNodeToShow = (LPPCK_PATH_NODE)pNmHdr->item.lParam;
-#ifdef UNICODE
+
 			if(0 == _tcscmp(lpNodeToShow->szName, pNmHdr->item.pszText))
 				return FALSE;
-#else
-			CAnsi2Ucs cA2U;
-			if(0 == wcscmp(lpNodeToShow->szName, cA2U.GetString(pNmHdr->item.pszText)))
-				return FALSE;
-#endif
 		}
 
 		TCHAR*	lpszInvalid;
@@ -459,15 +461,15 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 		}
 
 		if(m_cPckCenter.GetListInSearchMode()) {
-			if(!m_cPckCenter.RenameIndex(lpIndexToShow, szEditedText))
+			if(!m_cPckCenter.RenameIndex(lpIndexToShow, pNmHdr->item.pszText))
 				return FALSE;
 
 		} else {
 			if(NULL == lpNodeToShow->child) {
-				if(!m_cPckCenter.RenameIndex(lpNodeToShow, szEditedText))
+				if(!m_cPckCenter.RenameIndex(lpNodeToShow, pNmHdr->item.pszText))
 					return FALSE;
 			} else {
-				if(!m_cPckCenter.RenameNode(lpNodeToShow, szEditedText)) {
+				if(!m_cPckCenter.RenameNode(lpNodeToShow, pNmHdr->item.pszText)) {
 					MessageBox(GetLoadStr(IDS_STRING_RENAMEERROR), GetLoadStr(IDS_STRING_ERROR), MB_OK | MB_ICONERROR);
 					OpenPckFile(m_Filename, TRUE);
 					return FALSE;

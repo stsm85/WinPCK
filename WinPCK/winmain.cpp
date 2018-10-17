@@ -72,6 +72,7 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 	MoveWindow((cx - xsize) / 2, (cy - ysize) / 2, xsize, ysize, TRUE);
 
 	//界面和数据初始化
+	//MessageBoxA("语言测试");
 	SetWindowTextA(THIS_MAIN_CAPTION);
 	//初始化数据
 	initParams();
@@ -152,129 +153,48 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		break;
 	case ID_CLOSE_PCK:
 	case ID_MENU_CLOSE:
-		if(lpPckParams->cVarParams.bThreadRunning)
-			lpPckParams->cVarParams.bThreadRunning = FALSE;
-		ListView_DeleteAllItems(GetDlgItem(IDC_LIST));
-		m_cPckCenter.Close();
+		MenuClose();
 		break;
 	case ID_MENU_INFO:
-		if(m_cPckCenter.IsValidPck()) {
-			TInfoDlg	dlg(m_cPckCenter.GetAdditionalInfo(), this);
-			if(dlg.Exec() == TRUE) {
-				m_cPckCenter.SetAdditionalInfo();
-			}
-		}
+		MenuInfo();
 		break;
 	case ID_MENU_SEARCH:
-		if(m_cPckCenter.IsValidPck()) {
-			TSearchDlg	dlg(m_szStrToSearch, this);
-			if(dlg.Exec() == TRUE) {
-				SearchPckFiles();
-			}
-		}
+		MenuSearch();
 		break;
 	case ID_CREATE_NEWPCK:
 	case ID_MENU_NEW:
-		if(lpPckParams->cVarParams.bThreadRunning) {
-			lpPckParams->cVarParams.bThreadRunning = FALSE;
-			EnableButton(wID, FALSE);
-		} else {
-			_beginthread(CreateNewPckFile, 0, this);
-		}
+		MenuNew(wID);
 		break;
 	case ID_ADD_FILE_TO_PCK:
 	case ID_MENU_ADD:
-		if(lpPckParams->cVarParams.bThreadRunning) {
-			lpPckParams->cVarParams.bThreadRunning = FALSE;
-			EnableButton(wID, FALSE);
-		} else {
-			AddFiles();
-		}
+		MenuAdd(wID);
 		break;
 	case ID_MENU_REBUILD:
-		if(lpPckParams->cVarParams.bThreadRunning) {
-			lpPckParams->cVarParams.bThreadRunning = FALSE;
-			EnableButton(wID, FALSE);
-		} else {
-
-			lpPckParams->cVarParams.dwMTMemoryUsed = 0;
-			_beginthread(RebuildPckFile, 0, this);
-		}
+		MenuRebuild(wID);
 		break;
 	case ID_MENU_COMPRESS_OPT:
-	{
-		TCompressOptDlg	dlg(lpPckParams, this);
-		dlg.Exec();
-	}
+		MenuCompressOpt();
 		break;
 	case ID_MENU_RENAME:
-	{
-		if(lpPckParams->cVarParams.bThreadRunning)break;
-		HWND	hList = GetDlgItem(IDC_LIST);
-		::SetWindowLong(hList, GWL_STYLE, ::GetWindowLong(hList, GWL_STYLE) | LVS_EDITLABELS);
-		ListView_EditLabel(hList, m_cPckCenter.GetListCurrentHotItem());
-	}
-	break;
+		MenuRename();
+		break;
 	case ID_MENU_DELETE:
-		if(lpPckParams->cVarParams.bThreadRunning)break;
-		if(IDNO == MessageBox(GetLoadStr(IDS_STRING_ISDELETE), GetLoadStr(IDS_STRING_ISDELETETITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))break;
-		lpPckParams->cVarParams.dwMTMemoryUsed = 0;
-		_beginthread(DeleteFileFromPckFile, 0, this);
+		MenuDelete();
 		break;
 	case ID_MENU_SELECTALL:
-	{
-		LVITEM item = { 0 };
-
-		item.mask = LVIF_STATE;
-		item.stateMask = item.state = LVIS_SELECTED;
-
-		HWND hList = GetDlgItem(IDC_LIST);
-
-		int	nItemCount = ListView_GetItemCount(hList);
-
-		for(item.iItem = 1; item.iItem < nItemCount; item.iItem++) {
-			ListView_SetItem(hList, &item);
-		}
-	}
-	break;
-
-	case ID_MENU_SELECTORP:
-	{
-		LVITEM item = { 0 };
-
-		item.mask = LVIF_STATE;
-		item.stateMask = LVIS_SELECTED;
-
-		HWND hList = GetDlgItem(IDC_LIST);
-
-		int	nItemCount = ListView_GetItemCount(hList);
-
-		for(item.iItem = 1; item.iItem < nItemCount; item.iItem++) {
-			ListView_GetItem(hList, &item);
-			item.state = LVIS_SELECTED == item.state ? 0 : LVIS_SELECTED;
-			ListView_SetItem(hList, &item);
-		}
-	}
-	break;
-
-	case ID_MENU_ATTR:
-
-		if(lpPckParams->cVarParams.bThreadRunning)
-			break;
-
-		ViewFileAttribute();
+		MenuSelectAll();
 		break;
-
+	case ID_MENU_SELECTORP:
+		MenuSelectReverse();
+		break;
+	case ID_MENU_ATTR:
+		MenuAttribute();
+		break;
 	case ID_MENU_EXIT:
 		SendMessage(WM_CLOSE, 0, 0);
 		break;
-
 	case ID_MENU_VIEW:
-
-		if(lpPckParams->cVarParams.bThreadRunning)
-			break;
-
-		ViewFile();
+		MenuView();
 		break;
 	case ID_MENU_SETUP:
 		AddSetupReg();
@@ -283,23 +203,13 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		DeleteSetupReg();
 		break;
 	case ID_MENU_ABOUT:
-		MessageBoxA(THIS_MAIN_CAPTION
-			"\r\n"
-			THIS_DESC
-			"\r\n\r\n"
-			THIS_AUTHOR
-			"\r\n\r\n"
-			THIS_UESDLIB,
-			"关于 "
-			THIS_NAME,
-			MB_OK | MB_ICONASTERISK);
+		MenuAbout();
 		break;
 	case ID_MENU_LOG:
 		logdlg->Show();
 		break;
-
 	case ID_LISTVIEW_ENTER:
-		DbClickListView(m_cPckCenter.GetListCurrentHotItem());
+		ListViewEnter();
 		break;
 	//case ID_LISTVIEW_BACK:
 	//	DbClickListView(0);
@@ -322,22 +232,6 @@ VOID TInstDlg::SetStatusBarText(int	iPart, LPCWSTR	lpszText)
 	SendDlgItemMessageW(IDC_STATUS, SB_SETTEXTW, iPart, (LPARAM)lpszText);
 	SendDlgItemMessageW(IDC_STATUS, SB_SETTIPTEXTW, iPart, (LPARAM)lpszText);
 }
-
-//__inline	void TInstDlg::ShowDebug(TCHAR *fmt,...)
-//{
-//	TCHAR	szString[1024];
-//
-//	va_list	ap;
-//	va_start(ap, fmt);
-//	_vsnwprintf(szString, 1024, fmt, ap);
-//	va_end(ap);
-//
-//	SendDlgItemMessage(IDC_EDIT_INFO, EM_SETSEL, -2, -1);
-//	SendDlgItemMessage(IDC_EDIT_INFO, EM_REPLACESEL, (WPARAM) 0, (LPARAM) szString);
-//
-//}
-
-
 
 BOOL TInstDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 {
@@ -508,8 +402,6 @@ BOOL TInstDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
 }
 #endif
 
-
-
 BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 {
 
@@ -541,7 +433,7 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 		}
 	}
 
-	if(IDCANCEL == MessageBoxA("确定添加这些文件吗？", "询问", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2))
+	if(IDCANCEL == MessageBoxW(L"确定添加这些文件吗？", L"询问", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2))
 		goto END_DROP;
 
 	DragAcceptFiles(hWnd, FALSE);
@@ -584,35 +476,3 @@ BOOL TInstDlg::EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	return FALSE;
 }
-
-//DWORD ShowErrorMsg ( CONST DWORD dwError )
-//{
-//	LPVOID lpMsgBuf; // temporary message buffer
-//	TCHAR szMessage[500];
-//
-//	// retrieve a message from the system message table
-//	if (!FormatMessage( 
-//		FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-//		FORMAT_MESSAGE_FROM_SYSTEM | 
-//		FORMAT_MESSAGE_IGNORE_INSERTS,
-//		NULL,
-//		dwError,
-//		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-//		(LPTSTR) &lpMsgBuf,
-//		0,
-//		NULL ))
-//	{
-//		return GetLastError();
-//	}
-//
-//	// display the message in a message box
-//	StringCchCopy(szMessage, 500, TEXT("Windows 给出的对错误的详细描述:\r\n\r\n"));
-//	StringCchCat(szMessage, 500, (TCHAR *) lpMsgBuf);
-//	MessageBox( NULL, szMessage, TEXT("错误信息"), MB_ICONEXCLAMATION | MB_OK );
-//
-//	// release the buffer FormatMessage allocated
-//	LocalFree( lpMsgBuf );
-//
-//	return NOERROR;
-//}
-

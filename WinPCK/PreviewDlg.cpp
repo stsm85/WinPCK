@@ -3,7 +3,7 @@
 #include <tchar.h>
 #include "DdsTgaDecoderDefine.h"
 #include "PckControlCenter.h"
-#include "CharsCodeConv.h"
+
 
 CPriviewInDlg::CPriviewInDlg() : m_buffer(NULL), dlg(NULL) {};
 CPriviewInDlg::~CPriviewInDlg()
@@ -60,12 +60,6 @@ PICFORMAT CPriviewInDlg::GetPicFormatFromFilename(LPCWSTR lpszFilename)
 	return picFormat;
 }
 #pragma endregion
-
-BOOL CPriviewInDlg::Show(LPCSTR lpszFilename, DWORD dwSize, CPckControlCenter	*m_lpPckCenter, LPPCKINDEXTABLE lpPckFileIndexToShow, TWin *_win)
-{
-	CAnsi2Ucs cA2U;
-	return Show(cA2U.GetString(lpszFilename), dwSize, m_lpPckCenter, lpPckFileIndexToShow, _win);
-}
 
 BOOL CPriviewInDlg::Show(LPCWSTR lpszFilename, DWORD dwSize, CPckControlCenter	*m_lpPckCenter, LPPCKINDEXTABLE lpPckFileIndexToShow, TWin *_win)
 {

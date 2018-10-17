@@ -1,10 +1,12 @@
 #pragma once
 #include "PckClassBaseFeatures.h"
+#include "PckClassCodepage.h"
 #include "PckClassZlib.h"
 #include "MapViewFileMultiPck.h"
 
 class CPckClassIndex :
 	public virtual CPckClassBaseFeatures,
+	protected virtual CPckClassCodepage,
 	protected virtual CPckClassZlib
 {
 public:

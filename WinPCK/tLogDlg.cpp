@@ -65,8 +65,8 @@ BOOL TLogDlg::EvCreate(LPARAM lParam)
 	ListView_SetImageList(hWndList, hSmall, LVSIL_SMALL);
 
 	//当前exe目录
-	GetModuleFileNameA(NULL, szExePath, MAX_PATH);
-	char *lpexeTitle = strrchr(szExePath, '\\') + 1;
+	GetModuleFileNameW(NULL, szExePath, MAX_PATH);
+	wchar_t *lpexeTitle = wcsrchr(szExePath, '\\') + 1;
 	*lpexeTitle = 0;
 
 	//Show();
@@ -94,25 +94,25 @@ BOOL TLogDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 	case ID_MENU_LOG_SAVE_SEL:
 	{
-		LVITEMA item = { 0 };
+		LVITEMW item = { 0 };
 
 		item.mask = LVIF_STATE;
 		item.stateMask = LVIS_SELECTED;
 
-		FILE *fplog = fopen(pszLogFileName(), "w+");
+		FILE *fplog = _wfopen(pszLogFileName(), L"wb");
 		if(!fplog) {
 
-			::MessageBoxA(hWnd, "保存日志文件失败", "error", MB_OK);
+			::MessageBoxW(hWnd, L"保存日志文件失败", L"error", MB_OK);
 			return TRUE;
 		}
 
-		int	nItemCount = ::SendMessageA(hWndList, LVM_GETITEMCOUNT, 0, 0);
+		int	nItemCount = ::SendMessage(hWndList, LVM_GETITEMCOUNT, 0, 0);
 
 		for(item.iItem = 0;item.iItem < nItemCount;++item.iItem) {
 			//ListView_GetItem(hWndList, &item);
-			::SendMessageA(hWndList, LVM_GETITEMA, 0, (LPARAM)(LV_ITEMA*)&item);
+			::SendMessageW(hWndList, LVM_GETITEMW, 0, (LPARAM)(LV_ITEMW*)&item);
 			if(item.state & LVIS_SELECTED) {
-				fprintf(fplog, "%s\r\n", pszTargetListLog(item.iItem));
+				fwprintf(fplog, L"%s\r\n", pszTargetListLog(item.iItem));
 			}
 		}
 
@@ -123,50 +123,51 @@ BOOL TLogDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 	case ID_MENU_LOG_SAVE_ALL:
 	{
-		LVITEMA item = { 0 };
+		LVITEMW item = { 0 };
 
-		FILE *fplog = fopen(pszLogFileName(), "w+");
+		FILE *fplog = _wfopen(pszLogFileName(), L"wb");
 		if(!fplog) {
 
-			::MessageBoxA(hWnd, "保存日志文件失败", "error", MB_OK);
+			::MessageBoxW(hWnd, L"保存日志文件失败", L"error", MB_OK);
 			return TRUE;
 		}
 
 		int	nItemCount = ::SendMessageA(hWndList, LVM_GETITEMCOUNT, 0, 0);
 
+		char header[] = { 0xff,0xfe };
+		fwrite(header, 1, sizeof(header), fplog);
+
 		for(int i = 0;i < nItemCount;++i) {
-			fprintf(fplog, "%s\n", pszTargetListLog(i));
+			fwprintf(fplog, L"%s\r\n", pszTargetListLog(i));
 		}
 
 		fclose(fplog);
-
 	}
 	break;
 
 	case ID_MENU_LOG_COPY:
 	{
-		char *lpszLogText = pszTargetListLog(m_iCurrentHotItem);
-		size_t nLen = strlen(lpszLogText) + 1;
+		wchar_t *lpszLogText = pszTargetListLog(m_iCurrentHotItem);
+		size_t nLen = wcslen(lpszLogText) + 1;
 
 		//拷入剪切板
 		if(OpenClipboard(hWnd)) {
 			HGLOBAL clipbuffer;
 			char *buffer;
 			EmptyClipboard();
-			if(NULL != (clipbuffer = GlobalAlloc(GMEM_DDESHARE, nLen))) {
+			if(NULL != (clipbuffer = GlobalAlloc(GMEM_DDESHARE, nLen*2))) {
 				buffer = (char *)GlobalLock(clipbuffer);
 				//StringCchCopyA(buffer, nLen, lpszLogText);
-				memcpy(buffer, lpszLogText, nLen);
+				memcpy(buffer, lpszLogText, nLen * 2);
 				GlobalUnlock(clipbuffer);
 
-				SetClipboardData(CF_TEXT, clipbuffer);
+				SetClipboardData(CF_UNICODETEXT, clipbuffer);
 
 				CloseClipboard();
 				GlobalFree(clipbuffer);
 
 			} else {
 				CloseClipboard();
-
 			}
 		}
 	}
@@ -222,25 +223,25 @@ HWND TLogDlg::GetListWnd()
 	return hWndList;
 }
 
-char*  TLogDlg::pszLogFileName()
+wchar_t*  TLogDlg::pszLogFileName()
 {
-	static char logfile[MAX_PATH];
+	static wchar_t logfile[MAX_PATH];
 	SYSTEMTIME systime;
 
 	//创建文件exportlog_2015-05-04_13_22_33.log
 	GetLocalTime(&systime);
-	sprintf_s(logfile, "%sexportlog_%04d-%02d-%02d_%02d_%02d_%02d.log", szExePath, \
+	swprintf_s(logfile, L"%sexportlog_%04d-%02d-%02d_%02d_%02d_%02d.log", szExePath, \
 		systime.wYear, systime.wMonth, systime.wDay, \
 		systime.wHour, systime.wMinute, systime.wSecond);
 	return logfile;
 
 }
 
-char*  TLogDlg::pszTargetListLog(int iItem)
+wchar_t*  TLogDlg::pszTargetListLog(int iItem)
 {
-	static char szText[8192];
+	static wchar_t szText[8192];
 
-	LVITEMA item = { 0 };
+	LVITEMW item = { 0 };
 
 	*(szText + 1) = ' ';
 
@@ -248,7 +249,7 @@ char*  TLogDlg::pszTargetListLog(int iItem)
 	item.mask = LVIF_IMAGE | LVIF_TEXT;
 	item.pszText = szText + 2;
 	item.cchTextMax = 8190;
-	::SendMessageA(hWndList, LVM_GETITEMA, 0, (LPARAM)(LV_ITEMA*)&item);
+	::SendMessageW(hWndList, LVM_GETITEMW, 0, (LPARAM)(LV_ITEMW*)&item);
 
 	*szText = CPckClassLog::GetLogLevelPrefix(item.iImage);
 

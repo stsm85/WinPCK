@@ -24,8 +24,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,25,1,0
- PRODUCTVERSION 1,25,1,0
+ FILEVERSION 1,26,0,0
+ PRODUCTVERSION 1,26,0,0
  FILEFLAGSMASK 0x37L
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -41,12 +41,12 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "FileDescription", "WinPCK"
-            VALUE "FileVersion", "1.25.1.0"
+            VALUE "FileVersion", "1.26.0.0"
             VALUE "InternalName", "WinPCK"
             VALUE "LegalCopyright", "Copyright (C) 2012-2018 stsm"
             VALUE "OriginalFilename", "WinPCK.exe"
             VALUE "ProductName", "WinPCK"
-            VALUE "ProductVersion", "1.25.1.0"
+            VALUE "ProductVersion", "1.26.0.0"
             VALUE "SpecialBuild", "WinPCK by stsm"
         END
     END
@@ -104,23 +104,25 @@ BEGIN
     LTEXT           "查找内容：",IDC_STATIC,5,8,47,10
 END
 
-IDD_DIALOG_COMPRESS DIALOGEX 0, 0, 207, 105
+IDD_DIALOG_COMPRESS DIALOGEX 0, 0, 207, 124
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "压缩选项"
+CAPTION "设置"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "确定",IDOK,150,84,50,14
-    PUSHBUTTON      "取消",IDCANCEL,96,84,50,14
+    DEFPUSHBUTTON   "确定",IDOK,150,103,50,14
+    PUSHBUTTON      "取消",IDCANCEL,96,103,50,14
     CONTROL         "",IDC_SLIDER_LEVEL,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,63,7,92,17
     CONTROL         "",IDC_SLIDER_THREAD,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,63,25,92,18
     RTEXT           "压缩等级：",IDC_STATIC,7,9,56,11
     RTEXT           "CPU 线程数：",IDC_STATIC,7,28,56,10
     LTEXT           "9",IDC_STATIC_LEVEL,157,9,17,8
     LTEXT           "3",IDC_STATIC_THREAD,157,28,17,8
-    LTEXT           "缓存是按需分配的，此处为上限值。",IDC_STATIC,7,64,145,8
-    RTEXT           "多线程缓存：",IDC_STATIC,7,46,56,10
-    EDITTEXT        IDC_EDIT_MEM,67,46,35,12,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "MB",IDC_STATIC,107,46,29,10
+    LTEXT           "缓存是按需分配的，此处为上限值。",IDC_STATIC,7,87,145,8
+    RTEXT           "多线程缓存：",IDC_STATIC,7,69,56,10
+    EDITTEXT        IDC_EDIT_MEM,67,69,35,12,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "MB",IDC_STATIC,107,69,29,10
+    RTEXT           "PCK文件编码：",IDC_STATIC,7,49,56,10
+    COMBOBOX        IDC_CBO_CODEPAGE,67,47,108,15,CBS_DROPDOWNLIST | CBS_SORT | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_DIALOG_VIEW DIALOGEX 0, 0, 467, 249
@@ -239,7 +241,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 200
         TOPMARGIN, 7
-        BOTTOMMARGIN, 98
+        BOTTOMMARGIN, 117
     END
 
     IDD_DIALOG_VIEW, DIALOG
@@ -417,6 +419,17 @@ BEGIN
     "N",            ID_CREATE_NEWPCK,       VIRTKEY, CONTROL, NOINVERT
     VK_RETURN,      ID_LISTVIEW_ENTER,      VIRTKEY, NOINVERT
     "O",            ID_OPEN_PCK,            VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_COMPRESS AFX_DIALOG_LAYOUT
+BEGIN
+    0
 END
 
 

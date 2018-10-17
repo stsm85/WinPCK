@@ -1,5 +1,4 @@
 #include "PckClassNode.h"
-#include "CharsCodeConv.h"
 
 template <typename T>
 _inline int __fastcall strpathcmp(const T * src, T * &dst)
@@ -77,15 +76,14 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 	LPPCK_PATH_NODE lpChildNode = &m_PckAllInfo.cRootNode;
 	LPPCK_PATH_NODE	lpFirstNode = NULL;
 
-	size_t			sizePckPathNode = sizeof(PCK_PATH_NODE);
-
 	wchar_t			*lpszFilename = lpPckIndexTable->cFileIndex.szwFilename;
 	wchar_t			*lpszToFind;
+
 
 	do {
 		//此节点下还没有文件（是一个新产生的节点），首先添加".."
 		if(NULL == (lpChildNode->child)) {
-			lpChildNode->child = (LPPCK_PATH_NODE)AllocMemory(sizePckPathNode);
+			lpChildNode->child = (LPPCK_PATH_NODE)AllocMemory(sizeof(PCK_PATH_NODE));
 			lpChildNode->child->parent = lpChildNode;
 			lpChildNode->child->parentfirst = lpFirstNode;
 
@@ -113,13 +111,16 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 					break;
 				}
 
+				//此级节点已遍历完，没有重复的，添加新节点
 				if(NULL == lpChildNode->next) {
 
 					//添加文件（夹）
-					lpChildNode->next = (LPPCK_PATH_NODE)AllocMemory(sizePckPathNode);
+					lpChildNode->next = (LPPCK_PATH_NODE)AllocMemory(sizeof(PCK_PATH_NODE));
 					lpChildNode = lpChildNode->next;
 
 					strpathcpy(lpChildNode->szName, lpszFilename);
+					lpChildNode->nNameSizeAnsi = PckFilenameCode2Ansi(lpChildNode->szName, NULL, 0);
+					lpChildNode->nMaxNameSizeAnsi = MAX_PATH_PCK_256;
 
 					//统计各文件夹的子文件夹数
 					if(0 != *lpszFilename) {
@@ -139,9 +140,14 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 
 		} while(1);
 
+		//名文件夹数据统计
 		++(lpFirstNode->dwFilesCount);
 		lpFirstNode->qdwDirCipherTextSize += lpPckIndexTable->cFileIndex.dwFileCipherTextSize;
 		lpFirstNode->qdwDirClearTextSize += lpPckIndexTable->cFileIndex.dwFileClearTextSize;
+
+		if (lpChildNode->nMaxNameSizeAnsi > lpPckIndexTable->nFilelenLeftBytes) {
+			lpChildNode->nMaxNameSizeAnsi = lpPckIndexTable->nFilelenLeftBytes;
+		}
 
 		if(TEXT('\\') == *lpszFilename || TEXT('/') == *lpszFilename)
 			++lpszFilename;
@@ -156,13 +162,12 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 #pragma endregion
 
 #pragma region FindFileNode
-LPPCK_PATH_NODE CPckClassNode::FindFileNode(const LPPCK_PATH_NODE lpBaseNode, char* lpszFile)
+LPPCK_PATH_NODE CPckClassNode::FindFileNode(const LPPCK_PATH_NODE lpBaseNode, wchar_t* lpszFile)
 {
 	LPPCK_PATH_NODE lpChildNode = lpBaseNode;
 
-	CAnsi2Ucs		cA2U;
 	wchar_t			szFilename[MAX_PATH];
-	cA2U.GetString(lpszFile, szFilename, MAX_PATH);
+	wcscpy_s(szFilename, lpszFile);
 
 	wchar_t			*lpszFilename = szFilename;
 	wchar_t			*lpszToFind;
@@ -255,7 +260,7 @@ BOOL CPckClassNode::RenameNodeEnum(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, ch
 
 BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* lpszReplaceString, size_t lenrs, size_t lenrp)
 {
-	if(lenrs >= (MAX_PATH_PCK_260 - strlen(lpNode->lpPckIndexTable->cFileIndex.szFilename + lenNodeRes - 2)))return FALSE;
+	//if(lenrs >= (MAX_PATH_PCK_260 - strlen(lpNode->lpPckIndexTable->cFileIndex.szFilename + lenNodeRes - 2)))return FALSE;
 	char	szTemp[MAX_PATH_PCK_260] = { 0 };
 	char	*lpszReplacePos = lpNode->lpPckIndexTable->cFileIndex.szFilename + lenrp - lenNodeRes;
 
@@ -267,7 +272,7 @@ BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, char* 
 
 	return TRUE;
 }
-
+#if 0
 
 BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 {
@@ -276,7 +281,7 @@ BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 	size_t lenNodeRes, lenrs, lenrp;
 	char	lpReplacePos[MAX_PATH_PCK_260];
 
-	CUcs2Ansi		cU2A;
+	CUcs2Ansi		cU2A(m_lpPckParams->code_page);
 	lenNodeRes = cU2A.GetStrlen(lpNode->szName);
 
 	lenrs = strlen(lpszReplaceString);
@@ -297,7 +302,7 @@ BOOL CPckClassNode::RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString)
 	size_t nBytesReadayToWrite;
 	char	*lpszPosToWrite;
 
-	CUcs2Ansi		cU2A;
+	CUcs2Ansi		cU2A(m_lpPckParams->code_page);
 	nBytesReadayToWrite = strlen(lpNode->lpPckIndexTable->cFileIndex.szFilename) - cU2A.GetStrlen(lpNode->szName);
 
 	lpszPosToWrite = lpNode->lpPckIndexTable->cFileIndex.szFilename + nBytesReadayToWrite;
@@ -317,20 +322,141 @@ BOOL CPckClassNode::RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString
 
 }
 
+
+
+BOOL CPckClassNode::RenameNodeEnum(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, wchar_t* lpszReplaceString, size_t lenrs, size_t lenrp)
+{
+
+	lpNode = lpNode->child->next;
+
+	while (NULL != lpNode) {
+
+		if (NULL == lpNode->child) {
+
+			if (!RenameNode(lpNode, lenNodeRes, lpszReplaceString, lenrs, lenrp))
+				return FALSE;
+		}
+		else {
+			if (!RenameNodeEnum(lpNode, lenNodeRes, lpszReplaceString, lenrs, lenrp))
+				return FALSE;
+		}
+
+		lpNode = lpNode->next;
+	}
+	return TRUE;
+}
+
+BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, wchar_t* lpszReplaceString, size_t lenrs, size_t lenrp)
+{
+	if (lenrs >= (MAX_PATH_PCK_260 - strlen(lpNode->lpPckIndexTable->cFileIndex.szFilename + lenNodeRes - 2)))return FALSE;
+
+	char lpszReplaceStringAnsi[MAX_PATH_PCK_260];
+
+	PckFilenameCode2Ansi(lpszReplaceString, lpszReplaceStringAnsi, sizeof(lpszReplaceStringAnsi));
+
+	return RenameNode(lpNode, lenNodeRes, lpszReplaceStringAnsi, lenrs, lenrp);
+
+}
+#endif
+//public
+BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceString)
+{
+	//假设文件名为a\b\c\d.exe
+	//本节点为c
+	size_t	lenNodeRes, lenrs, lenrp;
+	char	lpReplacePos[MAX_PATH_PCK_260];
+	char	lpszReplaceStringAnsi[MAX_PATH_PCK_260];
+
+	lenrs = PckFilenameCode2Ansi(lpszReplaceString, lpszReplaceStringAnsi, sizeof(lpszReplaceStringAnsi));
+
+	lenNodeRes = lpNode->nNameSizeAnsi;
+
+	size_t nAllowedMaxSize = lpNode->nMaxNameSizeAnsi + lenNodeRes;
+
+	if (nAllowedMaxSize < lenrs)
+		return FALSE;
+
+	//取到"a\b\"
+	GetCurrentNodeString(lpReplacePos, lpNode->child);
+
+	//lpReplacePos = "models\z1\"
+	lenrp = strlen(lpReplacePos) - 1;
+
+	return RenameNodeEnum(lpNode, lenNodeRes, lpszReplaceStringAnsi, lenrs, lenrp);
+
+}
+
+
+BOOL CPckClassNode::RenameIndex(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceString)
+{
+	//针对目录浏览模式下的文件进行修改
+	int		nBytesReadayToWrite;
+	char	*lpszPosToWrite;	//文件名地址，又名lpszFileTitle
+
+	lpszPosToWrite = lpNode->lpPckIndexTable->cFileIndex.szFilename + lpNode->lpPckIndexTable->nFilelenBytes - lpNode->nNameSizeAnsi;
+	nBytesReadayToWrite = lpNode->nMaxNameSizeAnsi + lpNode->nNameSizeAnsi;
+
+	//转换为ansi，检查长度
+	char szReplaceStringAnsi[MAX_PATH_PCK_260];
+
+	size_t nLenOfReplaceString =  PckFilenameCode2Ansi(lpszReplaceString, szReplaceStringAnsi, MAX_PATH_PCK_260);
+
+	if (nBytesReadayToWrite < nLenOfReplaceString)
+		return FALSE;
+
+	memset(lpszPosToWrite, 0, nBytesReadayToWrite);
+	strcpy(lpszPosToWrite, szReplaceStringAnsi);
+	return TRUE;
+}
+
+BOOL CPckClassNode::RenameIndex(LPPCKINDEXTABLE lpIndex, wchar_t* lpszReplaceString)
+{
+	//转换为ansi，检查长度
+	char szReplaceStringAnsi[MAX_PATH_PCK_260];
+
+	size_t nLenOfReplaceString = PckFilenameCode2Ansi(lpszReplaceString, szReplaceStringAnsi, MAX_PATH_PCK_260);
+
+	if (MAX_PATH_PCK_256 < nLenOfReplaceString)
+		return FALSE;
+
+	memset(lpIndex->cFileIndex.szFilename, 0, MAX_PATH_PCK_260);
+	strcpy(lpIndex->cFileIndex.szFilename, szReplaceStringAnsi);
+	return TRUE;
+}
+
 BOOL CPckClassNode::GetCurrentNodeString(char *szCurrentNodePathString, LPPCK_PATH_NODE lpNode)
 {
 
 	if((NULL == lpNode) || (NULL == lpNode->parentfirst)) {
 		*szCurrentNodePathString = 0;
-		//return TRUE;
+
 	} else {
 
 		GetCurrentNodeString(szCurrentNodePathString, lpNode->parentfirst);
 
-		CUcs2Ansi		cU2A;
-		strcat_s(szCurrentNodePathString, MAX_PATH_PCK_260, cU2A.GetString(lpNode->parent->szName));
+		char szNameAnsi[MAX_PATH_PCK_260];
+		PckFilenameCode2Ansi(lpNode->parent->szName, szNameAnsi, MAX_PATH_PCK_260);
 
+		strcat_s(szCurrentNodePathString, MAX_PATH_PCK_260, szNameAnsi);
 		strcat_s(szCurrentNodePathString, MAX_PATH_PCK_260, "\\");
+	}
+
+	return TRUE;
+}
+
+BOOL CPckClassNode::GetCurrentNodeString(wchar_t *szCurrentNodePathString, LPPCK_PATH_NODE lpNode)
+{
+
+	if ((NULL == lpNode) || (NULL == lpNode->parentfirst)) {
+		*szCurrentNodePathString = 0;
+		//return TRUE;
+	}
+	else {
+
+		GetCurrentNodeString(szCurrentNodePathString, lpNode->parentfirst);
+
+		wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, lpNode->parent->szName);
+		wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, L"\\");
 	}
 
 	return TRUE;
@@ -350,7 +476,7 @@ BOOL CPckClassNode::FindDuplicateNodeFromFileList(const LPPCK_PATH_NODE lpNodeTo
 
 		FILES_TO_COMPRESS *lpfirstFile = &(*lpFilesList)[i];
 		LPPCK_PATH_NODE lpDuplicateNode;
-		lpDuplicateNode = FindFileNode(lpNodeToInsertPtr, lpfirstFile->szFilename + lpfirstFile->nFileTitleLen);
+		lpDuplicateNode = FindFileNode(lpNodeToInsertPtr, lpfirstFile->szwFilename + lpfirstFile->nFileTitleLen);
 
 		if(INVALID_NODE == (int)lpDuplicateNode) {
 			m_PckLog.PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);

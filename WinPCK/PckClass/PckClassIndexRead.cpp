@@ -56,7 +56,6 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 			lpFileBuffer += 8;
 
 			m_PckAllInfo.lpDetectedPckVerFunc->PickIndexData(&lpPckIndexTable->cFileIndex, lpFileBuffer);
-
 			lpFileBuffer += dwFileIndexTableClearDataLength;
 			++lpPckIndexTable;
 

@@ -21,8 +21,10 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThread
 		LPBYTE lpCompressedBuffer = (BYTE*)MALLOCED_EMPTY_DATA;
 		pckFileIndex.dwMallocSize = pThis->GetCompressBoundSizeByFileSize(pckFileIndex.cFileIndex.dwFileClearTextSize, pckFileIndex.cFileIndex.dwFileCipherTextSize, lpOneFile->dwFileSize);
 
-		//bug lpszFileTitle不应该用指针
-		memcpy(mystrcpy(pckFileIndex.cFileIndex.szFilename, lpDataFetchMethod->szCurrentNodeString), lpOneFile->szFilename + lpOneFile->nFileTitleLen, lpOneFile->nBytesToCopy - lpDataFetchMethod->nCurrentNodeStringLen);
+		//构建文件名
+		memcpy(mystrcpy(pckFileIndex.cFileIndex.szwFilename, lpDataFetchMethod->szCurrentNodeString), lpOneFile->szwFilename + lpOneFile->nFileTitleLen, lpOneFile->nBytesToCopy - lpDataFetchMethod->nCurrentNodeStringLen);
+		//Unicode文件名转换为CP936的ANSI
+		pThis->PckFilenameCode2Ansi(pckFileIndex.cFileIndex.szwFilename, pckFileIndex.cFileIndex.szFilename, sizeof(pckFileIndex.cFileIndex.szwFilename));
 
 		//如果文件大小为0，则跳过打开文件步骤
 		if(0 != pckFileIndex.cFileIndex.dwFileClearTextSize) {
@@ -30,7 +32,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThread
 			LPBYTE					lpBufferToRead;
 			//文件不为0时的处理
 			//打开要进行压缩的文件
-			if(NULL == (lpBufferToRead = cFileRead.OpenMappingViewAllRead(lpOneFile->szFilename))) {
+			if(NULL == (lpBufferToRead = cFileRead.OpenMappingViewAllRead(lpOneFile->szwFilename))) {
 				return FD_ERR;
 			}
 

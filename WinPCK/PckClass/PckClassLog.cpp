@@ -59,7 +59,7 @@ wchar_t* CPckClassLog::GetErrorMsg(CONST DWORD dwError, wchar_t *szMessage)
 
 void CPckClassLog::ShowLog(const int _loglevel, const char *_logtext)
 {
-	CAnsi2Ucs cA2U;
+	CAnsi2Ucs cA2U(936);
 	ShowLog(_loglevel, cA2U.GetString(_logtext));
 }
 
@@ -133,7 +133,7 @@ define_one_PrintLog(N, LOG_IMAGE_NOTICE)
 
 void CPckClassLog::PrintLogEL(const char *_maintext, const char *_file, const char *_func, const long _line)
 {
-	CAnsi2Ucs cA2U;
+	CAnsi2Ucs cA2U(936);
 	m_dwLastError = GetLastError();
 	PrintLogEL(cA2U.GetString(_maintext), _file, _func, _line);
 }
@@ -158,15 +158,18 @@ void CPckClassLog::PrintLogEL(const wchar_t *_maintext, const char *_file, const
 
 void CPckClassLog::PrintLogEL(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line)
 {
+	CAnsi2Ucs cA2U(936);
 	char szPrintf[LOG_BUFFER];
 	sprintf_s(szPrintf, _fmt, _maintext);
-	PrintLogEL(szPrintf, _file, _func, _line);
+	PrintLogEL(cA2U.GetString(szPrintf), _file, _func, _line);
 
 }
 void CPckClassLog::PrintLogEL(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line)
 {
-	CUcs2Ansi cU2A;
-	PrintLogEL(_fmt, cU2A.GetString(_maintext), _file, _func, _line);
+	CAnsi2Ucs cA2U(936);
+	wchar_t szPrintf[LOG_BUFFER];
+	swprintf_s(szPrintf, cA2U.GetString(_fmt), _maintext);
+	PrintLogEL(szPrintf, _file, _func, _line);
 }
 #pragma endregion
 #pragma region PrintLog

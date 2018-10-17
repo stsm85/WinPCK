@@ -79,9 +79,7 @@ void CZupClass::BuildDirTree()
 		} else {
 			//Ö±½Ó¸´ÖÆ
 			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));
-			CAnsi2Ucs cA2U;
-			cA2U.GetString(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, sizeof(lpZupIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
-
+			PckFilenameCode2UCS(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, sizeof(lpZupIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
 		}
 
 		lpPckIndexTable++;

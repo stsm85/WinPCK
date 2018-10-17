@@ -12,6 +12,7 @@
 #include "ZupClass.h"
 #include "..\base64\base64.h"
 #include <intrin.h>
+#include "CharsCodeConv.h"
 
 _inline void CZupClass::DecodeDict(LPZUP_FILENAME_DICT lpZupDict)
 {
@@ -21,8 +22,9 @@ _inline void CZupClass::DecodeDict(LPZUP_FILENAME_DICT lpZupDict)
 	DWORD	dwRealLen = lpZupDict->realstrlength;
 	base64_decode(lpZupDict->realbase64str, dwRealLen, szUTF8str);
 
-	lpZupDict->wrealstrlength = MultiByteToWideChar(CP_UTF8, 0, szUTF8str, -1, lpZupDict->wrealstr, MAX_PATH_PCK) - 1;
-	lpZupDict->realstrlength = WideCharToMultiByte(CP_ACP, 0, lpZupDict->wrealstr, -1, lpZupDict->realstr, MAX_PATH_PCK, "_", 0) - 1;
+	lpZupDict->wrealstrlength = U8toW(szUTF8str, lpZupDict->wrealstr, MAX_PATH_PCK, -1) - 1;
+	lpZupDict->realstrlength = PckFilenameCode2Ansi(lpZupDict->wrealstr, lpZupDict->realstr, MAX_PATH_PCK);
+
 
 }
 

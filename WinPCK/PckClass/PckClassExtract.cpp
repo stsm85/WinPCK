@@ -9,11 +9,9 @@
 // 
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
-
 #pragma warning ( disable : 4267 )
 
 #include "PckClass.h"
-//#include "MapViewFile.h"
 
 BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer)
 {
@@ -102,8 +100,7 @@ BOOL CPckClass::ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount)
 			return FALSE;
 		}
 
-		CAnsi2Ucs cA2U;
-		cA2U.GetString((*lpIndexToExtractPtr)->cFileIndex.szFilename, szFilename, MAX_PATH_PCK_260);
+		wcscpy(szFilename, (*lpIndexToExtractPtr)->cFileIndex.szwFilename);
 
 		szStrchr = szFilename;
 		for(int j = 0;j < MAX_PATH_PCK_260;j++) {
@@ -152,7 +149,7 @@ BOOL CPckClass::ExtractFiles(LPPCK_PATH_NODE *lpNodeToExtract, int nFileCount)
 		if(NULL == (*lpNodeToExtractPtr)->child) {
 
 			//½âÑ¹ÎÄ¼þ
-			CUcs2Ansi cU2A;
+			//CUcs2Ansi cU2A(m_lpPckParams->code_page);
 			if(!(DecompressFile((*lpNodeToExtractPtr)->szName, (*lpNodeToExtractPtr)->lpPckIndexTable, &cFileRead))) {
 				m_PckLog.PrintLogEL(TEXT_UNCOMP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 				return FALSE;

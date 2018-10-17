@@ -11,7 +11,7 @@
 #ifndef TAPI32EX_H
 #define TAPI32EX_H
 
-
+#ifdef _USE_T_CHARCONV_
 #define CP_UTF8                   65001       // UTF-8 translation
 inline int AtoW(const char *src, WCHAR *dst, int bufsize, int max_len=-1) {
 	return	::MultiByteToWideChar(CP_ACP, 0, src, max_len, dst, bufsize);
@@ -21,8 +21,9 @@ inline int WtoA(const WCHAR *src, char *dst, int bufsize, int max_len=-1) {
 }
 
 
-
 WCHAR *AtoW(const char *src, BOOL noStatic=FALSE);
+#endif
+
 
 #if _MSC_VER < 1200
 

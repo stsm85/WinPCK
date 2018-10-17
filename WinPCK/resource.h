@@ -121,6 +121,8 @@
 #define IDC_CHECK_RECPMPRESS            1038
 #define IDC_BUTTON_OPEN                 1039
 #define IDC_EDIT_RESULT                 1040
+#define IDC_COMBO1                      1041
+#define IDC_CBO_CODEPAGE                1041
 #define ID_MENU_COMPRESS_OPT            40000
 #define ID_MENU_OPEN                    40001
 #define ID_MENU_CLOSE                   40002
@@ -173,9 +175,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        192
+#define _APS_NEXT_RESOURCE_VALUE        193
 #define _APS_NEXT_COMMAND_VALUE         40049
-#define _APS_NEXT_CONTROL_VALUE         1041
+#define _APS_NEXT_CONTROL_VALUE         1042
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

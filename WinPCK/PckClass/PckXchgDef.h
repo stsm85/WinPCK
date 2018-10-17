@@ -48,6 +48,8 @@ typedef struct _PCK_RUNTIME_PARAMS {
 
 	DWORD		dwCompressLevel;
 
+	int			code_page;			//pck文件使用编码
+
 	CPckControlCenter	*lpPckControlCenter;
 
 	int			iListHotItem;

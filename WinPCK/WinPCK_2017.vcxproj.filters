@@ -306,6 +306,12 @@
     <ClCompile Include="PckClass\PckClassIndexWriter.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
+    <ClCompile Include="MenuButtonFuncs.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassCodepage.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc">
@@ -471,6 +477,9 @@
     </ClInclude>
     <ClInclude Include="MapViewFile\MapViewFileMultiPck.h">
       <Filter>头文件\MapViewFile</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassCodepage.h">
+      <Filter>头文件\PckClass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

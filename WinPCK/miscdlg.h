@@ -14,10 +14,10 @@ protected:
 
 	//LPPCK_RUNTIME_PARAMS	lpParams;
 	HWND	hWndList;
-	char	szExePath[MAX_PATH];
+	wchar_t	szExePath[MAX_PATH];
 
-	char*	pszLogFileName();
-	char*	pszTargetListLog(int iItem);
+	wchar_t*	pszLogFileName();
+	wchar_t*	pszTargetListLog(int iItem);
 
 	int		m_iCurrentHotItem;
 
@@ -77,13 +77,13 @@ protected:
 	void	*lpPckInfo;
 	void	*lpRootInfo;
 
-	char	*lpszPath;
+	wchar_t	*lpszPath;
 	BOOL	isSearchMode;
 
 	QWORD	qwPckFileSize;
 
 public:
-	TAttrDlg(void *_lpPckInfo, void *_lpRootInfo, QWORD _qwPckFileSize, char *_lpszPath, BOOL _isSearchMode, TWin *_win);
+	TAttrDlg(void *_lpPckInfo, void *_lpRootInfo, QWORD _qwPckFileSize, wchar_t *_lpszPath, BOOL _isSearchMode, TWin *_win);
 	//~TAttrDlg();
 
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);

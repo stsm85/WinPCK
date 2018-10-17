@@ -8,7 +8,6 @@
 // 2018.5.15
 //////////////////////////////////////////////////////////////////////
 #include <stdlib.h>
-#include "CharsCodeConv.h"
 #include "PckClassWriteOperator.h"
 //chkfile
 //protect
@@ -128,18 +127,14 @@ BOOL CPckClassWriteOperator::ParseOneLine(FILEOP * pFileOp, char * lpszLine, TCH
 	if((MAX_PATH <= strlen(lpszSearch)) || (0 == *lpszSearch))
 		return FALSE;
 
-	CAnsi2Ucs cA2U;
-	cA2U.GetString(lpszSearch, pFileOp->szFilename, sizeof(pFileOp->szFilename) / sizeof(TCHAR));
+	NativeFilenameCode2UCS(lpszSearch, pFileOp->szFilename, sizeof(pFileOp->szFilename) / sizeof(TCHAR));
 	wcscpy(pFileOp->szFilenameBuffer, pFileOp->szFilename);
 
 	//检查文件名是否正确
 	if(OP_CheckFile == pFileOp->op) {
-#ifdef UNICODE
+
 		if(0 == _tcsicmp(lpszFileName, pFileOp->szFilename))
-#else
-		CAnsi2Ucs cA2U;
-		if(0 == wcsicmp(cA2U.GetString(lpszFileName), pFileOp->szFilename))
-#endif
+
 			return TRUE;
 		else
 			return FALSE;

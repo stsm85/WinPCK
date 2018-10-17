@@ -64,7 +64,7 @@ public:
 	BOOL		IsValidPck();
 
 	//获取node路径
-	BOOL		GetCurrentNodeString(char* szCurrentNodePathString, LPPCK_PATH_NODE lpNode);
+	BOOL		GetCurrentNodeString(wchar_t* szCurrentNodePathString, LPPCK_PATH_NODE lpNode);
 
 	//获取文件数
 	DWORD		GetPckFileCount();
@@ -80,11 +80,11 @@ public:
 	char*		GetAdditionalInfo();
 	BOOL		SetAdditionalInfo();
 
-	BOOL		RenameIndex(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
-	BOOL		RenameIndex(LPPCKINDEXTABLE lpIndex, char* lpszReplaceString);
+	BOOL		RenameIndex(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceString);
+	BOOL		RenameIndex(LPPCKINDEXTABLE lpIndex, wchar_t* lpszReplaceString);
 
 	//重命名一个节点
-	BOOL		RenameNode(LPPCK_PATH_NODE lpNode, char* lpszReplaceString);
+	BOOL		RenameNode(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceString);
 
 	//解压文件
 	BOOL		ExtractFiles(LPPCKINDEXTABLE *lpIndexToExtract, int nFileCount);

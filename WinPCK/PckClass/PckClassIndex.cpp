@@ -1,6 +1,5 @@
 
 #include "PckClassIndex.h"
-#include "CharsCodeConv.h"
 
 CPckClassIndex::CPckClassIndex()
 {}
@@ -33,11 +32,12 @@ void CPckClassIndex::GenerateUnicodeStringToIndex()
 	LPPCKINDEXTABLE lpPckIndexTable = m_PckAllInfo.lpPckIndexTable;
 
 	for(DWORD i = 0;i < m_PckAllInfo.dwFileCount;++i) {
-		//建立目录
-
-		CAnsi2Ucs cA2U;
-		cA2U.GetString(lpPckIndexTable->cFileIndex.szFilename, lpPckIndexTable->cFileIndex.szwFilename, sizeof(lpPckIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
-
+		//文件名长度
+		lpPckIndexTable->nFilelenBytes = strlen(lpPckIndexTable->cFileIndex.szFilename);
+		//文件名剩余空间,不占用最后的\0
+		lpPckIndexTable->nFilelenLeftBytes = MAX_PATH_PCK_256 - lpPckIndexTable->nFilelenBytes - 1;
+		//pck ansi -> unicode
+		PckFilenameCode2UCS(lpPckIndexTable->cFileIndex.szFilename, lpPckIndexTable->cFileIndex.szwFilename, sizeof(lpPckIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
 		++lpPckIndexTable;
 	}
 }
@@ -63,6 +63,7 @@ LPPCKINDEXTABLE_COMPRESS CPckClassIndex::FillAndCompressIndexData(LPPCKINDEXTABL
 {
 	BYTE pckFileIndexBuf[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
 	lpPckIndexTableComped->dwIndexDataLength = MAX_INDEXTABLE_CLEARTEXT_LENGTH;
+
 	compress(lpPckIndexTableComped->buffer, &lpPckIndexTableComped->dwIndexDataLength,
 		m_PckAllInfo.lpSaveAsPckVerFunc->FillIndexData(lpPckFileIndexToCompress, pckFileIndexBuf), m_PckAllInfo.lpSaveAsPckVerFunc->dwFileIndexSize);
 	//将获取的

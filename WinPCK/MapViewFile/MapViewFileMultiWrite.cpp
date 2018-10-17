@@ -48,7 +48,7 @@ BOOL CMapViewFileMultiWrite::AddFile(LPCSTR lpszFilename, DWORD dwCreationDispos
 		delete lpWrite;
 		return FALSE;
 	}
-	CAnsi2Ucs cA2U;
+	CAnsi2Ucs cA2U(CP_ACP);
 
 	return AddFile(lpWrite, qwMaxSize, cA2U.GetString(lpszFilename));
 }
