@@ -29,7 +29,7 @@ typedef enum _FMTPCK
 typedef enum _PCKVER
 {
 	PCK_V2020,
-	PCK_V2031,
+	PCK_V2030,
 	PCK_VXAJH
 }PCK_CATEGORY;
 

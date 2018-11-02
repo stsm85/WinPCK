@@ -115,16 +115,16 @@ CPckClassVersionDetect::~CPckClassVersionDetect()
 const PCK_VERSION_ID CPckClassVersionDetect::cPckIDs[] = 
 {
 	{ PCK_VERSION_ZX, TEXT("诛仙"), PCK_V2020, 0x20002, 0 },
-	{ PCK_VERSION_ZXNEW,	TEXT("诛仙(新)"),		PCK_V2031, 0x20003, 0 },
+	{ PCK_VERSION_ZXNEW,	TEXT("诛仙(新)"),		PCK_V2030, 0x20003, 0 },
 	{ PCK_VERSION_SDS,		TEXT("圣斗士"),			PCK_V2020, 0x20002, 161 },
-	{ PCK_VERSION_SDSNEW,	TEXT("圣斗士(新)"),		PCK_V2031, 0x20003, 161 },
+	{ PCK_VERSION_SDSNEW,	TEXT("圣斗士(新)"),		PCK_V2030, 0x20003, 161 },
 	{ PCK_VERSION_SM,		TEXT("神魔"),			PCK_V2020, 0x20002, 131 },
-	{ PCK_VERSION_SMNEW,	TEXT("神魔(新)"),		PCK_V2031, 0x20003, 131 },
+	{ PCK_VERSION_SMNEW,	TEXT("神魔(新)"),		PCK_V2030, 0x20003, 131 },
 #ifndef _DEBUG
 	{ PCK_VERSION_KDXY,		TEXT("口袋西游"),		PCK_V2020, 0x20002, 121 },
-	{ PCK_VERSION_KDXYNEW,	TEXT("口袋西游(新)"),	PCK_V2031, 0x20003, 121 },
+	{ PCK_VERSION_KDXYNEW,	TEXT("口袋西游(新)"),	PCK_V2030, 0x20003, 121 },
 	{ PCK_VERSION_RWPD,		TEXT("热舞派对"),		PCK_V2020, 0x20002, 111 },
-	{ PCK_VERSION_RWPDNEW,	TEXT("热舞派对(新)"),	PCK_V2031, 0x20003, 111 },
+	{ PCK_VERSION_RWPDNEW,	TEXT("热舞派对(新)"),	PCK_V2030, 0x20003, 111 },
 #endif
 	PCK_VERSION_INVALID,
 };
@@ -191,7 +191,7 @@ int CPckClassVersionDetect::FillUnknownVersionInfo(DWORD AlgorithmId, DWORD Vers
 		LPPCK_VERSION_FUNC lpUnknownPckVersionFunc = &cPckVersionFuncToAdd;
 		lpUnknownPckKeys->id = AlgorithmId;
 		_stprintf_s(lpUnknownPckKeys->name, TEXT("识别的未知格式(ver=0x%x id=%d)"), Version, AlgorithmId);
-		lpUnknownPckKeys->CategoryId = 0x20002 == Version ? PCK_V2020 : PCK_V2031;
+		lpUnknownPckKeys->CategoryId = 0x20002 == Version ? PCK_V2020 : PCK_V2030;
 		lpUnknownPckKeys->Version = Version;
 
 		SetAlgorithmId(AlgorithmId, &cPckVersionFuncToAdd);
@@ -466,7 +466,7 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile)
 		define_get_pckAllInfo_by_version(2020, iDetectedPckID);
 		break;
 
-	case PCK_V2031:
+	case PCK_V2030:
 
 		define_get_pckAllInfo_by_version(2030, iDetectedPckID);
 		break;
