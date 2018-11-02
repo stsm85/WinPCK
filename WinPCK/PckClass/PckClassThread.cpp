@@ -54,8 +54,11 @@ void CPckClassThreadWorker::ExecuteMainThreadGroup(PCK_ALL_INFOS &pckAllInfo, in
 	}
 	_beginthread(WriteThread, 0, this);
 
+	::Sleep(100);
+	
 	//待写线程完成
 	AcquireSRWLockShared(&g_mt_LockThreadID);
+	//是否有可能mt_threadID还没开始加已经到这里了
 	while(0 != mt_threadID) {
 		logOutput(__FUNCTION__ "_Sleep", "SleepConditionVariableSRW, %d\r\n", mt_threadID);
 		SleepConditionVariableSRW(&m_cvReadThreadComplete, &g_mt_LockThreadID, INFINITE, CONDITION_VARIABLE_LOCKMODE_SHARED);
