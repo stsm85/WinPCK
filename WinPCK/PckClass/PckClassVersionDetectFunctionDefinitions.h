@@ -4,10 +4,29 @@
 		PCKTAIL_V##_ver PckTail_v##_ver; \
 		cRead.SetFilePointer(-((QWORD)(sizeof(PCKTAIL_V##_ver))), FILE_END); \
 		if (!cRead.Read(&PckTail_v##_ver, sizeof(PCKTAIL_V##_ver))) { \
-			PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__); \
+			m_PckLog.PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__); \
 			goto dect_err; \
 		} \
-		for (int i = 0; i < PCK_VERSION_NUMS; ++i) { \
+		if (cPckVersionFunc[(_id)].cPckXorKeys.TailVerifyKey1 == PckTail_v##_ver.dwIndexTableCheckHead) { \
+			isFoundVer = TRUE; \
+			m_PckAllInfo.qwPckSize = ((LPPCKHEAD_V##_ver)&cPckHead)->dwPckSize; \
+			m_PckAllInfo.dwFinalFileCount = m_PckAllInfo.dwFileCountOld = m_PckAllInfo.dwFileCount = dwTailVals[2];\
+			m_PckAllInfo.dwAddressOfFilenameIndex = PckTail_v##_ver.dwCryptedFileIndexesAddr ^ cPckVersionFunc[(_id)].cPckXorKeys.IndexesEntryAddressCryptKey;\
+			memcpy(m_PckAllInfo.szAdditionalInfo, PckTail_v##_ver.szAdditionalInfo, PCK_ADDITIONAL_INFO_SIZE);\
+			_tcscpy_s(m_PckAllInfo.szFilename, lpszPckFile); \
+			break; \
+		} \
+
+
+/*
+#define define_get_pckAllInfo_by_version(_ver, _id)	\
+		PCKTAIL_V##_ver PckTail_v##_ver; \
+		cRead.SetFilePointer(-((QWORD)(sizeof(PCKTAIL_V##_ver))), FILE_END); \
+		if (!cRead.Read(&PckTail_v##_ver, sizeof(PCKTAIL_V##_ver))) { \
+			m_PckLog.PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__); \
+			goto dect_err; \
+		} \
+		for (int i = 0; i < PCK_VERSION_ALL_NUMS; ++i) { \
 			if (cPckKeys[i].VersionId == ver) { \
 				if (cPckKeys[i].TailVerifyKey1 == PckTail_v##_ver.dwIndexTableCheckHead) { \
 					isFoundVer = TRUE; \
@@ -21,6 +40,7 @@
 				} \
 			} \
 		}
+*/
 
 #define define_one_FillIndexData_by_version(_ver)	\
 		LPVOID CPckClassVersionDetect::FillIndexData_V##_ver(void *param, void *pckFileIndexBuf) \
@@ -54,9 +74,9 @@
 			static DWORD headbuf[3]; \
 			LPPCK_ALL_INFOS lpPckAllInfo = (LPPCK_ALL_INFOS)param; \
 			LPPCKHEAD_V##_ver	lpHead = (LPPCKHEAD_V##_ver)headbuf; \
-			lpHead->dwHeadCheckHead = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->HeadVerifyKey1; \
-			if (lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->HeadVerifyKey2) { \
-				lpHead->dwHeadCheckTail = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->HeadVerifyKey2; \
+			lpHead->dwHeadCheckHead = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys.HeadVerifyKey1; \
+			if (lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys.HeadVerifyKey2) { \
+				lpHead->dwHeadCheckTail = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys.HeadVerifyKey2; \
 				lpHead->dwPckSize = (DWORD)lpPckAllInfo->qwPckSize; \
 			} else { \
 				lpHead->dwPckSize = lpPckAllInfo->qwPckSize; \
@@ -70,12 +90,12 @@
 			static BYTE tailbuf[MAX_TAIL_LENGTH]; \
 			LPPCK_ALL_INFOS lpPckAllInfo = (LPPCK_ALL_INFOS)param; \
 			LPPCKTAIL_V##_ver lpTail = (LPPCKTAIL_V##_ver)tailbuf; \
-			lpTail->dwIndexTableCheckHead = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->TailVerifyKey1; \
-			lpTail->dwVersion0 = lpTail->dwVersion = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->Version; \
-			lpTail->dwCryptedFileIndexesAddr = lpPckAllInfo->dwAddressOfFilenameIndex ^ lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->IndexesEntryAddressCryptKey; \
+			lpTail->dwIndexTableCheckHead = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys.TailVerifyKey1; \
+			lpTail->dwVersion0 = lpTail->dwVersion = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys.Version; \
+			lpTail->dwCryptedFileIndexesAddr = lpPckAllInfo->dwAddressOfFilenameIndex ^ lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys.IndexesEntryAddressCryptKey; \
 			lpTail->dwNullDword = 0; \
 			memcpy(lpTail->szAdditionalInfo, lpPckAllInfo->szAdditionalInfo, sizeof(lpTail->szAdditionalInfo)); \
-			lpTail->dwIndexTableCheckTail = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys->TailVerifyKey2; \
+			lpTail->dwIndexTableCheckTail = lpPckAllInfo->lpSaveAsPckVerFunc->cPckXorKeys.TailVerifyKey2; \
 			lpTail->dwFileCount = lpPckAllInfo->dwFinalFileCount; \
 			return tailbuf; \
 		}

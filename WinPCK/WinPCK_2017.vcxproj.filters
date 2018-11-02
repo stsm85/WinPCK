@@ -312,6 +312,9 @@
     <ClCompile Include="PckClass\PckClassCodepage.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
+    <ClCompile Include="PckAlgorithmId.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc">
@@ -479,6 +482,9 @@
       <Filter>头文件\MapViewFile</Filter>
     </ClInclude>
     <ClInclude Include="PckClass\PckClassCodepage.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckAlgorithmId.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
   </ItemGroup>

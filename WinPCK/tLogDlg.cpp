@@ -134,7 +134,7 @@ BOOL TLogDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 		int	nItemCount = ::SendMessageA(hWndList, LVM_GETITEMCOUNT, 0, 0);
 
-		char header[] = { 0xff,0xfe };
+		char header[] = "\xff\xfe";
 		fwrite(header, 1, sizeof(header), fplog);
 
 		for(int i = 0;i < nItemCount;++i) {

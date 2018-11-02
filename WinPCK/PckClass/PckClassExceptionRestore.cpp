@@ -21,7 +21,7 @@ BOOL CPckClassBaseFeatures::GetPckBasicInfo(LPRESTORE_INFOS lpRestoreInfo)
 	lpRestoreInfo->isValid = FALSE;
 	lpRestoreInfo->sizeOfIndexTailBuffer = m_PckAllInfo.qwPckSize - m_PckAllInfo.dwAddressOfFilenameIndex;
 	lpRestoreInfo->dwAddressOfFilenameIndex = m_PckAllInfo.dwAddressOfFilenameIndex;
-	lpRestoreInfo->dwMaxSinglePckSize = m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize;
+	lpRestoreInfo->dwMaxSinglePckSize = m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys.dwMaxSinglePckSize;
 
 	_tcscpy_s(lpRestoreInfo->szFile, m_PckAllInfo.szFilename);
 	

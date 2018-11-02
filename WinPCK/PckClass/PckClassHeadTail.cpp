@@ -20,7 +20,7 @@ BOOL CPckClassHeadTail::SetAdditionalInfo()
 	if(0 == *m_PckAllInfo.szFilename)
 		return FALSE;
 
-	CMapViewFileMultiPckWrite	cWritefile(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys->dwMaxSinglePckSize);
+	CMapViewFileMultiPckWrite	cWritefile(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys.dwMaxSinglePckSize);
 
 	if(NULL == strstr(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO)) {
 		strcpy(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO

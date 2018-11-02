@@ -11,6 +11,7 @@
 
 #include "MapViewFileMultiPck.h"
 #include "PckClassVersionDetect.h"
+#include "PckAlgorithmId.h"
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4244 )
@@ -29,7 +30,7 @@
 
 /*
 诛仙 v202版本文件构造
-           00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
+		   00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
 00000000h: EF 23 CA 4D 57 01 00 00 B7 89 A0 56 31 37 32 39 ; ?蔒W...穳燰1729
 00000010h: 20 30 0D 0A 41 74 93 A8 70 36 A4 F1 78 DA 4B 2F ;  0..At摠p6ゑx贙/
 00000020h: 4A 2C 2E 4E 2D 8E 29 4B 2D 2A CE CC CF D3 2B 2E ; J,.N-?K-*翁嫌+.
@@ -54,7 +55,7 @@
 00000150h: 00 00 00 02 00 02 00                            ; .......
 
 最后280字节：0x3f~0x156
-           00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
+		   00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
 00000030h: xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx EE ; g.q�.??..?.忣
 00000040h: FE FD FD 02 00 02 00 76 74 93 A8 00 00 00 00 41 ; ?...vt摠....A
 00000050h: 6E 67 65 6C 69 63 61 20 46 69 6C 65 20 50 61 63 ; ngelica File Pac
@@ -75,8 +76,8 @@
 00000140h: 00 00 00 00 00 00 00 00 00 00 00 EF BE 0D F0 01 ; ...........锞.?
 00000150h: 00 00 00 02 00 02 00                            ; .......
 
-0xAAAAAAAA: 0x00~0x03	
-0xBBBBBBBB: 0x08~0x0b	
+0xAAAAAAAA: 0x00~0x03
+0xBBBBBBBB: 0x08~0x0b
 0xCCCCCCCC: 0x3f~0x42	dwIndexTableCheckHead
 0xEEEEEEEE: 计算存放文件名及文件数据的列表（数组）地址的开始位置，从最后280字节开头的第8个字节开始，找到0xa8937476, 与0xA8937462进行xor,->0x14，取出数据：
 
@@ -101,33 +102,147 @@ xxxxxxxxxx 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
 
 CPckClassVersionDetect::CPckClassVersionDetect()
 {
+	if (cPckVersionFunc.empty()) {
+		FillGeneralVersionInfo();
+		FillSpecialVersionInfo();
+	}
 	BuildSaveDlgFilterString();
 }
 
 CPckClassVersionDetect::~CPckClassVersionDetect()
 {}
 
-const PCK_KEYS CPckClassVersionDetect::cPckKeys[PCK_VERSION_NUMS] = \
-/*		ID				名称				版本ID		版本值	0xAAAAAAAA	0xBBBBBBBB	0xCCCCCCCC	0xDDDDDDDDEEEEEEEE	0xFFFFFFFF	0xGGGGGGGG	0xHHHHHHHH	分块大小	
+const PCK_VERSION_ID CPckClassVersionDetect::cPckIDs[] = 
+{
+	{ PCK_VERSION_ZX, TEXT("诛仙"), PCK_V2020, 0x20002, 0 },
+	{ PCK_VERSION_ZXNEW,	TEXT("诛仙(新)"),		PCK_V2031, 0x20003, 0 },
+	{ PCK_VERSION_SDS,		TEXT("圣斗士"),			PCK_V2020, 0x20002, 161 },
+	{ PCK_VERSION_SDSNEW,	TEXT("圣斗士(新)"),		PCK_V2031, 0x20003, 161 },
+	{ PCK_VERSION_SM,		TEXT("神魔"),			PCK_V2020, 0x20002, 131 },
+	{ PCK_VERSION_SMNEW,	TEXT("神魔(新)"),		PCK_V2031, 0x20003, 131 },
+#ifndef _DEBUG
+	{ PCK_VERSION_KDXY,		TEXT("口袋西游"),		PCK_V2020, 0x20002, 121 },
+	{ PCK_VERSION_KDXYNEW,	TEXT("口袋西游(新)"),	PCK_V2031, 0x20003, 121 },
+	{ PCK_VERSION_RWPD,		TEXT("热舞派对"),		PCK_V2020, 0x20002, 111 },
+	{ PCK_VERSION_RWPDNEW,	TEXT("热舞派对(新)"),	PCK_V2031, 0x20003, 111 },
+#endif
+	PCK_VERSION_INVALID,
+};
+
+const PCK_KEYS CPckClassVersionDetect::cPckSPKeys[] =
+/*		ID				名称				版本ID		版本值	0xAAAAAAAA	0xBBBBBBBB	0xCCCCCCCC	0xDDDDDDDDEEEEEEEE	0xFFFFFFFF	0xGGGGGGGG	0xHHHHHHHH	分块大小
 		id				name				VersionId	Version	HeadVerifyKey1			TailVerifyKey1					TailVerifyKey2			IndexCompressedFilenameDataLengthCryptKey2
 																			HeadVerifyKey2			IndexesEntryAddressCryptKey		IndexCompressedFilenameDataLengthCryptKey1*/
-{	{PCK_VERSION_ZX,	TEXT("诛仙"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0xFDFDFEEE, 0x00000000A8937462, 0xF00DBEEF, 0xA8937462, 0xF1A43653, 0x7fffff00}, \
-	{PCK_VERSION_SDS,	TEXT("圣斗士"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0x7b2a7820, 0x0000000062a4f9e1, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0x7fffff00}, \
-	{PCK_VERSION_XAJH,	TEXT("笑傲江湖"),	PCK_V2030, 0x20003, 0x5edb34f0, 0x00000000, 0x7b2a7820, 0x49ab7f1d33c3eddb, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0xffffff00}, \
-	{PCK_VERSION_ZXNEW, TEXT("诛仙3·十年"),PCK_V2031, 0x20003, 0x4DCA23EF, 0x00000000, 0xFDFDFEEE, 0xffffffffA8937462, 0xF00DBEEF, 0xA8937462, 0xF1A43653, 0x7fffff00}, \
-	{PCK_VERSION_SM,	TEXT("神魔"),		PCK_V2020, 0x20002, 0x4DCA23EF, 0x56A089B7, 0xA508BDC4, 0x0000000021c31a3f, 0x853567C8, 0x21c31a3f, 0x185c2025, 0x7fffff00}, \
+{ { PCK_VERSION_XAJH,	TEXT("笑傲江湖"),	PCK_VXAJH, 0x20003, 0x5edb34f0, 0x00000000, 0x7b2a7820, 0x49ab7f1d33c3eddb, 0xa75dc142, 0x62a4f9e1, 0x3520c3d5, 0xffffff00 },
 };
 
 #define PCK_VER_FUNC_LINE(_id, _head_ver, _tail_ver, _index_ver) \
-{&cPckKeys[_id], sizeof(PCKHEAD_V##_head_ver), sizeof(PCKTAIL_V##_tail_ver), sizeof(PCKFILEINDEX_V##_index_ver), PickIndexData_V##_index_ver, FillHeadData_V##_head_ver, FillTailData_V##_tail_ver, FillIndexData_V##_index_ver}
+{cPckSPKeys[(_id) - PCK_VERSION_SP_START_ID], sizeof(PCKHEAD_V##_head_ver), sizeof(PCKTAIL_V##_tail_ver), sizeof(PCKFILEINDEX_V##_index_ver), PickIndexData_V##_index_ver, FillHeadData_V##_head_ver, FillTailData_V##_tail_ver, FillIndexData_V##_index_ver}
 
-const PCK_VERSION_FUNC CPckClassVersionDetect::cPckVersionFunc[PCK_VERSION_NUMS] = \
-{	PCK_VER_FUNC_LINE(PCK_VERSION_ZX,		2020, 2020, 2020), \
-	PCK_VER_FUNC_LINE(PCK_VERSION_SDS,		2020, 2020, 2020), \
-	PCK_VER_FUNC_LINE(PCK_VERSION_XAJH,		2030, 2030, 2030), \
-	PCK_VER_FUNC_LINE(PCK_VERSION_ZXNEW,	2030, 2031, 2031), \
-	PCK_VER_FUNC_LINE(PCK_VERSION_SM,		2020, 2020, 2020), \
-};
+const PCK_VERSION_FUNC CPckClassVersionDetect::cPckSPVersionFunc[] = 
+{	PCK_VER_FUNC_LINE(PCK_VERSION_XAJH, 2030, XAJH, XAJH),
+	PCK_VERSION_INVALID };
+
+
+void CPckClassVersionDetect::FillGeneralVersionInfo()
+{
+	PCK_VERSION_FUNC cPckVersionFuncToAdd;
+	LPPCK_KEYS lpPckKeys = &cPckVersionFuncToAdd.cPckXorKeys;
+	const PCK_VERSION_ID *	lpPckIDs = cPckIDs;
+	
+	while (PCK_VERSION_INVALID != lpPckIDs->id) {
+		memset(&cPckVersionFuncToAdd, 0, sizeof(PCK_VERSION_FUNC));
+		lpPckKeys->id = lpPckIDs->id;
+		_tcscpy(lpPckKeys->name, lpPckIDs->name);
+		lpPckKeys->CategoryId = lpPckIDs->VersionId;
+		lpPckKeys->Version = lpPckIDs->Version;
+
+		SetAlgorithmId(lpPckIDs->AlgorithmId, &cPckVersionFuncToAdd);
+
+		cPckVersionFunc.push_back(cPckVersionFuncToAdd);
+
+		++lpPckIDs;
+	}
+
+}
+
+void CPckClassVersionDetect::FillSpecialVersionInfo()
+{
+	PCK_VERSION_FUNC cPckVersionFuncToAdd;
+	const PCK_VERSION_FUNC * lpPckVersionFuncSP = cPckSPVersionFunc;
+
+	while(PCK_VERSION_INVALID != lpPckVersionFuncSP->cPckXorKeys.id){
+
+		memcpy(&cPckVersionFuncToAdd, lpPckVersionFuncSP, sizeof(PCK_VERSION_FUNC));
+
+		cPckVersionFunc.push_back(cPckVersionFuncToAdd);
+
+		++lpPckVersionFuncSP;
+	}
+}
+
+int CPckClassVersionDetect::FillUnknownVersionInfo(DWORD AlgorithmId, DWORD Version)
+{
+	if (PCK_VERSION_INVALID != AlgorithmId) {
+
+		PCK_VERSION_FUNC cPckVersionFuncToAdd;
+
+		LPPCK_KEYS lpUnknownPckKeys = &cPckVersionFuncToAdd.cPckXorKeys;
+		LPPCK_VERSION_FUNC lpUnknownPckVersionFunc = &cPckVersionFuncToAdd;
+		lpUnknownPckKeys->id = AlgorithmId;
+		_stprintf_s(lpUnknownPckKeys->name, TEXT("识别的未知格式(ver=0x%x id=%d)"), Version, AlgorithmId);
+		lpUnknownPckKeys->CategoryId = 0x20002 == Version ? PCK_V2020 : PCK_V2031;
+		lpUnknownPckKeys->Version = Version;
+
+		SetAlgorithmId(AlgorithmId, &cPckVersionFuncToAdd);
+		cPckVersionFunc.push_back(cPckVersionFuncToAdd);
+
+		return cPckVersionFunc.size() - 1;
+	}
+	return PCK_VERSION_INVALID;
+}
+
+void CPckClassVersionDetect::SetAlgorithmId(DWORD id, LPPCK_VERSION_FUNC lpPckVersionFunc)
+{
+	CPckAlgorithmId AlgorithmId(id);
+
+	LPPCK_KEYS lpPckKey = &lpPckVersionFunc->cPckXorKeys;
+
+	lpPckKey->HeadVerifyKey1 = 0x4DCA23EF;
+	lpPckKey->TailVerifyKey1 = AlgorithmId.GetPckGuardByte0();
+	lpPckKey->TailVerifyKey2 = AlgorithmId.GetPckGuardByte1();
+	lpPckKey->IndexCompressedFilenameDataLengthCryptKey1 = AlgorithmId.GetPckMaskDword();
+	lpPckKey->IndexCompressedFilenameDataLengthCryptKey2 = AlgorithmId.GetPckCheckMask() ^ AlgorithmId.GetPckMaskDword();
+	lpPckKey->dwMaxSinglePckSize = 0x7fffff00;
+
+	if (0x20002 == lpPckKey->Version) {
+
+		lpPckKey->HeadVerifyKey2 = 0x56A089B7;
+		lpPckKey->IndexesEntryAddressCryptKey = AlgorithmId.GetPckMaskDword();
+
+		lpPckVersionFunc->dwHeadSize = sizeof(PCKHEAD_V2020);
+		lpPckVersionFunc->dwTailSize = sizeof(PCKTAIL_V2020);
+		lpPckVersionFunc->dwFileIndexSize = sizeof(PCKFILEINDEX_V2020);
+		lpPckVersionFunc->PickIndexData = PickIndexData_V2020;
+		lpPckVersionFunc->FillHeadData = FillHeadData_V2020;
+		lpPckVersionFunc->FillTailData = FillTailData_V2020;
+		lpPckVersionFunc->FillIndexData = FillIndexData_V2020;
+	}
+	else {
+		//0x20003
+		lpPckKey->HeadVerifyKey2 = 0;
+		lpPckKey->IndexesEntryAddressCryptKey = (AlgorithmId.GetPckMaskDword() & 0x80000000) ? 0xffffffff00000000 | AlgorithmId.GetPckMaskDword() : AlgorithmId.GetPckMaskDword();
+
+		lpPckVersionFunc->dwHeadSize = sizeof(PCKHEAD_V2020);
+		lpPckVersionFunc->dwTailSize = sizeof(PCKTAIL_V2030);
+		lpPckVersionFunc->dwFileIndexSize = sizeof(PCKFILEINDEX_V2030);
+		lpPckVersionFunc->PickIndexData = PickIndexData_V2030;
+		lpPckVersionFunc->FillHeadData = FillHeadData_V2030;
+		lpPckVersionFunc->FillTailData = FillTailData_V2030;
+		lpPckVersionFunc->FillIndexData = FillIndexData_V2030;
+
+	}
+}
 
 //生成界面保存文件时的Filter文本
 void CPckClassVersionDetect::BuildSaveDlgFilterString()
@@ -135,16 +250,17 @@ void CPckClassVersionDetect::BuildSaveDlgFilterString()
 	*szSaveDlgFilterString = 0;
 	TCHAR szPrintf[256];
 
-	for(int i = 0;i < PCK_VERSION_NUMS;i++) {
+	for (int i = 0; i < cPckVersionFunc.size(); i++) {
 
-		_stprintf_s(szPrintf, TEXT("%sPCK文件(*.pck)|*.pck|"), cPckKeys[i].name);
+		_stprintf_s(szPrintf, TEXT("%sPCK文件(*.pck)|*.pck|"), cPckVersionFunc[i].cPckXorKeys.name);
 		_tcscat_s(szSaveDlgFilterString, szPrintf);
+
 	}
 
 	TCHAR *lpszStr = szSaveDlgFilterString;
-	while(*lpszStr) {
+	while (*lpszStr) {
 
-		if(TEXT('|') == *lpszStr)
+		if (TEXT('|') == *lpszStr)
 			*lpszStr = 0;
 		++lpszStr;
 	}
@@ -160,23 +276,24 @@ LPCTSTR CPckClassVersionDetect::GetSaveDlgFilterString()
 
 const PCK_KEYS* CPckClassVersionDetect::GetPckVersion()
 {
-	return m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys;
+	return &m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys;
 }
 
 
 void CPckClassVersionDetect::SetSavePckVersion(int verID)
 {
-	if(0 <= verID && PCK_VERSION_NUMS > verID) {
+	if (0 <= verID && cPckVersionFunc.size() > verID) {
 		m_PckAllInfo.lpSaveAsPckVerFunc = &cPckVersionFunc[verID];
-	} else
-		m_PckLog.PrintLogW(TEXT_INVALID_VERSION);;
+	}
+	else
+		m_PckLog.PrintLogW(TEXT_INVALID_VERSION);
 }
 
 
 #define PRINT_HEAD_SIZE		0x20
 #define PRINT_TAIL_SIZE		0x580
-#define PrintLogEL
-#define PrintLogD
+//#define PrintLogEL
+//#define PrintLogD
 
 void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 {
@@ -189,15 +306,15 @@ void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 	//读取文件头
 	CMapViewFileMultiPckRead *lpRead = new CMapViewFileMultiPckRead();
 
-	if(!lpRead->OpenPck(lpszPckFile)) {
-		PrintLogEL(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
+	if (!lpRead->OpenPck(lpszPckFile)) {
+		m_PckLog.PrintLogEL(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
-	if(lpRead->GetFileSize() <= (PRINT_TAIL_SIZE + PRINT_HEAD_SIZE)) {
+	if (lpRead->GetFileSize() <= (PRINT_TAIL_SIZE + PRINT_HEAD_SIZE)) {
 
-		if(!lpRead->Read(buf, lpRead->GetFileSize())) {
-			PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		if (!lpRead->Read(buf, lpRead->GetFileSize())) {
+			m_PckLog.PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			goto dect_err;
 		}
 
@@ -207,10 +324,11 @@ void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 		strcat_s(szPrintf, cHexStr.GetHexString());
 
 
-	} else {
+	}
+	else {
 
-		if(!lpRead->Read(buf, PRINT_HEAD_SIZE)) {
-			PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		if (!lpRead->Read(buf, PRINT_HEAD_SIZE)) {
+			m_PckLog.PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			goto dect_err;
 		}
 
@@ -219,8 +337,8 @@ void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 
 		lpRead->SetFilePointer(qwWhereToMove, FILE_BEGIN);
 
-		if(!lpRead->Read(buf + PRINT_HEAD_SIZE, qwBytesToRead)) {
-			PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		if (!lpRead->Read(buf + PRINT_HEAD_SIZE, qwBytesToRead)) {
+			m_PckLog.PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 			goto dect_err;
 		}
 
@@ -238,7 +356,7 @@ void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 		strcat_s(szPrintf, cHexStrTail.GetHexString());
 	}
 
-	PrintLogD(szPrintf);
+	m_PckLog.PrintLogD(szPrintf);
 dect_err:
 	delete lpRead;
 
@@ -251,56 +369,59 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile)
 {
 	PCKHEAD_V2020 cPckHead;
 	DWORD		dwTailVals[4];
+	size_t		dwVerionDataCount = cPckVersionFunc.size();
 
 	int iDetectedPckID = PCK_VERSION_INVALID;
 	//读取文件头
 	CMapViewFileMultiPckRead cRead;
 
-	if(!cRead.OpenPck(lpszPckFile)) {
-		PrintLogEL(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
+	if (!cRead.OpenPck(lpszPckFile)) {
+		m_PckLog.PrintLogEL(TEXT_OPENNAME_FAIL, lpszPckFile, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
-	if(!cRead.Read(&cPckHead, sizeof(PCKHEAD_V2020))) {
-		PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+	if (!cRead.Read(&cPckHead, sizeof(PCKHEAD_V2020))) {
+		m_PckLog.PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
 	//判断是不是64位的文件大小
-	if(!cRead.SetPckPackSize((0x100 < cPckHead.dwHeadCheckTail) ? cPckHead.dwPckSize : ((PCKHEAD_V2030*)&cPckHead)->dwPckSize)) {
+	if (!cRead.SetPckPackSize((0x100 < cPckHead.dwHeadCheckTail) ? cPckHead.dwPckSize : ((PCKHEAD_V2030*)&cPckHead)->dwPckSize)) {
 
-		PrintLogEL(TEXT_PCK_SIZE_INVALID, __FILE__, __FUNCTION__, __LINE__);
+		m_PckLog.PrintLogEL(TEXT_PCK_SIZE_INVALID, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
 	cRead.SetFilePointer(-((QWORD)(sizeof(DWORD) * 4)), FILE_END);
 
-	if(!cRead.Read(&dwTailVals, sizeof(DWORD) * 4)) {
-		PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+	if (!cRead.Read(&dwTailVals, sizeof(DWORD) * 4)) {
+		m_PckLog.PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
-	if(0x20003 == dwTailVals[3]) {
-		if(0 != dwTailVals[0])
+	//dwTailVals[3] 为文件末尾4字节，一般存放版本
+	if (0x20003 == dwTailVals[3]) {
+		if (0 != dwTailVals[0])
 			dwTailVals[1] = dwTailVals[0];
 
-		for(int i = 0;i < PCK_VERSION_NUMS;i++) {
-			if((cPckKeys[i].Version == 0x20003) &&
-				(cPckKeys[i].TailVerifyKey2 == dwTailVals[1]) &&
-				(cPckKeys[i].HeadVerifyKey1 == cPckHead.dwHeadCheckHead)) {
+		for (int i = 0; i < dwVerionDataCount; i++) {
+			if ((cPckVersionFunc[i].cPckXorKeys.Version == 0x20003) &&
+				(cPckVersionFunc[i].cPckXorKeys.TailVerifyKey2 == dwTailVals[1]) &&
+				(cPckVersionFunc[i].cPckXorKeys.HeadVerifyKey1 == cPckHead.dwHeadCheckHead)) {
 
 				iDetectedPckID = i;
 				break;
 			}
 		}
-	} else {
+	}
+	else {
 
 		//当版本为202时，TailVerifyKey2的值可能为HeadVerifyKey2 或者 0，此例已在游戏：神魔的pck文件上出现。
-		for(int i = 0;i < PCK_VERSION_NUMS;i++) {
-			if((cPckKeys[i].Version == dwTailVals[3]) &&
-				(cPckKeys[i].TailVerifyKey2 == dwTailVals[1]) &&
-				(cPckKeys[i].HeadVerifyKey1 == cPckHead.dwHeadCheckHead) &&
-				((cPckKeys[i].HeadVerifyKey2 == cPckHead.dwHeadCheckTail) || (0 == cPckHead.dwHeadCheckTail))) {
+		for (int i = 0; i < dwVerionDataCount; i++) {
+			if ((cPckVersionFunc[i].cPckXorKeys.Version == dwTailVals[3]) &&
+				(cPckVersionFunc[i].cPckXorKeys.TailVerifyKey2 == dwTailVals[1]) &&
+				(cPckVersionFunc[i].cPckXorKeys.HeadVerifyKey1 == cPckHead.dwHeadCheckHead) &&
+				((cPckVersionFunc[i].cPckXorKeys.HeadVerifyKey2 == cPckHead.dwHeadCheckTail) || (0 == cPckHead.dwHeadCheckTail))) {
 
 				iDetectedPckID = i;
 				break;
@@ -308,32 +429,55 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile)
 		}
 	}
 
-	//读取PCKINDEXADDR，验证
-	if(PCK_VERSION_INVALID == iDetectedPckID) {
-		PrintLogEL(TEXT_VERSION_NOT_FOUND, __FILE__, __FUNCTION__, __LINE__);
+	//已遍历所有格式，开始识别是否标准pck格式
+	if (PCK_VERSION_INVALID == iDetectedPckID) {
+
+		if (0x4DCA23EF == cPckHead.dwHeadCheckHead) {
+			//验证未知格式，暂时默认遍历到10000
+			for (int i = 0; i < 10000; i++) {
+
+				CPckAlgorithmId AlgorithmId(i);
+
+				if (AlgorithmId.GetPckGuardByte1() == dwTailVals[1]) {
+
+					iDetectedPckID = FillUnknownVersionInfo(i, dwTailVals[3]);;
+					//重建对话框pck列表
+					BuildSaveDlgFilterString();
+					break;
+				}
+
+			}
+		}
+	}
+
+	if (PCK_VERSION_INVALID == iDetectedPckID) {
+
+		m_PckLog.PrintLogEL(TEXT_VERSION_NOT_FOUND, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
-	PCKVERSION ver = cPckKeys[iDetectedPckID].VersionId;
+	PCK_CATEGORY ver = cPckVersionFunc[iDetectedPckID].cPckXorKeys.CategoryId;
 	BOOL		isFoundVer = FALSE;
 
-	switch(ver) {
+
+	switch (ver) {
 	case PCK_V2020:
 
 		define_get_pckAllInfo_by_version(2020, iDetectedPckID);
 		break;
-	case PCK_V2030:
+
+	case PCK_V2031:
 
 		define_get_pckAllInfo_by_version(2030, iDetectedPckID);
 		break;
-	case PCK_V2031:
+	case PCK_VXAJH:
 
-		define_get_pckAllInfo_by_version(2031, iDetectedPckID);
+		define_get_pckAllInfo_by_version(XAJH, iDetectedPckID);
 		break;
 	}
 
-	if(!isFoundVer) {
-		PrintLogEL(TEXT_VERSION_NOT_FOUND, __FILE__, __FUNCTION__, __LINE__);
+	if (!isFoundVer) {
+		m_PckLog.PrintLogEL(TEXT_VERSION_NOT_FOUND, __FILE__, __FUNCTION__, __LINE__);
 		goto dect_err;
 	}
 
@@ -352,18 +496,18 @@ define_one_FillHeadData_by_version(2030);
 
 define_one_FillTailData_by_version(2020);
 define_one_FillTailData_by_version(2030);
-define_one_FillTailData_by_version(2031);
+define_one_FillTailData_by_version(XAJH);
 
 //数据从param -> lpTail
 define_one_FillIndexData_by_version(2020);
 define_one_FillIndexData_by_version(2030);
-define_one_FillIndexData_by_version(2031);
+define_one_FillIndexData_by_version(XAJH);
 
 //数据从lpIndex -> param
 define_one_PickIndexData_by_version(2020);
 define_one_PickIndexData_by_version(2030);
-define_one_PickIndexData_by_version(2031);
+define_one_PickIndexData_by_version(XAJH);
 
-#undef PrintLogEL
-#undef PrintLogD
+//#undef PrintLogEL
+//#undef PrintLogD
 #pragma endregion

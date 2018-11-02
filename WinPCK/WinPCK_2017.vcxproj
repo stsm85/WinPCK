@@ -336,6 +336,7 @@
     <ClCompile Include="MiscFuncs\Raw2HexString.cpp" />
     <ClCompile Include="MiscFuncs\ShowLogOnDlgListView.cpp" />
     <ClCompile Include="MiscFuncs\StopWatch.cpp" />
+    <ClCompile Include="PckAlgorithmId.cpp" />
     <ClCompile Include="PckClassThreadData.cpp" />
     <ClCompile Include="PckClass\PckClassAppendFiles.cpp" />
     <ClCompile Include="PckClass\PckClassCodepage.cpp" />
@@ -419,6 +420,7 @@
     <ClInclude Include="MiscFuncs\Raw2HexString.h" />
     <ClInclude Include="MiscFuncs\ShowLogOnDlgListView.h" />
     <ClInclude Include="MiscFuncs\StopWatch.h" />
+    <ClInclude Include="PckAlgorithmId.h" />
     <ClInclude Include="PckClass\PckClassCodepage.h" />
     <ClInclude Include="PckClass\PckClassFileDisk.h" />
     <ClInclude Include="PckClass\PckClassBaseFeatures.h" />

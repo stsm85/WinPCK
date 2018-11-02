@@ -25,18 +25,19 @@ typedef enum _FMTPCK
 	FMTPCK_UNKNOWN = 0x7fffffff
 }FMTPCK;
 
+
 typedef enum _PCKVER
 {
 	PCK_V2020,
-	PCK_V2030,
-	PCK_V2031
-}PCKVERSION;
+	PCK_V2031,
+	PCK_VXAJH
+}PCK_CATEGORY;
 
 typedef struct _PCK_KEYS
 {
 	int			id;
 	TCHAR		name[64];
-	PCKVERSION	VersionId;
+	PCK_CATEGORY	CategoryId;
 	DWORD		Version;
 	//head
 	DWORD		HeadVerifyKey1;
@@ -55,7 +56,8 @@ typedef struct _PCK_KEYS
 typedef struct _PCK_VERSION_FUNC
 {
 
-	const		PCK_KEYS*	cPckXorKeys;
+	//const		PCK_KEYS*	cPckXorKeys;
+	PCK_KEYS	cPckXorKeys;
 	//头的size
 	size_t		dwHeadSize;
 	//尾的size
@@ -112,7 +114,7 @@ typedef struct _PCK_HEAD_V2030
 			DWORD		dwHeadCheckTail;
 		};
 	};
-}PCKHEAD_V2030, *LPPCKHEAD_V2030, PCKHEAD_V2031, *LPPCKHEAD_V2031;
+}PCKHEAD_V2030, *LPPCKHEAD_V2030, PCKHEAD_VXAJH, *LPPCKHEAD_VXAJH;
 
 /*
 ** PCKTAIL PCK文件的文件尾（最后8字节）结构
@@ -141,6 +143,18 @@ typedef struct _PCK_TAIL_V2020
 typedef struct _PCK_TAIL_V2030
 {
 	DWORD		dwIndexTableCheckHead;
+	DWORD		dwVersion0;
+	QWORD		dwCryptedFileIndexesAddr;
+	DWORD		dwNullDword;
+	char		szAdditionalInfo[PCK_ADDITIONAL_INFO_SIZE];
+	QWORD		dwIndexTableCheckTail;
+	DWORD		dwFileCount;
+	DWORD		dwVersion;
+}PCKTAIL_V2030, *LPPCKTAIL_V2030;
+
+typedef struct _PCK_TAIL_VXAJH
+{
+	DWORD		dwIndexTableCheckHead;
 	union
 	{
 		QWORD		dwCryptedFileIndexesAddr;
@@ -155,19 +169,7 @@ typedef struct _PCK_TAIL_V2030
 	DWORD		dwIndexTableCheckTail;
 	DWORD		dwFileCount;
 	DWORD		dwVersion;
-}PCKTAIL_V2030, *LPPCKTAIL_V2030;
-
-typedef struct _PCK_TAIL_V2031
-{
-	DWORD		dwIndexTableCheckHead;
-	DWORD		dwVersion0;
-	QWORD		dwCryptedFileIndexesAddr;
-	DWORD		dwNullDword;
-	char		szAdditionalInfo[PCK_ADDITIONAL_INFO_SIZE];
-	QWORD		dwIndexTableCheckTail;
-	DWORD		dwFileCount;
-	DWORD		dwVersion;
-}PCKTAIL_V2031, *LPPCKTAIL_V2031;
+}PCKTAIL_VXAJH, *LPPCKTAIL_VXAJH;
 
 typedef struct _PCK_FILE_INDEX_V2020
 {
@@ -181,7 +183,7 @@ typedef struct _PCK_FILE_INDEX_V2020
 
 typedef struct _PCK_FILE_INDEX_V2030
 {
-	char		szFilename[MAX_PATH_PCK_256];
+	char		szFilename[MAX_PATH_PCK_260];
 	DWORD		dwUnknown1;
 	QWORD		dwAddressOffset;
 	DWORD		dwFileClearTextSize;
@@ -189,15 +191,15 @@ typedef struct _PCK_FILE_INDEX_V2030
 	DWORD		dwUnknown2;
 }PCKFILEINDEX_V2030, *LPPCKFILEINDEX_V2030;
 
-typedef struct _PCK_FILE_INDEX_V2031
+typedef struct _PCK_FILE_INDEX_VXAJH
 {
-	char		szFilename[MAX_PATH_PCK_260];
+	char		szFilename[MAX_PATH_PCK_256];
 	DWORD		dwUnknown1;
 	QWORD		dwAddressOffset;
 	DWORD		dwFileClearTextSize;
 	DWORD		dwFileCipherTextSize;
 	DWORD		dwUnknown2;
-}PCKFILEINDEX_V2031, *LPPCKFILEINDEX_V2031;
+}PCKFILEINDEX_VXAJH, *LPPCKFILEINDEX_VXAJH;
 
 typedef struct _PCK_FILE_INDEX
 {
