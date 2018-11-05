@@ -292,8 +292,6 @@ void CPckClassVersionDetect::SetSavePckVersion(int verID)
 
 #define PRINT_HEAD_SIZE		0x20
 #define PRINT_TAIL_SIZE		0x580
-//#define PrintLogEL
-//#define PrintLogD
 
 void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile)
 {
@@ -508,6 +506,4 @@ define_one_PickIndexData_by_version(2020);
 define_one_PickIndexData_by_version(2030);
 define_one_PickIndexData_by_version(XAJH);
 
-//#undef PrintLogEL
-//#undef PrintLogD
 #pragma endregion

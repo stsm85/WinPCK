@@ -309,7 +309,7 @@
     <ClCompile Include="..\tlib\tini.cpp" />
     <ClCompile Include="..\tlib\tlist.cpp" />
     <ClCompile Include="..\tlib\tregist.cpp" />
-    <ClCompile Include=".\DictHash\DictHash.cpp" />
+    <ClCompile Include="DictHash\DictHash.cpp" />
     <ClCompile Include="decode_dds\ShowPictureWithZoom.cpp" />
     <ClCompile Include="decode_dds\DdsTgaDecoderBuildDIB.cpp" />
     <ClCompile Include="decode_dds\DDSTextureLoader.cpp" />
@@ -336,8 +336,8 @@
     <ClCompile Include="MiscFuncs\Raw2HexString.cpp" />
     <ClCompile Include="MiscFuncs\ShowLogOnDlgListView.cpp" />
     <ClCompile Include="MiscFuncs\StopWatch.cpp" />
-    <ClCompile Include="PckAlgorithmId.cpp" />
-    <ClCompile Include="PckClassThreadData.cpp" />
+    <ClCompile Include="PckClass\PckAlgorithmId.cpp" />
+    <ClCompile Include="PckClass\PckClassThreadData.cpp" />
     <ClCompile Include="PckClass\PckClassAppendFiles.cpp" />
     <ClCompile Include="PckClass\PckClassCodepage.cpp" />
     <ClCompile Include="PckClass\PckClassExceptionRestore.cpp" />
@@ -373,8 +373,8 @@
     <ClCompile Include="guirelated.cpp" />
     <ClCompile Include="helpfunc.cpp" />
     <ClCompile Include="mainfunc.cpp" />
-    <ClCompile Include=".\PckClass\PckClass.cpp" />
-    <ClCompile Include=".\PckClass\PckClassExtract.cpp" />
+    <ClCompile Include="PckClass\PckClass.cpp" />
+    <ClCompile Include="PckClass\PckClassExtract.cpp" />
     <ClCompile Include="PreviewDlg.cpp" />
     <ClCompile Include="tAttrDlg.cpp" />
     <ClCompile Include="tCompressOptDlg.cpp" />
@@ -386,9 +386,9 @@
     <ClCompile Include="tSearchDlg.cpp" />
     <ClCompile Include="tViewDlg.cpp" />
     <ClCompile Include="winmain.cpp" />
-    <ClCompile Include=".\ZupClass\ZupClass.cpp" />
-    <ClCompile Include=".\ZupClass\ZupClassExtract.cpp" />
-    <ClCompile Include=".\ZupClass\ZupClassFunction.cpp" />
+    <ClCompile Include="ZupClass\ZupClass.cpp" />
+    <ClCompile Include="ZupClass\ZupClassExtract.cpp" />
+    <ClCompile Include="ZupClass\ZupClassFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc" />
@@ -402,7 +402,7 @@
     <ClInclude Include="..\tlib\tlib.h" />
     <ClInclude Include="..\tlib\tlist.h" />
     <ClInclude Include="..\tlib\tregist.h" />
-    <ClInclude Include=".\DictHash\DictHash.h" />
+    <ClInclude Include="DictHash\DictHash.h" />
     <ClInclude Include="decode_dds\ShowPictureWithZoom.h" />
     <ClInclude Include="decode_dds\DDS.h" />
     <ClInclude Include="decode_dds\DDSTextureLoader.h" />
@@ -420,7 +420,7 @@
     <ClInclude Include="MiscFuncs\Raw2HexString.h" />
     <ClInclude Include="MiscFuncs\ShowLogOnDlgListView.h" />
     <ClInclude Include="MiscFuncs\StopWatch.h" />
-    <ClInclude Include="PckAlgorithmId.h" />
+    <ClInclude Include="PckClass\PckAlgorithmId.h" />
     <ClInclude Include="PckClass\PckClassCodepage.h" />
     <ClInclude Include="PckClass\PckClassFileDisk.h" />
     <ClInclude Include="PckClass\PckClassBaseFeatures.h" />
@@ -442,13 +442,13 @@
     <ClInclude Include="PckControlCenter\PckControlCenter.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="miscdlg.h" />
-    <ClInclude Include=".\PckClass\PckClass.h" />
-    <ClInclude Include=".\PckClass\PckHeader.h" />
+    <ClInclude Include="PckClass\PckClass.h" />
+    <ClInclude Include="PckClass\PckHeader.h" />
     <ClInclude Include="PreviewDlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="winmain.h" />
-    <ClInclude Include=".\ZupClass\ZupClass.h" />
-    <ClInclude Include=".\ZupClass\ZupHeader.h" />
+    <ClInclude Include="ZupClass\ZupClass.h" />
+    <ClInclude Include="ZupClass\ZupHeader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="icons\chinaz1.ico" />

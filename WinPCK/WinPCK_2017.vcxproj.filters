@@ -252,7 +252,7 @@
     <ClCompile Include="PckClass\PckClassThread.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
-    <ClCompile Include="PckClassThreadData.cpp">
+    <ClCompile Include="PckClass\PckClassThreadData.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
     <ClCompile Include="PckClass\PckClassThreadMemory.cpp">
@@ -312,7 +312,7 @@
     <ClCompile Include="PckClass\PckClassCodepage.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
-    <ClCompile Include="PckAlgorithmId.cpp">
+    <ClCompile Include="PckClass\PckAlgorithmId.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
   </ItemGroup>
@@ -484,7 +484,7 @@
     <ClInclude Include="PckClass\PckClassCodepage.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
-    <ClInclude Include="PckAlgorithmId.h">
+    <ClInclude Include="PckClass\PckAlgorithmId.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
   </ItemGroup>
