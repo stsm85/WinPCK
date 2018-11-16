@@ -30,37 +30,34 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 {
 
 	TInstDlg	*pThis = (TInstDlg*)pParam;
-	BOOL		bHasPckOpened = !pThis->m_cPckCenter.IsValidPck();
+	BOOL		bHasPckOpened = !pck_IsValidPck(pThis->m_PckHandle);
 	TCHAR		szFilenameToSave[MAX_PATH];
-	LPPCK_RUNTIME_PARAMS	lpParams = pThis->lpPckParams;
-	BOOL		*lpbThreadRunning = &lpParams->cVarParams.bThreadRunning;
 	TCHAR		szPrintf[320];
-	CStopWatch	timer;
-
-	if(bHasPckOpened)
-		pThis->m_cPckCenter.New();
+	CStopWatch	timer;;
 
 	*szFilenameToSave = 0;
 
-	if(bHasPckOpened) {
+	if (bHasPckOpened) {
 		//此时没有打开文件，这时的操作相当于新建文档
-		if(1 == pThis->m_lpszFilePath.size()) {
+		pThis->m_currentNodeOnShow = NULL;
+
+		if (1 == pThis->m_lpszFilePath.size()) {
 			GetPckFileNameBySource(szFilenameToSave, pThis->m_lpszFilePath[0].c_str(), FALSE);
 		}
 
 		//选择保存的文件名
-		int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->m_cPckCenter.GetSaveDlgFilterString());
-		if(!nSelectFilter) {
-			pThis->m_cPckCenter.Close();
-
+		int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->BuildSaveDlgFilterString());
+		if (0 > nSelectFilter) {
+			pck_close(pThis->m_PckHandle);
 			return;
 		}
 
 		//设定目标pck的版本
-		pThis->m_cPckCenter.SetPckVersion(nSelectFilter);
+		pck_setVersion(pThis->m_PckHandle, nSelectFilter);
 
 		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
-	} else {
+	}
+	else {
 		_tcscpy_s(szFilenameToSave, pThis->m_Filename);
 		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 	}
@@ -73,35 +70,46 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 
 	pThis->SetStatusBarText(4, szPrintf);
 
-	pThis->m_cPckCenter.Reset(pThis->m_lpszFilePath.size());
-	*lpbThreadRunning = TRUE;
+	//pck_setThreadWorking(pThis->m_PckHandle);
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
-	if(pThis->m_cPckCenter.UpdatePckFile(szFilenameToSave, pThis->m_lpszFilePath, pThis->m_currentNodeOnShow)) {
-		if(*lpbThreadRunning) {
-			//计时结束
-			timer.stop();
-			pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
+	pck_StringArrayReset(pThis->m_PckHandle);
+	for (int i = 0; i < pThis->m_lpszFilePath.size(); i++) {
+		pck_StringArrayAppend(pThis->m_PckHandle, pThis->m_lpszFilePath[i].c_str());
+	}
+
+	if (pck_UpdatePckFileSubmit(pThis->m_PckHandle, szFilenameToSave, pThis->m_currentNodeOnShow)) {
+
+		//计时结束
+		timer.stop();
+
+		if (pck_isLastOptSuccess(pThis->m_PckHandle)) {
+
+			//pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
+			log_Print(LOG_IMAGE_NOTICE, GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
 			//pThis->SetStatusBarText(4, szPrintf);
-		} else {
+		}
+		else {
 
 			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
-		if(bHasPckOpened) {
+		if (bHasPckOpened) {
 
 			pThis->OpenPckFile(szFilenameToSave, TRUE);
-		} else {
+		}
+		else {
 			pThis->OpenPckFile(pThis->m_Filename, TRUE);
 		}
 
-	} else {
+	}
+	else {
 
 		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 
-		if(bHasPckOpened) {
-			pThis->m_cPckCenter.Close();
+		if (bHasPckOpened) {
+			pck_close(pThis->m_PckHandle);
 		}
 	}
 
@@ -110,12 +118,13 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 	pThis->KillTimer(WM_TIMER_PROGRESS_100);
 	pThis->RefreshProgress();
 
-	if((!(*lpbThreadRunning)) && pThis->bGoingToExit) {
+	if ((!(pck_isLastOptSuccess(pThis->m_PckHandle))) && pThis->bGoingToExit) {
 		pThis->bGoingToExit = FALSE;
 		pThis->SendMessage(WM_CLOSE, 0, 0);
 	}
 
-	*lpbThreadRunning = FALSE;
+	//pck_breakThreadWorking(pThis->m_PckHandle);
+	//*lpbThreadRunning = FALSE;
 
 	//还原Drop状态
 	pThis->m_lpszFilePath.clear();
@@ -128,7 +137,8 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 	// 使用原数据地址 %d 个，新数据地址 %d 个\r\n
 	// 通过成的新pck文件共 %d 个文件\r\n
 
-	if(0 != lpParams->cVarParams.dwPrepareToAddFileCount) {
+	//const PCK_VARIETY_PARAMS* lpVarParams = pck_getUpdateResult(pThis->m_PckHandle);
+	if (0 != pck_getUpdateResult_PrepareToAddFileCount(pThis->m_PckHandle)) {
 
 		_stprintf_s(szPrintf,
 			TEXT("此更新过程数据如下：\r\n")
@@ -138,16 +148,17 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 			TEXT("重名文件数： %d\r\n")
 			TEXT("未更新文件数： %d\r\n")
 			TEXT("更新后 PCK 包中文件数： %d"),
-			lpParams->cVarParams.dwOldFileCount,
-			lpParams->cVarParams.dwPrepareToAddFileCount,
-			lpParams->cVarParams.dwChangedFileCount,
-			lpParams->cVarParams.dwDuplicateFileCount,
-			lpParams->cVarParams.dwPrepareToAddFileCount - lpParams->cVarParams.dwChangedFileCount,
-			lpParams->cVarParams.dwFinalFileCount);
+			pck_getUpdateResult_OldFileCount(pThis->m_PckHandle),
+			pck_getUpdateResult_PrepareToAddFileCount(pThis->m_PckHandle),
+			pck_getUpdateResult_ChangedFileCount(pThis->m_PckHandle),
+			pck_getUpdateResult_DuplicateFileCount(pThis->m_PckHandle),
+			pck_getUpdateResult_PrepareToAddFileCount(pThis->m_PckHandle) - pck_getUpdateResult_ChangedFileCount(pThis->m_PckHandle),
+			pck_getUpdateResult_FinalFileCount(pThis->m_PckHandle));
 
 		pThis->MessageBox(szPrintf, TEXT("更新报告"), MB_OK | MB_ICONINFORMATION);
 
-		pThis->m_PckLog.PrintLogI(szPrintf);
+		//pThis->m_PckLog.PrintLogI(szPrintf);
+		log_Print(LOG_IMAGE_INFO, szPrintf);
 	}
 
 	return;
@@ -170,12 +181,11 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 
 	pThis->SetStatusBarText(4, szPrintf);
 
-	pThis->m_cPckCenter.Reset();
-	pThis->lpPckParams->cVarParams.bThreadRunning = TRUE;
+	//pck_setThreadWorking(pThis->m_PckHandle);
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
-	if(pThis->m_cPckCenter.RenameFilename()) {
+	if (pck_RenameSubmit(pThis->m_PckHandle)) {
 
 		//计时结束
 		timer.stop();
@@ -185,9 +195,11 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 
 		pThis->OpenPckFile(pThis->m_Filename, TRUE);
 
-	} else {
+	}
+	else {
+
 		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-		pThis->m_cPckCenter.Close();
+		pck_close(pThis->m_PckHandle);
 	}
 
 	pThis->EnbaleButtons(ID_MENU_RENAME, TRUE);
@@ -195,12 +207,12 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 	pThis->KillTimer(WM_TIMER_PROGRESS_100);
 	pThis->RefreshProgress();
 
-	if(pThis->bGoingToExit) {
+	if (pThis->bGoingToExit) {
 		pThis->bGoingToExit = FALSE;
 		pThis->SendMessage(WM_CLOSE, 0, 0);
 	}
 
-	pThis->lpPckParams->cVarParams.bThreadRunning = FALSE;
+	//pck_breakThreadWorking(pThis->m_PckHandle);
 
 	return;
 
@@ -211,17 +223,15 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 
-	BOOL		bDeleteClass = !pThis->m_cPckCenter.IsValidPck();
+	BOOL		bDeleteClass = !pck_IsValidPck(pThis->m_PckHandle);
 
 	TCHAR		szFilenameToSave[MAX_PATH];
 	TCHAR		szPrintf[288];
 
-	BOOL		*lpbThreadRunning = &pThis->lpPckParams->cVarParams.bThreadRunning;
-
 	CStopWatch	timer;
 
-	if(bDeleteClass) {
-		if(!pThis->OpenPckFile()) {
+	if (bDeleteClass) {
+		if (!pThis->OpenPckFile()) {
 			return;
 		}
 	}
@@ -235,18 +245,18 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 	//弹出选项对话框
 	//调用对话框
 	BOOL  bNeedRecompress;
-	TRebuildOptDlg	dlg(pThis->lpPckParams, &bNeedRecompress, pThis);
-	DWORD dwCompressLevel = pThis->lpPckParams->dwCompressLevel;
-	if(IDCANCEL == dlg.Exec())
+	TRebuildOptDlg	dlg(pThis->m_PckHandle, &bNeedRecompress, pThis);
+	//DWORD dwCompressLevel = pck_getCompressLevel(pThis->m_PckHandle);
+	if (IDCANCEL == dlg.Exec())
 		return;
 
 	//选择保存的文件名
-	int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->m_cPckCenter.GetSaveDlgFilterString(), pThis->m_cPckCenter.GetPckVersion());
-	if(!nSelectFilter) {
+	int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->BuildSaveDlgFilterString(), pck_getVersion(pThis->m_PckHandle));
+	if (0 > nSelectFilter) {
 		return;
 	}
 
-	pThis->m_cPckCenter.SetPckVersion(nSelectFilter);
+	pck_setVersion(pThis->m_PckHandle, nSelectFilter);
 
 	//开始计时
 	timer.start();
@@ -256,23 +266,26 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_REBUILDING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
 	pThis->SetStatusBarText(4, szPrintf);
 
-	pThis->m_cPckCenter.Reset(pThis->m_cPckCenter.GetPckFileCount());
-	*lpbThreadRunning = TRUE;
+	//pck_setThreadWorking(pThis->m_PckHandle);
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, 100, NULL);
 
-	if(pThis->m_cPckCenter.RebuildPckFile(szFilenameToSave, bNeedRecompress)) {
-		if(*lpbThreadRunning) {
-			//计时结束
-			timer.stop();
+	if (pck_RebuildPckFile(pThis->m_PckHandle, szFilenameToSave, bNeedRecompress)) {
 
-			pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
-			//pThis->SetStatusBarText(4, szPrintf);
-		} else {
+		//计时结束
+		timer.stop();
+
+		if (pck_isLastOptSuccess(pThis->m_PckHandle)) {
+
+			//pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+			log_Print(LOG_IMAGE_NOTICE, GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+		}
+		else {
 			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
-	} else {
+	}
+	else {
 
 		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 
@@ -280,20 +293,20 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 
 	pThis->EnbaleButtons(ID_MENU_REBUILD, TRUE);
 
-	if(bDeleteClass) {
+	if (bDeleteClass) {
 		ListView_DeleteAllItems(pThis->GetDlgItem(IDC_LIST));
-		pThis->m_cPckCenter.Close();
+		pck_close(pThis->m_PckHandle);
 	}
 
 	pThis->KillTimer(WM_TIMER_PROGRESS_100);
 	pThis->RefreshProgress();
 
-	if((!(*lpbThreadRunning)) && pThis->bGoingToExit) {
+	if ((!(pck_isLastOptSuccess(pThis->m_PckHandle))) && pThis->bGoingToExit) {
 		pThis->bGoingToExit = FALSE;
 		pThis->SendMessage(WM_CLOSE, 0, 0);
 	}
 
-	*lpbThreadRunning = FALSE;
+	//pck_breakThreadWorking(pThis->m_PckHandle);
 
 	return;
 
@@ -303,32 +316,28 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 {
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 
-	BOOL		isNotOpenedPck = !pThis->m_cPckCenter.IsValidPck();
+	BOOL		isNotOpenedPck = !pck_IsValidPck(pThis->m_PckHandle);
 	TCHAR		szFilenameToSave[MAX_PATH];
 
 	TCHAR		szPrintf[64];
-	BOOL		*lpbThreadRunning = &pThis->lpPckParams->cVarParams.bThreadRunning;
 
 	CStopWatch	timer;
 
 	//选择目录
-	if(!OpenFilesVistaUp(pThis->hWnd, pThis->m_CurrentPath))
+	if (!OpenFilesVistaUp(pThis->hWnd, pThis->m_CurrentPath))
 		return;
 
 	pThis->m_lpszFilePath.push_back(pThis->m_CurrentPath);
 
 	GetPckFileNameBySource(szFilenameToSave, pThis->m_CurrentPath, TRUE);
 
-	if(isNotOpenedPck)
-		pThis->m_cPckCenter.New();
-
 	//选择保存的文件名
-	int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->m_cPckCenter.GetSaveDlgFilterString());
-	if(!nSelectFilter)
+	int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->BuildSaveDlgFilterString());
+	if (0 > nSelectFilter)
 		return;
 
 	//设定目标pck的版本
-	pThis->m_cPckCenter.SetPckVersion(nSelectFilter);
+	pck_setVersion(pThis->m_PckHandle, nSelectFilter);
 
 	//开始计时
 	timer.start();
@@ -338,45 +347,51 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_COMPING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
 	pThis->SetStatusBarText(4, szPrintf);
 
-	pThis->m_cPckCenter.Reset();
-	*lpbThreadRunning = TRUE;
+	//pck_setThreadWorking(pThis->m_PckHandle);
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
-	if(pThis->m_cPckCenter.UpdatePckFile(szFilenameToSave, pThis->m_lpszFilePath, pThis->m_currentNodeOnShow)) {
+	pck_StringArrayReset(pThis->m_PckHandle);
+	for (int i = 0; i < pThis->m_lpszFilePath.size(); i++) {
+		pck_StringArrayAppend(pThis->m_PckHandle, pThis->m_lpszFilePath[i].c_str());
+	}
 
-		if(*lpbThreadRunning) {
-			//计时结束
-			timer.stop();
+	if (pck_UpdatePckFileSubmit(pThis->m_PckHandle, szFilenameToSave, pThis->m_currentNodeOnShow)) {
 
-			pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_COMPOK), timer.getElapsedTime());
-		} else {
+		//计时结束
+		timer.stop();
+
+		if (pck_isLastOptSuccess(pThis->m_PckHandle)) {
+
+			//pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_COMPOK), timer.getElapsedTime());
+			log_Print(LOG_IMAGE_NOTICE, GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+		}
+		else {
 			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
-	} else {
+	}
+	else {
 
 		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 	}
 
 	pThis->EnbaleButtons(ID_MENU_NEW, TRUE);
 
-	if(isNotOpenedPck)
-		pThis->m_cPckCenter.Close();
+	if (isNotOpenedPck)
+		pck_close(pThis->m_PckHandle);
 
 	pThis->KillTimer(WM_TIMER_PROGRESS_100);
 	pThis->RefreshProgress();
 
-	if((!(*lpbThreadRunning)) && pThis->bGoingToExit) {
+	if ((!(pck_isLastOptSuccess(pThis->m_PckHandle))) && pThis->bGoingToExit) {
 
 		pThis->bGoingToExit = FALSE;
 		pThis->SendMessage(WM_CLOSE, 0, 0);
 	}
 
-	*lpbThreadRunning = FALSE;
+	//pck_breakThreadWorking(pThis->m_PckHandle);
 
-	//还原Drop状态
-	pThis->m_lpszFilePath.clear();
 	return;
 
 }
@@ -385,7 +400,6 @@ VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)
 {
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 	TCHAR		szPrintf[64];
-	BOOL		*lpbThreadRunning = &pThis->lpPckParams->cVarParams.bThreadRunning;
 
 	CStopWatch	timer;
 
@@ -397,19 +411,19 @@ VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)
 	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 	pThis->SetStatusBarText(4, szPrintf);
 
-	pThis->m_cPckCenter.Reset(pThis->m_cPckCenter.m_lpPckRootNode->child->dwFilesCount);
-	*lpbThreadRunning = TRUE;
+	//pck_setThreadWorking(pThis->m_PckHandle);
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
-	if(pThis->m_cPckCenter.ExtractFiles(&pThis->m_cPckCenter.m_lpPckRootNode, 1)) {
+	if (pck_ExtractAllFiles(pThis->m_PckHandle, pThis->m_CurrentPath)) {
 		//计时结束
 		timer.stop();
 		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPOK), timer.getElapsedTime());
 
 		pThis->SetStatusBarText(4, szPrintf);
 
-	} else {
+	}
+	else {
 		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 	}
 
@@ -418,12 +432,12 @@ VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)
 	pThis->KillTimer(WM_TIMER_PROGRESS_100);
 	pThis->RefreshProgress();
 
-	if((!(*lpbThreadRunning)) && pThis->bGoingToExit) {
+	if ((!(pck_isLastOptSuccess(pThis->m_PckHandle))) && pThis->bGoingToExit) {
 		pThis->bGoingToExit = FALSE;
 		pThis->SendMessage(WM_CLOSE, 0, 0);
 	}
 
-	*lpbThreadRunning = FALSE;
+	//pck_breakThreadWorking(pThis->m_PckHandle);
 
 	return;
 
@@ -433,76 +447,48 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 {
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 
-	BOOL		*lpbThreadRunning = &pThis->lpPckParams->cVarParams.bThreadRunning;
-	LPDWORD		lpdwUIProgressUpper = &pThis->lpPckParams->cVarParams.dwUIProgressUpper;
-
-	pThis->m_cPckCenter.Reset(0);
-
 	HWND	hList = pThis->GetDlgItem(IDC_LIST);
 
 	CStopWatch	timer;
 
-	LPPCK_PATH_NODE		*lpNodeToShow, *lpNodeToShowPtr;
-	LPPCKINDEXTABLE		*lpIndexToShow, *lpIndexToShowPtr;
+	const PCK_UNIFIED_FILE_ENTRY **lpFileEntryArray, **lpFileEntryArrayPtr;
 
 	UINT uiSelectCount = ListView_GetSelectedCount(hList);
 
-	if(0 != uiSelectCount) {
-		if(NULL != (lpNodeToShow = (LPPCK_PATH_NODE*)malloc(sizeof(LPPCK_PATH_NODE) * uiSelectCount))) {
+	if (0 != uiSelectCount) {
+		if (NULL != (lpFileEntryArray = (const PCK_UNIFIED_FILE_ENTRY **)malloc(sizeof(PCK_UNIFIED_FILE_ENTRY *) * uiSelectCount))) {
 			TCHAR		szPrintf[64];
-
-			lpIndexToShow = (LPPCKINDEXTABLE*)lpNodeToShow;
 
 			//取lpNodeToShow
 			int	nCurrentItemCount = ListView_GetItemCount(hList);
 
 			LVITEM item;
-
 			item.mask = LVIF_PARAM | LVIF_STATE;
 			item.iSubItem = 0;
 			item.stateMask = LVIS_SELECTED;		// get all state flags
 
-			lpNodeToShowPtr = lpNodeToShow;
-			lpIndexToShowPtr = lpIndexToShow;
+			lpFileEntryArrayPtr = lpFileEntryArray;
 
 			uiSelectCount = 0;
 
-			if(pThis->m_cPckCenter.GetListInSearchMode()) {
-				for(item.iItem = 1;item.iItem < nCurrentItemCount;item.iItem++) {
-					ListView_GetItem(hList, &item);
+			//从1开始，跳过..目录
+			for (item.iItem = 1; item.iItem < nCurrentItemCount; item.iItem++) {
+				ListView_GetItem(hList, &item);
 
-					if(item.state & LVIS_SELECTED) {
-						*lpIndexToShowPtr = (LPPCKINDEXTABLE)item.lParam;
-						(*lpdwUIProgressUpper)++;
-						lpIndexToShowPtr++;
+				if (item.state & LVIS_SELECTED) {
+					*lpFileEntryArrayPtr = (LPPCK_UNIFIED_FILE_ENTRY)item.lParam;
+					lpFileEntryArrayPtr++;
 
-						uiSelectCount++;
-					}
-				}
-			} else {
-				for(item.iItem = 1;item.iItem < nCurrentItemCount;item.iItem++) {
-					ListView_GetItem(hList, &item);
-
-					if(item.state & LVIS_SELECTED) {
-						*lpNodeToShowPtr = (LPPCK_PATH_NODE)item.lParam;
-						if(NULL == (*lpNodeToShowPtr)->child) {
-							(*lpdwUIProgressUpper)++;
-						} else {
-							(*lpdwUIProgressUpper) += (*lpNodeToShowPtr)->child->dwFilesCount;
-						}
-						lpNodeToShowPtr++;
-
-						uiSelectCount++;
-					}
+					uiSelectCount++;
 				}
 			}
 
-			if(0 == uiSelectCount)return;
+			if (0 == uiSelectCount)return;
+
+			//pck_setThreadWorking(pThis->m_PckHandle);
 
 			//开始计时
 			timer.start();
-
-			*lpbThreadRunning = TRUE;
 
 			pThis->EnbaleButtons(ID_MENU_UNPACK_SELECTED, FALSE);
 
@@ -511,69 +497,49 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 
 			pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
-			lpNodeToShowPtr = lpNodeToShow;
+			lpFileEntryArrayPtr = lpFileEntryArray;
 
-			if(pThis->m_cPckCenter.GetListInSearchMode()) {
-				if(pThis->m_cPckCenter.ExtractFiles(lpIndexToShow, uiSelectCount)) {
-					//计时结束
-					timer.stop();
-					_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPOK), timer.getElapsedTime());
+			if (pck_ExtractFilesByEntrys(pThis->m_PckHandle, lpFileEntryArray, uiSelectCount, pThis->m_CurrentPath)) {
+				//计时结束
+				timer.stop();
+				_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPOK), timer.getElapsedTime());
 
-					pThis->SetStatusBarText(4, szPrintf);
-				} else {
-					pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-				}
-			} else {
-				if(pThis->m_cPckCenter.ExtractFiles(lpNodeToShow, uiSelectCount)) {
-					//计时结束
-					timer.stop();
-					_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPOK), timer.getElapsedTime());
-
-					pThis->SetStatusBarText(4, szPrintf);
-				} else {
-					pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-				}
-
+				pThis->SetStatusBarText(4, szPrintf);
+			}
+			else {
+				pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 			}
 
-			free(lpNodeToShow);
+			free(lpFileEntryArray);
 
 			pThis->EnbaleButtons(ID_MENU_UNPACK_SELECTED, TRUE);
 
 			pThis->KillTimer(WM_TIMER_PROGRESS_100);
 			pThis->RefreshProgress();
 
-			if((!(*lpbThreadRunning)) && pThis->bGoingToExit) {
+			if ((!(pck_isLastOptSuccess(pThis->m_PckHandle))) && pThis->bGoingToExit) {
 				pThis->bGoingToExit = FALSE;
 				pThis->SendMessage(WM_CLOSE, 0, 0);
 			}
 		}
 	}
-
-	*lpbThreadRunning = FALSE;
+	//pck_breakThreadWorking(pThis->m_PckHandle);
 
 	return;
-
 }
 
 
 VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 {
 	TInstDlg	*pThis = (TInstDlg*)pParam;
-	BOOL		*lpbThreadRunning = &pThis->lpPckParams->cVarParams.bThreadRunning;
-
-	pThis->m_cPckCenter.Reset();
 
 	HWND	hList = pThis->GetDlgItem(IDC_LIST);
 
 	CStopWatch	timer;
 
-	LPPCK_PATH_NODE		lpNodeToShow;//, *lpNodeToShowPtr;
-	LPPCKINDEXTABLE		lpIndexToShow;//, *lpIndexToShowPtr;
-
 	UINT uiSelectCount = ListView_GetSelectedCount(hList);
 
-	if(0 != uiSelectCount) {
+	if (0 != uiSelectCount) {
 
 		TCHAR		szPrintf[64];
 
@@ -586,43 +552,21 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 
 		uiSelectCount = 0;
 
+		for (item.iItem = 1; item.iItem < nCurrentItemCount; item.iItem++) {
+			ListView_GetItem(hList, &item);
 
-		if(pThis->m_cPckCenter.GetListInSearchMode()) {
-			for(item.iItem = 1;item.iItem < nCurrentItemCount;item.iItem++) {
-				ListView_GetItem(hList, &item);
-
-				if(item.state & LVIS_SELECTED) {
-
-					lpIndexToShow = (LPPCKINDEXTABLE)item.lParam;
-					pThis->m_cPckCenter.DeleteNode(lpIndexToShow);
-					uiSelectCount++;
-				}
-			}
-		} else {
-			for(item.iItem = 1;item.iItem < nCurrentItemCount;item.iItem++) {
-				ListView_GetItem(hList, &item);
-
-				if(item.state & LVIS_SELECTED) {
-
-					lpNodeToShow = (LPPCK_PATH_NODE)item.lParam;
-
-					if(NULL == lpNodeToShow->child) {
-						pThis->m_cPckCenter.DeleteNode(lpNodeToShow->lpPckIndexTable);
-					} else {
-						pThis->m_cPckCenter.DeleteNode(lpNodeToShow);
-					}
-
-					uiSelectCount++;
-				}
+			if (item.state & LVIS_SELECTED) {
+				pck_DeleteEntry(pThis->m_PckHandle, (LPPCK_UNIFIED_FILE_ENTRY)item.lParam);
+				uiSelectCount++;
 			}
 		}
 
-		if(0 == uiSelectCount)return;
+		if (0 == uiSelectCount)return;
 
 		//开始计时
 		timer.start();
 
-		*lpbThreadRunning = TRUE;
+		//pck_setThreadWorking(pThis->m_PckHandle);
 
 		pThis->EnbaleButtons(ID_MENU_DELETE, FALSE);
 
@@ -632,7 +576,7 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 		pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
 
-		if(pThis->m_cPckCenter.RenameFilename()) {
+		if (pck_RenameSubmit(pThis->m_PckHandle)) {
 			//计时结束
 			timer.stop();
 			_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
@@ -641,7 +585,8 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 
 			pThis->OpenPckFile(pThis->m_Filename, TRUE);
 
-		} else {
+		}
+		else {
 			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
@@ -650,14 +595,13 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 		pThis->KillTimer(WM_TIMER_PROGRESS_100);
 		pThis->RefreshProgress();
 
-		if(pThis->bGoingToExit) {
+		if (pThis->bGoingToExit) {
 			pThis->bGoingToExit = FALSE;
 			pThis->SendMessage(WM_CLOSE, 0, 0);
 		}
 
 	}
-
-	*lpbThreadRunning = FALSE;
+	//pck_breakThreadWorking(pThis->m_PckHandle);
 
 	return;
 
@@ -669,8 +613,8 @@ VOID GetPckFileNameBySource(LPTSTR dst, LPCTSTR src, BOOL isDirectory)
 	int szPathToCompressLen;
 	_tcscpy(dst, src);
 
-	if(isDirectory) {
-		if((szPathToCompressLen = lstrlen(dst)) > 13 && 0 == lstrcmp(dst + szPathToCompressLen - 10, TEXT(".pck.files"))) {
+	if (isDirectory) {
+		if ((szPathToCompressLen = lstrlen(dst)) > 13 && 0 == lstrcmp(dst + szPathToCompressLen - 10, TEXT(".pck.files"))) {
 			*(dst + szPathToCompressLen - 10) = 0;
 		}
 	}

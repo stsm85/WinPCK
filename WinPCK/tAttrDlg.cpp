@@ -12,14 +12,12 @@
 #include "miscdlg.h"
 #include <shlwapi.h>
 
-TAttrDlg::TAttrDlg(void *_lpPckInfo, void *_lpRootInfo, QWORD _qwPckFileSize, wchar_t *_lpszPath, BOOL _isSearchMode, TWin *_win) : TDlg(IDD_DIALOG_ATTR, _win)
+TAttrDlg::TAttrDlg(const PCK_UNIFIED_FILE_ENTRY *_lpPckInfo, HANDLE	_PckHandle, wchar_t *_lpszPath, TWin *_win) :
+	TDlg(IDD_DIALOG_ATTR, _win),
+	lpPckInfo(_lpPckInfo),
+	lpszPath(_lpszPath),
+	m_PckHandle(_PckHandle)
 {
-	lpPckInfo = _lpPckInfo;
-	lpRootInfo = _lpRootInfo;
-	lpszPath = _lpszPath;
-	isSearchMode = _isSearchMode;
-	qwPckFileSize = _qwPckFileSize;
-
 }
 
 //TAttrDlg::~TAttrDlg()
@@ -28,171 +26,128 @@ TAttrDlg::TAttrDlg(void *_lpPckInfo, void *_lpRootInfo, QWORD _qwPckFileSize, wc
 
 BOOL TAttrDlg::EvCreate(LPARAM lParam)
 {
-	//ultoa(lpPckNode->lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szPrintf, 10));
 #define PRINTF_BYTESIZE	32
 #define PRINTF_SIZE		80
 
 	wchar_t	*lpszFilename;
-	wchar_t	*lpszwFilename;
+	const wchar_t	*lpszwFilename;
 	wchar_t	szPrintf[PRINTF_SIZE];
 	wchar_t	szPrintfBytesize[PRINTF_BYTESIZE];
 	LPCWSTR	lpszFormat = L"%s (%llu 字节)";
 	LPCWSTR	lpszFileFormat = L"%s (%u 字节)";
 
-
-	if(isSearchMode) {
-		LPPCKINDEXTABLE	lpPckIndex = (LPPCKINDEXTABLE)lpPckInfo;
+	if (PCK_ENTRY_TYPE_INDEX == lpPckInfo->entryType) {
 		wchar_t	szFilename[MAX_PATH_PCK_260];
 
-		wcscpy(szFilename, lpPckIndex->cFileIndex.szwFilename);
+		wcscpy(szFilename, lpPckInfo->szName);
 
 		SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件");
 
-		if(NULL != (lpszFilename = wcsrchr(szFilename, L'\\'))) {
+		if (NULL != (lpszFilename = wcsrchr(szFilename, L'\\'))) {
 
 			*lpszFilename++ = 0;
 			SetDlgItemTextW(IDC_EDIT_ATTR_PATH, szFilename);
 
-		} else if(NULL != (lpszFilename = wcsrchr(szFilename, L'/'))) {
+			lpszwFilename = lpszFilename;
+
+		}
+		else if (NULL != (lpszFilename = wcsrchr(szFilename, L'/'))) {
 
 			*lpszFilename++ = 0;
 			SetDlgItemTextW(IDC_EDIT_ATTR_PATH, szFilename);
 
-		} else {
+			lpszwFilename = lpszFilename;
 
-			lpszFilename = lpPckIndex->cFileIndex.szwFilename;
+		}
+		else {
+
+			lpszwFilename = lpPckInfo->szName;
 			SetDlgItemTextA(IDC_EDIT_ATTR_PATH, "");
 		}
 
-		SetDlgItemTextW(IDC_EDIT_ATTR_NAME, lpszFilename);
+		SetDlgItemTextW(IDC_EDIT_ATTR_NAME, lpszwFilename);
+	}
+	else {
+		SetDlgItemTextW(IDC_EDIT_ATTR_NAME, lpszwFilename = lpPckInfo->szName);
+	}
 
-		//压缩大小
-		_stprintf_s(szPrintf, PRINTF_SIZE, lpszFileFormat,
-			StrFormatByteSizeW(lpPckIndex->cFileIndex.dwFileCipherTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-			lpPckIndex->cFileIndex.dwFileCipherTextSize);
+	SetDlgItemTextW(IDC_EDIT_ATTR_PATH, lpszPath);
 
-		SetDlgItemTextW(IDC_EDIT_ATTR_CIPHER, szPrintf);
+	QWORD qdwDirClearTextSize = pck_getFileSizeInEntry(lpPckInfo);
+	QWORD qdwDirCipherTextSize = pck_getCompressedSizeInEntry(lpPckInfo);
 
-		//实际大小
-		_stprintf_s(szPrintf, PRINTF_SIZE, lpszFileFormat,
-			StrFormatByteSizeW(lpPckIndex->cFileIndex.dwFileClearTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-			lpPckIndex->cFileIndex.dwFileClearTextSize);
+	//压缩大小
+	swprintf_s(szPrintf, PRINTF_SIZE, lpszFileFormat,
+		StrFormatByteSizeW(qdwDirCipherTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
+		qdwDirCipherTextSize);
 
-		SetDlgItemTextW(IDC_EDIT_ATTR_SIZE, szPrintf);
+	SetDlgItemTextW(IDC_EDIT_ATTR_CIPHER, szPrintf);
 
-		//压缩率
-		if(0 == lpPckIndex->cFileIndex.dwFileClearTextSize)
-			SetDlgItemTextA(IDC_EDIT_ATTR_CMPR, "-");
-		else {
-			swprintf_s(szPrintf, PRINTF_SIZE, L"%.1f%%", lpPckIndex->cFileIndex.dwFileCipherTextSize * 100 / (double)lpPckIndex->cFileIndex.dwFileClearTextSize);
-			SetDlgItemTextW(IDC_EDIT_ATTR_CMPR, szPrintf);
-		}
+
+	//实际大小
+	swprintf_s(szPrintf, PRINTF_SIZE, lpszFileFormat,
+		StrFormatByteSizeW(qdwDirClearTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
+		qdwDirClearTextSize);
+
+	SetDlgItemTextW(IDC_EDIT_ATTR_SIZE, szPrintf);
+
+	//压缩率
+	if (0 == qdwDirClearTextSize)
+		SetDlgItemTextA(IDC_EDIT_ATTR_CMPR, "-");
+	else {
+		swprintf_s(szPrintf, PRINTF_SIZE, L"%.1f%%", qdwDirCipherTextSize / (double)qdwDirClearTextSize * 100);
+		SetDlgItemTextW(IDC_EDIT_ATTR_CMPR, szPrintf);
+	}
+
+	if (PCK_ENTRY_TYPE_FOLDER != (PCK_ENTRY_TYPE_FOLDER & lpPckInfo->entryType))//文件
+	{
+		SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件");
 
 		//包含
 		SetDlgItemTextA(IDC_EDIT_ATTR_FILECOUNT, "-");
 
 		//偏移地址
-		//		#ifdef PCKV202
-		swprintf_s(szPrintf, PRINTF_SIZE, L"%llu (0x%016llX)", lpPckIndex->cFileIndex.dwAddressOffset, lpPckIndex->cFileIndex.dwAddressOffset);
+		swprintf_s(szPrintf, PRINTF_SIZE, L"%llu (0x%016llX)", pck_getFileOffset(lpPckInfo), pck_getFileOffset(lpPckInfo));
 		SetDlgItemTextW(IDC_EDIT_ATTR_ADDR, szPrintf);
+	}
+	else {
 
-	} else {
+		SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件夹");
 
-		LPPCK_PATH_NODE	lpPckNode = (LPPCK_PATH_NODE)lpPckInfo;
+		//包含
+		swprintf_s(szPrintf, PRINTF_SIZE, L"%u 个文件，%u 个文件夹", pck_getFilesCountInEntry(lpPckInfo), pck_getFoldersCountInEntry(lpPckInfo));
+		SetDlgItemTextW(IDC_EDIT_ATTR_FILECOUNT, szPrintf);
 
-		SetDlgItemTextW(IDC_EDIT_ATTR_NAME, lpszwFilename = lpPckNode->szName);
-		SetDlgItemTextW(IDC_EDIT_ATTR_PATH, lpszPath);
-
-		if(NULL == lpPckNode->child)//文件
-		{
-			SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件");
-
-			//压缩大小
-			swprintf_s(szPrintf, PRINTF_SIZE, lpszFileFormat,
-				StrFormatByteSizeW(lpPckNode->lpPckIndexTable->cFileIndex.dwFileCipherTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-				lpPckNode->lpPckIndexTable->cFileIndex.dwFileCipherTextSize);
-
-			SetDlgItemTextW(IDC_EDIT_ATTR_CIPHER, szPrintf);
-
-
-			//实际大小
-			swprintf_s(szPrintf, PRINTF_SIZE, lpszFileFormat,
-				StrFormatByteSizeW(lpPckNode->lpPckIndexTable->cFileIndex.dwFileClearTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-				lpPckNode->lpPckIndexTable->cFileIndex.dwFileClearTextSize);
-
-			SetDlgItemTextW(IDC_EDIT_ATTR_SIZE, szPrintf);
-
-
-
-			//压缩率
-			if(0 == lpPckNode->lpPckIndexTable->cFileIndex.dwFileClearTextSize)
-				SetDlgItemTextA(IDC_EDIT_ATTR_CMPR, "-");
-			else {
-				swprintf_s(szPrintf, PRINTF_SIZE, L"%.1f%%", lpPckNode->lpPckIndexTable->cFileIndex.dwFileCipherTextSize / (double)lpPckNode->lpPckIndexTable->cFileIndex.dwFileClearTextSize * 100);
-				SetDlgItemTextW(IDC_EDIT_ATTR_CMPR, szPrintf);
-			}
-
-			//包含
-			SetDlgItemTextA(IDC_EDIT_ATTR_FILECOUNT, "-");
-
-			//偏移地址
-			swprintf_s(szPrintf, PRINTF_SIZE, L"%llu (0x%016llX)", lpPckNode->lpPckIndexTable->cFileIndex.dwAddressOffset, lpPckNode->lpPckIndexTable->cFileIndex.dwAddressOffset);
-			SetDlgItemTextW(IDC_EDIT_ATTR_ADDR, szPrintf);
-		} else {
-
-			SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件夹");
-
-			//压缩大小
-			swprintf_s(szPrintf, PRINTF_SIZE, lpszFormat,
-				StrFormatByteSizeW(lpPckNode->child->qdwDirCipherTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-				lpPckNode->child->qdwDirCipherTextSize);
-			SetDlgItemTextW(IDC_EDIT_ATTR_CIPHER, szPrintf);
-
-
-			//实际大小
-			swprintf_s(szPrintf, PRINTF_SIZE, lpszFormat,
-				StrFormatByteSizeW(lpPckNode->child->qdwDirClearTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-				lpPckNode->child->qdwDirClearTextSize);
-
-			SetDlgItemTextW(IDC_EDIT_ATTR_SIZE, szPrintf);
-
-
-			//压缩率
-			swprintf_s(szPrintf, PRINTF_SIZE, L"%.1f%%", lpPckNode->child->qdwDirCipherTextSize / (float)lpPckNode->child->qdwDirClearTextSize * 100.0);
-			SetDlgItemTextW(IDC_EDIT_ATTR_CMPR, szPrintf);
-
-			//包含
-			swprintf_s(szPrintf, PRINTF_SIZE, L"%u 个文件，%u 个文件夹", lpPckNode->child->dwFilesCount, lpPckNode->child->dwDirsCount);
-			SetDlgItemTextW(IDC_EDIT_ATTR_FILECOUNT, szPrintf);
-
-			SetDlgItemTextA(IDC_EDIT_ATTR_ADDR, "-");
-
-		}
-
+		//偏移地址
+		SetDlgItemTextA(IDC_EDIT_ATTR_ADDR, "-");
 
 	}
 
 	//文件包信息
-	LPPCK_PATH_NODE	lpRootNode = (LPPCK_PATH_NODE)lpRootInfo;
+	const PCK_UNIFIED_FILE_ENTRY* lpRootNode = pck_getRootNode(m_PckHandle);
+
+	qdwDirClearTextSize = pck_getFileSizeInEntry(lpRootNode);
+	qdwDirCipherTextSize = pck_getCompressedSizeInEntry(lpRootNode);
+
 	//文件总大小
 	swprintf_s(szPrintf, PRINTF_SIZE, lpszFormat,
-		StrFormatByteSizeW(lpRootNode->child->qdwDirClearTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-		lpRootNode->child->qdwDirClearTextSize);
+		StrFormatByteSizeW(qdwDirClearTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
+		qdwDirClearTextSize);
 
 	SetDlgItemTextW(IDC_EDIT_ATTR_ALLSIZE, szPrintf);
 
 	//压缩包大小
 	swprintf_s(szPrintf, PRINTF_SIZE, lpszFormat,
-		StrFormatByteSizeW(lpRootNode->child->qdwDirCipherTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-		lpRootNode->child->qdwDirCipherTextSize);
+		StrFormatByteSizeW(qdwDirCipherTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
+		qdwDirCipherTextSize);
 	SetDlgItemTextW(IDC_EDIT_ATTR_PCKSIZE, szPrintf);
 
 	//压缩率
-	swprintf_s(szPrintf, PRINTF_SIZE, L"%.1f%%", lpRootNode->child->qdwDirCipherTextSize / (float)lpRootNode->child->qdwDirClearTextSize * 100.0);
+	swprintf_s(szPrintf, PRINTF_SIZE, L"%.1f%%", qdwDirCipherTextSize / (float)qdwDirClearTextSize * 100.0);
 	SetDlgItemTextW(IDC_EDIT_ATTR_PCKCMPR, szPrintf);
 
 	//冗余数据量
-	//int dwDirt = dwPckFileSize - lpRootNode->child->dwDirCipherTextSize;
+	QWORD qwPckFileSize = pck_file_redundancy_data_size(m_PckHandle);
 	swprintf_s(szPrintf, PRINTF_SIZE, lpszFormat,
 		StrFormatByteSizeW(qwPckFileSize, szPrintfBytesize, PRINTF_BYTESIZE),
 		qwPckFileSize);

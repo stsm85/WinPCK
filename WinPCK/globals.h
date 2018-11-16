@@ -24,9 +24,8 @@ using namespace std;
 //****** some defines *******
 #define _USE_CUSTOMDRAW_
 
-
 #define	THIS_NAME			"WinPCK "
-#define	THIS_VERSION		"v1.27.0.0 "
+#define	THIS_VERSION		"v1.30.0.0 "
 #define	THIS_DESC			L"完美世界系列游戏PCK文件包综合查看器 " 
 #define	THIS_AUTHOR			L"程序编写: stsm/liqf/李秋枫\r\n" \
 							"E-Mail: stsm85@126.com "
@@ -45,7 +44,7 @@ using namespace std;
 	#define	THIS_MAIN_CAPTION	THIS_NAME \
 								THIS_VERSION
 #endif
-							
+
 
 //#define	SHELL_LISTVIEW_PARENT_CLASS		TEXT("SHELLDLL_DefView")
 #define	SHELL_LISTVIEW_ROOT_CLASS1		TEXT("ExploreWClass")
@@ -57,26 +56,15 @@ using namespace std;
 #define	TEXT_FILE_FILTER				TEXT(	"PCK压缩文件(*.pck;*.zup)\0*.pck;*.zup\0")	\
 										TEXT(	"所有文件\0*.*\0\0")
 
+#define IMGLIST_FOLDER	0
+#define IMGLIST_FILE	1
 
-#define Z_DEFAULT_COMPRESS_LEVEL	9
-
-#define WM_FRESH_MAIN_CAPTION		(WM_USER + 1)
 #define WM_TIMER_PROGRESS_100		(WM_USER + 1)
 
 #define	TIMER_PROGRESS				100
 
-#define	MT_MAX_MEMORY				0x80000000	//2048MB
-
-#define MAX_COMPRESS_LEVEL	12
-
 #ifndef SE_CREATE_SYMBOLIC_LINK_NAME
 #define SE_CREATE_SYMBOLIC_LINK_NAME  TEXT("SeCreateSymbolicLinkPrivilege")
-#endif
-
-#ifdef _UNICODE
-#define tstring wstring
-#else
-#define tstring string
 #endif
 
 #endif

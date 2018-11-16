@@ -10,6 +10,8 @@
       <DebugInformationFormat>None</DebugInformationFormat>
 	  <!-- 运行库 多线程DLL=MultiThreadedDLL 多线程=MultiThreaded -->
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+	  <!-- 使用完全路径 是=true 否=false -->
+	  <UseFullPaths>false</UseFullPaths>
     </ClCompile>
     <Link>
       <!-- 随机基址 是=true 否=false -->

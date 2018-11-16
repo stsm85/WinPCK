@@ -2,7 +2,6 @@
 #include "PreviewDlg.h"
 #include <tchar.h>
 #include "DdsTgaDecoderDefine.h"
-#include "PckControlCenter.h"
 
 
 CPriviewInDlg::CPriviewInDlg() : m_buffer(NULL), dlg(NULL) {};
@@ -61,10 +60,12 @@ PICFORMAT CPriviewInDlg::GetPicFormatFromFilename(LPCWSTR lpszFilename)
 }
 #pragma endregion
 
-BOOL CPriviewInDlg::Show(LPCWSTR lpszFilename, DWORD dwSize, CPckControlCenter	*m_lpPckCenter, LPPCKINDEXTABLE lpPckFileIndexToShow, TWin *_win)
+BOOL CPriviewInDlg::Show(HANDLE pckHandle, const PCK_UNIFIED_FILE_ENTRY* const lpPckFileIndexToShow, TWin *_win)
 {
 #pragma region get FileTitle
 
+	LPCWSTR lpszFilename = lpPckFileIndexToShow->szName;
+	DWORD dwSize = pck_getFileSizeInEntry(lpPckFileIndexToShow);
 	LPCWSTR lpszFileTitle;
 
 	if(NULL == (lpszFileTitle = wcsrchr(lpszFilename, L'\\')))
@@ -95,12 +96,13 @@ BOOL CPriviewInDlg::Show(LPCWSTR lpszFilename, DWORD dwSize, CPckControlCenter	*
 		return FALSE;
 
 	if(NULL == m_buffer) {
-		m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		//m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		log_PrintA(LOG_IMAGE_ERROR, TEXT_MALLOC_FAIL);
 		delete dlg;
 		return FALSE;
 	}
 
-	m_lpPckCenter->GetSingleFileData(NULL, lpPckFileIndexToShow, (char*)m_buffer, m_buffersize);
+	pck_GetSingleFileData(pckHandle, lpPckFileIndexToShow, (char*)m_buffer, m_buffersize);
 
 	dlg->Exec();
 

@@ -12,8 +12,6 @@
 //#include "globals.h"
 #include "miscdlg.h"
 #include <stdio.h>
-#include "PckHeader.h"
-#include "PckClassLog.h"
 
 /*
 日志信息对话框
@@ -251,7 +249,7 @@ wchar_t*  TLogDlg::pszTargetListLog(int iItem)
 	item.cchTextMax = 8190;
 	::SendMessageW(hWndList, LVM_GETITEMW, 0, (LPARAM)(LV_ITEMW*)&item);
 
-	*szText = CPckClassLog::GetLogLevelPrefix(item.iImage);
+	*szText = log_getLogLevelPrefix(item.iImage);
 
 	return szText;
 }

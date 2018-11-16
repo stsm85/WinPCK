@@ -23,7 +23,7 @@
 
 #define SORT_FLAG_ASCENDING		0x00010000
 #define SORT_FLAG_DESCENDING	0x00020000
-#define SORT_FLAG_SEARCHMODE	0x00040000
+//#define SORT_FLAG_SEARCHMODE	0x00040000
 
 #ifdef _USE_CUSTOMDRAW_
 
@@ -63,28 +63,11 @@ BOOL TInstDlg::EvNotifyListView(const NMHDR *pNmHdr)
 	case LVN_ITEMCHANGED:
 	case NM_CLICK:
 		if(-1 != iCurrentHotItem) {
-			m_cPckCenter.SetListCurrentHotItem(iCurrentHotItem);
+			m_iListHotItem = iCurrentHotItem;
 #ifdef _DEBUG
-			LPPCK_PATH_NODE		lpNodeToShow;
-			LPPCKINDEXTABLE		lpIndexToShow;
-			LVITEM				item = { 0 };
-			item.mask = LVIF_PARAM;
-			item.iItem = iCurrentHotItem;
-			ListView_GetItem(pNmHdr->hwndFrom, &item);
-
-			if (m_cPckCenter.GetListInSearchMode()) {
-				lpIndexToShow = (LPPCKINDEXTABLE)(item.lParam);
-				DebugA("lpIndexToShow->nFilelenLeftBytes = %d\r\n", lpIndexToShow->nFilelenLeftBytes);
-			} else {
-
-				lpNodeToShow = (LPPCK_PATH_NODE)(item.lParam);
-
-				if (NULL == lpNodeToShow->child) {
-					DebugA("lpIndexToShow->nFilelenLeftBytes = %d\r\n", lpNodeToShow->nMaxNameSizeAnsi);
-				} else {
-					DebugA("(dir)lpIndexToShow->nFilelenLeftBytes = %d\r\n", lpNodeToShow->nMaxNameSizeAnsi);
-				}
-			}
+			const PCK_UNIFIED_FILE_ENTRY* lpFileEntry = GetFileEntryByItem(iCurrentHotItem);
+			DebugA("nFilelenBytes/nNameSizeAnsi = %d\r\n", pck_getFilelenBytesOfEntry(lpFileEntry));
+			DebugA("nFilelenLeftBytes/nMaxNameSizeAnsi = %d\r\n", pck_getFilelenLeftBytesOfEntry(lpFileEntry));
 #endif
 		}
 		break;
@@ -152,7 +135,7 @@ BOOL TInstDlg::EvNotifyListView(const NMHDR *pNmHdr)
 				DbClickListView(0);
 				break;
 			case VK_APPS:
-				PopupRightMenu(m_cPckCenter.GetListCurrentHotItem());
+				PopupRightMenu(m_iListHotItem);
 				break;
 			case VK_F2:
 				SendMessage(WM_COMMAND, ID_MENU_RENAME, 0);
@@ -239,105 +222,47 @@ void TInstDlg::ListView_Uninit()
 
 int CALLBACK ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
-	LPPCKINDEXTABLE		lpIndexToShow1, lpIndexToShow2;
-	LPPCK_PATH_NODE		lpNodeToShow1, lpNodeToShow2;
+
+	const PCK_UNIFIED_FILE_ENTRY* lpFileEntry1 = (LPPCK_UNIFIED_FILE_ENTRY)lParam1;
+	const PCK_UNIFIED_FILE_ENTRY* lpFileEntry2 = (LPPCK_UNIFIED_FILE_ENTRY)lParam2;
+
 	DWORD dwSortStat = *(DWORD*)lParamSort;
 	int iLastSort = dwSortStat & 0xffff;
 	int iResult;
 
-	if(0 != (SORT_FLAG_SEARCHMODE & dwSortStat)) {
-		lpIndexToShow1 = (LPPCKINDEXTABLE)lParam1;
-		lpIndexToShow2 = (LPPCKINDEXTABLE)lParam2;
-		//如果存在上级目录(".."目录)
-		if((0 == *lpIndexToShow1->cFileIndex.szFilename) || (0 == *lpIndexToShow1->cFileIndex.szFilename))
-			return 0;
+	//如果是上级目录(".."目录)
+	if (PCK_ENTRY_TYPE_DOTDOT == (PCK_ENTRY_TYPE_DOTDOT & (lpFileEntry1->entryType | lpFileEntry2->entryType)))
+		return 0;
 
-		switch(iLastSort) {
-			//文件名
-		case 0:
-			iResult = lstrcmpiA(lpIndexToShow1->cFileIndex.szFilename, lpIndexToShow2->cFileIndex.szFilename);
-			break;
-		case 1:
-			iResult = lpIndexToShow1->cFileIndex.dwFileClearTextSize - lpIndexToShow2->cFileIndex.dwFileClearTextSize;
-			break;
-		case 2:
-			iResult = lpIndexToShow1->cFileIndex.dwFileCipherTextSize - lpIndexToShow2->cFileIndex.dwFileCipherTextSize;
-			break;
-		case 3:
-			float a, b;
+	//如果存在目录和文件比较
+	if (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & (lpFileEntry1->entryType ^ lpFileEntry2->entryType)))
+		return 0;
 
-			if(0 == lpIndexToShow1->cFileIndex.dwFileClearTextSize)
-				a = 0.0;
-			else
-				a = (float)lpIndexToShow1->cFileIndex.dwFileCipherTextSize / (float)lpIndexToShow1->cFileIndex.dwFileClearTextSize;
-			if(0 == lpIndexToShow2->cFileIndex.dwFileClearTextSize)
-				b = 0.0;
-			else
-				b = (float)lpIndexToShow2->cFileIndex.dwFileCipherTextSize / (float)lpIndexToShow2->cFileIndex.dwFileClearTextSize;
+	switch (iLastSort) {
+		//文件名
+	case 0:
+		iResult = wcsicmp(lpFileEntry1->szName, lpFileEntry2->szName);
+		break;
+	case 1:
+		iResult = pck_getFileSizeInEntry(lpFileEntry1) - pck_getFileSizeInEntry(lpFileEntry2);
+		break;
+	case 2:
+		iResult = pck_getCompressedSizeInEntry(lpFileEntry1) - pck_getCompressedSizeInEntry(lpFileEntry2);
+		break;
+	case 3:
+		float a, b;
 
-			iResult = (int)((a > b) ? 1 : -1);
-			break;
-		}
+		if (0 == pck_getFileSizeInEntry(lpFileEntry1))
+			a = 0.0;
+		else
+			a = (float)pck_getCompressedSizeInEntry(lpFileEntry1) / (float)pck_getFileSizeInEntry(lpFileEntry1);
+		if (0 == pck_getFileSizeInEntry(lpFileEntry2))
+			b = 0.0;
+		else
+			b = (float)pck_getCompressedSizeInEntry(lpFileEntry2) / (float)pck_getFileSizeInEntry(lpFileEntry2);
 
-	} else {
-		lpNodeToShow1 = (LPPCK_PATH_NODE)lParam1;
-		lpNodeToShow2 = (LPPCK_PATH_NODE)lParam2;
-
-		if(lpNodeToShow1 && lpNodeToShow2) {
-
-			//如果存在上级目录(".."目录)
-			if((NULL != lpNodeToShow1->parent) || (NULL != lpNodeToShow2->parent))
-				return 0;
-
-			//如果存在目录和文件比较
-			//NULL == lpNodeToShow->lpPckIndexTable -> 目录
-			if((NULL == lpNodeToShow1->lpPckIndexTable ? 1 : 0) ^ (NULL == lpNodeToShow2->lpPckIndexTable ? 1 : 0))
-				return 0;
-
-			switch(iLastSort) {
-				//文件名
-			case 0:
-				iResult = wcsicmp(lpNodeToShow1->szName, lpNodeToShow2->szName);
-				break;
-			case 1:
-				if(NULL == lpNodeToShow1->lpPckIndexTable)
-					iResult = lpNodeToShow1->child->qdwDirClearTextSize - lpNodeToShow2->child->qdwDirClearTextSize;
-				else
-					iResult = lpNodeToShow1->lpPckIndexTable->cFileIndex.dwFileClearTextSize - lpNodeToShow2->lpPckIndexTable->cFileIndex.dwFileClearTextSize;
-				break;
-			case 2:
-				if(NULL == lpNodeToShow1->lpPckIndexTable)
-					iResult = lpNodeToShow1->child->qdwDirCipherTextSize - lpNodeToShow2->child->qdwDirCipherTextSize;
-				else
-					iResult = lpNodeToShow1->lpPckIndexTable->cFileIndex.dwFileCipherTextSize - lpNodeToShow2->lpPckIndexTable->cFileIndex.dwFileCipherTextSize;
-				break;
-			case 3:
-				float a, b;
-				if(NULL == lpNodeToShow1->lpPckIndexTable) {
-					if(0 == lpNodeToShow1->child->qdwDirClearTextSize)
-						a = 0.0;
-					else
-						a = (float)lpNodeToShow1->child->qdwDirCipherTextSize / (float)lpNodeToShow1->child->qdwDirClearTextSize;
-					if(0 == lpNodeToShow2->child->qdwDirClearTextSize)
-						b = 0.0;
-					else
-						b = (float)lpNodeToShow2->child->qdwDirCipherTextSize / (float)lpNodeToShow2->child->qdwDirClearTextSize;
-				} else {
-					if(0 == lpNodeToShow1->lpPckIndexTable->cFileIndex.dwFileClearTextSize)
-						a = 0.0;
-					else
-						a = (float)lpNodeToShow1->lpPckIndexTable->cFileIndex.dwFileCipherTextSize / (float)lpNodeToShow1->lpPckIndexTable->cFileIndex.dwFileClearTextSize;
-					if(0 == lpNodeToShow2->lpPckIndexTable->cFileIndex.dwFileClearTextSize)
-						b = 0.0;
-					else
-						b = (float)lpNodeToShow2->lpPckIndexTable->cFileIndex.dwFileCipherTextSize / (float)lpNodeToShow2->lpPckIndexTable->cFileIndex.dwFileClearTextSize;
-
-				}
-				iResult = (int)((a > b) ? 1 : -1);
-				break;
-			}
-
-		}
+		iResult = (int)((a > b) ? 1 : -1);
+		break;
 	}
 
 	if(SORT_FLAG_ASCENDING & dwSortStat)
@@ -362,13 +287,6 @@ void TInstDlg::ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlis
 		}
 	}
 
-	if(m_cPckCenter.GetListInSearchMode()) {
-
-		dwSortStatus |= SORT_FLAG_SEARCHMODE;
-	} else {
-		dwSortStatus &= (~SORT_FLAG_SEARCHMODE);
-	}
-
 	ListView_SortItems(pnmlistview->hdr.hwndFrom, ListViewCompareProc, (LPARAM)&dwSortStatus);
 
 	HWND hwndHeader = ListView_GetHeader(hWndList);
@@ -388,22 +306,17 @@ void TInstDlg::ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlis
 
 BOOL TInstDlg::ListView_BeginLabelEdit(const HWND hWndList, LPARAM lParam)
 {
-	LPPCK_PATH_NODE		lpNodeToShow;
-	LPPCKINDEXTABLE		lpIndexToShow;
 
-	if(NULL == lParam)return TRUE;
-	//isSearchMode = 2 == ((NMLVDISPINFO*) pNmHdr)->item.iImage ? TRUE : FALSE;
+	if (NULL == lParam)return TRUE;
+
+	const PCK_UNIFIED_FILE_ENTRY* lpFileEntry = (LPPCK_UNIFIED_FILE_ENTRY)lParam;
 
 	size_t nAllowMaxLength;
 
-	if(m_cPckCenter.GetListInSearchMode()) {
-		lpIndexToShow = (LPPCKINDEXTABLE)lParam;
-
+	if(PCK_ENTRY_TYPE_INDEX == lpFileEntry->entryType) {
 		nAllowMaxLength = MAX_PATH_PCK_256;
 	} else {
-
-		lpNodeToShow = (LPPCK_PATH_NODE)lParam;
-		nAllowMaxLength = lpNodeToShow->nMaxNameSizeAnsi + lpNodeToShow->nNameSizeAnsi;
+		nAllowMaxLength = pck_getFilelenLeftBytesOfEntry( lpFileEntry) + pck_getFilelenBytesOfEntry(lpFileEntry);
 
 	}
 
@@ -418,33 +331,22 @@ BOOL TInstDlg::ListView_BeginLabelEdit(const HWND hWndList, LPARAM lParam)
 
 BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 {
-	LPPCK_PATH_NODE		lpNodeToShow;
-	LPPCKINDEXTABLE		lpIndexToShow;
 
 	m_isListviewRenaming = FALSE;
 
 	::SetWindowLong(pNmHdr->hdr.hwndFrom, GWL_STYLE, ::GetWindowLong(pNmHdr->hdr.hwndFrom, GWL_STYLE) & (LVS_EDITLABELS ^ 0xffffffff));
 
-	//wchar_t	szEditedText[MAX_PATH_PCK_260] = { 0 };
-
 	if(NULL != pNmHdr->item.pszText) {
 		if(0 == *pNmHdr->item.pszText)return FALSE;
 
-		if(m_cPckCenter.GetListInSearchMode()) {
-			lpIndexToShow = (LPPCKINDEXTABLE)pNmHdr->item.lParam;
+		PCK_UNIFIED_FILE_ENTRY* lpFileEntry = (LPPCK_UNIFIED_FILE_ENTRY)pNmHdr->item.lParam;
 
-			if(0 == wcscmp(lpIndexToShow->cFileIndex.szwFilename, pNmHdr->item.pszText))
-				return FALSE;
-		} else {
-			lpNodeToShow = (LPPCK_PATH_NODE)pNmHdr->item.lParam;
+		if (0 == wcscmp(lpFileEntry->szName, pNmHdr->item.pszText))
+			return FALSE;
 
-			if(0 == _tcscmp(lpNodeToShow->szName, pNmHdr->item.pszText))
-				return FALSE;
-		}
-
-		TCHAR*	lpszInvalid;
-		if(m_cPckCenter.GetListInSearchMode()) {
-			lpszInvalid = (TCHAR*)TEXT( TEXT_INVALID_PATHCHAR ) + 2;
+		const wchar_t*	lpszInvalid;
+		if(PCK_ENTRY_TYPE_INDEX == lpFileEntry->entryType) {
+			lpszInvalid = (wchar_t*)TEXT( TEXT_INVALID_PATHCHAR ) + 2;
 		} else {
 			lpszInvalid = TEXT( TEXT_INVALID_PATHCHAR );
 		}
@@ -460,26 +362,14 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 			lpszInvalid++;
 		}
 
-		if(m_cPckCenter.GetListInSearchMode()) {
-			if(!m_cPckCenter.RenameIndex(lpIndexToShow, pNmHdr->item.pszText))
+		if (!pck_RenameEntry(m_PckHandle, lpFileEntry, pNmHdr->item.pszText)) {
+				MessageBox(GetLoadStr(IDS_STRING_RENAMEERROR), GetLoadStr(IDS_STRING_ERROR), MB_OK | MB_ICONERROR);
+				OpenPckFile(m_Filename, TRUE);
 				return FALSE;
-
-		} else {
-			if(NULL == lpNodeToShow->child) {
-				if(!m_cPckCenter.RenameIndex(lpNodeToShow, pNmHdr->item.pszText))
-					return FALSE;
-			} else {
-				if(!m_cPckCenter.RenameNode(lpNodeToShow, pNmHdr->item.pszText)) {
-					MessageBox(GetLoadStr(IDS_STRING_RENAMEERROR), GetLoadStr(IDS_STRING_ERROR), MB_OK | MB_ICONERROR);
-					OpenPckFile(m_Filename, TRUE);
-					return FALSE;
-				}
-			}
 		}
 
 		//调用修改
-		//mt_MaxMemoryCount = 0;
-		lpPckParams->cVarParams.dwMTMemoryUsed = 0;
+		//pck_setMTMemoryUsed(m_PckHandle, 0);
 		_beginthread(RenamePckFile, 0, this);
 
 		return TRUE;
@@ -487,6 +377,7 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 	return FALSE;
 }
 
+#ifdef _USE_CUSTOMDRAW_
 BOOL TInstDlg::EvDrawItemListView(const DRAWITEMSTRUCT *lpDis)
 {
 	HWND						hWndHeader;
@@ -587,7 +478,7 @@ BOOL TInstDlg::EvDrawItemListView(const DRAWITEMSTRUCT *lpDis)
 	}
 	return FALSE;
 }
-
+#endif
 void TInstDlg::InsertList(CONST HWND hWndList, CONST INT iIndex, CONST UINT uiMask, CONST INT iImage, CONST LPVOID lParam, CONST INT nColCount, ...)
 {
 

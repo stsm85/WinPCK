@@ -17,7 +17,7 @@
 BOOL TSearchDlg::EvCreate(LPARAM lParam)
 {
 	SendDlgItemMessage(IDC_EDIT_SEARCH, EM_LIMITTEXT, 255, 0);
-	SetDlgItemTextA(IDC_EDIT_SEARCH, dirBuf);
+	SetDlgItemTextW(IDC_EDIT_SEARCH, dirBuf);
 	//SendDlgItemMessage(IDC_EDIT_SEARCH, EM_SETSEL, 0, -1);
 	//::SetFocus(GetDlgItem(IDC_EDIT_SEARCH));
 	return	TRUE;
@@ -27,7 +27,7 @@ BOOL TSearchDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
 	switch(wID) {
 	case IDOK:
-		GetDlgItemTextA(IDC_EDIT_SEARCH, dirBuf, 256);
+		GetDlgItemTextW(IDC_EDIT_SEARCH, dirBuf, 256);
 		EndDialog(wID);
 		return	TRUE;
 

@@ -14,6 +14,7 @@
 #pragma warning ( disable : 4005 )
 #pragma warning ( disable : 4302 )
 
+
 #include "winmain.h"
 #include <tchar.h>
 #pragma comment(lib,"comctl32.lib")
@@ -30,13 +31,13 @@ void TInstDlg::initCommctrls()
 
 	//StatusBar,文件名，文件数，文件大小，进度，状态
 	//int		iStatusWidth[] = {150, 250, 320, 530, 1024};
-	int		iStatusWidth[] = { 150, 260, 350, 590, 1224 };
+	int		iStatusWidth[] = { 150, 260, 350, 750, 1224 };
 	SendDlgItemMessage(IDC_STATUS, SB_SETPARTS, 5, (LPARAM)iStatusWidth);
 
 	//SetStatusBarText(0, TEXT("textures123456.pck"));
 	//SetStatusBarText(1, TEXT("大小: 9999999999"));
 	//SetStatusBarText(2, TEXT("数量: 9999999"));
-	//SetStatusBarText(3, TEXT("进度: 9999999/9999999 100.0% 缓存:100.0%"));
+	//SetStatusBarText(3, TEXT("进度: 9999999/9999999 100.0% 缓存:9999 MB / 9999 MB 100.0%"));
 
 	//快捷键
 	hAccel = LoadAccelerators(TApp::GetInstance(), MAKEINTRESOURCE(IDR_ACCELERATOR1));
@@ -46,34 +47,17 @@ void TInstDlg::initCommctrls()
 void TInstDlg::initParams()
 {
 
-	//初始化数据
-	m_cPckCenter.setMainWnd(hWnd);
+	//打开、关闭、复原等事件注册
+	pck_regMsgFeedback(this, MyFeedbackCallback);
 
-	lpPckParams = m_cPckCenter.GetParams();
+	m_PckHandle = pck_new();
 
 	*m_szStrToSearch = 0;			//查找的文字
-	//bThreadRunning = FALSE;			//线程运行标记
-	bGoingToExit = FALSE;			//是否准备退出
+	bGoingToExit = FALSE;			//是否准备退出8
 
 #ifdef _DEBUG
-	lpPckParams->dwMTThread = 8;	//获取当前机器的CPU个数;
-	lpPckParams->dwMTMaxThread = 50;
-#else
-	//获取当前机器的CPU个数
-	SYSTEM_INFO sysinfo;								//定义结构对象
-	GetSystemInfo(&sysinfo);							//获取当前机器的信息
-	lpPckParams->dwMTThread = sysinfo.dwNumberOfProcessors;	//获取当前机器的CPU个数;
-	lpPckParams->dwMTMaxThread = sysinfo.dwNumberOfProcessors + ((sysinfo.dwNumberOfProcessors + (sysinfo.dwNumberOfProcessors & 1)) >> 1);
+	pck_setMTMaxMemory(m_PckHandle, (512 * 1024 * 1024));
 #endif
-
-	lpPckParams->dwCompressLevel = Z_DEFAULT_COMPRESS_LEVEL;
-#ifdef _DEBUG
-	lpPckParams->dwMTMaxMemory = (128 * 1024 * 1024);
-#else
-	lpPckParams->dwMTMaxMemory = MT_MAX_MEMORY;
-#endif
-
-	lpPckParams->code_page = 936;
 
 	m_isListviewRenaming = FALSE;
 
@@ -81,8 +65,8 @@ void TInstDlg::initParams()
 	m_isSearchWindow = FALSE;
 
 	//Timer
-	_tcscpy_s(szTimerProcessingFormatString, GetLoadStr(IDS_STRING_TIMERING));
-	_tcscpy_s(szTimerProcessedFormatString, GetLoadStr(IDS_STRING_TIMEROK));
+	wcscpy_s(szTimerProcessingFormatString, GetLoadStrW(IDS_STRING_TIMERING));
+	wcscpy_s(szTimerProcessedFormatString, GetLoadStrW(IDS_STRING_TIMEROK));
 
 
 #ifdef _WIN64
@@ -433,8 +417,10 @@ void TInstDlg::initArgument()
 
 		//初始化浏览路径
 
-		memset(&m_PathDirs, 0, sizeof(m_PathDirs));
-		*m_PathDirs.lpszDirNames = m_PathDirs.szPaths;
+		//memset(&m_PathDirs, 0, sizeof(m_PathDirs));
+		//*m_PathDirs.lpszDirNames = m_PathDirs.szPaths;
+
+		*m_FolderBrowsed = 0;
 
 		*m_CurrentPath = 0;
 		GetCurrentDirectory(MAX_PATH, m_CurrentPath);

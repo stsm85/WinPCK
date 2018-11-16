@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="头文件\ZupClass">
+      <UniqueIdentifier>{8c908083-5d92-4757-a9f8-f2a7f225baa3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\PckControlCenter">
+      <UniqueIdentifier>{c855237d-8b85-4ec8-a30b-63da8ebdc6d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\PckClass">
+      <UniqueIdentifier>{42f9514c-977b-450f-955c-7d8133f5bc0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\MapViewFile">
+      <UniqueIdentifier>{8b88d815-a0ab-425e-924a-7484f5a3efbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\DictHash">
+      <UniqueIdentifier>{4fcdb324-3994-4179-bac4-967b7387e7d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\DictHash">
+      <UniqueIdentifier>{adc7731f-259f-417d-aac7-3609a1cfb16e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\MapViewFile">
+      <UniqueIdentifier>{eafc3962-d9d6-4b6d-b476-d5b480b3986c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\PckClass">
+      <UniqueIdentifier>{4ce84adb-dc57-4cee-87f8-f62da1391b3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\PckControlCenter">
+      <UniqueIdentifier>{8ec205e9-8b63-4bec-8df7-0df5223f5a51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\ZupClass">
+      <UniqueIdentifier>{229c4c48-5c97-41ea-b058-8c2aa51e6d06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\MiscFuncs">
+      <UniqueIdentifier>{79d1a900-c835-40ad-ba1e-00ec234f8731}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\MiscFuncs">
+      <UniqueIdentifier>{489345cc-453c-4390-9568-149e5e7158f9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PckControlCenter\PckControlCenterAttribute.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckControlCenter\PckControlCenterInterface.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckControlCenter\PckControlCenterParams.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckControlCenter\PckControlCenterOperation.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckControlCenter\PckControlCenter.cpp">
+      <Filter>源文件\PckControlCenter</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassMount.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassVersionDetect.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassExceptionRestore.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassRebuildFilter.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscFuncs\Raw2HexString.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscFuncs\CharsCodeConv.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassFileDisk.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassLog.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassNode.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassIndex.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassHeadTail.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassZlib.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassHeadTailWriter.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassRenamer.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassRebuild.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassBaseFeatures.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassThread.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassThreadData.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassThreadMemory.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassThreadQueue.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassThreadVarsInit.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassAppendFiles.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassIndexRead.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFile.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMulti.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMultiPck.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMultiPckRead.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMultiPckWrite.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMultiRead.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileMultiWrite.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileRead.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFile\MapViewFileWrite.cpp">
+      <Filter>源文件\MapViewFile</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassIndexWriter.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassCodepage.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckAlgorithmId.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pck_handle.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DictHash\DictHash.cpp">
+      <Filter>源文件\DictHash</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClass.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckClassExtract.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="ZupClass\ZupClass.cpp">
+      <Filter>源文件\ZupClass</Filter>
+    </ClCompile>
+    <ClCompile Include="ZupClass\ZupClassExtract.cpp">
+      <Filter>源文件\ZupClass</Filter>
+    </ClCompile>
+    <ClCompile Include="ZupClass\ZupClassFunction.cpp">
+      <Filter>源文件\ZupClass</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PckControlCenter\PckControlCenter.h">
+      <Filter>头文件\PckControlCenter</Filter>
+    </ClInclude>
+    <ClInclude Include="MapViewFile\MapViewFile.h">
+      <Filter>头文件\MapViewFile</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckDefines.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckStructs.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckConf.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassVersionDetect.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscFuncs\Raw2HexString.h">
+      <Filter>头文件\MiscFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscFuncs\CharsCodeConv.h">
+      <Filter>头文件\MiscFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassFileDisk.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassLog.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassNode.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassIndex.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassHeadTail.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassZlib.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassBaseFeatures.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassVersionDetectFunctionDefinitions.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassHeadTailWriter.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassIndexWriter.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassThread.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassWriteOperator.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="MapViewFile\MapViewFileMulti.h">
+      <Filter>头文件\MapViewFile</Filter>
+    </ClInclude>
+    <ClInclude Include="MapViewFile\MapViewFileMultiPck.h">
+      <Filter>头文件\MapViewFile</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassCodepage.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckAlgorithmId.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pck_handle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClass.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckHeader.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="DictHash\DictHash.h">
+      <Filter>头文件\DictHash</Filter>
+    </ClInclude>
+    <ClInclude Include="ZupClass\ZupClass.h">
+      <Filter>头文件\ZupClass</Filter>
+    </ClInclude>
+    <ClInclude Include="ZupClass\ZupHeader.h">
+      <Filter>头文件\ZupClass</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pck_dependencies.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="pckdll.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

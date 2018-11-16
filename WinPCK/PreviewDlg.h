@@ -2,8 +2,7 @@
 #include "tlib.h"
 #include "resource.h"
 #include "ShowPictureWithZoom.h"
-#include "PckHeader.h"
-#include "PckClassLog.h"
+#include "pck_handle.h"
 
 class CPriviewInDlg
 {
@@ -11,7 +10,7 @@ public:
 	CPriviewInDlg();
 	~CPriviewInDlg();
 
-	BOOL Show(LPCWSTR lpszFilename, DWORD dwSize, CPckControlCenter	*m_lpPckCenter, LPPCKINDEXTABLE lpPckFileIndexToShow, TWin *_win);
+	BOOL Show(HANDLE pckHandle, const PCK_UNIFIED_FILE_ENTRY* const lpPckFileIndexToShow, TWin *_win);
 
 protected:
 
@@ -19,7 +18,7 @@ protected:
 	TDlg *	dlg;
 
 	//日志系统
-	CPckClassLog		m_PckLog;
+	//CPckClassLog		m_PckLog;
 
 	void *	m_buffer;
 	DWORD	m_buffersize;

@@ -18,17 +18,22 @@
 */
 BOOL TInfoDlg::EvCreate(LPARAM lParam)
 {
-	SendDlgItemMessage(IDC_EDIT_INFO, EM_LIMITTEXT, PCK_ADDITIONAL_INFO_SIZE - 1, 0);
-	SetDlgItemTextA(IDC_EDIT_INFO, dirBuf);
+	SendDlgItemMessage(IDC_EDIT_INFO, EM_LIMITTEXT, pck_GetAdditionalInfoMaxSize() - 1, 0);
+	SetDlgItemTextA(IDC_EDIT_INFO, pck_GetAdditionalInfo(m_PckHandle));
 	return	TRUE;
 }
 
 BOOL TInfoDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
+	char *szAdditionalInfo;
 	switch(wID) {
 	case IDOK:
-		memset(dirBuf, 0, PCK_ADDITIONAL_INFO_SIZE);
-		GetDlgItemTextA(IDC_EDIT_INFO, dirBuf, PCK_ADDITIONAL_INFO_SIZE);
+		szAdditionalInfo = new char[pck_GetAdditionalInfoMaxSize()];
+		memset(szAdditionalInfo, 0, pck_GetAdditionalInfoMaxSize());
+		GetDlgItemTextA(IDC_EDIT_INFO, szAdditionalInfo, pck_GetAdditionalInfoMaxSize());
+
+		//返回1为操作成功，success=1
+		pck_SetAdditionalInfo(m_PckHandle, szAdditionalInfo);
 		EndDialog(wID);
 		return	TRUE;
 

@@ -18,32 +18,31 @@
 void TInstDlg::ListViewEnter()
 {
 	if (!m_isListviewRenaming)
-		DbClickListView(m_cPckCenter.GetListCurrentHotItem());
+		DbClickListView(m_iListHotItem);
 	else
 		keybd_event(VK_TAB, 0, 0, 0);
 }
 
 void TInstDlg::MenuClose()
 {
-	if (lpPckParams->cVarParams.bThreadRunning)
-		lpPckParams->cVarParams.bThreadRunning = FALSE;
+	if (pck_isThreadWorking(m_PckHandle))
+		pck_forceBreakThreadWorking(m_PckHandle);
+
 	ListView_DeleteAllItems(GetDlgItem(IDC_LIST));
-	m_cPckCenter.Close();
+	pck_close(m_PckHandle);
 }
 
 void TInstDlg::MenuInfo()
 {
-	if (m_cPckCenter.IsValidPck()) {
-		TInfoDlg	dlg(m_cPckCenter.GetAdditionalInfo(), this);
-		if (dlg.Exec() == TRUE) {
-			m_cPckCenter.SetAdditionalInfo();
-		}
+	if (pck_IsValidPck(m_PckHandle)) {
+		TInfoDlg	dlg(m_PckHandle, this);
+		dlg.Exec();
 	}
 }
 
 void TInstDlg::MenuSearch()
 {
-	if (m_cPckCenter.IsValidPck()) {
+	if (pck_IsValidPck(m_PckHandle)) {
 		TSearchDlg	dlg(m_szStrToSearch, this);
 		if (dlg.Exec() == TRUE) {
 			SearchPckFiles();
@@ -53,8 +52,9 @@ void TInstDlg::MenuSearch()
 
 void TInstDlg::MenuNew(WORD wID)
 {
-	if (lpPckParams->cVarParams.bThreadRunning) {
-		lpPckParams->cVarParams.bThreadRunning = FALSE;
+		
+	if (pck_isThreadWorking(m_PckHandle)) {
+		pck_forceBreakThreadWorking(m_PckHandle);
 		EnableButton(wID, FALSE);
 	}
 	else {
@@ -64,8 +64,8 @@ void TInstDlg::MenuNew(WORD wID)
 
 void TInstDlg::MenuAdd(WORD wID)
 {
-	if (lpPckParams->cVarParams.bThreadRunning) {
-		lpPckParams->cVarParams.bThreadRunning = FALSE;
+	if (pck_isThreadWorking(m_PckHandle)) {
+		pck_forceBreakThreadWorking(m_PckHandle);
 		EnableButton(wID, FALSE);
 	}
 	else {
@@ -75,40 +75,41 @@ void TInstDlg::MenuAdd(WORD wID)
 
 void TInstDlg::MenuRebuild(WORD wID)
 {
-	if (lpPckParams->cVarParams.bThreadRunning) {
-		lpPckParams->cVarParams.bThreadRunning = FALSE;
+	if (pck_isThreadWorking(m_PckHandle)) {
+		pck_forceBreakThreadWorking(m_PckHandle);
 		EnableButton(wID, FALSE);
 	}
 	else {
 
-		lpPckParams->cVarParams.dwMTMemoryUsed = 0;
+		//pck_setMTMemoryUsed(m_PckHandle, 0);
 		_beginthread(RebuildPckFile, 0, this);
 	}
 }
 
 void TInstDlg::MenuCompressOpt()
 {
-	TCompressOptDlg	dlg(lpPckParams, this);
+	TCompressOptDlg	dlg(m_PckHandle, this);
 	dlg.Exec();
 }
 
 void TInstDlg::MenuRename()
 {
-	if(lpPckParams->cVarParams.bThreadRunning)
+	if(pck_isThreadWorking(m_PckHandle))
 		return;
 
 	HWND	hList = GetDlgItem(IDC_LIST);
 	::SetWindowLong(hList, GWL_STYLE, ::GetWindowLong(hList, GWL_STYLE) | LVS_EDITLABELS);
-	ListView_EditLabel(hList, m_cPckCenter.GetListCurrentHotItem());
+	ListView_EditLabel(hList, m_iListHotItem);
 }
 
 void TInstDlg::MenuDelete()
 {
-	if (lpPckParams->cVarParams.bThreadRunning)
+	if (pck_isThreadWorking(m_PckHandle))
 		return;
 	if (IDNO == MessageBox(GetLoadStr(IDS_STRING_ISDELETE), GetLoadStr(IDS_STRING_ISDELETETITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))
 		return;
-	lpPckParams->cVarParams.dwMTMemoryUsed = 0;
+
+	//pck_setMTMemoryUsed(m_PckHandle, 0);
 	_beginthread(DeleteFileFromPckFile, 0, this);
 }
 
@@ -148,7 +149,7 @@ void TInstDlg::MenuSelectReverse()
 
 void TInstDlg::MenuAttribute()
 {
-	if (lpPckParams->cVarParams.bThreadRunning)
+	if (pck_isThreadWorking(m_PckHandle))
 		return;
 
 	ViewFileAttribute();
@@ -156,14 +157,31 @@ void TInstDlg::MenuAttribute()
 
 void TInstDlg::MenuView()
 {
-	if (lpPckParams->cVarParams.bThreadRunning)
+	if (pck_isThreadWorking(m_PckHandle))
 		return;
 
-	ViewFile();
+	HWND	hWndList = GetDlgItem(IDC_LIST);
+
+	LVITEM	item = { 0 };
+
+	item.mask = LVIF_PARAM;
+	item.iItem = m_iListHotItem;
+	ListView_GetItem(hWndList, &item);
+
+	int entry_type = ((LPPCK_UNIFIED_FILE_ENTRY)item.lParam)->entryType;
+
+	if (PCK_ENTRY_TYPE_FOLDER == entry_type)
+		return;
+
+	ViewFile((LPPCK_UNIFIED_FILE_ENTRY)item.lParam);
 }
 
 void TInstDlg::MenuAbout()
 {
+#ifdef _DEBUG
+	//BOOL a = do_AddFileToPckFile(L"z:\\2222", L"z:\\Rebuild_1111zxxx.pck", L"1111\\");
+	BOOL b = do_CreatePckFile(L"z:\\2222", L"z:\\Rebuild_1111zxxx.pck");
+#endif
 	MessageBoxW(THIS_MAIN_CAPTION
 		"\r\n"
 		THIS_DESC

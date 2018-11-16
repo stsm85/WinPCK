@@ -1,0 +1,416 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_static|Win32">
+      <Configuration>Release_static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_static|x64">
+      <Configuration>Release_static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B2803419-FDEC-4F7D-B00C-E002D6AB5F56}</ProjectGuid>
+    <RootNamespace>WinPCK</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>pckdll</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\VC-LTL\VC-LTL helper for Visual Studio.props" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
+    <Import Project="..\VC-LTL\VC-LTL helper for Visual Studio.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\VC-LTL\VC-LTL helper for Visual Studio.props" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Config\WinPCK_Includes.props" />
+    <Import Project="..\VC-LTL\VC-LTL helper for Visual Studio.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <OptimizeReferences>
+      </OptimizeReferences>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
+      <WarningLevel>Level3</WarningLevel>
+      <EnablePREfast>false</EnablePREfast>
+      <Parallelization>false</Parallelization>
+      <GenerateAlternateCodePaths>SSE2</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>SSE2</UseProcessorExtensions>
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>
+      </LargeAddressAware>
+      <TerminalServerAware>
+      </TerminalServerAware>
+      <SwapRunFromCD>false</SwapRunFromCD>
+      <AssemblyDebug>
+      </AssemblyDebug>
+    </Link>
+    <MASM>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_WIN64;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
+      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
+      <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>SSE3</UseProcessorExtensions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
+      <WarningLevel>Level3</WarningLevel>
+      <EnablePREfast>false</EnablePREfast>
+      <Parallelization>false</Parallelization>
+      <GenerateAlternateCodePaths>SSE2</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>SSE2</UseProcessorExtensions>
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>
+      </LargeAddressAware>
+      <TerminalServerAware>
+      </TerminalServerAware>
+      <SwapRunFromCD>false</SwapRunFromCD>
+      <AssemblyDebug>
+      </AssemblyDebug>
+    </Link>
+    <MASM>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+      <SupportJustMyCode>false</SupportJustMyCode>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="DictHash\DictHash.cpp" />
+    <ClCompile Include="MapViewFile\MapViewFile.cpp" />
+    <ClCompile Include="MapViewFile\MapViewFileMulti.cpp" />
+    <ClCompile Include="MapViewFile\MapViewFileMultiPck.cpp" />
+    <ClCompile Include="MapViewFile\MapViewFileMultiPckRead.cpp" />
+    <ClCompile Include="MapViewFile\MapViewFileMultiPckWrite.cpp" />
+    <ClCompile Include="MapViewFile\MapViewFileMultiRead.cpp" />
+    <ClCompile Include="MapViewFile\MapViewFileMultiWrite.cpp" />
+    <ClCompile Include="MapViewFile\MapViewFileRead.cpp" />
+    <ClCompile Include="MapViewFile\MapViewFileWrite.cpp" />
+    <ClCompile Include="..\MiscFuncs\CharsCodeConv.cpp" />
+    <ClCompile Include="..\MiscFuncs\Raw2HexString.cpp" />
+    <ClCompile Include="PckClass\PckAlgorithmId.cpp" />
+    <ClCompile Include="PckClass\PckClassThreadData.cpp" />
+    <ClCompile Include="PckClass\PckClassAppendFiles.cpp" />
+    <ClCompile Include="PckClass\PckClassCodepage.cpp" />
+    <ClCompile Include="PckClass\PckClassExceptionRestore.cpp" />
+    <ClCompile Include="PckClass\PckClassBaseFeatures.cpp" />
+    <ClCompile Include="PckClass\PckClassHeadTail.cpp" />
+    <ClCompile Include="PckClass\PckClassHeadTailWriter.cpp" />
+    <ClCompile Include="PckClass\PckClassIndex.cpp" />
+    <ClCompile Include="PckClass\PckClassIndexRead.cpp" />
+    <ClCompile Include="PckClass\PckClassIndexWriter.cpp" />
+    <ClCompile Include="PckClass\PckClassLog.cpp" />
+    <ClCompile Include="PckClass\PckClassFileDisk.cpp" />
+    <ClCompile Include="PckClass\PckClassMount.cpp" />
+    <ClCompile Include="PckClass\PckClassNode.cpp" />
+    <ClCompile Include="PckClass\PckClassRebuild.cpp" />
+    <ClCompile Include="PckClass\PckClassRebuildFilter.cpp" />
+    <ClCompile Include="PckClass\PckClassRenamer.cpp" />
+    <ClCompile Include="PckClass\PckClassThread.cpp" />
+    <ClCompile Include="PckClass\PckClassThreadMemory.cpp" />
+    <ClCompile Include="PckClass\PckClassThreadQueue.cpp" />
+    <ClCompile Include="PckClass\PckClassThreadVarsInit.cpp" />
+    <ClCompile Include="PckClass\PckClassVersionDetect.cpp" />
+    <ClCompile Include="PckClass\PckClassZlib.cpp" />
+    <ClCompile Include="PckControlCenter\PckControlCenter.cpp" />
+    <ClCompile Include="PckControlCenter\PckControlCenterAttribute.cpp" />
+    <ClCompile Include="PckControlCenter\PckControlCenterInterface.cpp" />
+    <ClCompile Include="PckControlCenter\PckControlCenterOperation.cpp" />
+    <ClCompile Include="PckControlCenter\PckControlCenterParams.cpp" />
+    <ClCompile Include="PckClass\PckClass.cpp" />
+    <ClCompile Include="PckClass\PckClassExtract.cpp" />
+    <ClCompile Include="src\pck_funcs.cpp" />
+    <ClCompile Include="src\pck_handle.cpp" />
+    <ClCompile Include="ZupClass\ZupClass.cpp" />
+    <ClCompile Include="ZupClass\ZupClassExtract.cpp" />
+    <ClCompile Include="ZupClass\ZupClassFunction.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DictHash\DictHash.h" />
+    <ClInclude Include="MapViewFile\MapViewFile.h" />
+    <ClInclude Include="MapViewFile\MapViewFileMulti.h" />
+    <ClInclude Include="MapViewFile\MapViewFileMultiPck.h" />
+    <ClInclude Include="..\MiscFuncs\CharsCodeConv.h" />
+    <ClInclude Include="..\MiscFuncs\Raw2HexString.h" />
+    <ClInclude Include="PckClass\PckAlgorithmId.h" />
+    <ClInclude Include="PckClass\PckClassCodepage.h" />
+    <ClInclude Include="PckClass\PckClassFileDisk.h" />
+    <ClInclude Include="PckClass\PckClassBaseFeatures.h" />
+    <ClInclude Include="PckClass\PckClassHeadTail.h" />
+    <ClInclude Include="PckClass\PckClassHeadTailWriter.h" />
+    <ClInclude Include="PckClass\PckClassIndex.h" />
+    <ClInclude Include="PckClass\PckClassIndexWriter.h" />
+    <ClInclude Include="PckClass\PckClassLog.h" />
+    <ClInclude Include="PckClass\PckClassNode.h" />
+    <ClInclude Include="PckClass\PckClassWriteOperator.h" />
+    <ClInclude Include="PckClass\PckClassThread.h" />
+    <ClInclude Include="PckClass\PckClassVersionDetect.h" />
+    <ClInclude Include="PckClass\PckClassVersionDetectFunctionDefinitions.h" />
+    <ClInclude Include="PckClass\PckClassZlib.h" />
+    <ClInclude Include="PckClass\PckConf.h" />
+    <ClInclude Include="PckClass\PckDefines.h" />
+    <ClInclude Include="PckClass\PckStructs.h" />
+    <ClInclude Include="PckClass\PckXchgDef.h" />
+    <ClInclude Include="PckControlCenter\PckControlCenter.h" />
+    <ClInclude Include="PckClass\PckClass.h" />
+    <ClInclude Include="PckClass\PckHeader.h" />
+    <ClInclude Include="include\pck_funcs.h" />
+    <ClInclude Include="include\pck_handle.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="ZupClass\ZupClass.h" />
+    <ClInclude Include="ZupClass\ZupHeader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\base64\base64_2017.vcxproj">
+      <Project>{4526ffba-6cee-4c01-8d22-535617fe88e5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\libdeflate\libdeflate_2017.vcxproj">
+      <Project>{2a3f22c4-d534-497b-82fc-f92a634fb20f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\zlib\zlib_2017.vcxproj">
+      <Project>{1d5981bc-51af-4748-9ef6-9458e10abba4}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="pckdll.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="WinPCK.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

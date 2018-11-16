@@ -6,7 +6,7 @@
 #include "resource.h"
 #include <tchar.h>
 #include <stdio.h>
-#include "PckHeader.h"
+#include "pck_handle.h"
 
 class TLogDlg : public TDlg
 {
@@ -37,11 +37,12 @@ public:
 
 class TInfoDlg : public TDlg
 {
-protected:
-	char	*dirBuf;
+private:
+	//char				*dirBuf;
+	HANDLE			m_PckHandle;
 
 public:
-	TInfoDlg(char *_dirBuf, TWin *_win) : TDlg(IDD_DIALOG_INFO, _win) { dirBuf = _dirBuf; }
+	TInfoDlg(HANDLE _in, TWin *_win) : TDlg(IDD_DIALOG_INFO, _win) { m_PckHandle = _in; }
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
 	virtual BOOL	EvCreate(LPARAM lParam);
 };
@@ -49,22 +50,22 @@ public:
 class TSearchDlg : public TDlg
 {
 protected:
-	char	*dirBuf;
+	wchar_t	*dirBuf;
 
 public:
-	TSearchDlg(char *_dirBuf, TWin *_win) : TDlg(IDD_DIALOG_SEARCH, _win) { dirBuf = _dirBuf; }
+	TSearchDlg(wchar_t *_dirBuf, TWin *_win) : TDlg(IDD_DIALOG_SEARCH, _win) { dirBuf = _dirBuf; }
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
 	virtual BOOL	EvCreate(LPARAM lParam);
 };
 
 class TCompressOptDlg : public TDlg
 {
-protected:
+private:
 
-	LPPCK_RUNTIME_PARAMS	lpParams;
+	HANDLE			m_PckHandle;
 
 public:
-	TCompressOptDlg(LPPCK_RUNTIME_PARAMS in, TWin *_win) : TDlg(IDD_DIALOG_COMPRESS, _win) { lpParams = in; }
+	TCompressOptDlg(HANDLE in, TWin *_win) : TDlg(IDD_DIALOG_COMPRESS, _win) { m_PckHandle = in; }
 	
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
 	virtual BOOL	EvCreate(LPARAM lParam);
@@ -74,16 +75,13 @@ public:
 class TAttrDlg : public TDlg
 {
 protected:
-	void	*lpPckInfo;
-	void	*lpRootInfo;
+	const PCK_UNIFIED_FILE_ENTRY*	lpPckInfo;
+	HANDLE			m_PckHandle;
 
 	wchar_t	*lpszPath;
-	BOOL	isSearchMode;
-
-	QWORD	qwPckFileSize;
 
 public:
-	TAttrDlg(void *_lpPckInfo, void *_lpRootInfo, QWORD _qwPckFileSize, wchar_t *_lpszPath, BOOL _isSearchMode, TWin *_win);
+	TAttrDlg(const PCK_UNIFIED_FILE_ENTRY *_lpPckInfo, HANDLE _PckHandle, wchar_t *_lpszPath, TWin *_win);
 	//~TAttrDlg();
 
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
@@ -95,15 +93,15 @@ class TRebuildOptDlg : public TDlg
 {
 protected:
 
-	LPPCK_RUNTIME_PARAMS	lpParams;
+	HANDLE			m_PckHandle;
 	TCHAR					szScriptFile[MAX_PATH];
 	BOOL					*lpNeedRecompress;
 
 public:
-	TRebuildOptDlg(LPPCK_RUNTIME_PARAMS in, BOOL *_lpNeedRecompress, TWin *_win) : \
-		TDlg(IDD_DIALOG_REBUILD_OPT, _win), \
-		lpParams(in), \
-		lpNeedRecompress(_lpNeedRecompress), \
+	TRebuildOptDlg(HANDLE in, BOOL *_lpNeedRecompress, TWin *_win) : 
+		TDlg(IDD_DIALOG_REBUILD_OPT, _win), 
+		m_PckHandle(in), 
+		lpNeedRecompress(_lpNeedRecompress), 
 		isScriptParseSuccess(FALSE)
 	{
 		*szScriptFile = 0;

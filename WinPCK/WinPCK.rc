@@ -24,8 +24,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,27,0,0
- PRODUCTVERSION 1,27,0,0
+ FILEVERSION 1,30,0,0
+ PRODUCTVERSION 1,30,0,0
  FILEFLAGSMASK 0x37L
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -41,12 +41,12 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "FileDescription", "WinPCK"
-            VALUE "FileVersion", "1.27.0.0"
+            VALUE "FileVersion", "1.30.0.0"
             VALUE "InternalName", "WinPCK"
             VALUE "LegalCopyright", "Copyright (C) 2012-2018 stsm"
             VALUE "OriginalFilename", "WinPCK.exe"
             VALUE "ProductName", "WinPCK"
-            VALUE "ProductVersion", "1.27.0.0"
+            VALUE "ProductVersion", "1.30.0.0"
             VALUE "SpecialBuild", "WinPCK by stsm"
         END
     END
@@ -72,16 +72,16 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 // Dialog
 //
 
-IDD_MAIN DIALOGEX 0, 0, 543, 319
+IDD_MAIN DIALOGEX 0, 0, 617, 367
 STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_ACCEPTFILES | WS_EX_APPWINDOW
 MENU IDR_MENU_MAIN
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_OWNERDRAWFIXED | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,0,36,542,260
-    CONTROL         "",IDC_PROGRESS,"msctls_progress32",WS_BORDER,0,298,542,8
-    CONTROL         "",IDC_STATUS,"msctls_statusbar32",0x0,0,307,542,13
-    CONTROL         "",IDC_TOOLBAR,"ToolbarWindow32",0x2810,0,0,542,36
+    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_OWNERDRAWFIXED | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,0,36,616,307
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",WS_BORDER,0,344,616,8
+    CONTROL         "",IDC_STATUS,"msctls_statusbar32",0x0,0,352,616,13
+    CONTROL         "",IDC_TOOLBAR,"ToolbarWindow32",0x2810,0,0,616,36
 END
 
 IDD_DIALOG_INFO DIALOGEX 0, 0, 268, 153
@@ -217,7 +217,8 @@ GUIDELINES DESIGNINFO
 BEGIN
     IDD_MAIN, DIALOG
     BEGIN
-        BOTTOMMARGIN, 317
+        RIGHTMARGIN, 543
+        BOTTOMMARGIN, 365
     END
 
     IDD_DIALOG_INFO, DIALOG
@@ -432,6 +433,11 @@ BEGIN
     0
 END
 
+IDD_MAIN AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -483,7 +489,7 @@ BEGIN
     IDS_STRING_SEARCHING    "正在查找""%s""，请稍等..."
     IDS_STRING_SEARCHOK     "找到""%s""一共 %u 处"
     IDS_STRING_TIMEROK      "已完成: %u/%u 100.0%%"
-    IDS_STRING_TIMERING     "进度: %u/%u %.1f%% 缓存:%.1f%%"
+    IDS_STRING_TIMERING     "进度: %u/%u %.1f%% 缓存:%s/%s %.1f%%"
     IDS_STRING_LISTHEAD1    "文件名"
     IDS_STRING_LISTHEAD2    "实际大小"
     IDS_STRING_LISTHEAD3    "压缩大小"

@@ -99,11 +99,11 @@ BOOL TInstDlg::EvClose()
 
 	SetStatusBarText(0, GetLoadStr(IDS_STRING_EXITING));
 
-	if(lpPckParams->cVarParams.bThreadRunning) {
+	if(pck_isThreadWorking(m_PckHandle)) {
 		if(IDNO == MessageBox(GetLoadStr(IDS_STRING_ISEXIT), GetLoadStr(IDS_STRING_ISEXITTITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))return FALSE;
 
 		bGoingToExit = TRUE;
-		lpPckParams->cVarParams.bThreadRunning = FALSE;
+		pck_forceBreakThreadWorking(m_PckHandle);
 		return FALSE;
 	}
 
@@ -114,6 +114,8 @@ BOOL TInstDlg::EvClose()
 	ListView_Uninit();
 
 	delete logdlg;
+
+	pck_free(m_PckHandle);
 
 	::PostQuitMessage(0);
 	return FALSE;
@@ -257,11 +259,12 @@ BOOL TInstDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 			m_isSearchWindow = FALSE;
 
 			if(IsValidWndAndGetPath(szPath, TRUE)) {
-				if(m_cPckCenter.IsValidPck()) {
-					if(!lpPckParams->cVarParams.bThreadRunning) {
-						//mt_MaxMemoryCount = 0;
-						lpPckParams->cVarParams.dwMTMemoryUsed = 0;
-						SetCurrentDirectoryW(szPath);
+				if(pck_IsValidPck(m_PckHandle)) {
+					if(!pck_isThreadWorking(m_PckHandle)) {
+
+						wcscpy_s(m_CurrentPath, szPath);
+						pck_setMTMaxMemory(m_PckHandle, 0);
+
 						_beginthread(ToExtractSelectedFiles, 0, this);
 					}
 				}
@@ -404,7 +407,7 @@ BOOL TInstDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
 BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 {
 
-	if(lpPckParams->cVarParams.bThreadRunning)goto END_DROP;
+	if(pck_isThreadWorking(m_PckHandle))goto END_DROP;
 
 	TCHAR	szFirstFile[MAX_PATH];
 
@@ -413,7 +416,7 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 	if(0 == dwDropFileCount)goto END_DROP;
 
 	if(1 == dwDropFileCount) {
-		if(!m_cPckCenter.IsValidPck()) {
+		if(!pck_IsValidPck(m_PckHandle)) {
 			size_t	nFirstFileLength;
 			DragQueryFile(hDrop, 0, szFirstFile, MAX_PATH);
 			nFirstFileLength = _tcsnlen(szFirstFile, MAX_PATH);
@@ -455,6 +458,7 @@ END_DROP:
 	return	TRUE;
 }
 
+#if 0
 BOOL TInstDlg::EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	TCHAR szPrintf[256];
@@ -463,7 +467,7 @@ BOOL TInstDlg::EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_FRESH_MAIN_CAPTION:
 
 		if(wParam) {
-			_stprintf_s(szPrintf, TEXT("%s - %s"), TEXT(THIS_MAIN_CAPTION), m_cPckCenter.GetCurrentVersionName());
+			_stprintf_s(szPrintf, TEXT("%s - %s"), TEXT(THIS_MAIN_CAPTION), pck_GetCurrentVersionName(m_PckHandle));
 			SetWindowText(szPrintf);
 		} else {
 			SetWindowTextA(THIS_MAIN_CAPTION);
@@ -475,3 +479,4 @@ BOOL TInstDlg::EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	return FALSE;
 }
+#endif
