@@ -47,7 +47,7 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 		timer.start();
 
 		//转换文件名格式 
-		if(pck_open(m_PckHandle, m_Filename)) {
+		if(WINPCK_OK == pck_open(m_Filename)) {
 			timer.stop();
 			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENOK), timer.getElapsedTime());
 			SetStatusBarText(4, szString);
@@ -55,23 +55,23 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 			SetStatusBarText(0, _tcsrchr(m_Filename, TEXT('\\')) + 1);
 			SetStatusBarText(3, TEXT(""));
 
-			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILESIZE), pck_filesize(m_PckHandle));
+			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILESIZE), pck_filesize());
 			SetStatusBarText(1, szString);
 
-			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILECOUNT), pck_filecount(m_PckHandle));
+			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILECOUNT), pck_filecount());
 			SetStatusBarText(2, szString);
 
 			if(isReOpen) {
-				ShowPckFiles(pck_getFileEntryByPath(m_PckHandle, m_FolderBrowsed));
+				ShowPckFiles(pck_getFileEntryByPath(m_FolderBrowsed));
 				ListView_EnsureVisible(GetDlgItem(IDC_LIST), iListTopView, NULL);
 				ListView_EnsureVisible(GetDlgItem(IDC_LIST), iListTopView + ListView_GetCountPerPage(GetDlgItem(IDC_LIST)) - 1, NULL);
 			} else
-				ShowPckFiles(pck_getFirstNode(m_PckHandle));
+				ShowPckFiles(/*pck_getFirstNode*/pck_getRootNode());
 
 			return TRUE;
 		} else {
 			SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-			pck_close(m_PckHandle);
+			pck_close();
 			return FALSE;
 		}
 
@@ -123,7 +123,7 @@ void ShowFilelistCallback(void* _in_param, int sn, const wchar_t *lpszFilename, 
 
 VOID TInstDlg::SearchPckFiles()
 {
-	if(0 == pck_filecount(m_PckHandle))return;
+	if(0 == pck_filecount())return;
 
 	HWND	hList = GetDlgItem(IDC_LIST);
 
@@ -139,7 +139,7 @@ VOID TInstDlg::SearchPckFiles()
 
 	::SendMessage(hList, WM_SETREDRAW, FALSE, 0);
 
-	DWORD dwFoundCount = pck_searchByName(m_PckHandle, m_szStrToSearch, this, ShowFilelistCallback);
+	DWORD dwFoundCount = pck_searchByName(m_szStrToSearch, this, ShowFilelistCallback);
 
 	::SendMessage(hList, WM_SETREDRAW, TRUE, 0);
 
@@ -151,6 +151,11 @@ VOID TInstDlg::SearchPckFiles()
 VOID TInstDlg::ShowPckFiles(const PCK_UNIFIED_FILE_ENTRY*	lpNodeToShow)
 {
 	HWND	hList = GetDlgItem(IDC_LIST);
+
+	if (NULL == lpNodeToShow) {
+		MessageBoxW(L"Node Not Found!!!\r\nShow Root Node");
+		lpNodeToShow = pck_getRootNode();
+	}
 
 	m_currentNodeOnShow = lpNodeToShow;
 

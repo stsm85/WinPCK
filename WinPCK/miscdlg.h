@@ -37,12 +37,8 @@ public:
 
 class TInfoDlg : public TDlg
 {
-private:
-	//char				*dirBuf;
-	HANDLE			m_PckHandle;
-
 public:
-	TInfoDlg(HANDLE _in, TWin *_win) : TDlg(IDD_DIALOG_INFO, _win) { m_PckHandle = _in; }
+	TInfoDlg(TWin *_win) : TDlg(IDD_DIALOG_INFO, _win) {}
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
 	virtual BOOL	EvCreate(LPARAM lParam);
 };
@@ -60,12 +56,8 @@ public:
 
 class TCompressOptDlg : public TDlg
 {
-private:
-
-	HANDLE			m_PckHandle;
-
 public:
-	TCompressOptDlg(HANDLE in, TWin *_win) : TDlg(IDD_DIALOG_COMPRESS, _win) { m_PckHandle = in; }
+	TCompressOptDlg(TWin *_win) : TDlg(IDD_DIALOG_COMPRESS, _win) { }
 	
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
 	virtual BOOL	EvCreate(LPARAM lParam);
@@ -76,12 +68,11 @@ class TAttrDlg : public TDlg
 {
 protected:
 	const PCK_UNIFIED_FILE_ENTRY*	lpPckInfo;
-	HANDLE			m_PckHandle;
 
 	wchar_t	*lpszPath;
 
 public:
-	TAttrDlg(const PCK_UNIFIED_FILE_ENTRY *_lpPckInfo, HANDLE _PckHandle, wchar_t *_lpszPath, TWin *_win);
+	TAttrDlg(const PCK_UNIFIED_FILE_ENTRY *_lpPckInfo, wchar_t *_lpszPath, TWin *_win);
 	//~TAttrDlg();
 
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
@@ -93,14 +84,12 @@ class TRebuildOptDlg : public TDlg
 {
 protected:
 
-	HANDLE			m_PckHandle;
 	TCHAR					szScriptFile[MAX_PATH];
 	BOOL					*lpNeedRecompress;
 
 public:
-	TRebuildOptDlg(HANDLE in, BOOL *_lpNeedRecompress, TWin *_win) : 
+	TRebuildOptDlg(BOOL *_lpNeedRecompress, TWin *_win) : 
 		TDlg(IDD_DIALOG_REBUILD_OPT, _win), 
-		m_PckHandle(in), 
 		lpNeedRecompress(_lpNeedRecompress), 
 		isScriptParseSuccess(FALSE)
 	{

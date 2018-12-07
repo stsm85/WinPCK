@@ -10,15 +10,12 @@ public:
 	CPriviewInDlg();
 	~CPriviewInDlg();
 
-	BOOL Show(HANDLE pckHandle, const PCK_UNIFIED_FILE_ENTRY* const lpPckFileIndexToShow, TWin *_win);
+	BOOL Show(const PCK_UNIFIED_FILE_ENTRY* const lpPckFileIndexToShow, TWin *_win);
 
 protected:
 
 	//将要显示的对话框
 	TDlg *	dlg;
-
-	//日志系统
-	//CPckClassLog		m_PckLog;
 
 	void *	m_buffer;
 	DWORD	m_buffersize;

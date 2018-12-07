@@ -6,7 +6,7 @@ CPckClassBaseFeatures::CPckClassBaseFeatures():
 	m_PckAllInfo({ 0 }),
 	m_lpPckParams(NULL)
 {
-	m_PckAllInfo.cRootNode.entryType = PCK_ENTRY_TYPE_NODE | PCK_ENTRY_TYPE_FOLDER;
+	m_PckAllInfo.cRootNode.entryType = PCK_ENTRY_TYPE_NODE | PCK_ENTRY_TYPE_FOLDER | PCK_ENTRY_TYPE_ROOT;
 #ifdef _DEBUG
 	InitializeSRWLock(&m_LockLogFile);
 #endif
@@ -123,6 +123,10 @@ void CPckClassBaseFeatures::AddParams_ProgressUpper(DWORD dwUIProgressUpperAdd)
 #pragma region Thread Params
 void CPckClassBaseFeatures::SetThreadFlag(BOOL isThreadWorking)
 {
+	//if (FALSE == isThreadWorking)
+	//在开始和结束任务后，把强制退出标记置0
+	m_lpPckParams->cVarParams.bForcedStopWorking = FALSE;
+
 	m_lpPckParams->cVarParams.bThreadRunning = isThreadWorking;
 }
 

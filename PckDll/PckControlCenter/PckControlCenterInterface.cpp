@@ -70,7 +70,56 @@ int CPckControlCenter::DefaultFeedbackCallback(void* pTag, int eventId, WPARAM w
 
 void CPckControlCenter::DefaultShowFilelistCallback(void* _in_param, int sn, const wchar_t *lpszFilename, int entry_type, unsigned __int64 qwFileSize, unsigned __int64 qwFileSizeCompressed, void* fileEntry)
 {
-	wprintf(L"%s\t%s\t%llu\t%llu\r\n", lpszFilename, (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type)) ? L"Folder" : L"File", qwFileSize, qwFileSizeCompressed);
+	auto fix_print_str = [](int nTabs, const wchar_t * str) {
+		
+		wprintf(str);
+
+		int nSubTabs = wcslen(str) / 8;
+
+		if (nTabs < nSubTabs)
+			nTabs = 0;
+		else
+			nTabs -= nSubTabs;
+		for (int i = 0; i < nTabs; i++) {
+			printf("\t");
+		}
+	};
+
+	auto fix_print_qword = [](int nTabs, unsigned __int64 num) {
+
+		wchar_t szQword2Str[32];
+		swprintf_s(szQword2Str, L"%llu", num);
+
+		int len = wcslen(szQword2Str);
+		int nSubTabs = (len-1) / 8;
+		int nModnum = 8 - len % 8;
+
+		if (8 != nModnum) {
+			memmove_s(szQword2Str + nModnum, sizeof(szQword2Str), szQword2Str, sizeof(wchar_t) * (len + 1));
+			for (int i = 0; i < nModnum; i++) {
+				szQword2Str[i] = ' ';
+			}
+		}
+
+		if (nTabs < nSubTabs)
+			nTabs = 0;
+		else
+			nTabs -= nSubTabs;
+		for (int i = 0; i < nTabs; i++) {
+			printf("\t");
+		}
+
+		wprintf(szQword2Str);
+	};
+
+	fix_print_str(4, lpszFilename);
+
+	printf("%s\t", (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type)) ? "Folder" : "File");
+
+	fix_print_qword(1, qwFileSize);
+	fix_print_qword(1, qwFileSizeCompressed);
+
+	printf("\r\n");
 }
 
 DWORD CPckControlCenter::SearchByName(const wchar_t* lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
@@ -126,7 +175,35 @@ DWORD CPckControlCenter::ListByNode(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry, v
 		_showList = DefaultShowFilelistCallback;
 	}
 
+	//如果是..文件夹，就显示上一层，不是就显示下一层
 	const PCK_PATH_NODE* lpNodeToShow = (LPPCK_PATH_NODE)lpFileEntry;
+
+	int entry_type = lpFileEntry->entryType;
+	//首先要是文件夹
+	if (PCK_ENTRY_TYPE_FOLDER != (PCK_ENTRY_TYPE_FOLDER & entry_type)) {
+#if _DEBUG
+		printf("%s:is not a folder\n", __FUNCTION__);
+#endif
+		return 0;
+	}
+
+	//进入非..文件夹
+	if (PCK_ENTRY_TYPE_DOTDOT != (PCK_ENTRY_TYPE_DOTDOT & entry_type)){
+
+		lpNodeToShow = ((LPPCK_PATH_NODE)lpFileEntry)->child;
+
+	}//剩下的是..文件夹
+	else {
+		lpNodeToShow = ((LPPCK_PATH_NODE)lpFileEntry)->parentfirst;
+	}
+
+	//lpNodeToShow是否为NULL
+	if (NULL == lpNodeToShow) {
+#if _DEBUG
+		printf("%s:lpNodeToShow is NULL\n", __FUNCTION__);
+#endif
+		return 0;
+	}
 
 	DWORD dwSerialNumber = 0;
 
@@ -181,30 +258,6 @@ DWORD CPckControlCenter::ListByNode(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry, v
 
 	}
 	return dwSerialNumber;
-}
-
-const PCK_UNIFIED_FILE_ENTRY* CPckControlCenter::GetUpwardEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
-{
-	if (NULL == lpFileEntry)
-		return 0;
-
-	if (PCK_ENTRY_TYPE_FIRSTDOT != (PCK_ENTRY_TYPE_FIRSTDOT & lpFileEntry->entryType)) {
-		LPPCK_PATH_NODE lpNode = (LPPCK_PATH_NODE)lpFileEntry;
-		return (LPPCK_UNIFIED_FILE_ENTRY)lpNode->parentfirst;
-	}
-	return lpFileEntry;
-}
-
-const PCK_UNIFIED_FILE_ENTRY* CPckControlCenter::GetDownwardEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
-{
-	if (NULL == lpFileEntry)
-		return 0;
-
-	if (PCK_ENTRY_TYPE_INDEX != lpFileEntry->entryType) {
-		LPPCK_PATH_NODE lpNode = (LPPCK_PATH_NODE)lpFileEntry;
-		return (LPPCK_UNIFIED_FILE_ENTRY)lpNode->child;
-	}
-	return lpFileEntry;
 }
 
 #pragma endregion

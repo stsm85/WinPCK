@@ -30,6 +30,7 @@ CPckControlCenter::CPckControlCenter():
 
 CPckControlCenter::~CPckControlCenter()
 {
+	regMsgFeedback(NULL, DefaultFeedbackCallback);
 	Close();
 	uninit();
 }

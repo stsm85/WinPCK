@@ -185,11 +185,6 @@ CONST PCK_UNIFIED_FILE_ENTRY* CPckControlCenter::GetRootNode()
 	return (PCK_UNIFIED_FILE_ENTRY*)m_lpPckRootNode;
 }
 
-CONST PCK_UNIFIED_FILE_ENTRY* CPckControlCenter::GetFirstNode()
-{
-	return (PCK_UNIFIED_FILE_ENTRY*)m_lpPckRootNode->child;
-}
-
 BOOL CPckControlCenter::GetCurrentNodeString(wchar_t* szCurrentNodePathString, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
 {
 	if (NULL == lpFileEntry)
@@ -206,8 +201,14 @@ BOOL CPckControlCenter::GetCurrentNodeString(wchar_t* szCurrentNodePathString, c
 
 const PCK_UNIFIED_FILE_ENTRY* CPckControlCenter::GetFileEntryByPath(const wchar_t* _in_szCurrentNodePathString)
 {
-	const PCK_PATH_NODE* lpCurrentNode = (PCK_PATH_NODE*)GetFirstNode();
+	const PCK_PATH_NODE* lpCurrentNode = (PCK_PATH_NODE*)GetRootNode();
 	const PCK_PATH_NODE* lpCurrentNodeToFind = lpCurrentNode;
+
+	if (NULL == _in_szCurrentNodePathString)
+		return NULL;
+
+	if (0 == *_in_szCurrentNodePathString)
+		return (LPPCK_UNIFIED_FILE_ENTRY)lpCurrentNode;
 
 	wchar_t szPath2Parse[MAX_PATH];
 	wchar_t *lpszPaths[MAX_PATH] = { NULL };
@@ -244,23 +245,35 @@ const PCK_UNIFIED_FILE_ENTRY* CPckControlCenter::GetFileEntryByPath(const wchar_
 
 		if (0 == **lpCurrentDir)return (LPPCK_UNIFIED_FILE_ENTRY)lpCurrentNode;
 
+		//如果是文件夹
+		if (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & lpCurrentNodeToFind->entryType)) {
+			lpCurrentNode = lpCurrentNodeToFind = lpCurrentNodeToFind->child;
+		}
+		else {
+			return NULL;
+		}
+
 		BOOL isDirFound = FALSE;
 
 		while (NULL != lpCurrentNodeToFind) {
 
 			if (0 == _tcscmp(lpCurrentNodeToFind->szName, *lpCurrentDir)) {
-				lpCurrentNode = lpCurrentNodeToFind = lpCurrentNodeToFind->child;
-				isDirFound = TRUE;
 
+				lpCurrentNode = lpCurrentNodeToFind;
+				isDirFound = TRUE;
 				break;
 			}
-
 
 			lpCurrentNodeToFind = lpCurrentNodeToFind->next;
 		}
 
-		if (!isDirFound)
-			return (LPPCK_UNIFIED_FILE_ENTRY)lpCurrentNode;
+		if (!isDirFound) {
+#ifdef _DEBUG
+			printf("node not found\n");
+#endif
+			return NULL;
+			//return (LPPCK_UNIFIED_FILE_ENTRY)lpCurrentNode;
+		}
 
 		lpCurrentDir++;
 

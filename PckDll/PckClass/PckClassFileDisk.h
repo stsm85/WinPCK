@@ -15,10 +15,10 @@ public:
 	~CPckClassFileDisk();
 
 protected:
-
 	BOOL		MakeFolderExist(const wchar_t* lpszDirectory);
-
-
+private:
+	BOOL		MakeFolderExistInternal(const wchar_t* lpszDirectory);
+protected:
 	BOOL		EnumAllFilesByPathList(const vector<tstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList);
 	//压缩重建、压缩写入空间不够时扩展空间
 	BOOL		IsNeedExpandWritingFile(

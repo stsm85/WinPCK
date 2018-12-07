@@ -54,11 +54,7 @@ private:
 
 	BOOL	m_isListviewRenaming;
 
-	int					m_iListHotItem;	//当前鼠标在listview上的选中数据行
-	//BOOL				m_isInSearchMode;
-
-	HANDLE			m_PckHandle;
-	//CPckClassLog		m_PckLog;
+	int		m_iListHotItem;	//当前鼠标在listview上的选中数据行
 
 	const PCK_UNIFIED_FILE_ENTRY*	m_currentNodeOnShow;
 

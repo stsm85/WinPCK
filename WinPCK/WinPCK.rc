@@ -7,6 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
+#include "pck_handle.h"
 #include "winres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -24,8 +25,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,30,0,0
- PRODUCTVERSION 1,30,0,0
+ FILEVERSION WINPCK_VERSION_NUMBER
+ PRODUCTVERSION WINPCK_VERSION_NUMBER
  FILEFLAGSMASK 0x37L
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -40,13 +41,13 @@ BEGIN
     BEGIN
         BLOCK "080404b0"
         BEGIN
-            VALUE "FileDescription", "WinPCK"
-            VALUE "FileVersion", "1.30.0.0"
+            VALUE "FileDescription", "WinPCK GUI"
+            VALUE "FileVersion", WINPCK_VERSION
             VALUE "InternalName", "WinPCK"
             VALUE "LegalCopyright", "Copyright (C) 2012-2018 stsm"
             VALUE "OriginalFilename", "WinPCK.exe"
             VALUE "ProductName", "WinPCK"
-            VALUE "ProductVersion", "1.30.0.0"
+            VALUE "ProductVersion", WINPCK_VERSION
             VALUE "SpecialBuild", "WinPCK by stsm"
         END
     END

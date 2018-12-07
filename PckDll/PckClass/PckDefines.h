@@ -94,7 +94,7 @@ typedef void(*ShowLogW)(const int log_level, const wchar_t *str);
 #define PCK_ENTRY_TYPE_NODE				2
 #define PCK_ENTRY_TYPE_FOLDER			4
 #define PCK_ENTRY_TYPE_DOTDOT			8
-#define PCK_ENTRY_TYPE_FIRSTDOT			16
+#define PCK_ENTRY_TYPE_ROOT				16
 #define PCK_ENTRY_TYPE_TAIL_INDEX		0x80000000
 
 #define	PCK_ADDITIONAL_INFO				"Angelica File Package"

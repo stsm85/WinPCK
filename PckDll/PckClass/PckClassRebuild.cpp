@@ -45,6 +45,9 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
 	memcpy(&pckAllInfo, &m_PckAllInfo, sizeof(PCK_ALL_INFOS));
 	_tcscpy_s(pckAllInfo.szNewFilename, szRebuildPckFile);
 
+	//线程标记
+	SetThreadFlag(TRUE);
+
 	//设置界面进度条总值
 	SetParams_ProgressUpper(dwValidFileCount);
 
@@ -127,6 +130,9 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
 	WriteAllIndex(&cFileWrite, &pckAllInfo, dwAddress);
 
 	AfterProcess(&cFileWrite, pckAllInfo, dwAddress);
+
+	//线程标记
+	SetThreadFlag(FALSE);
 
 	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
 

@@ -65,7 +65,7 @@ void CPckClassNode::ParseIndexTableToNode(LPPCKINDEXTABLE lpMainIndexTable)
 	
 	//将第一个root节点下的entryType加上标签以示区别
 	if(NULL != m_PckAllInfo.cRootNode.child)
-		m_PckAllInfo.cRootNode.child->entryType |= PCK_ENTRY_TYPE_FIRSTDOT;
+		m_PckAllInfo.cRootNode.child->entryType |= PCK_ENTRY_TYPE_ROOT;
 }
 
 /********************************
@@ -90,6 +90,10 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 			lpChildNode->child = (LPPCK_PATH_NODE)AllocMemory(sizeof(PCK_PATH_NODE));
 			lpChildNode->child->parent = lpChildNode;
 			lpChildNode->child->parentfirst = lpFirstNode;
+
+			//使用nNameSizeAnsi 在..目录记录本目录路径（如gfx\下的..目录）的长度（ansi）
+			if(NULL != lpFirstNode)
+				lpChildNode->child->nNameSizeAnsi = (lpFirstNode->nNameSizeAnsi + lpChildNode->nNameSizeAnsi + 1);
 
 			//添加..目录
 			//strcpy(lpChildNode->child->szName, "..");
@@ -125,6 +129,8 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 					//添加文件（夹）
 					lpChildNode->next = (LPPCK_PATH_NODE)AllocMemory(sizeof(PCK_PATH_NODE));
 					lpChildNode = lpChildNode->next;
+
+					lpChildNode->parent = lpFirstNode->parent;
 
 					lpChildNode->entryType = PCK_ENTRY_TYPE_NODE | PCK_ENTRY_TYPE_FOLDER;
 
@@ -378,7 +384,6 @@ BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceStrin
 	//假设文件名为a\b\c\d.exe
 	//本节点为c
 	size_t	lenNodeRes, lenrs, lenrp;
-	char	lpReplacePos[MAX_PATH_PCK_260];
 	char	lpszReplaceStringAnsi[MAX_PATH_PCK_260];
 
 	lenrs = PckFilenameCode2Ansi(lpszReplaceString, lpszReplaceStringAnsi, sizeof(lpszReplaceStringAnsi));
@@ -391,10 +396,7 @@ BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceStrin
 		return FALSE;
 
 	//取到"a\b\"
-	GetCurrentNodeString(lpReplacePos, lpNode->child);
-
-	//lpReplacePos = "models\z1\"
-	lenrp = strlen(lpReplacePos) - 1;
+	lenrp = lpNode->child->nNameSizeAnsi - 1;
 
 	return RenameNodeEnum(lpNode, lenNodeRes, lpszReplaceStringAnsi, lenrs, lenrp);
 
@@ -437,62 +439,40 @@ BOOL CPckClassNode::RenameIndex(LPPCKINDEXTABLE lpIndex, wchar_t* lpszReplaceStr
 	strcpy(lpIndex->cFileIndex.szFilename, szReplaceStringAnsi);
 	return TRUE;
 }
-//
-//BOOL CPckClassNode::RenameEntry(PCK_UNIFIED_FILE_ENTRY* lpFileEntry, wchar_t* lpszReplaceString)
-//{
-//	int entryType = lpFileEntry->entryType;
-//	if (PCK_ENTRY_TYPE_NODE == entryType) {
-//
-//		return RenameIndex((LPPCK_PATH_NODE)lpFileEntry, lpszReplaceString);
-//	}
-//	else if(PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entryType)){
-//
-//		return RenameNode((LPPCK_PATH_NODE)lpFileEntry, lpszReplaceString);
-//	}
-//	else if (PCK_ENTRY_TYPE_INDEX == entryType)
-//	{
-//		return RenameIndex((LPPCKINDEXTABLE)lpFileEntry, lpszReplaceString);
-//	}
-//	else {
-//		return FALSE;
-//	}
-//}
-
-BOOL CPckClassNode::GetCurrentNodeString(char *szCurrentNodePathString, const PCK_PATH_NODE* lpNode)
-{
-
-	if((NULL == lpNode) || (NULL == lpNode->parentfirst)) {
-		*szCurrentNodePathString = 0;
-
-	} else {
-
-		GetCurrentNodeString(szCurrentNodePathString, lpNode->parentfirst);
-
-		char szNameAnsi[MAX_PATH_PCK_260];
-		PckFilenameCode2Ansi(lpNode->parent->szName, szNameAnsi, MAX_PATH_PCK_260);
-
-		strcat_s(szCurrentNodePathString, MAX_PATH_PCK_260, szNameAnsi);
-		strcat_s(szCurrentNodePathString, MAX_PATH_PCK_260, "\\");
-	}
-
-	return TRUE;
-}
 
 BOOL CPckClassNode::GetCurrentNodeString(wchar_t *szCurrentNodePathString, const PCK_PATH_NODE* lpNode)
 {
-
-	if ((NULL == lpNode) || (NULL == lpNode->parentfirst)) {
+	if ((NULL == lpNode) || (PCK_ENTRY_TYPE_ROOT == (PCK_ENTRY_TYPE_ROOT & lpNode->entryType))) {
 		*szCurrentNodePathString = 0;
-		//return TRUE;
+		return TRUE;
 	}
-	else {
+
+	int entry_type = lpNode->entryType;
+
+	if (PCK_ENTRY_TYPE_DOTDOT == (PCK_ENTRY_TYPE_DOTDOT & entry_type)) {
+
+		if (NULL == lpNode->parentfirst) {
+			*szCurrentNodePathString = 0;
+			return TRUE;
+		}
+
+		lpNode = lpNode->parentfirst;
 
 		GetCurrentNodeString(szCurrentNodePathString, lpNode->parentfirst);
 
 		wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, lpNode->parent->szName);
 		wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, L"\\");
-	}
 
+	}
+	else {
+
+		GetCurrentNodeString(szCurrentNodePathString, lpNode->parent);
+		wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, lpNode->szName);
+
+		if(PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type))
+			wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, L"\\");
+
+	}
 	return TRUE;
 }
 

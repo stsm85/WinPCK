@@ -18,11 +18,15 @@ typedef struct _PCK_PATH_NODE * LPPCK_PATH_NODE;
 typedef struct _PCK_RUNTIME_PARAMS * LPPCK_RUNTIME_PARAMS;
 typedef struct _RESTORE_INFOS * LPRESTORE_INFOS;
 
+#if 0
 #ifdef _WINDLL	//.dll
 #define EXPORT_CLASS _declspec(dllexport) 
 #elif defined(_DLL)	//.exe
 #define EXPORT_CLASS _declspec(dllimport)
 #else	//other
+#define EXPORT_CLASS 
+#endif
+#else
 #define EXPORT_CLASS 
 #endif
 
@@ -70,16 +74,14 @@ public:
 	//解压文件
 	BOOL		ExtractFiles(const PCK_UNIFIED_FILE_ENTRY **lpFileEntryArray, int nEntryCount, const wchar_t *lpszDestDirectory);
 	BOOL		ExtractAllFiles(const wchar_t *lpszDestDirectory);
-	static BOOL		ExtractFiles(LPCTSTR lpszFilePathSrc, const wchar_t *lpszDestDirectory, const wchar_t *lpszFileToExtract);
-	static BOOL		ExtractAllFiles(LPCTSTR lpszFilePathSrc, const wchar_t *lpszDestDirectory);
 
 #pragma endregion
 
 #pragma region 重建pck文件
 	//重建pck文件
 	BOOL	ParseScript(LPCTSTR lpszScriptFile);
-	BOOL	RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress);
-	BOOL	RebuildPckFileWithScript(LPCTSTR lpszScriptFile, LPTSTR szRebuildPckFile, BOOL bUseRecompress);
+	BOOL	RebuildPckFile(LPCTSTR szRebuildPckFile, BOOL bUseRecompress);
+	BOOL	RebuildPckFileWithScript(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress);
 
 #pragma endregion
 
@@ -91,8 +93,6 @@ public:
 	void	StringArrayReset();
 	void	StringArrayAppend(const wchar_t * lpszFilePath);
 	BOOL	UpdatePckFileSubmit(LPCTSTR szPckFile, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
-	static BOOL	AddFileToPckFile(LPCTSTR lpszFilePathSrc, LPCTSTR szPckFile, const wchar_t *lpszPathInPckToAdd);
-	static BOOL	CreatePckFile(LPCTSTR lpszFilePathSrc, LPCTSTR szPckFile, int _versionId);
 
 #pragma endregion
 
@@ -113,13 +113,13 @@ public:
 	LPCTSTR	GetCurrentVersionName();
 	static DWORD	GetVersionCount();
 	static const wchar_t*	GetVersionNameById(int verID);
+	static int		AddVersionAlgorithmId(int AlgorithmId, int Version);
 
 #pragma endregion
 
 #pragma region 节点属性操作
 
 	const PCK_UNIFIED_FILE_ENTRY* GetRootNode();
-	const PCK_UNIFIED_FILE_ENTRY* GetFirstNode();
 	//获取node路径
 	static BOOL			GetCurrentNodeString(wchar_t* szCurrentNodePathString, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
 	const PCK_UNIFIED_FILE_ENTRY*	GetFileEntryByPath(const wchar_t* _in_szCurrentNodePathString);
@@ -167,8 +167,6 @@ private:
 public:
 	DWORD			SearchByName(const wchar_t* lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
 	static DWORD	ListByNode(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
-	static const PCK_UNIFIED_FILE_ENTRY* GetUpwardEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
-	static const PCK_UNIFIED_FILE_ENTRY* GetDownwardEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
 
 #pragma endregion
 
@@ -218,7 +216,6 @@ public:
 	DWORD	getUIProgress();
 	void	setUIProgress(DWORD dwUIProgress);
 	DWORD	getUIProgressUpper();
-	//void	setUIProgressUpper(DWORD dwUIProgressUpper);
 
 #pragma endregion
 

@@ -1,80 +1,91 @@
 #include "pck_handle.h"
 #include "PckControlCenter.h"
-#include <list>
-using namespace std;
 
-static list<CPckControlCenter*> all_sessions;
+CPckControlCenter this_handle;
 
-#define SETCLASS(_handle) ((CPckControlCenter*)##_handle)
-
-BOOL checkIfValidHandle(HANDLE handle)
+BOOL checkIfValidPck()
 {
-	BOOL isFound = FALSE;
+	return this_handle.IsValidPck();
+}
 
-	if(all_sessions.empty())
-		return FALSE;
+BOOL checkIfWorking()
+{
+	return this_handle.isThreadWorking();
+}
 
-	for (list<CPckControlCenter*>::const_iterator iter = all_sessions.begin(); iter != all_sessions.end(); iter++)
-	{
-		if (handle == *iter)
-			return TRUE;
-	}
+BOOL checkIfWriteAllowed()
+{
+	if (checkIfValidPck())
+		return !this_handle.isThreadWorking();
+
 	return FALSE;
 }
 
-WINPCK_API HANDLE pck_new()
+WINPCK_API CLPSTR pck_version()
 {
-
-	CPckControlCenter* lpcPckCenter = new CPckControlCenter();
-	all_sessions.push_back(lpcPckCenter);
-
-	return lpcPckCenter;
+	return WINPCK_VERSION;
 }
 
-WINPCK_API void	pck_free(HANDLE handle)
+WINPCK_API PCKRTN pck_open(CLPWSTR lpszFile)
 {
+	if (checkIfWorking())
+		return WINPCK_WORKING;
 
-	if (NULL != handle) {
-		if (checkIfValidHandle(handle)) {
-
-			delete handle;
-			all_sessions.remove(SETCLASS(handle));
-		}
+	if (this_handle.Open(lpszFile))
+	{
+		return WINPCK_OK;
+	}
+	else {
+		return WINPCK_ERROR;
 	}
 }
 
-WINPCK_API BOOL pck_open(HANDLE handle, LPCTSTR lpszFile)
+WINPCK_API PCKRTN pck_close()
 {
-	if (!checkIfValidHandle(handle))
-		return FALSE;
+	if (checkIfWorking()) {
+		this_handle.ForceBreakThreadWorking();
 
-	return SETCLASS(handle)->Open(lpszFile);
+
+		//等待60秒
+		for (int i = 0; i < 120; i++) {
+
+			if (!checkIfWorking())
+				break;
+			Sleep(500);
+		}
+	}
+
+	if (!checkIfWorking()) {
+
+		this_handle.New();
+		return WINPCK_OK;
+	}
+
+	return WINPCK_WORKING;
+
 }
 
-WINPCK_API void	pck_close(HANDLE handle)
+WINPCK_API int pck_getVersion()
 {
-	if (!checkIfValidHandle(handle))
-		return;
-
-	SETCLASS(handle)->New();
-}
-
-WINPCK_API int pck_getVersion(HANDLE handle)
-{
-
-	if (!checkIfValidHandle(handle))
+	if (!checkIfValidPck())
 		return -1;
 
-	return SETCLASS(handle)->GetPckVersion();
+	return this_handle.GetPckVersion();
 
 }
 
-WINPCK_API BOOL	pck_setVersion(HANDLE handle, int verID)
+WINPCK_API PCKRTN pck_setVersion(int verID)
 {
-	if (!checkIfValidHandle(handle))
-		return FALSE;
+	if (checkIfWorking())
+		return WINPCK_WORKING;
 
-	return SETCLASS(handle)->SetPckVersion(verID);
+	if (this_handle.SetPckVersion(verID))
+	{
+		return WINPCK_OK;
+	}
+	else {
+		return WINPCK_ERROR;
+	}
 }
 
 WINPCK_API DWORD pck_getVersionCount()
@@ -82,137 +93,128 @@ WINPCK_API DWORD pck_getVersionCount()
 	return CPckControlCenter::GetVersionCount();
 }
 
-WINPCK_API const wchar_t*	pck_getVersionNameById(int verID)
+WINPCK_API CLPWSTR pck_getVersionNameById(int verID)
 {
 	return CPckControlCenter::GetVersionNameById(verID);
 }
 
-//获取当前配置名称
-WINPCK_API LPCTSTR pck_GetCurrentVersionName(HANDLE handle)
+//直接添加一个AlgorithmId
+WINPCK_API int pck_addVersionAlgorithmId(int AlgorithmId, int Version)
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
+	return CPckControlCenter::AddVersionAlgorithmId(AlgorithmId, Version);
+}
 
-	return SETCLASS(handle)->GetCurrentVersionName();
+//获取当前配置名称
+WINPCK_API CLPWSTR pck_GetCurrentVersionName()
+{
+	return this_handle.GetCurrentVersionName();
 }
 
 //有效的
-WINPCK_API int	pck_IsValidPck(HANDLE handle)
+WINPCK_API int	pck_IsValidPck()
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
-
-	return SETCLASS(handle)->IsValidPck();
+	return this_handle.IsValidPck();
 }
 
 //获取node路径
-WINPCK_API BOOL	pck_getNodeRelativePath(wchar_t* _out_szCurrentNodePathString, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API BOOL	pck_getNodeRelativePath(LPWSTR _out_szCurrentNodePathString, CLPPUFE lpFileEntry)
 {
-
 	return CPckControlCenter::GetCurrentNodeString(_out_szCurrentNodePathString, lpFileEntry);
 }
 
-WINPCK_API const PCK_UNIFIED_FILE_ENTRY* pck_getFileEntryByPath(HANDLE handle, wchar_t* _in_szCurrentNodePathString)
+WINPCK_API CLPPUFE pck_getFileEntryByPath(LPWSTR _in_szCurrentNodePathString)
 {
-	if (!checkIfValidHandle(handle))
+	if (!checkIfValidPck())
 		return NULL;
 
-	return SETCLASS(handle)->GetFileEntryByPath(_in_szCurrentNodePathString);
+	return this_handle.GetFileEntryByPath(_in_szCurrentNodePathString);
 }
 
-WINPCK_API const PCK_UNIFIED_FILE_ENTRY* pck_getRootNode(HANDLE handle)
+WINPCK_API CLPPUFE pck_getRootNode()
 {
-	if (!checkIfValidHandle(handle))
+	if (!checkIfValidPck())
 		return NULL;
 
-	return SETCLASS(handle)->GetRootNode();
-}
-
-WINPCK_API const PCK_UNIFIED_FILE_ENTRY* pck_getFirstNode(HANDLE handle)
-{
-	if (!checkIfValidHandle(handle))
-		return NULL;
-
-	return SETCLASS(handle)->GetFirstNode();
+	return this_handle.GetRootNode();
 }
 
 //文件大小
-WINPCK_API QWORD	pck_filesize(HANDLE handle)
+WINPCK_API QWORD	pck_filesize()
 {
-	if (!checkIfValidHandle(handle))
+	if (!checkIfValidPck())
 		return -1;
 
-	return SETCLASS(handle)->GetPckSize();
+	return this_handle.GetPckSize();
 }
 
-WINPCK_API QWORD	pck_file_data_area_size(HANDLE handle)
+WINPCK_API QWORD	pck_file_data_area_size()
 {
-	if (!checkIfValidHandle(handle))
+	if (!checkIfValidPck())
 		return -1;
 
-	return SETCLASS(handle)->GetPckDataAreaSize();
+	return this_handle.GetPckDataAreaSize();
 }
 
-WINPCK_API QWORD	pck_file_redundancy_data_size(HANDLE handle)
+WINPCK_API QWORD	pck_file_redundancy_data_size()
 {
-	if (!checkIfValidHandle(handle))
+	if (!checkIfValidPck())
 		return -1;
 
-	return SETCLASS(handle)->GetPckRedundancyDataSize();
+	return this_handle.GetPckRedundancyDataSize();
 }
 
-WINPCK_API DWORD	pck_filecount(HANDLE handle)
+WINPCK_API DWORD	pck_filecount()
 {
-	if (!checkIfValidHandle(handle))
+	if (!checkIfValidPck())
 		return -1;
 
-	return SETCLASS(handle)->GetPckFileCount();
+	return this_handle.GetPckFileCount();
 }
 
-WINPCK_API QWORD	pck_getFileSizeInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API QWORD	pck_getFileSizeInEntry(CLPPUFE lpFileEntry)
 {
 	return CPckControlCenter::GetFileSizeInEntry(lpFileEntry);
 }
 
-WINPCK_API QWORD	pck_getCompressedSizeInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API QWORD	pck_getCompressedSizeInEntry(CLPPUFE lpFileEntry)
 {
 	return CPckControlCenter::GetCompressedSizeInEntry(lpFileEntry);
 }
 
-WINPCK_API DWORD	pck_getFoldersCountInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API DWORD	pck_getFoldersCountInEntry(CLPPUFE lpFileEntry)
 {
 	return CPckControlCenter::GetFoldersCountInEntry(lpFileEntry);
 }
 
-WINPCK_API DWORD	pck_getFilesCountInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API DWORD	pck_getFilesCountInEntry(CLPPUFE lpFileEntry)
 {
 	return CPckControlCenter::GetFilesCountInEntry(lpFileEntry);
 }
 
 //当前节点文件名当前长度
-WINPCK_API DWORD	pck_getFilelenBytesOfEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API DWORD	pck_getFilelenBytesOfEntry(CLPPUFE lpFileEntry)
 {
 	return CPckControlCenter::GetFilelenBytesOfEntry(lpFileEntry);
 }
 
 //当前节点文件名最大长度-当前长度
-WINPCK_API DWORD	pck_getFilelenLeftBytesOfEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API DWORD	pck_getFilelenLeftBytesOfEntry(CLPPUFE lpFileEntry)
 {
 	return CPckControlCenter::GetFilelenLeftBytesOfEntry(lpFileEntry);
 }
 
-WINPCK_API QWORD	pck_getFileOffset(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API QWORD	pck_getFileOffset(CLPPUFE lpFileEntry)
 {
 	return CPckControlCenter::GetFileOffset(lpFileEntry);
 }
 
 //设置附加信息
-WINPCK_API const char* pck_GetAdditionalInfo(HANDLE handle)
+WINPCK_API CLPSTR pck_GetAdditionalInfo()
 {
-	if (!checkIfValidHandle(handle))
+	if (!checkIfValidPck())
 		return NULL;
 
-	return SETCLASS(handle)->GetAdditionalInfo();
+	return this_handle.GetAdditionalInfo();
 }
 
 WINPCK_API DWORD	pck_GetAdditionalInfoMaxSize()
@@ -220,237 +222,385 @@ WINPCK_API DWORD	pck_GetAdditionalInfoMaxSize()
 	return CPckControlCenter::GetAdditionalInfoMaxSize();
 }
 
-WINPCK_API BOOL pck_SetAdditionalInfo(HANDLE handle, const char *lpszAdditionalInfo)
+WINPCK_API PCKRTN pck_SetAdditionalInfo(CLPSTR lpszAdditionalInfo)
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->SetAdditionalInfo(lpszAdditionalInfo);
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	if (this_handle.SetAdditionalInfo(lpszAdditionalInfo))
+	{
+		return WINPCK_OK;
+	}
+	else {
+		return WINPCK_ERROR;
+	}
 }
 
 //是否是支持更新的文件
-WINPCK_API BOOL	pck_isSupportAddFileToPck(HANDLE handle)
+WINPCK_API BOOL	pck_isSupportAddFileToPck()
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
-
-	return SETCLASS(handle)->isSupportAddFileToPck();
+	return this_handle.isSupportAddFileToPck();
 }
 
 //重命名一个节点
-WINPCK_API BOOL pck_RenameEntry(HANDLE handle, PCK_UNIFIED_FILE_ENTRY* lpFileEntry, wchar_t* lpszReplaceString)
+WINPCK_API PCKRTN pck_RenameEntry(LPPUFE lpFileEntry, LPWSTR lpszReplaceString)
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->RenameEntry(lpFileEntry, lpszReplaceString);
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.RenameEntry(lpFileEntry, lpszReplaceString) ? WINPCK_OK : WINPCK_ERROR;
 }
 
 //重命名文件
-WINPCK_API BOOL	pck_RenameSubmit(HANDLE handle)
+WINPCK_API PCKRTN	pck_RenameSubmit()
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->RenameSubmit();
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.RenameSubmit() ? WINPCK_OK : WINPCK_ERROR;
 }
 
 //预览文件
-WINPCK_API BOOL pck_GetSingleFileData(HANDLE handle, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry, char *_inout_buffer, size_t _in_sizeOfBuffer)
+WINPCK_API PCKRTN pck_GetSingleFileData(CLPPUFE lpFileEntry, LPSTR _inout_buffer, size_t _in_sizeOfBuffer)
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->GetSingleFileData(lpFileEntry, _inout_buffer, _in_sizeOfBuffer);
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.GetSingleFileData(lpFileEntry, _inout_buffer, _in_sizeOfBuffer) ? WINPCK_OK : WINPCK_ERROR;
 }
 
 //解压文件
-WINPCK_API BOOL	pck_ExtractFilesByEntrys(HANDLE handle, const PCK_UNIFIED_FILE_ENTRY **lpFileEntryArray, int nEntryCount, const wchar_t *lpszDestDirectory)
+WINPCK_API PCKRTN	pck_ExtractFilesByEntrys(CLPPUFE* lpFileEntryArray, int nEntryCount, CLPWSTR lpszDestDirectory)
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->ExtractFiles(lpFileEntryArray, nEntryCount, lpszDestDirectory);
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.ExtractFiles(lpFileEntryArray, nEntryCount, lpszDestDirectory) ? WINPCK_OK : WINPCK_ERROR;
 }
 
-WINPCK_API BOOL	pck_ExtractAllFiles(HANDLE handle, const wchar_t *lpszDestDirectory)
+WINPCK_API PCKRTN	pck_ExtractAllFiles(CLPWSTR lpszDestDirectory)
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->ExtractAllFiles(lpszDestDirectory);
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.ExtractAllFiles(lpszDestDirectory) ? WINPCK_OK : WINPCK_ERROR;
 }
 
-WINPCK_API BOOL	do_ExtractPartFiles(LPCTSTR lpszFilePathSrc, const wchar_t *lpszDestDirectory, const wchar_t *lpszFileToExtract)
+WINPCK_API PCKRTN	do_ExtractPartFiles(CLPWSTR lpszFilePathSrc, CLPWSTR lpszDestDirectory, CLPWSTR lpszFileToExtract)
 {
-	return CPckControlCenter::ExtractFiles(lpszFilePathSrc, lpszDestDirectory, lpszFileToExtract);
+	BOOL rtn = FALSE;
+
+	if (this_handle.Open(lpszFilePathSrc)) {
+		if (this_handle.IsValidPck()) {
+
+			CLPPUFE lpFileEntry = this_handle.GetFileEntryByPath(lpszFileToExtract);
+
+			if (NULL == lpFileEntry) {
+				this_handle.New();
+				return WINPCK_NOTFOUND;
+			}
+
+			rtn = this_handle.ExtractFiles(&lpFileEntry, 1, lpszDestDirectory);
+		}
+	}
+	this_handle.New();
+
+	return rtn ? WINPCK_OK : WINPCK_ERROR;
 }
-WINPCK_API BOOL	do_ExtractAllFiles(LPCTSTR lpszFilePathSrc, const wchar_t *lpszDestDirectory)
+WINPCK_API PCKRTN	do_ExtractAllFiles(CLPWSTR lpszFilePathSrc, CLPWSTR lpszDestDirectory)
 {
-	return CPckControlCenter::ExtractAllFiles(lpszFilePathSrc, lpszDestDirectory);
+	BOOL rtn = FALSE;
+
+	if (this_handle.Open(lpszFilePathSrc)) {
+		if (this_handle.IsValidPck()) {
+
+			rtn = this_handle.ExtractAllFiles(lpszDestDirectory);
+		}
+	}
+
+	this_handle.New();
+	return rtn ? WINPCK_OK : WINPCK_ERROR;
 }
 
 //重建pck文件
-WINPCK_API BOOL	pck_ParseScript(HANDLE handle, LPCTSTR lpszScriptFile)
+WINPCK_API PCKRTN	pck_ParseScript(CLPWSTR lpszScriptFile)
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->ParseScript(lpszScriptFile);
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.ParseScript(lpszScriptFile) ? WINPCK_OK : WINPCK_ERROR;
 }
 
-WINPCK_API BOOL	pck_RebuildPckFile(HANDLE handle, LPTSTR szRebuildPckFile, BOOL bUseRecompress)
+WINPCK_API PCKRTN	pck_RebuildPckFile(CLPWSTR szRebuildPckFile, BOOL bUseRecompress)
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->RebuildPckFile(szRebuildPckFile, bUseRecompress);
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.RebuildPckFile(szRebuildPckFile, bUseRecompress) ? WINPCK_OK : WINPCK_ERROR;
 }
 
-WINPCK_API BOOL	pck_RebuildPckFileWithScript(HANDLE handle, LPCTSTR lpszScriptFile, LPTSTR szRebuildPckFile, BOOL bUseRecompress)
+WINPCK_API PCKRTN	pck_RebuildPckFileWithScript(CLPWSTR lpszScriptFile, CLPWSTR szRebuildPckFile, BOOL bUseRecompress)
 {
-	if (!checkIfValidHandle(handle))
-		return NULL;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->RebuildPckFileWithScript(lpszScriptFile, szRebuildPckFile, bUseRecompress);
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.RebuildPckFileWithScript(lpszScriptFile, szRebuildPckFile, bUseRecompress) ? WINPCK_OK : WINPCK_ERROR;
+}
+
+WINPCK_API PCKRTN do_RebuildPckFileWithScript(CLPWSTR szSrcPckFile, CLPWSTR lpszScriptFile, CLPWSTR szDstRebuildPckFile, BOOL bUseRecompress, int level)
+{
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	BOOL rtn = FALSE;
+
+	if (this_handle.Open(szSrcPckFile)) {
+		if (this_handle.IsValidPck()) {
+
+			if (bUseRecompress)
+				this_handle.setCompressLevel(level);
+
+			rtn = this_handle.RebuildPckFileWithScript(lpszScriptFile, szDstRebuildPckFile, bUseRecompress);
+		}
+	}
+
+	this_handle.New();
+	return rtn ? WINPCK_OK : WINPCK_ERROR;
 }
 
 //新建、更新pck文件
-WINPCK_API void	pck_StringArrayReset(HANDLE handle)
+WINPCK_API void	pck_StringArrayReset()
 {
-	if (!checkIfValidHandle(handle))
-		return;
-
-	return SETCLASS(handle)->StringArrayReset();
+	return this_handle.StringArrayReset();
 }
 
-WINPCK_API void	pck_StringArrayAppend(HANDLE handle, LPCTSTR lpszFilePath)
+WINPCK_API void	pck_StringArrayAppend(CLPWSTR lpszFilePath)
 {
-	if (!checkIfValidHandle(handle))
-		return;
-
-	return SETCLASS(handle)->StringArrayAppend(lpszFilePath);
+	return this_handle.StringArrayAppend(lpszFilePath);
 }
 
-WINPCK_API BOOL	pck_UpdatePckFileSubmit(HANDLE handle, LPCTSTR szPckFile, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API PCKRTN	pck_UpdatePckFileSubmit(CLPWSTR szPckFile, CLPPUFE lpFileEntry)
 {
-	if (!checkIfValidHandle(handle))
-		return FALSE;
+	if (checkIfWorking())
+		return WINPCK_WORKING;
 
-	return SETCLASS(handle)->UpdatePckFileSubmit(szPckFile, lpFileEntry);
+	return this_handle.UpdatePckFileSubmit(szPckFile, lpFileEntry) ? WINPCK_OK : WINPCK_ERROR;
 }
 
 //添加文件到pck
-WINPCK_API BOOL	do_AddFileToPckFile(LPCTSTR lpszFilePathSrc, LPCTSTR szPckFile, const wchar_t *lpszPathInPckToAdd)
+WINPCK_API PCKRTN	do_AddFileToPckFile(CLPWSTR lpszFilePathSrc, CLPWSTR szPckFile, CLPWSTR lpszPathInPckToAdd)
 {
-	return CPckControlCenter::AddFileToPckFile(lpszFilePathSrc, szPckFile, lpszPathInPckToAdd);
+
+	BOOL rtn = FALSE;
+
+	if (this_handle.Open(szPckFile)) {
+		if (this_handle.IsValidPck()) {
+
+			CLPPUFE lpFileEntry = this_handle.GetFileEntryByPath(lpszPathInPckToAdd);
+
+			if (NULL == lpFileEntry) {
+				this_handle.New();
+				return WINPCK_NOTFOUND;
+			}
+
+			this_handle.StringArrayReset();
+			this_handle.StringArrayAppend(lpszFilePathSrc);
+
+			rtn = this_handle.UpdatePckFileSubmit(szPckFile, lpFileEntry);
+		}
+	}
+
+	this_handle.New();
+
+	return rtn ? WINPCK_OK : WINPCK_ERROR;
 }
 
 //创建新的pck文件
-WINPCK_API BOOL	do_CreatePckFile(LPCTSTR lpszFilePathSrc, LPCTSTR szPckFile, int _versionId)
+WINPCK_API PCKRTN	do_CreatePckFile(CLPWSTR lpszFilePathSrc, CLPWSTR szPckFile, int _versionId)
 {
-	return CPckControlCenter::CreatePckFile(lpszFilePathSrc, szPckFile, _versionId);
+
+	BOOL rtn = FALSE;
+
+	this_handle.SetPckVersion(_versionId);
+	this_handle.StringArrayReset();
+	this_handle.StringArrayAppend(lpszFilePathSrc);
+
+	rtn = this_handle.UpdatePckFileSubmit(szPckFile, NULL);
+
+	this_handle.New();
+
+	return rtn ? WINPCK_OK : WINPCK_ERROR;
 }
 
 //删除一个节点
-WINPCK_API BOOL	pck_DeleteEntry(HANDLE handle, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API PCKRTN pck_DeleteEntry(CLPPUFE lpFileEntry)
 {
-	if (!checkIfValidHandle(handle))
-		return FALSE;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->DeleteEntry(lpFileEntry);
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.DeleteEntry(lpFileEntry) ? WINPCK_OK : WINPCK_ERROR;
 }
 
 //提交
-WINPCK_API BOOL pck_DeleteEntrySubmit(HANDLE handle)
+WINPCK_API PCKRTN pck_DeleteEntrySubmit()
 {
-	if (!checkIfValidHandle(handle))
-		return FALSE;
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
 
-	return SETCLASS(handle)->DeleteEntrySubmit();
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.DeleteEntrySubmit() ? WINPCK_OK : WINPCK_ERROR;
+}
+
+WINPCK_API PCKRTN	 do_DeleteFromPck(CLPWSTR szSrcPckFile, int count, ...)
+{
+
+	if (0 == count)
+		return WINPCK_ERROR;
+
+	BOOL rtn = FALSE;
+
+	if (this_handle.Open(szSrcPckFile)) {
+		if (this_handle.IsValidPck()) {
+
+			va_list	ap;
+			va_start(ap, count);
+
+			for (int i = 0; i < count; i++)
+			{
+
+				CLPWSTR lpszPathInPckToDel = va_arg(ap, LPWSTR);
+				CLPPUFE lpFileEntry = this_handle.GetFileEntryByPath(lpszPathInPckToDel);
+
+				if (NULL != lpFileEntry)
+					this_handle.DeleteEntry(lpFileEntry);
+
+			}
+
+			va_end(ap);
+			rtn = this_handle.DeleteEntrySubmit();
+		}
+	}
+
+	this_handle.New();
+	return rtn ? WINPCK_OK : WINPCK_ERROR;
 }
 
 //查询
-WINPCK_API DWORD pck_searchByName(HANDLE handle, const wchar_t* lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
+WINPCK_API DWORD pck_searchByName(CLPWSTR lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
 {
-	if (!checkIfValidHandle(handle))
+	if (!checkIfValidPck())
 		return 0;
 
-	return SETCLASS(handle)->SearchByName(lpszSearchString, _in_param, _showListCallback);
+	if (checkIfWorking())
+		return 0;
+
+	return this_handle.SearchByName(lpszSearchString, _in_param, _showListCallback);
 }
 
-WINPCK_API DWORD pck_listByNode(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
+WINPCK_API DWORD pck_listByNode(CLPPUFE lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
 {
 	return CPckControlCenter::ListByNode(lpFileEntry, _in_param, _showListCallback);
 }
 
-WINPCK_API const PCK_UNIFIED_FILE_ENTRY* pck_getUpwardEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API DWORD do_listPathInPck(CLPWSTR szSrcPckFile, CLPWSTR lpszListPath, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
 {
-	return CPckControlCenter::GetUpwardEntry(lpFileEntry);
+	if (NULL == lpszListPath)
+		return WINPCK_ERROR;
+
+	BOOL rtn = FALSE;
+
+	if (this_handle.Open(szSrcPckFile)) {
+		if (this_handle.IsValidPck()) {
+
+
+			CLPPUFE lpFileEntry = this_handle.GetFileEntryByPath(lpszListPath);
+
+			if (NULL == lpFileEntry) {
+				this_handle.New();
+
+				return WINPCK_NOTFOUND;
+			}
+
+			rtn = CPckControlCenter::ListByNode(lpFileEntry, _in_param, _showListCallback);
+		}
+	}
+
+	this_handle.New();
+	return rtn ? WINPCK_OK : WINPCK_ERROR;
 }
 
-WINPCK_API const PCK_UNIFIED_FILE_ENTRY* pck_getDownwardEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+WINPCK_API BOOL pck_isThreadWorking()
 {
-	return CPckControlCenter::GetDownwardEntry(lpFileEntry);
+	return checkIfWorking();
 }
 
-WINPCK_API BOOL pck_isThreadWorking(HANDLE handle)
+WINPCK_API void	pck_forceBreakThreadWorking()
 {
-	if (!checkIfValidHandle(handle))
-		return FALSE;
-
-	return SETCLASS(handle)->isThreadWorking();
-}
-
-WINPCK_API void	pck_forceBreakThreadWorking(HANDLE handle)
-{
-	if (!checkIfValidHandle(handle))
+	if (!checkIfWorking())
 		return;
 
-	return SETCLASS(handle)->ForceBreakThreadWorking();
+	return this_handle.ForceBreakThreadWorking();
 }
 
-WINPCK_API BOOL	pck_isLastOptSuccess(HANDLE handle)
+WINPCK_API BOOL	pck_isLastOptSuccess()
 {
-	if (!checkIfValidHandle(handle))
-		return FALSE;
-
-	return SETCLASS(handle)->isLastOptSuccess();
+	return this_handle.isLastOptSuccess();
 }
 
-WINPCK_API BOOL	pck_getLastErrorMsg(HANDLE handle)
+WINPCK_API BOOL	pck_getLastErrorMsg()
 {
-	if (!checkIfValidHandle(handle))
-		return FALSE;
-
-	return SETCLASS(handle)->GetLastErrorMsg();
+	return this_handle.GetLastErrorMsg();
 }
-
-
 
 //内存占用
-WINPCK_API DWORD	pck_getMTMemoryUsed(HANDLE handle)
+WINPCK_API DWORD	pck_getMTMemoryUsed()
 {
-	if (!checkIfValidHandle(handle))
-		return 0;
-
-	return SETCLASS(handle)->getMTMemoryUsed();
+	return this_handle.getMTMemoryUsed();
 }
 
-WINPCK_API DWORD	pck_getMTMaxMemory(HANDLE handle)
+WINPCK_API DWORD	pck_getMTMaxMemory()
 {
-	if (!checkIfValidHandle(handle))
-		return CPckControlCenter::getMaxMemoryAllowed();
-
-	return SETCLASS(handle)->getMTMaxMemory();
+	return this_handle.getMTMaxMemory();
 }
 
-WINPCK_API void		pck_setMTMaxMemory(HANDLE handle, DWORD dwMTMaxMemory)
+WINPCK_API void		pck_setMTMaxMemory(DWORD dwMTMaxMemory)
 {
-	if (!checkIfValidHandle(handle))
+	if (checkIfWorking())
 		return;
 
-	return SETCLASS(handle)->setMTMaxMemory(dwMTMaxMemory);
+	return this_handle.setMTMaxMemory(dwMTMaxMemory);
 }
 
 WINPCK_API DWORD	pck_getMaxMemoryAllowed()
@@ -464,20 +614,17 @@ WINPCK_API DWORD	pck_getMaxThreadUpperLimit()
 	return CPckControlCenter::getMaxThreadUpperLimit();
 }
 
-WINPCK_API DWORD	pck_getMaxThread(HANDLE handle)
+WINPCK_API DWORD	pck_getMaxThread()
 {
-	if (!checkIfValidHandle(handle))
-		return 0;
-
-	return SETCLASS(handle)->getMaxThread();
+	return this_handle.getMaxThread();
 }
 
-WINPCK_API void		pck_setMaxThread(HANDLE handle, DWORD dwThread)
+WINPCK_API void		pck_setMaxThread(DWORD dwThread)
 {
-	if (!checkIfValidHandle(handle))
+	if (checkIfWorking())
 		return;
 
-	return SETCLASS(handle)->setMaxThread(dwThread);
+	return this_handle.setMaxThread(dwThread);
 }
 
 //压缩等级
@@ -491,85 +638,58 @@ WINPCK_API DWORD	pck_getDefaultCompressLevel()
 	return CPckControlCenter::getDefaultCompressLevel();
 }
 
-WINPCK_API DWORD	pck_getCompressLevel(HANDLE handle)
+WINPCK_API DWORD	pck_getCompressLevel()
 {
-	if (!checkIfValidHandle(handle))
-		return CPckControlCenter::getDefaultCompressLevel();
-
-	return SETCLASS(handle)->getCompressLevel();
+	return this_handle.getCompressLevel();
 }
 
-WINPCK_API void		pck_setCompressLevel(HANDLE handle, DWORD dwCompressLevel)
+WINPCK_API void		pck_setCompressLevel(DWORD dwCompressLevel)
 {
-	if (!checkIfValidHandle(handle))
+	if (checkIfWorking())
 		return;
 
-	return SETCLASS(handle)->setCompressLevel(dwCompressLevel);
+	return this_handle.setCompressLevel(dwCompressLevel);
 }
 
-WINPCK_API DWORD	pck_getUIProgress(HANDLE handle)
+WINPCK_API DWORD	pck_getUIProgress()
 {
-	if (!checkIfValidHandle(handle))
-		return 0;
-
-	return SETCLASS(handle)->getUIProgress();
+	return this_handle.getUIProgress();
 }
 
-WINPCK_API void		pck_setUIProgress(HANDLE handle, DWORD dwUIProgress)
+WINPCK_API void		pck_setUIProgress(DWORD dwUIProgress)
 {
-	if (!checkIfValidHandle(handle))
-		return;
-
-	return SETCLASS(handle)->setUIProgress(dwUIProgress);
+	return this_handle.setUIProgress(dwUIProgress);
 }
 
-WINPCK_API DWORD	pck_getUIProgressUpper(HANDLE handle)
+WINPCK_API DWORD	pck_getUIProgressUpper()
 {
-	if (!checkIfValidHandle(handle))
-		return 0;
-
-	return SETCLASS(handle)->getUIProgressUpper();
+	return this_handle.getUIProgressUpper();
 }
 
 //添加/新增文件返回结果清单
-WINPCK_API DWORD	pck_getUpdateResult_OldFileCount(HANDLE handle)
+WINPCK_API DWORD	pck_getUpdateResult_OldFileCount()
 {
-	if (!checkIfValidHandle(handle))
-		return 0;
-
-	return SETCLASS(handle)->GetUpdateResult_OldFileCount();
+	return this_handle.GetUpdateResult_OldFileCount();
 }
 
-WINPCK_API DWORD	pck_getUpdateResult_PrepareToAddFileCount(HANDLE handle)
+WINPCK_API DWORD	pck_getUpdateResult_PrepareToAddFileCount()
 {
-	if (!checkIfValidHandle(handle))
-		return 0;
-
-	return SETCLASS(handle)->GetUpdateResult_PrepareToAddFileCount();
+	return this_handle.GetUpdateResult_PrepareToAddFileCount();
 }
 
-WINPCK_API DWORD	pck_getUpdateResult_ChangedFileCount(HANDLE handle)
+WINPCK_API DWORD	pck_getUpdateResult_ChangedFileCount()
 {
-	if (!checkIfValidHandle(handle))
-		return 0;
-
-	return SETCLASS(handle)->GetUpdateResult_ChangedFileCount();
+	return this_handle.GetUpdateResult_ChangedFileCount();
 }
 
-WINPCK_API DWORD	pck_getUpdateResult_DuplicateFileCount(HANDLE handle)
+WINPCK_API DWORD	pck_getUpdateResult_DuplicateFileCount()
 {
-	if (!checkIfValidHandle(handle))
-		return 0;
-
-	return SETCLASS(handle)->GetUpdateResult_DuplicateFileCount();
+	return this_handle.GetUpdateResult_DuplicateFileCount();
 }
 
-WINPCK_API DWORD	pck_getUpdateResult_FinalFileCount(HANDLE handle)
+WINPCK_API DWORD	pck_getUpdateResult_FinalFileCount()
 {
-	if (!checkIfValidHandle(handle))
-		return 0;
-
-	return SETCLASS(handle)->GetUpdateResult_FinalFileCount();
+	return this_handle.GetUpdateResult_FinalFileCount();
 }
 
 //日志
@@ -583,7 +703,7 @@ WINPCK_API const char	log_getLogLevelPrefix(int _loglevel)
 	return CPckControlCenter::getLogLevelPrefix(_loglevel);
 }
 
-WINPCK_API void		log_PrintA(const char chLevel, const char *_fmt, ...)
+WINPCK_API void		log_PrintA(const char chLevel, CLPSTR _fmt, ...)
 {
 	va_list	ap;
 	va_start(ap, _fmt);
@@ -591,7 +711,7 @@ WINPCK_API void		log_PrintA(const char chLevel, const char *_fmt, ...)
 	va_end(ap);
 }
 
-WINPCK_API void		log_PrintW(const char chLevel, const wchar_t *_fmt, ...)
+WINPCK_API void		log_PrintW(const char chLevel, CLPWSTR _fmt, ...)
 {
 	va_list	ap;
 	va_start(ap, _fmt);

@@ -217,13 +217,13 @@ typedef struct _PCK_PATH_NODE
 	wchar_t			szName[MAX_PATH_PCK_260];
 	DWORD			dwFilesCount;
 	DWORD			dwDirsCount;
-	size_t			nNameSizeAnsi;		//节点名的pck ansi 长度
+	size_t			nNameSizeAnsi;		//节点名的pck ansi 长度, 在..目录记录本目录路径（如gfx\下的..目录）的长度（ansi）
 	size_t			nMaxNameSizeAnsi;	//
 	QWORD			qdwDirClearTextSize;
 	QWORD			qdwDirCipherTextSize;
 	LPPCKINDEXTABLE	lpPckIndexTable;
-	_PCK_PATH_NODE	*parentfirst;		//非根目录下的..目录使用，指向..目录在上级目录的节点
-	_PCK_PATH_NODE	*parent;			//非根目录下的..目录使用，指向本目录在上级目录的节点
+	_PCK_PATH_NODE	*parentfirst;		//非根目录下的..目录使用，指向..目录在上级目录的节点，也就是被点击的目录所在的..目录
+	_PCK_PATH_NODE	*parent;			//非根目录下的..目录使用，指向本目录在上级目录的节点，也就是被点击的目录的上级目录
 	_PCK_PATH_NODE	*child;				//普通目录指向下级目录的..目录的节点
 	_PCK_PATH_NODE	*next;				//本级目录指向下一项的节点
 }PCK_PATH_NODE, *LPPCK_PATH_NODE;

@@ -50,13 +50,11 @@ void TInstDlg::initParams()
 	//打开、关闭、复原等事件注册
 	pck_regMsgFeedback(this, MyFeedbackCallback);
 
-	m_PckHandle = pck_new();
-
 	*m_szStrToSearch = 0;			//查找的文字
 	bGoingToExit = FALSE;			//是否准备退出8
 
 #ifdef _DEBUG
-	pck_setMTMaxMemory(m_PckHandle, (512 * 1024 * 1024));
+	pck_setMTMaxMemory((512 * 1024 * 1024));
 #endif
 
 	m_isListviewRenaming = FALSE;

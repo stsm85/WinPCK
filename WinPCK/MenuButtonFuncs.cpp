@@ -25,24 +25,24 @@ void TInstDlg::ListViewEnter()
 
 void TInstDlg::MenuClose()
 {
-	if (pck_isThreadWorking(m_PckHandle))
-		pck_forceBreakThreadWorking(m_PckHandle);
+	if (pck_isThreadWorking())
+		pck_forceBreakThreadWorking();
 
 	ListView_DeleteAllItems(GetDlgItem(IDC_LIST));
-	pck_close(m_PckHandle);
+	pck_close();
 }
 
 void TInstDlg::MenuInfo()
 {
-	if (pck_IsValidPck(m_PckHandle)) {
-		TInfoDlg	dlg(m_PckHandle, this);
+	if (pck_IsValidPck()) {
+		TInfoDlg	dlg(this);
 		dlg.Exec();
 	}
 }
 
 void TInstDlg::MenuSearch()
 {
-	if (pck_IsValidPck(m_PckHandle)) {
+	if (pck_IsValidPck()) {
 		TSearchDlg	dlg(m_szStrToSearch, this);
 		if (dlg.Exec() == TRUE) {
 			SearchPckFiles();
@@ -53,8 +53,8 @@ void TInstDlg::MenuSearch()
 void TInstDlg::MenuNew(WORD wID)
 {
 		
-	if (pck_isThreadWorking(m_PckHandle)) {
-		pck_forceBreakThreadWorking(m_PckHandle);
+	if (pck_isThreadWorking()) {
+		pck_forceBreakThreadWorking();
 		EnableButton(wID, FALSE);
 	}
 	else {
@@ -64,8 +64,8 @@ void TInstDlg::MenuNew(WORD wID)
 
 void TInstDlg::MenuAdd(WORD wID)
 {
-	if (pck_isThreadWorking(m_PckHandle)) {
-		pck_forceBreakThreadWorking(m_PckHandle);
+	if (pck_isThreadWorking()) {
+		pck_forceBreakThreadWorking();
 		EnableButton(wID, FALSE);
 	}
 	else {
@@ -75,8 +75,8 @@ void TInstDlg::MenuAdd(WORD wID)
 
 void TInstDlg::MenuRebuild(WORD wID)
 {
-	if (pck_isThreadWorking(m_PckHandle)) {
-		pck_forceBreakThreadWorking(m_PckHandle);
+	if (pck_isThreadWorking()) {
+		pck_forceBreakThreadWorking();
 		EnableButton(wID, FALSE);
 	}
 	else {
@@ -88,13 +88,13 @@ void TInstDlg::MenuRebuild(WORD wID)
 
 void TInstDlg::MenuCompressOpt()
 {
-	TCompressOptDlg	dlg(m_PckHandle, this);
+	TCompressOptDlg	dlg(this);
 	dlg.Exec();
 }
 
 void TInstDlg::MenuRename()
 {
-	if(pck_isThreadWorking(m_PckHandle))
+	if(pck_isThreadWorking())
 		return;
 
 	HWND	hList = GetDlgItem(IDC_LIST);
@@ -104,7 +104,7 @@ void TInstDlg::MenuRename()
 
 void TInstDlg::MenuDelete()
 {
-	if (pck_isThreadWorking(m_PckHandle))
+	if (pck_isThreadWorking())
 		return;
 	if (IDNO == MessageBox(GetLoadStr(IDS_STRING_ISDELETE), GetLoadStr(IDS_STRING_ISDELETETITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))
 		return;
@@ -149,7 +149,7 @@ void TInstDlg::MenuSelectReverse()
 
 void TInstDlg::MenuAttribute()
 {
-	if (pck_isThreadWorking(m_PckHandle))
+	if (pck_isThreadWorking())
 		return;
 
 	ViewFileAttribute();
@@ -157,7 +157,7 @@ void TInstDlg::MenuAttribute()
 
 void TInstDlg::MenuView()
 {
-	if (pck_isThreadWorking(m_PckHandle))
+	if (pck_isThreadWorking())
 		return;
 
 	HWND	hWndList = GetDlgItem(IDC_LIST);
@@ -178,10 +178,6 @@ void TInstDlg::MenuView()
 
 void TInstDlg::MenuAbout()
 {
-#ifdef _DEBUG
-	//BOOL a = do_AddFileToPckFile(L"z:\\2222", L"z:\\Rebuild_1111zxxx.pck", L"1111\\");
-	BOOL b = do_CreatePckFile(L"z:\\2222", L"z:\\Rebuild_1111zxxx.pck");
-#endif
 	MessageBoxW(THIS_MAIN_CAPTION
 		"\r\n"
 		THIS_DESC

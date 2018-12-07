@@ -99,11 +99,11 @@ BOOL TInstDlg::EvClose()
 
 	SetStatusBarText(0, GetLoadStr(IDS_STRING_EXITING));
 
-	if(pck_isThreadWorking(m_PckHandle)) {
+	if(pck_isThreadWorking()) {
 		if(IDNO == MessageBox(GetLoadStr(IDS_STRING_ISEXIT), GetLoadStr(IDS_STRING_ISEXITTITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))return FALSE;
 
 		bGoingToExit = TRUE;
-		pck_forceBreakThreadWorking(m_PckHandle);
+		pck_forceBreakThreadWorking();
 		return FALSE;
 	}
 
@@ -114,8 +114,6 @@ BOOL TInstDlg::EvClose()
 	ListView_Uninit();
 
 	delete logdlg;
-
-	pck_free(m_PckHandle);
 
 	::PostQuitMessage(0);
 	return FALSE;
@@ -259,11 +257,11 @@ BOOL TInstDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 			m_isSearchWindow = FALSE;
 
 			if(IsValidWndAndGetPath(szPath, TRUE)) {
-				if(pck_IsValidPck(m_PckHandle)) {
-					if(!pck_isThreadWorking(m_PckHandle)) {
+				if(pck_IsValidPck()) {
+					if(!pck_isThreadWorking()) {
 
 						wcscpy_s(m_CurrentPath, szPath);
-						pck_setMTMaxMemory(m_PckHandle, 0);
+						pck_setMTMaxMemory(0);
 
 						_beginthread(ToExtractSelectedFiles, 0, this);
 					}
@@ -407,7 +405,7 @@ BOOL TInstDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
 BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 {
 
-	if(pck_isThreadWorking(m_PckHandle))goto END_DROP;
+	if(pck_isThreadWorking())goto END_DROP;
 
 	TCHAR	szFirstFile[MAX_PATH];
 
@@ -416,7 +414,7 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 	if(0 == dwDropFileCount)goto END_DROP;
 
 	if(1 == dwDropFileCount) {
-		if(!pck_IsValidPck(m_PckHandle)) {
+		if(!pck_IsValidPck()) {
 			size_t	nFirstFileLength;
 			DragQueryFile(hDrop, 0, szFirstFile, MAX_PATH);
 			nFirstFileLength = _tcsnlen(szFirstFile, MAX_PATH);

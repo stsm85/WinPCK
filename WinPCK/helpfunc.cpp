@@ -28,9 +28,9 @@ inline void CreateAndSetDefaultValue(LPCTSTR pszValueName, LPCTSTR pszValue);
 
 void TInstDlg::UnpackAllFiles()
 {
-	if(pck_IsValidPck(m_PckHandle)) {
-		if(pck_isThreadWorking(m_PckHandle)) {
-			pck_forceBreakThreadWorking(m_PckHandle);
+	if(pck_IsValidPck()) {
+		if(pck_isThreadWorking()) {
+			pck_forceBreakThreadWorking();
 			EnableButton(ID_MENU_UNPACK_ALL, FALSE);
 		} else {
 			if(OpenFilesVistaUp(hWnd, m_CurrentPath)) {
@@ -43,9 +43,9 @@ void TInstDlg::UnpackAllFiles()
 
 void TInstDlg::UnpackSelectedFiles()
 {
-	if(pck_IsValidPck(m_PckHandle)) {
-		if(pck_isThreadWorking(m_PckHandle)) {
-			pck_forceBreakThreadWorking(m_PckHandle);
+	if(pck_IsValidPck()) {
+		if(pck_isThreadWorking()) {
+			pck_forceBreakThreadWorking();
 			EnableButton(ID_MENU_UNPACK_SELECTED, FALSE);
 		} else {
 			if(OpenFilesVistaUp(hWnd, m_CurrentPath)) {
@@ -85,26 +85,15 @@ void TInstDlg::DbClickListView(const int itemIndex)
 		}
 	}
 
+	if (PCK_ENTRY_TYPE_ROOT == (PCK_ENTRY_TYPE_ROOT & entry_type))
+		return;
+
 	//本级是否是文件夹(NULL=文件夹)
 	if (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type)) {
-		//是否是上级目录(".."目录)
-		if (PCK_ENTRY_TYPE_DOTDOT != (PCK_ENTRY_TYPE_DOTDOT & entry_type)) {
-			//进入目录中(下一级)
-			const PCK_UNIFIED_FILE_ENTRY* lpFileEntryChild = pck_getDownwardEntry(lpFileEntry);
 
-			if (NULL != lpFileEntryChild) {
+		ShowPckFiles(lpFileEntry);
+		pck_getNodeRelativePath(m_FolderBrowsed, lpFileEntry);
 
-				pck_getNodeRelativePath(m_FolderBrowsed, lpFileEntryChild);
-				ShowPckFiles(lpFileEntryChild);
-			}			
-		}
-		else if (PCK_ENTRY_TYPE_FIRSTDOT != (PCK_ENTRY_TYPE_FIRSTDOT & entry_type)) {
-
-			//上一级
-			pck_getNodeRelativePath(m_FolderBrowsed, pck_getUpwardEntry(lpFileEntry));
-			ShowPckFiles(pck_getUpwardEntry(lpFileEntry));
-
-		}
 	}
 	else {
 		ViewFile(lpFileEntry);
@@ -122,7 +111,7 @@ void TInstDlg::PopupRightMenu(const int itemIndex)
 
 	if(PCK_ENTRY_TYPE_INDEX != lpFileEntry->entryType) {
 
-		if(NULL == lpFileEntry || pck_isThreadWorking(m_PckHandle)) {
+		if(NULL == lpFileEntry || pck_isThreadWorking()) {
 			::EnableMenuItem(hMenuRClick, ID_MENU_VIEW, MF_GRAYED);
 			::EnableMenuItem(hMenuRClick, ID_MENU_RENAME, MF_GRAYED);
 			::EnableMenuItem(hMenuRClick, ID_MENU_DELETE, MF_GRAYED);
@@ -152,16 +141,16 @@ void TInstDlg::PopupRightMenu(const int itemIndex)
 VOID TInstDlg::ViewFileAttribute()
 {
 	if (0 == m_iListHotItem)return;
-	if(pck_isThreadWorking(m_PckHandle))return;
+	if(pck_isThreadWorking())return;
 
 	const PCK_UNIFIED_FILE_ENTRY* lpFileEntry = GetFileEntryByItem(m_iListHotItem);
 
-	if(pck_IsValidPck(m_PckHandle)) {
+	if(pck_IsValidPck()) {
 		wchar_t	szPath[MAX_PATH_PCK_260];
 
 		pck_getNodeRelativePath(szPath, m_currentNodeOnShow);
 
-		TAttrDlg	dlg(lpFileEntry, m_PckHandle, szPath, this);
+		TAttrDlg	dlg(lpFileEntry, szPath, this);
 		dlg.Exec();
 	}
 }
@@ -169,17 +158,17 @@ VOID TInstDlg::ViewFileAttribute()
 
 VOID TInstDlg::ViewFile(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
 {
-	if(pck_isThreadWorking(m_PckHandle))return;
+	if(pck_isThreadWorking())return;
 
 	CPriviewInDlg cPreview;
-	cPreview.Show(m_PckHandle, lpFileEntry, this);
+	cPreview.Show(lpFileEntry, this);
 
 }
 
 BOOL TInstDlg::AddFiles()
 {
 
-	if(pck_isThreadWorking(m_PckHandle))return FALSE;
+	if(pck_isThreadWorking())return FALSE;
 
 	if(IDCANCEL == MessageBoxW(L"确定添加文件吗？", L"询问", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2))return FALSE;
 
@@ -357,9 +346,7 @@ void TInstDlg::InitLogWindow()
 	log_regShowFunc(PreInsertLogToList);
 
 	//启动日志
-	log_PrintA(LOG_IMAGE_INFO, THIS_NAME \
-		THIS_VERSION \
-		" is started.");
+	log_PrintA(LOG_IMAGE_INFO, THIS_MAIN_CAPTION " is started.");
 
 }
 
@@ -370,10 +357,10 @@ void TInstDlg::RefreshProgress()
 	INT			iNewPos;
 	wchar_t		szMTMemoryUsed[CHAR_NUM_LEN], szMTMaxMemory[CHAR_NUM_LEN];
 
-	DWORD		dwUIProgress = pck_getUIProgress(m_PckHandle);
-	DWORD		dwUIProgressUpper = pck_getUIProgressUpper(m_PckHandle);
-	DWORD		dwMTMemoryUsed = pck_getMTMemoryUsed(m_PckHandle);
-	DWORD		dwMTMaxMemory = pck_getMTMaxMemory(m_PckHandle);
+	DWORD		dwUIProgress = pck_getUIProgress();
+	DWORD		dwUIProgressUpper = pck_getUIProgressUpper();
+	DWORD		dwMTMemoryUsed = pck_getMTMemoryUsed();
+	DWORD		dwMTMaxMemory = pck_getMTMaxMemory();
 
 	if(0 == dwUIProgressUpper)
 		dwUIProgressUpper = 1;
@@ -382,18 +369,18 @@ void TInstDlg::RefreshProgress()
 
 	SendDlgItemMessage(IDC_PROGRESS, PBM_SETPOS, (WPARAM)iNewPos, (LPARAM)0);
 
-	if(dwUIProgress == dwUIProgressUpper)
-		swprintf_s(szString, szTimerProcessedFormatString, dwUIProgress, dwUIProgressUpper);
-	else
-		swprintf_s(
-			szString, 
-			szTimerProcessingFormatString, 
-			dwUIProgress, 
-			dwUIProgressUpper, 
-			dwUIProgress * 100.0 / dwUIProgressUpper,
-			StrFormatByteSizeW(dwMTMemoryUsed, szMTMemoryUsed, CHAR_NUM_LEN),
-			StrFormatByteSizeW(dwMTMaxMemory, szMTMaxMemory, CHAR_NUM_LEN),
-			(dwMTMemoryUsed >> 10) * 100.0 / (dwMTMaxMemory >> 10));
+	//if(dwUIProgress == dwUIProgressUpper)
+	//	swprintf_s(szString, szTimerProcessedFormatString, dwUIProgress, dwUIProgressUpper);
+	//else
+	swprintf_s(
+		szString, 
+		szTimerProcessingFormatString, 
+		dwUIProgress, 
+		dwUIProgressUpper, 
+		dwUIProgress * 100.0 / dwUIProgressUpper,
+		StrFormatByteSizeW(dwMTMemoryUsed, szMTMemoryUsed, CHAR_NUM_LEN),
+		StrFormatByteSizeW(dwMTMaxMemory, szMTMaxMemory, CHAR_NUM_LEN),
+		(dwMTMemoryUsed >> 10) * 100.0 / (dwMTMaxMemory >> 10));
 
 	SetStatusBarText(3, szString);
 

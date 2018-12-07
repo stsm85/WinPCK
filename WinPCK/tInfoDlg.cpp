@@ -19,7 +19,7 @@
 BOOL TInfoDlg::EvCreate(LPARAM lParam)
 {
 	SendDlgItemMessage(IDC_EDIT_INFO, EM_LIMITTEXT, pck_GetAdditionalInfoMaxSize() - 1, 0);
-	SetDlgItemTextA(IDC_EDIT_INFO, pck_GetAdditionalInfo(m_PckHandle));
+	SetDlgItemTextA(IDC_EDIT_INFO, pck_GetAdditionalInfo());
 	return	TRUE;
 }
 
@@ -32,8 +32,8 @@ BOOL TInfoDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		memset(szAdditionalInfo, 0, pck_GetAdditionalInfoMaxSize());
 		GetDlgItemTextA(IDC_EDIT_INFO, szAdditionalInfo, pck_GetAdditionalInfoMaxSize());
 
-		//返回1为操作成功，success=1
-		pck_SetAdditionalInfo(m_PckHandle, szAdditionalInfo);
+		//返回1为操作成功，success=WINPCK_OK
+		pck_SetAdditionalInfo(szAdditionalInfo);
 		EndDialog(wID);
 		return	TRUE;
 

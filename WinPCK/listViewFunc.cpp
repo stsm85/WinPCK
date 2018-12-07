@@ -362,7 +362,7 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 			lpszInvalid++;
 		}
 
-		if (!pck_RenameEntry(m_PckHandle, lpFileEntry, pNmHdr->item.pszText)) {
+		if (WINPCK_OK != pck_RenameEntry(lpFileEntry, pNmHdr->item.pszText)) {
 				MessageBox(GetLoadStr(IDS_STRING_RENAMEERROR), GetLoadStr(IDS_STRING_ERROR), MB_OK | MB_ICONERROR);
 				OpenPckFile(m_Filename, TRUE);
 				return FALSE;

@@ -181,7 +181,7 @@ BOOL CPckControlCenter::ExtractAllFiles(const wchar_t *lpszDestDirectory)
 
 	return m_lpClassPck->ExtractAllFiles(lpszDestDirectory);
 }
-
+#if 0
 BOOL CPckControlCenter::ExtractFiles(LPCTSTR lpszFilePathSrc, const wchar_t *lpszDestDirectory, const wchar_t *lpszFileToExtract)
 {
 	CPckControlCenter* new_handle = new CPckControlCenter();
@@ -215,7 +215,7 @@ BOOL CPckControlCenter::ExtractAllFiles(LPCTSTR lpszFilePathSrc, const wchar_t *
 	delete new_handle;
 	return rtn;
 }
-
+#endif
 #pragma endregion
 
 #pragma region 重建pck文件
@@ -228,7 +228,7 @@ BOOL CPckControlCenter::ParseScript(LPCTSTR lpszScriptFile)
 	return m_lpClassPck->ParseScript(lpszScriptFile);
 }
 
-BOOL CPckControlCenter::RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompress)
+BOOL CPckControlCenter::RebuildPckFile(LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
@@ -236,13 +236,14 @@ BOOL CPckControlCenter::RebuildPckFile(LPTSTR szRebuildPckFile, BOOL bUseRecompr
 	return m_lpClassPck->RebuildPckFile(szRebuildPckFile, bUseRecompress);
 }
 
-BOOL CPckControlCenter::RebuildPckFileWithScript(LPCTSTR lpszScriptFile, LPTSTR szRebuildPckFile, BOOL bUseRecompress)
+BOOL CPckControlCenter::RebuildPckFileWithScript(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
 {
-
-	if (ParseScript(lpszScriptFile)) {
-		return RebuildPckFile(szRebuildPckFile, bUseRecompress);
+	if (NULL != lpszScriptFile) {
+		if (!ParseScript(lpszScriptFile))
+			return FALSE;
 	}
-	return FALSE;
+
+	return RebuildPckFile(szRebuildPckFile, bUseRecompress);
 }
 
 #pragma endregion
@@ -275,7 +276,7 @@ BOOL CPckControlCenter::UpdatePckFileSubmit(LPCTSTR szPckFile, const PCK_UNIFIED
 	}
 	return rtn;
 }
-
+#if 0
 BOOL CPckControlCenter::AddFileToPckFile(LPCTSTR lpszFilePathSrc, LPCTSTR szPckFile, const wchar_t *lpszPathInPckToAdd)
 {
 	CPckControlCenter* new_handle = new CPckControlCenter();
@@ -315,7 +316,7 @@ BOOL CPckControlCenter::CreatePckFile(LPCTSTR lpszFilePathSrc, LPCTSTR szPckFile
 	return rtn;
 
 }
-
+#endif
 #pragma endregion
 
 #pragma region 删除节点
@@ -372,6 +373,11 @@ DWORD	CPckControlCenter::GetVersionCount()
 const wchar_t*	CPckControlCenter::GetVersionNameById(int verID)
 {
 	return CPckClassVersionDetect::GetPckVersionNameById(verID);
+}
+
+int CPckControlCenter::AddVersionAlgorithmId(int AlgorithmId, int Version)
+{
+	return CPckClassVersionDetect::AddPckVersion(AlgorithmId, Version);
 }
 
 #pragma endregion

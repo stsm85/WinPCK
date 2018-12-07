@@ -12,11 +12,10 @@
 #include "miscdlg.h"
 #include <shlwapi.h>
 
-TAttrDlg::TAttrDlg(const PCK_UNIFIED_FILE_ENTRY *_lpPckInfo, HANDLE	_PckHandle, wchar_t *_lpszPath, TWin *_win) :
+TAttrDlg::TAttrDlg(const PCK_UNIFIED_FILE_ENTRY *_lpPckInfo, wchar_t *_lpszPath, TWin *_win) :
 	TDlg(IDD_DIALOG_ATTR, _win),
 	lpPckInfo(_lpPckInfo),
-	lpszPath(_lpszPath),
-	m_PckHandle(_PckHandle)
+	lpszPath(_lpszPath)
 {
 }
 
@@ -124,7 +123,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 	}
 
 	//文件包信息
-	const PCK_UNIFIED_FILE_ENTRY* lpRootNode = pck_getRootNode(m_PckHandle);
+	const PCK_UNIFIED_FILE_ENTRY* lpRootNode = pck_getRootNode();
 
 	qdwDirClearTextSize = pck_getFileSizeInEntry(lpRootNode);
 	qdwDirCipherTextSize = pck_getCompressedSizeInEntry(lpRootNode);
@@ -147,7 +146,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 	SetDlgItemTextW(IDC_EDIT_ATTR_PCKCMPR, szPrintf);
 
 	//冗余数据量
-	QWORD qwPckFileSize = pck_file_redundancy_data_size(m_PckHandle);
+	QWORD qwPckFileSize = pck_file_redundancy_data_size();
 	swprintf_s(szPrintf, PRINTF_SIZE, lpszFormat,
 		StrFormatByteSizeW(qwPckFileSize, szPrintfBytesize, PRINTF_BYTESIZE),
 		qwPckFileSize);

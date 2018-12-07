@@ -308,10 +308,11 @@ BOOL CPckClassFileDisk::EnumAllFilesByPathList(const vector<tstring> &lpszFilePa
 #include <shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
 
-BOOL CPckClassFileDisk::MakeFolderExist(const wchar_t* lpszDirectory)
+BOOL CPckClassFileDisk::MakeFolderExistInternal(const wchar_t* lpszDirectory)
 {
 	wchar_t szUpwardPath[MAX_PATH];
 	wcscpy_s(szUpwardPath, lpszDirectory);
+
 
 	wchar_t *lpLastDir = wcsrchr(szUpwardPath, '\\');
 
@@ -327,12 +328,30 @@ BOOL CPckClassFileDisk::MakeFolderExist(const wchar_t* lpszDirectory)
 
 	*lpLastDir = 0;
 
-	if (MakeFolderExist(szUpwardPath)) {
+	if (MakeFolderExistInternal(szUpwardPath)) {
 		*lpLastDir = '\\';
 		if (CreateDirectoryW(szUpwardPath, NULL))
 			return TRUE;
 	}
 	return FALSE;
+}
+
+BOOL CPckClassFileDisk::MakeFolderExist(const wchar_t* lpszDirectory)
+{
+
+	if ((NULL == lpszDirectory) || (0 == *lpszDirectory))
+		return FALSE;
+
+	wchar_t szUpwardPath[MAX_PATH];
+
+	GetFullPathNameW(lpszDirectory, MAX_PATH, szUpwardPath, NULL);
+	//wcscpy_s(szUpwardPath, lpszDirectory);
+	size_t len = wcslen(szUpwardPath);
+
+	if ('\\' == szUpwardPath[len - 1])
+		szUpwardPath[len - 1] = 0;
+
+	return MakeFolderExistInternal(szUpwardPath);
 }
 
 #pragma endregion

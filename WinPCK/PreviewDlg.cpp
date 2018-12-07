@@ -60,7 +60,7 @@ PICFORMAT CPriviewInDlg::GetPicFormatFromFilename(LPCWSTR lpszFilename)
 }
 #pragma endregion
 
-BOOL CPriviewInDlg::Show(HANDLE pckHandle, const PCK_UNIFIED_FILE_ENTRY* const lpPckFileIndexToShow, TWin *_win)
+BOOL CPriviewInDlg::Show(const PCK_UNIFIED_FILE_ENTRY* const lpPckFileIndexToShow, TWin *_win)
 {
 #pragma region get FileTitle
 
@@ -102,9 +102,9 @@ BOOL CPriviewInDlg::Show(HANDLE pckHandle, const PCK_UNIFIED_FILE_ENTRY* const l
 		return FALSE;
 	}
 
-	pck_GetSingleFileData(pckHandle, lpPckFileIndexToShow, (char*)m_buffer, m_buffersize);
 
-	dlg->Exec();
+	if(WINPCK_OK == pck_GetSingleFileData(lpPckFileIndexToShow, (char*)m_buffer, m_buffersize))
+		dlg->Exec();
 
 	delete dlg;
 

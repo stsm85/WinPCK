@@ -42,9 +42,8 @@ protected:
 	//检查新文件名
 	BOOL			CheckNewFilename();
 
-	//获取node路径
-	BOOL	GetCurrentNodeString(char* szCurrentNodePathString, const PCK_PATH_NODE* lpNode);
 public:
+	//获取node路径
 	static BOOL	GetCurrentNodeString(wchar_t *szCurrentNodePathString, const PCK_PATH_NODE* lpNode);
 protected:
 	BOOL	FindDuplicateNodeFromFileList(const PCK_PATH_NODE* lpNodeToInsertPtr, DWORD &_in_out_FileCount);
