@@ -63,9 +63,12 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 
 	//InstallExceptionFilter(THIS_NAME, "%s\r\n异常信息已被保存到:\r\n%s\r\n");
 
-	GetWindowRect(&rect);
 	int		cx = ::GetSystemMetrics(SM_CXFULLSCREEN), cy = ::GetSystemMetrics(SM_CYFULLSCREEN);
-	int		xsize = rect.right - rect.left, ysize = rect.bottom - rect.top;
+
+	//GetWindowRect(&rect);
+	//int		xsize = rect.right - rect.left, ysize = rect.bottom - rect.top;
+
+	int		xsize = 1100, ysize = 800;
 
 	::SetClassLong(hWnd, GCL_HICON,
 		(LONG_PTR)::LoadIcon(TApp::GetInstance(), (LPCTSTR)IDI_ICON_APP));
@@ -289,10 +292,16 @@ BOOL TInstDlg::EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight)
 {
 	HWND	hList = GetDlgItem(IDC_LIST);
 	HWND	hPrgs = GetDlgItem(IDC_PROGRESS);
+	HWND	hToolbar = GetDlgItem(IDC_TOOLBAR);
 
-	::SetWindowPos(GetDlgItem(IDC_TOOLBAR), NULL, 0, 0, nWidth, 58, SWP_NOMOVE | SWP_NOZORDER | SWP_NOREDRAW);
+	RECT rectToolbar;
+
+	GetClientRect(hToolbar, &rectToolbar);
+
+	::SetWindowPos(hToolbar, NULL, 0, 0, nWidth, rectToolbar.bottom, SWP_NOMOVE | SWP_NOZORDER | SWP_NOREDRAW);
+
 	::SetWindowPos(hPrgs, NULL, 0, nHeight - 36, nWidth, 13, SWP_NOZORDER);
-	::SetWindowPos(hList, NULL, 0, 0, nWidth, nHeight - 97, SWP_NOZORDER | SWP_NOMOVE);
+	::SetWindowPos(hList, NULL, 0, rectToolbar.bottom + 6, nWidth, nHeight - (36 + rectToolbar.bottom + 6), SWP_NOZORDER);
 	ListView_SetColumnWidth(hList, 0, nWidth - 257);
 
 	::SetWindowPos(GetDlgItem(IDC_STATUS), NULL, 0, nHeight - 22, nWidth, 22, SWP_NOZORDER);

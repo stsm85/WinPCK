@@ -16,7 +16,7 @@ typedef void(*SHOW_LIST_CALLBACK)(void*, int, const wchar_t *, int, unsigned __i
 
 typedef int(*FeedbackCallback)(void* pTag, int eventId, WPARAM wParam, LPARAM lParam);
 
-
+#if 0
 typedef struct _RESTORE_INFOS
 {
 	BOOL			isValid;
@@ -32,7 +32,7 @@ typedef struct _RESTORE_INFOS
 	size_t			sizeOfIndexTailBuffer;
 	LPBYTE			lpIndexTailBuffer;
 }RESTORE_INFOS, *LPRESTORE_INFOS;
-
+#endif
 
 class CPckControlCenter;
 

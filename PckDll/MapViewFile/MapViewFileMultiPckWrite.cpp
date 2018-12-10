@@ -30,6 +30,7 @@ BOOL CMapViewFileMultiPckWrite::OpenPck(LPCSTR lpszFilename, DWORD dwCreationDis
 	return rtn;
 }
 
+//OPEN_ALWAYS, CREATE_ALWAYES, OPEN_EXISTING
 BOOL CMapViewFileMultiPckWrite::OpenPck(LPCWSTR lpszFilename, DWORD dwCreationDisposition)
 {
 	BOOL rtn = FALSE;

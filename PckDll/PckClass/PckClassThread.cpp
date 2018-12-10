@@ -72,10 +72,6 @@ void CPckClassThreadWorker::ExecuteMainThreadGroup(PCK_ALL_INFOS &pckAllInfo, in
 	pckAllInfo.dwFileCountToAdd = mt_dwFileCountOfWriteTarget;
 	pckAllInfo.dwAddressOfFilenameIndex = mt_dwAddressQueue;
 
-	//if(!isThreadWorkerStillWorking()) {
-	//	m_PckLog.PrintLogW(TEXT_USERCANCLE);
-	//}
-
 }
 
 

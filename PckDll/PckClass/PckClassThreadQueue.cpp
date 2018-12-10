@@ -17,15 +17,18 @@ BOOL CPckClassThreadWorker::initCompressedDataQueue(DWORD dwFileCount, QWORD dwA
 BOOL CPckClassThreadWorker::putCompressedDataQueue(PCKINDEXTABLE &cPckFileIndexToCompress)
 {
 #pragma region 减少内存消耗
+	//用到的次数很少
 	DWORD dwUnusedMemory = cPckFileIndexToCompress.dwMallocSize - cPckFileIndexToCompress.cFileIndex.dwFileCipherTextSize;
 	if((10 * 1024 * 1024) < dwUnusedMemory) {
 		LPBYTE newbuf = (LPBYTE)realloc(cPckFileIndexToCompress.compressed_file_data, cPckFileIndexToCompress.cFileIndex.dwFileCipherTextSize);
 		if(NULL != newbuf) {
 			cPckFileIndexToCompress.compressed_file_data = newbuf;
 			cPckFileIndexToCompress.dwMallocSize = cPckFileIndexToCompress.cFileIndex.dwFileCipherTextSize;
+			freeMaxToSubtractMemory(dwUnusedMemory);
+			logOutput(__FUNCTION__, "reduce memory usage success dwUnusedMemory = %u\r\n", dwUnusedMemory);
 		}
-		freeMaxToSubtractMemory(dwUnusedMemory);
 	}
+
 #pragma endregion
 
 	AcquireSRWLockExclusive(&m_LockQueue);

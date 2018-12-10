@@ -2,7 +2,7 @@
 
 #define define_get_pckAllInfo_by_version(_ver, _id)	\
 		PCKTAIL_V##_ver PckTail_v##_ver; \
-		cRead.SetFilePointer(-((QWORD)(sizeof(PCKTAIL_V##_ver))), FILE_END); \
+		cRead.SetFilePointer(qwPckSizeInHeader - ((QWORD)(sizeof(PCKTAIL_V##_ver))), FILE_BEGIN); \
 		if (!cRead.Read(&PckTail_v##_ver, sizeof(PCKTAIL_V##_ver))) { \
 			m_PckLog.PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__); \
 			goto dect_err; \

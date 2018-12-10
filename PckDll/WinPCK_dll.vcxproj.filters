@@ -72,9 +72,6 @@
     <ClCompile Include="PckClass\PckClassVersionDetect.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
-    <ClCompile Include="PckClass\PckClassExceptionRestore.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
     <ClCompile Include="PckClass\PckClassRebuildFilter.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>

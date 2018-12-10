@@ -11,7 +11,7 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 	int			level = m_lpPckParams->dwCompressLevel;
 	int			threadnum = m_lpPckParams->dwMTThread;
 
-	QWORD		dwAddress;
+	QWORD		dwAddressWhereToAppendData;
 	THREAD_PARAMS		cThreadParams;
 
 	//开始查找文件
@@ -31,6 +31,9 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 
 		lpNodeToInsertPtr = lpNodeToInsert;
 
+		//从文件尾添加数据，操作失败后可回退
+		dwAddressWhereToAppendData = m_PckAllInfo.qwPckSize;
+
 		//取得当前节点的相对路径
 		if(!GetCurrentNodeString(cThreadParams.cDataFetchMethod.szCurrentNodeString, lpNodeToInsert)) {
 			assert(FALSE);
@@ -44,8 +47,10 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 			TEXT_LOG_LEVEL_THREAD, level, threadnum);
 
 	} else {
+		//新建文件
+		//m_PckAllInfo.dwAddressOfFilenameIndex = PCK_DATA_START_AT;
+		dwAddressWhereToAppendData = PCK_DATA_START_AT;
 
-		m_PckAllInfo.dwAddressOfFilenameIndex = PCK_DATA_START_AT;
 		lpNodeToInsertPtr = m_PckAllInfo.cRootNode.child;
 		*cThreadParams.cDataFetchMethod.szCurrentNodeString = 0;
 		cThreadParams.cDataFetchMethod.nCurrentNodeStringLen = 0;
@@ -116,19 +121,19 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 		return FALSE;
 	}
 
-	if(!initCompressedDataQueue(mt_dwFileCountOfWriteTarget = dwNewFileCount, dwAddress = m_PckAllInfo.dwAddressOfFilenameIndex)) {
+	if(!initCompressedDataQueue(mt_dwFileCountOfWriteTarget = dwNewFileCount, dwAddressWhereToAppendData/*m_PckAllInfo.dwAddressOfFilenameIndex*/)) {
 		return FALSE;
 	}
 
 	ExecuteMainThreadGroup(m_PckAllInfo, threadnum, &cThreadParams);
-	dwAddress = m_PckAllInfo.dwAddressOfFilenameIndex;
+	dwAddressWhereToAppendData = m_PckAllInfo.dwAddressOfFilenameIndex;
 
 	//写文件索引
 	m_PckAllInfo.dwFileCount = m_PckAllInfo.dwFileCountOld - dwDuplicateFileCount;
 
-	WriteAllIndex(mt_lpFileWrite, &m_PckAllInfo, dwAddress);
+	WriteAllIndex(mt_lpFileWrite, &m_PckAllInfo, dwAddressWhereToAppendData);
 
-	AfterProcess(mt_lpFileWrite, m_PckAllInfo, dwAddress);
+	AfterProcess(mt_lpFileWrite, m_PckAllInfo, dwAddressWhereToAppendData);
 
 	uninitCompressedDataQueue();
 

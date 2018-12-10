@@ -382,14 +382,10 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile)
 		goto dect_err;
 	}
 
-	//判断是不是64位的文件大小
-	if (!cRead.SetPckPackSize((0x100 < cPckHead.dwHeadCheckTail) ? cPckHead.dwPckSize : ((PCKHEAD_V2030*)&cPckHead)->dwPckSize)) {
+	//判断是不是64位的文件大小，head中的文件大小是否和实际相符
+	QWORD qwPckSizeInHeader = (0x100 < cPckHead.dwHeadCheckTail) ? cPckHead.dwPckSize : ((PCKHEAD_V2030*)&cPckHead)->dwPckSize;
 
-		m_PckLog.PrintLogEL(TEXT_PCK_SIZE_INVALID, __FILE__, __FUNCTION__, __LINE__);
-		goto dect_err;
-	}
-
-	cRead.SetFilePointer(-((QWORD)(sizeof(DWORD) * 4)), FILE_END);
+	cRead.SetFilePointer(qwPckSizeInHeader - ((QWORD)(sizeof(DWORD) * 4)), FILE_BEGIN);
 
 	if (!cRead.Read(&dwTailVals, sizeof(DWORD) * 4)) {
 		m_PckLog.PrintLogEL(TEXT_READFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
@@ -479,6 +475,24 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile)
 	}
 
 	m_PckAllInfo.lpSaveAsPckVerFunc = m_PckAllInfo.lpDetectedPckVerFunc = &cPckVersionFunc[iDetectedPckID];
+
+	//调整文件大小
+	QWORD qwSizeFileBefore = cRead.GetFileSize();
+
+	if (qwPckSizeInHeader < qwSizeFileBefore){
+
+		cRead.clear();
+		CMapViewFileMultiPckWrite cWrite(cPckVersionFunc[iDetectedPckID].cPckXorKeys.dwMaxSinglePckSize);
+		
+		if (cWrite.OpenPck(lpszPckFile, OPEN_EXISTING)) {
+			
+			cWrite.SetFilePointer(qwPckSizeInHeader);
+			cWrite.SetEndOfFile();
+
+			m_PckLog.PrintLogI("Pck file size does not match, adjusted from %llu to %llu", qwSizeFileBefore, qwPckSizeInHeader);
+
+		}
+	}
 
 	return TRUE;
 

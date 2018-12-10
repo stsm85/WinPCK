@@ -49,7 +49,7 @@ private:
 	void	Reset(DWORD dwUIProgressUpper = 1);
 #pragma region 打开关闭文件
 
-	BOOL	Open(LPCTSTR lpszFile, BOOL isOpenAfterRestore);
+	//BOOL	Open(LPCTSTR lpszFile, BOOL isOpenAfterRestore);
 	void	Close();
 public:
 
@@ -60,7 +60,7 @@ public:
 #pragma region 重命名节点
 
 	//重命名一个节点
-	BOOL	RenameEntry(PCK_UNIFIED_FILE_ENTRY* lpFileEntry, wchar_t* lpszReplaceString);
+	BOOL	RenameEntry(PCK_UNIFIED_FILE_ENTRY* lpFileEntry, const wchar_t* lpszReplaceString);
 	//提交
 	BOOL	RenameSubmit();
 
@@ -246,11 +246,11 @@ private:
 	FMTPCK	GetPckTypeFromFilename(LPCTSTR lpszFile);
 
 #pragma region 备份的还原数据
-
+#if 0
 	void	CreateRestoreData();
 	BOOL	RestoreData(LPCTSTR lpszFile, FMTPCK emunFileFormat);
 	void	DeleteRestoreData();
-
+#endif
 #pragma endregion
 public:
 
@@ -264,8 +264,6 @@ private:
 	PCK_RUNTIME_PARAMS			cParams;
 	CPckClass					*m_lpClassPck;
 	CPckClassLog				*m_lpPckLog;
-
-	RESTORE_INFOS				m_RestoreInfomation;
 
 	//格式
 	FMTPCK						m_emunFileFormat;

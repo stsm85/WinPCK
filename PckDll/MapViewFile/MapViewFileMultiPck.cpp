@@ -50,17 +50,4 @@ void CMapViewFileMultiPck::GetPkXName(LPWSTR dst, LPCWSTR src, int _pckid)
 
 }
 
-BOOL CMapViewFileMultiPck::SetPckPackSize(QWORD qwPckSize)
-{
-
-	if(m_uqwPckStructSize.qwValue < qwPckSize) {
-		//pck标注的文件大小比实际文件要大，文件不全
-		return FALSE;
-	} else if(m_uqwPckStructSize.qwValue > qwPckSize) {
-		//pck标注的文件大小比实际文件要小，重新指定文件大小
-		m_uqwPckStructSize.qwValue = qwPckSize;
-	}
-
-	return TRUE;
-}
 

@@ -32,10 +32,6 @@ public:
 	//数据区冗余数据大小
 	QWORD	GetPckRedundancyDataSize();
 
-	//获取基本信息，用于写入文件后造成的文件损坏的恢复
-	BOOL GetPckBasicInfo(LPRESTORE_INFOS lpRestoreInfo);
-	BOOL SetPckBasicInfo(LPRESTORE_INFOS lpRestoreInfo);
-
 protected:
 	//重置信息
 	void	ResetPckInfos();
@@ -53,10 +49,12 @@ protected:
 	//BOOL	CheckIfNeedForcedStopWorking();
 	void	SetErrMsgFlag(int errMsg);
 
-#ifdef _DEBUG
+#if _DEBUG
+#define _USELOGFILE 1
 	static SRWLOCK	m_LockLogFile;
 	static int logOutput(const char *file, const char *format, ...);
 #else
+#define _USELOGFILE 0
 	static void logOutput(...){}
 #endif
 

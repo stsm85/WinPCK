@@ -379,7 +379,7 @@ BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, size_t lenNodeRes, wchar_
 }
 #endif
 //public
-BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceString)
+BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString)
 {
 	//假设文件名为a\b\c\d.exe
 	//本节点为c
@@ -403,7 +403,7 @@ BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceStrin
 }
 
 
-BOOL CPckClassNode::RenameIndex(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceString)
+BOOL CPckClassNode::RenameIndex(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString)
 {
 	//针对目录浏览模式下的文件进行修改
 	int		nBytesReadayToWrite;
@@ -425,7 +425,7 @@ BOOL CPckClassNode::RenameIndex(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceStri
 	return TRUE;
 }
 
-BOOL CPckClassNode::RenameIndex(LPPCKINDEXTABLE lpIndex, wchar_t* lpszReplaceString)
+BOOL CPckClassNode::RenameIndex(LPPCKINDEXTABLE lpIndex, const wchar_t* lpszReplaceString)
 {
 	//转换为ansi，检查长度
 	char szReplaceStringAnsi[MAX_PATH_PCK_260];

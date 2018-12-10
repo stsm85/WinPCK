@@ -37,7 +37,7 @@ FMTPCK	CPckControlCenter::GetPckTypeFromFilename(LPCTSTR lpszFile)
 	return FMTPCK_UNKNOWN;
 }
 
-BOOL CPckControlCenter::Open(LPCTSTR lpszFile, BOOL isOpenAfterRestore)
+BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 {
 	//判断文件格式
 	FMTPCK emunFileFormat = GetPckTypeFromFilename(lpszFile);
@@ -61,10 +61,10 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile, BOOL isOpenAfterRestore)
 
 			m_emunFileFormat = emunFileFormat;
 
-			DeleteRestoreData();
+			//DeleteRestoreData();
 
-			//创建一个备份，用于失败后恢复
-			CreateRestoreData();
+			////创建一个备份，用于失败后恢复
+			//CreateRestoreData();
 
 			m_lpPckRootNode = m_lpClassPck->GetPckPathNode();
 
@@ -74,20 +74,20 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile, BOOL isOpenAfterRestore)
 			return TRUE;
 
 		} else {
-			if((FALSE == isOpenAfterRestore) && RestoreData(lpszFile, emunFileFormat)) {
+			//if((FALSE == isOpenAfterRestore) && RestoreData(lpszFile, emunFileFormat)) {
 
-				return Open(lpszFile, TRUE);
-			} else {
+			//	return Open(lpszFile, TRUE);
+			//} else {
 				return FALSE;
-			}
+			//}
 		}
 	}
 }
 
-BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
-{
-	return Open(lpszFile, FALSE);
-}
+//BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
+//{
+//	return Open(lpszFile, FALSE);
+//}
 
 
 void CPckControlCenter::Close()
@@ -116,7 +116,7 @@ void CPckControlCenter::Close()
 
 #pragma region 重命名节点
 
-BOOL CPckControlCenter::RenameEntry(PCK_UNIFIED_FILE_ENTRY* lpFileEntry, wchar_t* lpszReplaceString)
+BOOL CPckControlCenter::RenameEntry(PCK_UNIFIED_FILE_ENTRY* lpFileEntry, const wchar_t* lpszReplaceString)
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
@@ -383,7 +383,7 @@ int CPckControlCenter::AddVersionAlgorithmId(int AlgorithmId, int Version)
 #pragma endregion
 
 #pragma region 备份的还原数据
-
+#if 0
 void CPckControlCenter::CreateRestoreData()
 {
 	if(FMTPCK_PCK == m_emunFileFormat) {
@@ -429,5 +429,5 @@ void CPckControlCenter::DeleteRestoreData()
 		m_RestoreInfomation.isValid = FALSE;
 	}
 }
-
+#endif
 #pragma endregion

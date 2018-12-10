@@ -16,7 +16,7 @@ CPckClassBaseFeatures::~CPckClassBaseFeatures()
 {}
 
 
-#ifdef _DEBUG
+#if _USELOGFILE
 SRWLOCK	CPckClassBaseFeatures::m_LockLogFile;
 
 int CPckClassBaseFeatures::logOutput(const char *file, const char *format, ...)

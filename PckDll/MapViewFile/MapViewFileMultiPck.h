@@ -14,7 +14,7 @@ public:
 	CMapViewFileMultiPck();
 	~CMapViewFileMultiPck();
 
-	BOOL	SetPckPackSize(QWORD qwPckSize);
+	//BOOL	CheckPckPackSize(QWORD qwPckSize);
 	
 protected:
 

@@ -18,8 +18,8 @@ typedef char *				LPSTR;
 typedef PCK_UNIFIED_FILE_ENTRY*			LPPUFE;
 typedef const PCK_UNIFIED_FILE_ENTRY*	CLPPUFE;
 
-#define WINPCK_VERSION        "1.30.0.1"
-#define WINPCK_VERSION_NUMBER  1,30,0,1
+#define WINPCK_VERSION        "1.30.0.4"
+#define WINPCK_VERSION_NUMBER  1,30,0,4
 
 typedef enum _PCKRTN
 {
@@ -106,12 +106,14 @@ WINPCK_API BOOL			pck_isSupportAddFileToPck();
 WINPCK_API CLPSTR 		pck_GetAdditionalInfo();
 WINPCK_API DWORD		pck_GetAdditionalInfoMaxSize();
 //
-WINPCK_API PCKRTN		pck_SetAdditionalInfo(CLPSTR  lpszAdditionalInfo);//
+WINPCK_API PCKRTN		pck_SetAdditionalInfo(CLPSTR  lpszAdditionalInfo);
 
 //重命名一个节点
-WINPCK_API PCKRTN		pck_RenameEntry(LPPUFE lpFileEntry, LPWSTR lpszReplaceString);//
+WINPCK_API PCKRTN		pck_RenameEntry(LPPUFE lpFileEntry, CLPWSTR lpszReplaceString);
 //提交
 WINPCK_API PCKRTN		pck_RenameSubmit();
+//use it like do_RenameEntry(L"x.pck", L"gfx\\test", L"testabc");
+WINPCK_API PCKRTN		do_RenameEntry(CLPWSTR  szPckFile, CLPWSTR lpFullPathToRename, CLPWSTR lpszReplaceString);
 
 //预览文件
 WINPCK_API PCKRTN		pck_GetSingleFileData(CLPPUFE lpFileEntry, LPSTR _inout_buffer, size_t _in_sizeOfBuffer = 0);
@@ -119,8 +121,8 @@ WINPCK_API PCKRTN		pck_GetSingleFileData(CLPPUFE lpFileEntry, LPSTR _inout_buffe
 //解压文件
 WINPCK_API PCKRTN		pck_ExtractFilesByEntrys(CLPPUFE* lpFileEntryArray, int nEntryCount, CLPWSTR  lpszDestDirectory);
 WINPCK_API PCKRTN		pck_ExtractAllFiles(CLPWSTR  lpszDestDirectory);
-WINPCK_API PCKRTN		do_ExtractPartFiles(CLPWSTR  lpszFilePathSrc, CLPWSTR  lpszDestDirectory, CLPWSTR  lpszFileToExtract);
-WINPCK_API PCKRTN		do_ExtractAllFiles(CLPWSTR  lpszFilePathSrc, CLPWSTR  lpszDestDirectory);
+WINPCK_API PCKRTN		do_ExtractPartFiles(CLPWSTR  lpszSrcPckFile, CLPWSTR  lpszDestDirectory, CLPWSTR  lpszFileToExtract);
+WINPCK_API PCKRTN		do_ExtractAllFiles(CLPWSTR  lpszSrcPckFile, CLPWSTR  lpszDestDirectory);
 
 //重建pck文件
 WINPCK_API PCKRTN		pck_ParseScript(CLPWSTR  lpszScriptFile);
@@ -134,9 +136,9 @@ WINPCK_API void			pck_StringArrayReset();
 WINPCK_API void			pck_StringArrayAppend(CLPWSTR  lpszFilePath);
 WINPCK_API PCKRTN		pck_UpdatePckFileSubmit(CLPWSTR  szPckFile, CLPPUFE lpFileEntry);
 //添加文件到pck
-WINPCK_API PCKRTN		do_AddFileToPckFile(CLPWSTR  lpszFilePathSrc, CLPWSTR  szDstPckFile, CLPWSTR  lpszPathInPckToAdd);
+WINPCK_API PCKRTN		do_AddFileToPckFile(CLPWSTR  lpszFilePathSrc, CLPWSTR  szDstPckFile, CLPWSTR  lpszPathInPckToAdd, int level = 9);
 //创建新的pck文件
-WINPCK_API PCKRTN		do_CreatePckFile(CLPWSTR  lpszFilePathSrc, CLPWSTR  szDstPckFile, int _versionId = 0);
+WINPCK_API PCKRTN		do_CreatePckFile(CLPWSTR  lpszFilePathSrc, CLPWSTR  szDstPckFile, int _versionId = 0, int level = 9);
 
 //删除一个节点，通过提交应用更改
 WINPCK_API PCKRTN		pck_DeleteEntry(CLPPUFE lpFileEntry);

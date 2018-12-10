@@ -9,11 +9,11 @@ FETCHDATA_RET CPckClassThreadWorker::detectMaxToAddMemory(DWORD dwMallocSize)
 
 			if(m_lpPckParams->cVarParams.dwMTMemoryUsed >= m_lpPckParams->dwMTMaxMemory) {
 
-				logOutput(__FUNCTION__ "_Sleep", "SleepConditionVariableSRW\r\n");
+				logOutput(__FUNCTION__ "_Sleep", "SleepConditionVariableSRW, dwMTMemoryUsed = %u, dwMTMaxMemory = %u\r\n", m_lpPckParams->cVarParams.dwMTMemoryUsed, m_lpPckParams->dwMTMaxMemory);
 				m_memoryNotEnoughBlocked = TRUE;
 				SleepConditionVariableSRW(&m_cvMemoryNotEnough, &m_LockMaxMemory, 5000, 0/*CONDITION_VARIABLE_LOCKMODE_SHARED*/);
 
-				logOutput(__FUNCTION__ "_Sleep", "Awake\r\n");
+				logOutput(__FUNCTION__ "_Sleep", "Awake, dwMTMemoryUsed = %u, dwMTMaxMemory = %du\r\n", m_lpPckParams->cVarParams.dwMTMemoryUsed, m_lpPckParams->dwMTMaxMemory);
 			} else {
 				return FD_OK;
 			}
@@ -31,9 +31,12 @@ FETCHDATA_RET CPckClassThreadWorker::detectMaxAndAddMemory(LPBYTE &_out_buffer, 
 {
 	FETCHDATA_RET rtn = FD_OK;
 	int retry_count = 10;
-	AcquireSRWLockExclusive(&m_LockMaxMemory);
 
-	if(FD_OK == (rtn = detectMaxToAddMemory(dwMallocSize))) {
+	AcquireSRWLockExclusive(&m_LockMaxMemory);
+	BOOL bMemIsEnough = (FD_OK == (rtn = detectMaxToAddMemory(dwMallocSize)));
+	ReleaseSRWLockExclusive(&m_LockMaxMemory);
+
+	if(bMemIsEnough) {
 
 		while(NULL == (_out_buffer = (LPBYTE)malloc(dwMallocSize))) {
 			assert(FALSE);
@@ -51,10 +54,15 @@ FETCHDATA_RET CPckClassThreadWorker::detectMaxAndAddMemory(LPBYTE &_out_buffer, 
 			break;
 		}
 		
-		if(NULL != _out_buffer)m_lpPckParams->cVarParams.dwMTMemoryUsed += dwMallocSize;
+		if (NULL != _out_buffer)
+		{
+			AcquireSRWLockExclusive(&m_LockMaxMemory);
+			m_lpPckParams->cVarParams.dwMTMemoryUsed += dwMallocSize;
+			logOutput(__FUNCTION__ "_Addmem", "malloc size %u, dwMTMemoryUsed = %u\r\n", dwMallocSize, m_lpPckParams->cVarParams.dwMTMemoryUsed);
+			ReleaseSRWLockExclusive(&m_LockMaxMemory);
+		}
 	}
 
-	ReleaseSRWLockExclusive(&m_LockMaxMemory);
 	return rtn;
 }
 
@@ -62,13 +70,9 @@ FETCHDATA_RET CPckClassThreadWorker::detectMaxAndAddMemory(LPBYTE &_out_buffer, 
 void CPckClassThreadWorker::freeMaxToSubtractMemory(DWORD dwMallocSize)
 {
 
-	AcquireSRWLockShared(&m_LockMaxMemory);
-	DWORD dwMTMemoryUsed = m_lpPckParams->cVarParams.dwMTMemoryUsed;
-	ReleaseSRWLockShared(&m_LockMaxMemory);
-
-	dwMTMemoryUsed -= dwMallocSize;
 	AcquireSRWLockExclusive(&m_LockMaxMemory);
-	m_lpPckParams->cVarParams.dwMTMemoryUsed = dwMTMemoryUsed;
+	m_lpPckParams->cVarParams.dwMTMemoryUsed -= dwMallocSize;
+	logOutput(__FUNCTION__ "_freemem", "dwMTMemoryUsed = %u, -dwMallocSize = %u\r\n", m_lpPckParams->cVarParams.dwMTMemoryUsed, dwMallocSize);
 	ReleaseSRWLockExclusive(&m_LockMaxMemory);
 
 	if(m_memoryNotEnoughBlocked){

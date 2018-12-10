@@ -28,13 +28,13 @@ void CPckControlCenter::regMsgFeedback(void* _pTag, FeedbackCallback _FeedbackCa
 int CPckControlCenter::DefaultFeedbackCallback(void* pTag, int eventId, WPARAM wParam, LPARAM lParam)
 {
 	wchar_t szTitle[MAX_PATH] = { 0 };
-	char szInput;
 
 	switch (eventId)
 	{
 	case PCK_FILE_OPEN_SUCESS:
 
 		GetConsoleTitleW(szTitle, MAX_PATH);
+		wcscat_s(szTitle, L" - ");
 		wcscat_s(szTitle, (const wchar_t*)lParam);
 		SetConsoleTitleW(szTitle);
 
@@ -44,7 +44,7 @@ int CPckControlCenter::DefaultFeedbackCallback(void* pTag, int eventId, WPARAM w
 		SetConsoleTitleA("WinPCK");
 
 		break;
-
+#if 0
 	case PCK_FILE_NEED_RESTORE:
 		
 		printf("fail to open file\r\n"
@@ -57,7 +57,8 @@ int CPckControlCenter::DefaultFeedbackCallback(void* pTag, int eventId, WPARAM w
 			return PCK_FEEDBACK_YES;
 		else
 			return PCK_FEEDBACK_NO;
-
+#endif
+	default:
 		break;
 	}
 

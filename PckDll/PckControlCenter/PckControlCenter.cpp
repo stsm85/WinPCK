@@ -20,7 +20,6 @@ const DWORD	CPckControlCenter::m_dwNumberOfProcessors = thread::hardware_concurr
 CPckControlCenter::CPckControlCenter():
 	m_lpClassPck(NULL),
 	m_lpPckRootNode(NULL),
-	m_RestoreInfomation({ 0 }),
 	m_emunFileFormat(FMTPCK_UNKNOWN),
 	cParams({ 0 })
 {
@@ -44,15 +43,12 @@ void CPckControlCenter::init()
 	cParams.dwMTMaxMemory = getMaxMemoryAllowed();
 
 	m_lpPckLog = new CPckClassLog();
-	//m_lpRestoreInfomation = new RESTORE_INFOS;
 }
 
 void CPckControlCenter::uninit()
 {
-	DeleteRestoreData();
 	lpszFilePathToAdd.clear();
 	delete m_lpPckLog;
-	//delete m_lpRestoreInfomation;
 }
 
 void CPckControlCenter::Reset(DWORD dwUIProgressUpper)
@@ -60,11 +56,6 @@ void CPckControlCenter::Reset(DWORD dwUIProgressUpper)
 	memset(&cParams.cVarParams, 0, sizeof(PCK_VARIETY_PARAMS));
 	cParams.cVarParams.dwUIProgressUpper = dwUIProgressUpper;
 }
-
-//CPckClass* CPckControlCenter::GetPckClass()
-//{
-//	return m_lpClassPck;
-//}
 
 #pragma region 日志相关功能
 //日志

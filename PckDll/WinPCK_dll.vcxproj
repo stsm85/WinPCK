@@ -322,7 +322,6 @@
     <ClCompile Include="PckClass\PckClassThreadData.cpp" />
     <ClCompile Include="PckClass\PckClassAppendFiles.cpp" />
     <ClCompile Include="PckClass\PckClassCodepage.cpp" />
-    <ClCompile Include="PckClass\PckClassExceptionRestore.cpp" />
     <ClCompile Include="PckClass\PckClassBaseFeatures.cpp" />
     <ClCompile Include="PckClass\PckClassHeadTail.cpp" />
     <ClCompile Include="PckClass\PckClassHeadTailWriter.cpp" />
