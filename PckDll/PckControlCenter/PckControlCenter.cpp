@@ -15,7 +15,7 @@
 #include "PckClassLog.h"
 #include <thread>
 	
-const DWORD	CPckControlCenter::m_dwNumberOfProcessors = thread::hardware_concurrency();
+//const DWORD	CPckControlCenter::m_dwNumberOfProcessors = thread::hardware_concurrency();
 
 CPckControlCenter::CPckControlCenter():
 	m_lpClassPck(NULL),
@@ -39,7 +39,7 @@ void CPckControlCenter::init()
 	cParams.lpPckControlCenter = this;
 	cParams.code_page = 936;
 	cParams.dwCompressLevel = getDefaultCompressLevel();
-	cParams.dwMTThread = m_dwNumberOfProcessors;
+	cParams.dwMTThread = thread::hardware_concurrency();
 	cParams.dwMTMaxMemory = getMaxMemoryAllowed();
 
 	m_lpPckLog = new CPckClassLog();

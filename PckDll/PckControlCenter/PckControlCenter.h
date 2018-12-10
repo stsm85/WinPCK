@@ -268,8 +268,6 @@ private:
 	//∏Ò Ω
 	FMTPCK						m_emunFileFormat;
 
-	const static DWORD			m_dwNumberOfProcessors;
-
 	static FeedbackCallback		pFeedbackCallBack;
 	static void*				pTag;
 

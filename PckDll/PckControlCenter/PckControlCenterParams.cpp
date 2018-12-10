@@ -11,13 +11,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "PckControlCenter.h"
-
-
-//LPPCK_RUNTIME_PARAMS CPckControlCenter::GetParams()
-//{
-//	return &cParams;
-//}
-
+#include <thread>
 
 #pragma region 线程控制
 
@@ -96,7 +90,7 @@ void CPckControlCenter::setMaxThread(DWORD dwThread)
 //线程默认参数
 DWORD CPckControlCenter::getMaxThreadUpperLimit()
 {
-	return (m_dwNumberOfProcessors + ((m_dwNumberOfProcessors + (m_dwNumberOfProcessors & 1)) >> 1));
+	return (thread::hardware_concurrency() + ((thread::hardware_concurrency() + (thread::hardware_concurrency() & 1)) >> 1));
 }
 
 #pragma endregion
