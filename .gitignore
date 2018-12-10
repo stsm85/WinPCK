@@ -23,7 +23,6 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.out
@@ -42,7 +41,11 @@
 .vs/*
 build/*
 Debug/*
+Release/libs/*
+Release_static/libs/*
+Release/dlltester_*.exe
 
 *.aps
 *.user
 *.aps
+*.exp

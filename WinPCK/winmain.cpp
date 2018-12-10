@@ -72,7 +72,7 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 
 	::SetClassLong(hWnd, GCL_HICON,
 		(LONG_PTR)::LoadIcon(TApp::GetInstance(), (LPCTSTR)IDI_ICON_APP));
-	MoveWindow((cx - xsize) / 2, (cy - ysize) / 2, xsize, ysize, TRUE);
+	//MoveWindow((cx - xsize) / 2, (cy - ysize) / 2, xsize, ysize, TRUE);
 
 	//界面和数据初始化
 	SetWindowTextA(THIS_MAIN_CAPTION);
@@ -90,6 +90,8 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 	initArgument();
 	//显示窗口
 	Show();
+
+	MoveWindow((cx - xsize) / 2, (cy - ysize) / 2, xsize, ysize, TRUE);
 
 	return	TRUE;
 }
@@ -299,23 +301,12 @@ BOOL TInstDlg::EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight)
 	GetClientRect(hToolbar, &rectToolbar);
 
 	::SetWindowPos(hToolbar, NULL, 0, 0, nWidth, rectToolbar.bottom, SWP_NOMOVE | SWP_NOZORDER | SWP_NOREDRAW);
-
-	::SetWindowPos(hPrgs, NULL, 0, nHeight - 36, nWidth, 13, SWP_NOZORDER);
-	::SetWindowPos(hList, NULL, 0, rectToolbar.bottom + 6, nWidth, nHeight - (36 + rectToolbar.bottom + 6), SWP_NOZORDER);
-	ListView_SetColumnWidth(hList, 0, nWidth - 257);
-
 	::SetWindowPos(GetDlgItem(IDC_STATUS), NULL, 0, nHeight - 22, nWidth, 22, SWP_NOZORDER);
 
+	::SetWindowPos(hPrgs, NULL, 0, nHeight - 36, nWidth, 13, SWP_NOZORDER);
 
-	//MoveWindow(arrHwnd[ID_LIST], 0, 0, x , y/2 , TRUE);
-	//ListView_SetColumnWidth(arrHwnd[ID_LIST], 0, x/2);
-	//ListView_SetColumnWidth(arrHwnd[ID_LIST], 1, x/8);
-	//ListView_SetColumnWidth(arrHwnd[ID_LIST], 2, x/3);
-
-	//MoveWindow(arrHwnd[ID_EDIT_CRC32], 0, y/2 , x , y/2 - 30, TRUE);
-	//MoveWindow(arrHwnd[ID_PROGRESS], 1 , y - 25 , x - 150 , 20 , TRUE);
-	//MoveWindow(arrHwnd[ID_COMBO], x - 145 , y - 25 , 80 , 20 , TRUE);
-	//MoveWindow(arrHwnd[ID_BTN_CALC], x - 63 , y - 28, 61, 25, TRUE);
+	::SetWindowPos(hList, NULL, 0, rectToolbar.bottom + 6, nWidth, nHeight - (36 + rectToolbar.bottom + 6), SWP_NOZORDER);
+	ListView_SetColumnWidth(hList, 0, nWidth - 257);
 
 	return TRUE;
 }
