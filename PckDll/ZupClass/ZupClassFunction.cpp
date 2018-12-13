@@ -261,7 +261,7 @@ BOOL CZupClass::BuildZupBaseDict()
 	return TRUE;
 }
 
-LPPCKINDEXTABLE CZupClass::GetBaseFileIndex(LPPCKINDEXTABLE lpIndex, LPPCKINDEXTABLE lpZeroBaseIndex)
+const PCKINDEXTABLE* CZupClass::GetBaseFileIndex(const PCKINDEXTABLE* lpIndex, const PCKINDEXTABLE* lpZeroBaseIndex)
 {
 	return m_PckAllInfo.lpPckIndexTable + (lpIndex - lpZeroBaseIndex);
 }

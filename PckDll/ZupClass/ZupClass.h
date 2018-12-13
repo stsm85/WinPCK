@@ -28,28 +28,27 @@ public:
 	BOOL	Init(LPCTSTR	szFile);
 
 	CONST	LPPCKINDEXTABLE		GetPckIndexTable();
-	//CONST	LPPCK_PATH_NODE		GetPckPathNode();
 
 	//重建pck文件
 	virtual BOOL	RebuildPckFile(LPCTSTR szRebuildPckFile, BOOL bUseRecompress) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 
 	//新建、更新pck文件
-	virtual BOOL	UpdatePckFile(LPCTSTR szPckFile, const vector<tstring> &lpszFilePath, const LPPCK_PATH_NODE lpNodeToInsert) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
+	virtual BOOL	UpdatePckFile(LPCTSTR szPckFile, const vector<tstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 
 	//重命名文件
 	virtual BOOL	RenameFilename() { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
 
 	//删除一个节点
 	virtual VOID	DeleteNode(LPPCK_PATH_NODE lpNode) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);}
+	virtual VOID	DeleteNode(LPPCKINDEXTABLE lpIndex) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); }
 
 	//重命名一个节点
-	virtual	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
-	virtual	BOOL	RenameIndex(LPPCK_PATH_NODE lpNode, wchar_t* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
-	virtual	BOOL	RenameIndex(LPPCKINDEXTABLE lpIndex, wchar_t* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
+	virtual	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
+	virtual	BOOL	RenameIndex(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
+	virtual	BOOL	RenameIndex(LPPCKINDEXTABLE lpIndex, const wchar_t* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
 
 	//预览文件
-	BOOL	GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
-
+	virtual BOOL	GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* const lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
 
 private:
 
@@ -67,7 +66,7 @@ private:
 	_inline void	DecodeDict(LPZUP_FILENAME_DICT lpZupDict);
 	VOID	AddDict(char *&lpszStringToAdd);
 
-	LPPCKINDEXTABLE GetBaseFileIndex(LPPCKINDEXTABLE lpIndex, LPPCKINDEXTABLE lpZeroBaseIndex);
+	const PCKINDEXTABLE* GetBaseFileIndex(const PCKINDEXTABLE* lpIndex, const PCKINDEXTABLE* lpZeroBaseIndex);
 
 };
 

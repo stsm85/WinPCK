@@ -1,13 +1,15 @@
 #include "MapViewFileMultiPck.h"
 
-CMapViewFileMultiPckWrite::CMapViewFileMultiPckWrite(QWORD qwMaxPckSize)
-{
 #ifdef _DEBUG
-	m_Max_PckFile_Size = 0x6400000;	//100MB
+CMapViewFileMultiPckWrite::CMapViewFileMultiPckWrite(QWORD qwMaxPckSize):
+	m_Max_PckFile_Size(100 * 1024 * 1024)
+{}
 #else
-	m_Max_PckFile_Size = qwMaxPckSize;
+CMapViewFileMultiPckWrite::CMapViewFileMultiPckWrite(QWORD qwMaxPckSize) :
+	m_Max_PckFile_Size(qwMaxPckSize)
+{}
 #endif
-}
+
 
 CMapViewFileMultiPckWrite::~CMapViewFileMultiPckWrite()
 {}

@@ -13,10 +13,10 @@
 
 #pragma warning ( disable : 4267 )
 
-BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, LPPCKINDEXTABLE lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer)
+BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* const lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer)
 {
 
-	LPPCKINDEXTABLE		lpPckFileIndexTable;
+	const PCKINDEXTABLE* lpPckFileIndexTable;
 
 	//"element\" = 0x6d656c65, 0x5c746e656d656c65
 	if(0x6d656c65 == *(DWORD*)lpZupFileIndexTable->cFileIndex.szFilename) {
