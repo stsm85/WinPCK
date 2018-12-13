@@ -3,7 +3,7 @@
 //重命名文件
 BOOL CPckClassWriteOperator::RenameFilename()
 {
-	init_compressor();
+	m_zlib.init_compressor(m_lpPckParams->dwCompressLevel);
 	m_PckLog.PrintLogI(TEXT_LOG_RENAME);
 
 	//以下是创建一个文件，用来保存压缩后的文件

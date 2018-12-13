@@ -69,7 +69,7 @@ LPPCKINDEXTABLE_COMPRESS CPckClassIndex::FillAndCompressIndexData(LPPCKINDEXTABL
 	BYTE pckFileIndexBuf[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
 	lpPckIndexTableComped->dwIndexDataLength = MAX_INDEXTABLE_CLEARTEXT_LENGTH;
 
-	compress(lpPckIndexTableComped->buffer, &lpPckIndexTableComped->dwIndexDataLength,
+	m_zlib.compress(lpPckIndexTableComped->buffer, &lpPckIndexTableComped->dwIndexDataLength,
 		m_PckAllInfo.lpSaveAsPckVerFunc->FillIndexData(lpPckFileIndexToCompress, pckFileIndexBuf), m_PckAllInfo.lpSaveAsPckVerFunc->dwFileIndexSize);
 	//将获取的
 	lpPckIndexTableComped->dwIndexValueHead = lpPckIndexTableComped->dwIndexDataLength ^ m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys.IndexCompressedFilenameDataLengthCryptKey1;

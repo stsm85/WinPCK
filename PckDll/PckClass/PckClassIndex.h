@@ -5,8 +5,7 @@
 #include "MapViewFileMultiPck.h"
 
 class CPckClassIndex :
-	public virtual CPckClassBaseFeatures,
-	protected virtual CPckClassZlib
+	public virtual CPckClassBaseFeatures
 {
 public:
 	CPckClassIndex();

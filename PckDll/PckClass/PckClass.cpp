@@ -19,6 +19,7 @@
 CPckClass::CPckClass(LPPCK_RUNTIME_PARAMS inout)
 {
 	m_lpPckParams = inout;
+	m_zlib.init_compressor(m_lpPckParams->dwCompressLevel);
 }
 
 CPckClass::~CPckClass()

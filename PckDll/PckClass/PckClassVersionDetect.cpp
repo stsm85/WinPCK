@@ -189,7 +189,7 @@ int CPckClassVersionDetect::FillUnknownVersionInfo(DWORD AlgorithmId, DWORD Vers
 
 		LPPCK_KEYS lpUnknownPckKeys = &cPckVersionFuncToAdd.cPckXorKeys;
 		LPPCK_VERSION_FUNC lpUnknownPckVersionFunc = &cPckVersionFuncToAdd;
-		lpUnknownPckKeys->id = AlgorithmId;
+		lpUnknownPckKeys->id = cPckVersionFunc.size();
 		_stprintf_s(lpUnknownPckKeys->name, TEXT("识别的未知格式(ver=0x%x id=%d)"), Version, AlgorithmId);
 		lpUnknownPckKeys->CategoryId = AFPCK_VERSION_202 == Version ? PCK_V2020 : PCK_V2030;
 		lpUnknownPckKeys->Version = Version;

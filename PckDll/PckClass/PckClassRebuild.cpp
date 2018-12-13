@@ -156,7 +156,7 @@ BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile)
 	int					threadnum = m_lpPckParams->dwMTThread;
 
 #pragma region 重置压缩参数
-	init_compressor();
+	m_zlib.init_compressor(m_lpPckParams->dwCompressLevel);
 #pragma endregion
 
 	//构造头和尾时需要的参数

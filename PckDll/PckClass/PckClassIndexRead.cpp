@@ -77,7 +77,7 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 			DWORD dwFileBytesRead = dwFileIndexTableClearDataLength;
 			BYTE pckFileIndexBuf[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
 
-			decompress(pckFileIndexBuf, &dwFileBytesRead,
+			m_zlib.decompress(pckFileIndexBuf, &dwFileBytesRead,
 				lpFileBuffer, dwFileIndexTableCryptedDataLength[0]);
 
 			m_PckAllInfo.lpDetectedPckVerFunc->PickIndexData(&lpPckIndexTable->cFileIndex, pckFileIndexBuf);

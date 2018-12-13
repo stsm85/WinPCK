@@ -46,9 +46,9 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* co
 		dwFileLengthToWrite = sizeOfBuffer;
 
 
-	if(check_zlib_header(lpMapAddress)) {
+	if(m_zlib.check_zlib_header(lpMapAddress)) {
 
-		if(Z_OK != decompress_part((BYTE*)buffer, &dwFileLengthToWrite,
+		if(Z_OK != m_zlib.decompress_part((BYTE*)buffer, &dwFileLengthToWrite,
 			lpMapAddress, lpPckFileIndex->dwFileCipherTextSize, lpPckFileIndex->dwFileClearTextSize)) {
 			if(lpPckFileIndex->dwFileClearTextSize == lpPckFileIndex->dwFileCipherTextSize)
 				memcpy(buffer, lpMapAddress, dwFileLengthToWrite);

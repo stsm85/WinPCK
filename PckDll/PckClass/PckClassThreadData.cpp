@@ -19,7 +19,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThread
 		logOutput(__FUNCTION__, "lpfirstFile_id=%d\r\n", lpOneFile->id);
 #endif
 		LPBYTE lpCompressedBuffer = (BYTE*)MALLOCED_EMPTY_DATA;
-		pckFileIndex.dwMallocSize = pThis->GetCompressBoundSizeByFileSize(pckFileIndex.cFileIndex.dwFileClearTextSize, pckFileIndex.cFileIndex.dwFileCipherTextSize, lpOneFile->dwFileSize);
+		pckFileIndex.dwMallocSize = pThis->m_zlib.GetCompressBoundSizeByFileSize(pckFileIndex.cFileIndex.dwFileClearTextSize, pckFileIndex.cFileIndex.dwFileCipherTextSize, lpOneFile->dwFileSize);
 
 		//构建文件名
 		memcpy(mystrcpy(pckFileIndex.cFileIndex.szwFilename, lpDataFetchMethod->szCurrentNodeString), lpOneFile->szwFilename + lpOneFile->nFileTitleLen, lpOneFile->nBytesToCopy - lpDataFetchMethod->nCurrentNodeStringLen);
@@ -44,7 +44,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThread
 			}
 
 			if(PCK_BEGINCOMPRESS_SIZE < pckFileIndex.cFileIndex.dwFileClearTextSize) {
-				pThis->compress(lpCompressedBuffer, &pckFileIndex.cFileIndex.dwFileCipherTextSize,
+				pThis->m_zlib.compress(lpCompressedBuffer, &pckFileIndex.cFileIndex.dwFileCipherTextSize,
 					lpBufferToRead, pckFileIndex.cFileIndex.dwFileClearTextSize);
 			} else {
 				memcpy(lpCompressedBuffer, lpBufferToRead, pckFileIndex.cFileIndex.dwFileClearTextSize);
@@ -96,7 +96,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromPCK(CPckClassThreadW
 		memcpy(&pckFileIndex.cFileIndex, &lpPckIndexTablePtrSrc->cFileIndex, sizeof(PCKFILEINDEX));
 
 		if(PCK_BEGINCOMPRESS_SIZE < dwFileClearTextSize) {
-			pckFileIndex.cFileIndex.dwFileCipherTextSize = pThis->compressBound(dwFileClearTextSize);
+			pckFileIndex.cFileIndex.dwFileCipherTextSize = pThis->m_zlib.compressBound(dwFileClearTextSize);
 		}
 		else {
 			pckFileIndex.cFileIndex.dwFileCipherTextSize = dwFileClearTextSize;
@@ -138,10 +138,10 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromPCK(CPckClassThreadW
 				cDataFetchMethod.lpFileReadPCK->UnmapViewAll();
 				ReleaseSRWLockExclusive(&g_mt_LockReadFileMap);
 
-				pThis->decompress(lpDecompressBuffer, &dwFileClearTextSize, lpSourceBuffer, dwNumberOfBytesToMap);
+				pThis->m_zlib.decompress(lpDecompressBuffer, &dwFileClearTextSize, lpSourceBuffer, dwNumberOfBytesToMap);
 				if(dwFileClearTextSize == lpPckIndexTablePtrSrc->cFileIndex.dwFileClearTextSize) {
 
-					pThis->compress(lpCompressedBuffer, &pckFileIndex.cFileIndex.dwFileCipherTextSize, lpDecompressBuffer, dwFileClearTextSize);
+					pThis->m_zlib.compress(lpCompressedBuffer, &pckFileIndex.cFileIndex.dwFileCipherTextSize, lpDecompressBuffer, dwFileClearTextSize);
 				} else {
 					memcpy(lpCompressedBuffer, lpSourceBuffer, dwNumberOfBytesToMap);
 				}

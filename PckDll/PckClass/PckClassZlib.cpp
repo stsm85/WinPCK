@@ -10,7 +10,7 @@
 
 CPckClassZlib::CPckClassZlib()
 {
-	init_compressor();
+	init_compressor(Z_Default_COMPRESSION);
 }
 
 CPckClassZlib::~CPckClassZlib()
@@ -19,35 +19,34 @@ CPckClassZlib::~CPckClassZlib()
 /*
 在压缩文件时进行调用，目前调用的函数为UpdatePckFile和ReCompress，压缩文件索引时不更新
 */
-void CPckClassZlib::init_compressor()
+int CPckClassZlib::init_compressor(int level)
 {
-	if (NULL != m_lpPckParams) {
-		m_compress_level = m_lpPckParams->dwCompressLevel;
 
-		if ((0 > m_compress_level) || (Z_MAX_COMPRESSION < m_compress_level))
-			m_lpPckParams->dwCompressLevel = m_compress_level = Z_Default_COMPRESSION;
-	}
-	else {
+	m_compress_level = level;
+
+	if ((0 > m_compress_level) || (Z_MAX_COMPRESSION < m_compress_level))
 		m_compress_level = Z_Default_COMPRESSION;
-	}
 
-	if(Z_Default_COMPRESSION < m_compress_level) {
+	if (Z_Default_COMPRESSION < m_compress_level) {
 
 		m_PckCompressFunc.compressBound = compressBound_libdeflate;
 		m_PckCompressFunc.compress = compress_libdeflate;
 
-	} else {
+	}
+	else {
 
 		m_PckCompressFunc.compressBound = compressBound_zlib;
 		m_PckCompressFunc.compress = compress_zlib;
 
 	}
+
+	return m_compress_level;
 }
 
 int CPckClassZlib::check_zlib_header(void *data)
 {
 	char cDeflateFlag = (*(char*)data) & 0xf;
-	if(Z_DEFLATED != cDeflateFlag)
+	if (Z_DEFLATED != cDeflateFlag)
 		return 0;
 
 	unsigned short header = _byteswap_ushort(*(unsigned short*)data);
@@ -95,7 +94,7 @@ int	CPckClassZlib::compress_libdeflate(void *dest, unsigned long *destLen, const
 
 	assert(0 != *destLen);
 
-	if(!(*destLen))
+	if (!(*destLen))
 		return 0;
 
 	return 1;
@@ -132,9 +131,9 @@ int CPckClassZlib::decompress_part(void *dest, unsigned long  *destLen, const vo
 	int rtn = uncompress((Bytef*)dest, destLen, (Bytef*)source, sourceLen);
 	assert(0 != *destLen);
 
-	if(Z_OK != rtn && !((Z_BUF_ERROR == rtn) && ((partlen == (*destLen)) || ((*destLen) < fullDestLen)))) {
+	if (Z_OK != rtn && !((Z_BUF_ERROR == rtn) && ((partlen == (*destLen)) || ((*destLen) < fullDestLen)))) {
 		char *lpReason;
-		switch(rtn) {
+		switch (rtn) {
 		case Z_NEED_DICT:
 			lpReason = "需要字典";
 			break;
@@ -156,7 +155,8 @@ int CPckClassZlib::decompress_part(void *dest, unsigned long  *destLen, const vo
 		assert(FALSE);
 		m_PckLog.PrintLogEL(TEXT_UNCOMPRESSDATA_FAIL_REASON, lpReason, __FILE__, __FUNCTION__, __LINE__);
 		return rtn;
-	} else {
+	}
+	else {
 		return Z_OK;
 	}
 }
@@ -164,10 +164,11 @@ int CPckClassZlib::decompress_part(void *dest, unsigned long  *destLen, const vo
 //获取数据压缩后的大小，如果源大小小于一定值就不压缩
 unsigned long CPckClassZlib::GetCompressBoundSizeByFileSize(unsigned long &dwFileClearTextSize, unsigned long &dwFileCipherTextSize, unsigned long dwFileSize)
 {
-	if(PCK_BEGINCOMPRESS_SIZE < dwFileSize) {
+	if (PCK_BEGINCOMPRESS_SIZE < dwFileSize) {
 		dwFileClearTextSize = dwFileSize;
 		dwFileCipherTextSize = compressBound(dwFileSize);
-	} else {
+	}
+	else {
 		dwFileCipherTextSize = dwFileClearTextSize = dwFileSize;
 	}
 

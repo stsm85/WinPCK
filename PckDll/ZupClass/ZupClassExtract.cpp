@@ -41,9 +41,9 @@ BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* co
 
 		if(CPckClass::GetSingleFileData(lpvoidFileRead, lpPckFileIndexTable, _cipherbuf, dwFileLengthDecompress1)) {
 
-			if(check_zlib_header(_cipherbuf + 4)) {
+			if(m_zlib.check_zlib_header(_cipherbuf + 4)) {
 
-				if(Z_OK != decompress_part((BYTE*)buffer, &dwFileLengthDecompress2,
+				if(Z_OK != m_zlib.decompress_part((BYTE*)buffer, &dwFileLengthDecompress2,
 					(BYTE*)_cipherbuf + 4, dwFileLengthDecompress1 - 4, lpZupFileIndexTable->cFileIndex.dwFileClearTextSize)) {
 					if(lpZupFileIndexTable->cFileIndex.dwFileClearTextSize == lpZupFileIndexTable->cFileIndex.dwFileCipherTextSize) {
 						memcpy(buffer, _cipherbuf + 4, dwFileLengthDecompress2);

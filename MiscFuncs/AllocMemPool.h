@@ -1,6 +1,9 @@
 #pragma once
 
-#include <windows.h>
+/*
+source code from:
+https://blog.csdn.net/dustpg/article/details/38756241
+*/
 
 class CAllocMemPool
 {
@@ -30,7 +33,7 @@ private:
 	// 申请节点
 	__forceinline Node* new_Node();
 	// 首节点
-	Node*	m_pFirstNode/* = new_Node()*/;
+	Node*	m_pFirstNode;
 
 	size_t	m_EachPoolSize;
 };

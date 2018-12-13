@@ -6,6 +6,7 @@
 #include "PckClassLog.h"
 
 #include "AllocMemPool.h"
+#include "PckClassZlib.h"
 
 #include <vector>
 using namespace std;
@@ -65,6 +66,8 @@ protected:
 	PCK_ALL_INFOS			m_PckAllInfo;
 
 	CAllocMemPool			m_NodeMemPool;
+
+	CPckClassZlib			m_zlib;
 
 	//运行时变量 
 	LPPCK_RUNTIME_PARAMS	m_lpPckParams;

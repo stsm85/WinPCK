@@ -18,7 +18,7 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 	const PCK_PATH_NODE*		lpNodeToInsertPtr;
 
 #pragma region ÖØÖÃÑ¹Ëõ²ÎÊý
-	init_compressor();
+	m_zlib.init_compressor(level);
 #pragma endregion
 
 

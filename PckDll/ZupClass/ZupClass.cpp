@@ -64,9 +64,9 @@ void CZupClass::BuildDirTree()
 
 			} else {
 
-				if(check_zlib_header(lpbuffer)) {
+				if(m_zlib.check_zlib_header(lpbuffer)) {
 					DWORD	dwFileBytesRead = 4;
-					decompress_part((BYTE*)&lpZupIndexTable->cFileIndex.dwFileClearTextSize, &dwFileBytesRead,
+					m_zlib.decompress_part((BYTE*)&lpZupIndexTable->cFileIndex.dwFileClearTextSize, &dwFileBytesRead,
 						lpbuffer, lpZupIndexTable->cFileIndex.dwFileCipherTextSize, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
 				} else {
 					lpZupIndexTable->cFileIndex.dwFileClearTextSize = *(DWORD*)lpbuffer;

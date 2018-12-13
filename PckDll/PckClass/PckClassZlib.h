@@ -2,12 +2,7 @@
 #define Z_MAX_COMPRESSION				12
 #define Z_Default_COMPRESSION			9
 
-#include "PckClassLog.h"
-#include "PckDefines.h"
-#include "PckClassBaseFeatures.h"
-
-class CPckClassZlib :
-	protected virtual CPckClassBaseFeatures
+class CPckClassZlib
 {
 public:
 	CPckClassZlib();
@@ -25,7 +20,7 @@ private:
 
 public:
 
-	void init_compressor();
+	int init_compressor(int level);
 
 	int check_zlib_header(void *data);
 	unsigned long compressBound(unsigned long sourceLen);
