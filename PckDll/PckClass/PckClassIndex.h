@@ -6,7 +6,6 @@
 
 class CPckClassIndex :
 	public virtual CPckClassBaseFeatures,
-	protected virtual CPckClassCodepage,
 	protected virtual CPckClassZlib
 {
 public:

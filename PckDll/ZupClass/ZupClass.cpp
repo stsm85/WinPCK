@@ -79,7 +79,7 @@ void CZupClass::BuildDirTree()
 		} else {
 			//Ö±½Ó¸´ÖÆ
 			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));
-			PckFilenameCode2UCS(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, sizeof(lpZupIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
+			CPckClassCodepage::PckFilenameCode2UCS(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, sizeof(lpZupIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
 		}
 
 		lpPckIndexTable++;

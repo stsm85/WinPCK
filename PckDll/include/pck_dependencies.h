@@ -69,7 +69,7 @@ typedef struct _PCK_RUNTIME_PARAMS {
 	DWORD		dwMTThread;			//压缩线程数
 	DWORD		dwCompressLevel;	//数据压缩率
 
-	int			code_page;			//pck文件使用编码
+	//int			code_page;			//pck文件使用编码
 
 	CPckControlCenter	*lpPckControlCenter;
 

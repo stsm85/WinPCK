@@ -37,7 +37,7 @@ CPckControlCenter::~CPckControlCenter()
 void CPckControlCenter::init()
 {
 	cParams.lpPckControlCenter = this;
-	cParams.code_page = 936;
+	//cParams.code_page = 936;
 	cParams.dwCompressLevel = getDefaultCompressLevel();
 	cParams.dwMTThread = thread::hardware_concurrency();
 	cParams.dwMTMaxMemory = getMaxMemoryAllowed();

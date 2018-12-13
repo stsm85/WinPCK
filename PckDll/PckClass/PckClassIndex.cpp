@@ -1,5 +1,7 @@
 
 #include "PckClassIndex.h"
+#include <thread>
+#include <vector>
 
 CPckClassIndex::CPckClassIndex()
 {}
@@ -39,9 +41,10 @@ void CPckClassIndex::GenerateUnicodeStringToIndex()
 		//文件名剩余空间,不占用最后的\0
 		lpPckIndexTable->nFilelenLeftBytes = MAX_PATH_PCK_256 - lpPckIndexTable->nFilelenBytes - 1;
 		//pck ansi -> unicode
-		PckFilenameCode2UCS(lpPckIndexTable->cFileIndex.szFilename, lpPckIndexTable->cFileIndex.szwFilename, sizeof(lpPckIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
+		CPckClassCodepage::PckFilenameCode2UCS(lpPckIndexTable->cFileIndex.szFilename, lpPckIndexTable->cFileIndex.szwFilename, sizeof(lpPckIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
 		++lpPckIndexTable;
 	}
+
 }
 
 //重建时计算有效文件数量，排除重复的文件

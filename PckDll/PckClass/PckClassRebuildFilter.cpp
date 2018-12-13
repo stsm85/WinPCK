@@ -88,7 +88,6 @@ VOID CPckClassWriteOperator::GetNextLine(SCRIPTBUFFER *sfvBuf, CHAR * szLineAnsi
 
 BOOL CPckClassWriteOperator::ParseOneLine(FILEOP * pFileOp, char * lpszLine, TCHAR *lpszFileName)
 {
-
 	char szOperator[16] = { 0 };
 	//首先检查16个字符内有没有空格或tab
 	char *lpszCell = lpszLine, *lpszSearch = lpszLine;
@@ -127,7 +126,7 @@ BOOL CPckClassWriteOperator::ParseOneLine(FILEOP * pFileOp, char * lpszLine, TCH
 	if((MAX_PATH <= strlen(lpszSearch)) || (0 == *lpszSearch))
 		return FALSE;
 
-	NativeFilenameCode2UCS(lpszSearch, pFileOp->szFilename, sizeof(pFileOp->szFilename) / sizeof(TCHAR));
+	CPckClassCodepage::NativeFilenameCode2UCS(lpszSearch, pFileOp->szFilename, sizeof(pFileOp->szFilename) / sizeof(TCHAR));
 	wcscpy(pFileOp->szFilenameBuffer, pFileOp->szFilename);
 
 	//检查文件名是否正确

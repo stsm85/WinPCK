@@ -24,7 +24,7 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThread
 		//构建文件名
 		memcpy(mystrcpy(pckFileIndex.cFileIndex.szwFilename, lpDataFetchMethod->szCurrentNodeString), lpOneFile->szwFilename + lpOneFile->nFileTitleLen, lpOneFile->nBytesToCopy - lpDataFetchMethod->nCurrentNodeStringLen);
 		//Unicode文件名转换为CP936的ANSI
-		pThis->PckFilenameCode2Ansi(pckFileIndex.cFileIndex.szwFilename, pckFileIndex.cFileIndex.szFilename, sizeof(pckFileIndex.cFileIndex.szwFilename));
+		CPckClassCodepage::PckFilenameCode2Ansi(pckFileIndex.cFileIndex.szwFilename, pckFileIndex.cFileIndex.szFilename, sizeof(pckFileIndex.cFileIndex.szwFilename));
 
 		//如果文件大小为0，则跳过打开文件步骤
 		if(0 != pckFileIndex.cFileIndex.dwFileClearTextSize) {

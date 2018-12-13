@@ -1,10 +1,10 @@
 #include "PckClassIndex.h"
 #include "PckClassZlib.h"
 
+
 BOOL CPckClassIndex::ReadPckFileIndexes()
 {
 	CMapViewFileMultiPckRead cRead;
-	CPckClassZlib	zlib;
 
 	if(!cRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
 		m_PckLog.PrintLogEL(TEXT_OPENNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
@@ -77,7 +77,7 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 			DWORD dwFileBytesRead = dwFileIndexTableClearDataLength;
 			BYTE pckFileIndexBuf[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
 
-			zlib.decompress(pckFileIndexBuf, &dwFileBytesRead,
+			decompress(pckFileIndexBuf, &dwFileBytesRead,
 				lpFileBuffer, dwFileIndexTableCryptedDataLength[0]);
 
 			m_PckAllInfo.lpDetectedPckVerFunc->PickIndexData(&lpPckIndexTable->cFileIndex, pckFileIndexBuf);

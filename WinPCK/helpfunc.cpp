@@ -85,8 +85,10 @@ void TInstDlg::DbClickListView(const int itemIndex)
 		}
 	}
 
-	if (PCK_ENTRY_TYPE_ROOT == (PCK_ENTRY_TYPE_ROOT & entry_type))
+	//目录浏览下root目录下的..不可点
+	if ((PCK_ENTRY_TYPE_ROOT | PCK_ENTRY_TYPE_DOTDOT) == ((PCK_ENTRY_TYPE_ROOT | PCK_ENTRY_TYPE_DOTDOT) & entry_type)) {
 		return;
+	}
 
 	//本级是否是文件夹(NULL=文件夹)
 	if (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type)) {

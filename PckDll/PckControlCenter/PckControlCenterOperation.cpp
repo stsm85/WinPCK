@@ -61,34 +61,18 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 
 			m_emunFileFormat = emunFileFormat;
 
-			//DeleteRestoreData();
-
-			////创建一个备份，用于失败后恢复
-			//CreateRestoreData();
-
 			m_lpPckRootNode = m_lpClassPck->GetPckPathNode();
 
 			//打开成功，刷新标题
-			//SendMessage(m_hWndMain, WM_FRESH_MAIN_CAPTION, 1, 0);
 			pFeedbackCallBack(pTag, PCK_FILE_OPEN_SUCESS, NULL, (LPARAM)(m_lpClassPck->GetPckVersion()->name));
 			return TRUE;
 
 		} else {
-			//if((FALSE == isOpenAfterRestore) && RestoreData(lpszFile, emunFileFormat)) {
 
-			//	return Open(lpszFile, TRUE);
-			//} else {
-				return FALSE;
-			//}
+			return FALSE;
 		}
 	}
 }
-
-//BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
-//{
-//	return Open(lpszFile, FALSE);
-//}
-
 
 void CPckControlCenter::Close()
 {

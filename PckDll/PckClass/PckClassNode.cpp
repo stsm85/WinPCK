@@ -1,5 +1,6 @@
 #include "PckClassNode.h"
 
+#if 0
 template <typename T>
 _inline int __fastcall strpathcmp(const T * src, T * &dst)
 {
@@ -11,6 +12,7 @@ _inline int __fastcall strpathcmp(const T * src, T * &dst)
 	if(0 != ret && 0 == *src && ('\\' == *dst || '/' == *dst))return 0;
 	return(ret);
 }
+#endif
 
 template <typename T>
 _inline void __fastcall strpathcpy(T * dst, T * &src)
@@ -81,7 +83,7 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 	LPPCK_PATH_NODE	lpFirstNode = NULL;
 
 	wchar_t			*lpszFilename = lpPckIndexTable->cFileIndex.szwFilename;
-	wchar_t			*lpszToFind;
+	
 
 
 	do {
@@ -96,8 +98,6 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 				lpChildNode->child->nNameSizeAnsi = (lpFirstNode->nNameSizeAnsi + lpChildNode->nNameSizeAnsi + 1);
 
 			//添加..目录
-			//strcpy(lpChildNode->child->szName, "..");
-			//*(DWORD*)lpChildNode->child->szName = 0x2e2e;	//".."
 			memcpy(lpChildNode->child->szName, L"..", wcslen(L"..") * sizeof(wchar_t));
 
 			lpChildNode->child->entryType = PCK_ENTRY_TYPE_NODE | PCK_ENTRY_TYPE_FOLDER | PCK_ENTRY_TYPE_DOTDOT;
@@ -106,18 +106,20 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 		lpFirstNode = lpChildNode = lpChildNode->child;
 
 		//解析目录层（分组\\）
+
+		wchar_t	szToFind[MAX_PATH_PCK_260] = { 0 };
+		strpathcpy(szToFind, lpszFilename);
+
 		do {
 			//下一级目录(next '\\')
-			lpszToFind = lpszFilename;
 
 			if((NULL == lpChildNode->lpPckIndexTable) || (!lpChildNode->lpPckIndexTable->isInvalid)) {
 
-				if(0 == strpathcmp(lpChildNode->szName, lpszToFind)) {
+				if (0 == wcscmp(lpChildNode->szName, szToFind)) {
 					//存在这个文件（夹）了
-					lpszFilename = lpszToFind;
 
 					//存在重复的文件名，则前一个重复的文件为无效
-					if(0 == *lpszToFind)
+					if(0 == *lpszFilename)
 						lpChildNode->lpPckIndexTable->isInvalid = TRUE;
 
 					break;
@@ -134,8 +136,8 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 
 					lpChildNode->entryType = PCK_ENTRY_TYPE_NODE | PCK_ENTRY_TYPE_FOLDER;
 
-					strpathcpy(lpChildNode->szName, lpszFilename);
-					lpChildNode->nNameSizeAnsi = PckFilenameCode2Ansi(lpChildNode->szName, NULL, 0);
+					wcscpy(lpChildNode->szName, szToFind);
+					lpChildNode->nNameSizeAnsi = CPckClassCodepage::PckFilenameCode2Ansi(lpChildNode->szName, NULL, 0);
 					lpChildNode->nMaxNameSizeAnsi = MAX_PATH_PCK_256;
 
 					//统计各文件夹的子文件夹数
@@ -184,24 +186,26 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 #pragma region FindFileNode
 const PCK_PATH_NODE* CPckClassNode::FindFileNode(const PCK_PATH_NODE* lpBaseNode, wchar_t* lpszFile)
 {
-	const PCK_PATH_NODE* lpChildNode = lpBaseNode;
+	if ((NULL == lpBaseNode) || (NULL == lpBaseNode->child))
+		return NULL;
+
+	const PCK_PATH_NODE* lpChildNode = lpBaseNode->child;
 
 	wchar_t			szFilename[MAX_PATH];
 	wcscpy_s(szFilename, lpszFile);
 
 	wchar_t			*lpszFilename = szFilename;
-	wchar_t			*lpszToFind;
-
 
 	if(NULL == lpChildNode->szName)
 		return NULL;
 
 	do {
-		do {
-			lpszToFind = lpszFilename;
+		wchar_t	szToFind[MAX_PATH_PCK_260] = { 0 };
+		strpathcpy(szToFind, lpszFilename);
 
-			if(0 == strpathcmp(lpChildNode->szName, lpszToFind)) {
-				lpszFilename = lpszToFind;
+		do {
+
+			if(0 == wcscmp(lpChildNode->szName, szToFind)) {
 
 				if(NULL == lpChildNode->child && 0 == *lpszFilename)return lpChildNode;
 
@@ -386,7 +390,7 @@ BOOL CPckClassNode::RenameNode(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplac
 	size_t	lenNodeRes, lenrs, lenrp;
 	char	lpszReplaceStringAnsi[MAX_PATH_PCK_260];
 
-	lenrs = PckFilenameCode2Ansi(lpszReplaceString, lpszReplaceStringAnsi, sizeof(lpszReplaceStringAnsi));
+	lenrs = CPckClassCodepage::PckFilenameCode2Ansi(lpszReplaceString, lpszReplaceStringAnsi, sizeof(lpszReplaceStringAnsi));
 
 	lenNodeRes = lpNode->nNameSizeAnsi;
 
@@ -415,7 +419,7 @@ BOOL CPckClassNode::RenameIndex(LPPCK_PATH_NODE lpNode, const wchar_t* lpszRepla
 	//转换为ansi，检查长度
 	char szReplaceStringAnsi[MAX_PATH_PCK_260];
 
-	size_t nLenOfReplaceString =  PckFilenameCode2Ansi(lpszReplaceString, szReplaceStringAnsi, MAX_PATH_PCK_260);
+	size_t nLenOfReplaceString = CPckClassCodepage::PckFilenameCode2Ansi(lpszReplaceString, szReplaceStringAnsi, MAX_PATH_PCK_260);
 
 	if (nBytesReadayToWrite < nLenOfReplaceString)
 		return FALSE;
@@ -430,7 +434,7 @@ BOOL CPckClassNode::RenameIndex(LPPCKINDEXTABLE lpIndex, const wchar_t* lpszRepl
 	//转换为ansi，检查长度
 	char szReplaceStringAnsi[MAX_PATH_PCK_260];
 
-	size_t nLenOfReplaceString = PckFilenameCode2Ansi(lpszReplaceString, szReplaceStringAnsi, MAX_PATH_PCK_260);
+	size_t nLenOfReplaceString = CPckClassCodepage::PckFilenameCode2Ansi(lpszReplaceString, szReplaceStringAnsi, MAX_PATH_PCK_260);
 
 	if (MAX_PATH_PCK_256 < nLenOfReplaceString)
 		return FALSE;
@@ -451,28 +455,27 @@ BOOL CPckClassNode::GetCurrentNodeString(wchar_t *szCurrentNodePathString, const
 
 	if (PCK_ENTRY_TYPE_DOTDOT == (PCK_ENTRY_TYPE_DOTDOT & entry_type)) {
 
-		if (NULL == lpNode->parentfirst) {
+		if ((NULL == lpNode->parentfirst) || (NULL == lpNode->parentfirst->parent)) {
 			*szCurrentNodePathString = 0;
 			return TRUE;
 		}
 
-		lpNode = lpNode->parentfirst;
+		lpNode = lpNode->parentfirst->parent;
 
-		GetCurrentNodeString(szCurrentNodePathString, lpNode->parentfirst);
+	}
+	entry_type = lpNode->entryType;
 
-		wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, lpNode->parent->szName);
+	if (PCK_ENTRY_TYPE_ROOT == (PCK_ENTRY_TYPE_ROOT & lpNode->entryType)) {
+		*szCurrentNodePathString = 0;
+		return TRUE;
+	}
+
+	GetCurrentNodeString(szCurrentNodePathString, lpNode->parent);
+	wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, lpNode->szName);
+
+	if (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type))
 		wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, L"\\");
 
-	}
-	else {
-
-		GetCurrentNodeString(szCurrentNodePathString, lpNode->parent);
-		wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, lpNode->szName);
-
-		if(PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type))
-			wcscat_s(szCurrentNodePathString, MAX_PATH_PCK_260, L"\\");
-
-	}
 	return TRUE;
 }
 

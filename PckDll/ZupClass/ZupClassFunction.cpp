@@ -23,7 +23,7 @@ _inline void CZupClass::DecodeDict(LPZUP_FILENAME_DICT lpZupDict)
 	base64_decode(lpZupDict->realbase64str, dwRealLen, szUTF8str);
 
 	lpZupDict->wrealstrlength = U8toW(szUTF8str, lpZupDict->wrealstr, MAX_PATH_PCK, -1) - 1;
-	lpZupDict->realstrlength = PckFilenameCode2Ansi(lpZupDict->wrealstr, lpZupDict->realstr, MAX_PATH_PCK);
+	lpZupDict->realstrlength = CPckClassCodepage::PckFilenameCode2Ansi(lpZupDict->wrealstr, lpZupDict->realstr, MAX_PATH_PCK);
 
 
 }

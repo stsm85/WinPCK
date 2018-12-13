@@ -93,6 +93,38 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
+
+		//整合报告
+		// 打印报告
+		// pck包中原有文件 %d 个\r\n
+		// 新加入文件 %d 个，其中重复文件名 %d 个\r\n
+		// 使用原数据地址 %d 个，新数据地址 %d 个\r\n
+		// 通过成的新pck文件共 %d 个文件\r\n
+
+		if (0 != pck_getUpdateResult_PrepareToAddFileCount()) {
+
+			_stprintf_s(szPrintf,
+				TEXT("此更新过程数据如下：\r\n")
+				TEXT("PCK 包中原有文件数： %d\r\n")
+				TEXT("计划更新文件数： %d\r\n")
+				TEXT("实际更新文件数： %d\r\n")
+				TEXT("重名文件数： %d\r\n")
+				TEXT("未更新文件数： %d\r\n")
+				TEXT("更新后 PCK 包中文件数： %d"),
+				pck_getUpdateResult_OldFileCount(),
+				pck_getUpdateResult_PrepareToAddFileCount(),
+				pck_getUpdateResult_ChangedFileCount(),
+				pck_getUpdateResult_DuplicateFileCount(),
+				pck_getUpdateResult_PrepareToAddFileCount() - pck_getUpdateResult_ChangedFileCount(),
+				pck_getUpdateResult_FinalFileCount());
+
+			pThis->MessageBox(szPrintf, TEXT("更新报告"), MB_OK | MB_ICONINFORMATION);
+
+			//pThis->m_PckLog.PrintLogI(szPrintf);
+			log_Print(LOG_IMAGE_INFO, szPrintf);
+		}
+
+
 		if (bHasPckOpened) {
 
 			pThis->OpenPckFile(szFilenameToSave, TRUE);
@@ -124,36 +156,6 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 	//还原Drop状态
 	pThis->m_lpszFilePath.clear();
 	DragAcceptFiles(pThis->hWnd, TRUE);
-
-	//整合报告
-	// 打印报告
-	// pck包中原有文件 %d 个\r\n
-	// 新加入文件 %d 个，其中重复文件名 %d 个\r\n
-	// 使用原数据地址 %d 个，新数据地址 %d 个\r\n
-	// 通过成的新pck文件共 %d 个文件\r\n
-
-	if (0 != pck_getUpdateResult_PrepareToAddFileCount()) {
-
-		_stprintf_s(szPrintf,
-			TEXT("此更新过程数据如下：\r\n")
-			TEXT("PCK 包中原有文件数： %d\r\n")
-			TEXT("计划更新文件数： %d\r\n")
-			TEXT("实际更新文件数： %d\r\n")
-			TEXT("重名文件数： %d\r\n")
-			TEXT("未更新文件数： %d\r\n")
-			TEXT("更新后 PCK 包中文件数： %d"),
-			pck_getUpdateResult_OldFileCount(),
-			pck_getUpdateResult_PrepareToAddFileCount(),
-			pck_getUpdateResult_ChangedFileCount(),
-			pck_getUpdateResult_DuplicateFileCount(),
-			pck_getUpdateResult_PrepareToAddFileCount() - pck_getUpdateResult_ChangedFileCount(),
-			pck_getUpdateResult_FinalFileCount());
-
-		pThis->MessageBox(szPrintf, TEXT("更新报告"), MB_OK | MB_ICONINFORMATION);
-
-		//pThis->m_PckLog.PrintLogI(szPrintf);
-		log_Print(LOG_IMAGE_INFO, szPrintf);
-	}
 
 	return;
 
