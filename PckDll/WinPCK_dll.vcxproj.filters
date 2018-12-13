@@ -189,6 +189,9 @@
     <ClCompile Include="ZupClass\ZupClassFunction.cpp">
       <Filter>源文件\ZupClass</Filter>
     </ClCompile>
+    <ClCompile Include="..\MiscFuncs\AllocMemPool.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PckControlCenter\PckControlCenter.h">
@@ -286,6 +289,9 @@
     </ClInclude>
     <ClInclude Include="include\pck_dependencies.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscFuncs\AllocMemPool.h">
+      <Filter>头文件\MiscFuncs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

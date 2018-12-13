@@ -55,7 +55,7 @@ private:
 	//将PckIndex文件进行路径分析后放入Node
 	BOOL	AddFileToNode(LPPCKINDEXTABLE	lpPckIndexNode);
 
-	//释放内存
-	VOID	DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode);
+	////释放内存
+	//VOID	DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode);
 };
 

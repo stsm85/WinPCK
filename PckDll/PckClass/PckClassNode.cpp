@@ -29,26 +29,26 @@ CPckClassNode::CPckClassNode()
 
 CPckClassNode::~CPckClassNode()
 {
-	DeAllocMultiNodes(m_lpRootNode->child);
+	//DeAllocMultiNodes(m_lpRootNode->child);
 }
 
-VOID CPckClassNode::DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode)
-{
-
-	LPPCK_PATH_NODE		lpThisNodePtr;
-
-	while(NULL != lpThisNode) {
-
-		lpThisNodePtr = lpThisNode;
-		if(NULL != lpThisNodePtr->child) {
-			DeAllocMultiNodes(lpThisNodePtr->child);
-		}
-		lpThisNode = lpThisNodePtr->next;
-
-		free(lpThisNodePtr);
-	}
-	//memset(&m_cRootNode, 0, sizeof(m_cRootNode));
-}
+//VOID CPckClassNode::DeAllocMultiNodes(LPPCK_PATH_NODE lpThisNode)
+//{
+//
+//	LPPCK_PATH_NODE		lpThisNodePtr;
+//
+//	while(NULL != lpThisNode) {
+//
+//		lpThisNodePtr = lpThisNode;
+//		if(NULL != lpThisNodePtr->child) {
+//			DeAllocMultiNodes(lpThisNodePtr->child);
+//		}
+//		lpThisNode = lpThisNodePtr->next;
+//
+//		free(lpThisNodePtr);
+//	}
+//	//memset(&m_cRootNode, 0, sizeof(m_cRootNode));
+//}
 
 #pragma endregion
 #pragma region ParseIndexTableToNode
@@ -89,7 +89,10 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 	do {
 		//此节点下还没有文件（是一个新产生的节点），首先添加".."
 		if(NULL == (lpChildNode->child)) {
-			lpChildNode->child = (LPPCK_PATH_NODE)AllocMemory(sizeof(PCK_PATH_NODE));
+			//lpChildNode->child = (LPPCK_PATH_NODE)AllocMemory(sizeof(PCK_PATH_NODE));
+
+			lpChildNode->child = (LPPCK_PATH_NODE)m_NodeMemPool.Alloc(sizeof(PCK_PATH_NODE));
+
 			lpChildNode->child->parent = lpChildNode;
 			lpChildNode->child->parentfirst = lpFirstNode;
 
@@ -129,7 +132,8 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 				if(NULL == lpChildNode->next) {
 
 					//添加文件（夹）
-					lpChildNode->next = (LPPCK_PATH_NODE)AllocMemory(sizeof(PCK_PATH_NODE));
+					//lpChildNode->next = (LPPCK_PATH_NODE)AllocMemory(sizeof(PCK_PATH_NODE));
+					lpChildNode->next = (LPPCK_PATH_NODE)m_NodeMemPool.Alloc(sizeof(PCK_PATH_NODE));
 					lpChildNode = lpChildNode->next;
 
 					lpChildNode->parent = lpFirstNode->parent;
@@ -487,8 +491,6 @@ BOOL CPckClassNode::FindDuplicateNodeFromFileList(const PCK_PATH_NODE* lpNodeToI
 	vector<FILES_TO_COMPRESS> *lpFilesList = m_PckAllInfo.lpFilesToBeAdded;
 	size_t sizeOfFileList = lpFilesList->size();
 
-	//LPFILES_TO_COMPRESS lpfirstFile = m_firstFile;
-	//while(NULL != lpfirstFile->next) {
 	for(size_t i=0;i<sizeOfFileList;i++){
 
 		FILES_TO_COMPRESS *lpfirstFile = &(*lpFilesList)[i];
@@ -505,8 +507,6 @@ BOOL CPckClassNode::FindDuplicateNodeFromFileList(const PCK_PATH_NODE* lpNodeToI
 			lpDuplicateNode->lpPckIndexTable->isInvalid = TRUE;
 			++_in_out_DuplicateFileCount;
 		}
-
-		//lpfirstFile = lpfirstFile->next;
 
 	}
 	return TRUE;

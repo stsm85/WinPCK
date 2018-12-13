@@ -306,6 +306,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\MiscFuncs\AllocMemPool.cpp" />
     <ClCompile Include="DictHash\DictHash.cpp" />
     <ClCompile Include="MapViewFile\MapViewFile.cpp" />
     <ClCompile Include="MapViewFile\MapViewFileMulti.cpp" />
@@ -354,6 +355,7 @@
     <ClCompile Include="ZupClass\ZupClassFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\MiscFuncs\AllocMemPool.h" />
     <ClInclude Include="DictHash\DictHash.h" />
     <ClInclude Include="include\pck_dependencies.h" />
     <ClInclude Include="MapViewFile\MapViewFile.h" />

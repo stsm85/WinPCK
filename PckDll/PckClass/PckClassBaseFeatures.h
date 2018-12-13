@@ -5,6 +5,8 @@
 #include "PckHeader.h"
 #include "PckClassLog.h"
 
+#include "AllocMemPool.h"
+
 #include <vector>
 using namespace std;
 
@@ -61,6 +63,8 @@ protected:
 	//打印日志
 	CPckClassLog			m_PckLog;
 	PCK_ALL_INFOS			m_PckAllInfo;
+
+	CAllocMemPool			m_NodeMemPool;
 
 	//运行时变量 
 	LPPCK_RUNTIME_PARAMS	m_lpPckParams;

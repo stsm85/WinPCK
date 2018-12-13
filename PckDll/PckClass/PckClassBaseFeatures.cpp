@@ -4,7 +4,8 @@
 
 CPckClassBaseFeatures::CPckClassBaseFeatures():
 	m_PckAllInfo({ 0 }),
-	m_lpPckParams(NULL)
+	m_lpPckParams(NULL),
+	m_NodeMemPool(10 * 1024 * 1024)
 {
 	m_PckAllInfo.cRootNode.entryType = PCK_ENTRY_TYPE_NODE | PCK_ENTRY_TYPE_FOLDER | PCK_ENTRY_TYPE_ROOT;
 #ifdef _DEBUG
