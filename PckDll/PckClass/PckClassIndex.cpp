@@ -17,7 +17,8 @@ void* CPckClassIndex::AllocMemory(size_t	sizeStuct)
 	void*		lpMallocNode;
 
 	if(NULL == (lpMallocNode = malloc(sizeStuct))) {
-		return lpMallocNode;
+		SetErrMsgFlag(PCK_ERR_MALLOC);
+		return NULL;
 	}
 	//³õÊ¼»¯ÄÚ´æ
 	memset(lpMallocNode, 0, sizeStuct);

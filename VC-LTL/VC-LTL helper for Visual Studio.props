@@ -36,10 +36,11 @@ VC-LTL默认搜索顺序
     <!--<SupportWinXP>true</SupportWinXP>-->
   </PropertyGroup>
   <!--####################################################################################################################################################-->
-
-  
-  
-  
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>_DISABLE_DEPRECATE_LTL_MESSAGE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   
   <PropertyGroup>
     <!--Shared.props文件根目录存在VC-LTL？-->

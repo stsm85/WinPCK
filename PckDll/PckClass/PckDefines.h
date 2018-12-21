@@ -65,6 +65,7 @@ typedef void(*ShowLogW)(const int log_level, const wchar_t *str);
 #define PCK_ERR_VIEWMAP_FAIL	4	/* Mapping  ß∞‹ */
 #define PCK_ERR_VIEW			5	/* View  ß∞‹ */
 #define PCK_ERR_OPENMAPVIEWR	6	/* OpenMappingViewAllRead  ß∞‹ */
+#define PCK_ERR_MALLOC			7	/* ƒ⁄¥Ê…Í«Î ß∞‹ */
 
 /* end-of-error-codes */
 

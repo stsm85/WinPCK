@@ -20,12 +20,12 @@ private:
 	BOOL		MakeFolderExistInternal(const wchar_t* lpszDirectory);
 protected:
 	BOOL		EnumAllFilesByPathList(const vector<tstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList);
-	//压缩重建、压缩写入空间不够时扩展空间
-	BOOL		IsNeedExpandWritingFile(
-		CMapViewFileMultiPckWrite *lpWrite,
-		QWORD dwWritingAddressPointer,
-		QWORD dwFileSizeToWrite,
-		QWORD &dwExpectedTotalCompressedFileSize);
+	////压缩重建、压缩写入空间不够时扩展空间
+	//BOOL		IsNeedExpandWritingFile(
+	//	CMapViewFileMultiPckWrite *lpWrite,
+	//	QWORD dwWritingAddressPointer,
+	//	QWORD dwFileSizeToWrite,
+	//	QWORD &dwExpectedTotalCompressedFileSize);
 
 	//重建pck时需要的磁盘空间（目标文件名，待重建的PCK文件大小）
 	QWORD	GetPckFilesizeRebuild(LPCTSTR lpszFilename, QWORD qwPckFilesize);

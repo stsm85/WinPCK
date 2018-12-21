@@ -90,6 +90,9 @@ BOOL CMapViewFileMultiWrite::Mapping(QWORD dwMaxSize)
 
 	m_file_cell[iCellID].qwCellSize = qwLastExpandSize;
 
+	if(dwMaxSize > m_uqwFullSize.qwValue)
+		m_uqwFullSize.qwValue = dwMaxSize;
+
 	return TRUE;
 }
 
@@ -132,4 +135,177 @@ DWORD CMapViewFileMultiWrite::Write(LPVOID buffer, DWORD dwBytesToWrite)
 	}
 	m_uqwCurrentPos.qwValue += dwBytesWriteAll;
 	return dwBytesWriteAll;
+}
+
+//创建时，剩余文件的空间量不够时，添加量
+#define	PCK_STEP_ADD_SIZE				(64*1024*1024)
+//创建时，剩余文件的空间量小于此值时，扩展数据
+#define	PCK_SPACE_DETECT_SIZE			(4*1024*1024)
+//创建时，剩余文件的空间量小于此值(PCK_SPACE_DETECT_SIZE)时，扩展数据的值
+//#define PCK_RENAME_EXPAND_ADD			(16*1024*1024)
+
+//qwCurrentPckFilesize为已经存在的文件大小，qwToAddSpace是需要扩大的大小，返回值为（qwCurrentPckFilesize + 可以再扩大的最大大小）
+QWORD CMapViewFileMultiWrite::GetExpanedPckFilesize(QWORD qwDiskFreeSpace, QWORD qwToAddSpace, QWORD qwCurrentPckFilesize)
+{
+	//计算大概需要多大空间qwTotalFileSize
+	QWORD	qwTotalFileSizeTemp = qwToAddSpace;
+
+	//if (-1 != qwDiskFreeSpace) {
+
+		//如果申请的空间小于磁盘剩余空间，则申请文件空间大小等于剩余磁盘空间
+		if (qwDiskFreeSpace < qwTotalFileSizeTemp)
+			qwTotalFileSizeTemp = qwDiskFreeSpace;
+	//}
+
+	return (qwTotalFileSizeTemp + qwCurrentPckFilesize);
+
+}
+
+BOOL CMapViewFileMultiWrite::IsNeedExpandWritingFile(
+	QWORD dwWritingAddressPointer,
+	QWORD dwFileSizeToWrite)
+{
+	//判断一下dwAddress的值会不会超过dwTotalFileSizeAfterCompress
+	//如果超过，说明文件空间申请的过小，重新申请一下ReCreateFileMapping
+	//新文件大小在原来的基础上增加(lpfirstFile->dwFileSize + 1mb) >= 64mb ? (lpfirstFile->dwFileSize + 1mb) :64mb
+	//1mb=0x100000
+	//64mb=0x4000000
+
+	QWORD qwOldFileSize = m_uqwFullSize.qwValue;
+
+	if ((dwWritingAddressPointer + dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) > qwOldFileSize) {
+
+		//打印日志
+		//CPckClassLog			m_PckLogFD;
+
+		QWORD qwSizeToExpand = ((dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) > PCK_STEP_ADD_SIZE ? (dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) : PCK_STEP_ADD_SIZE);
+		ULARGE_INTEGER lpfree;
+
+		if (GetDiskFreeSpaceExA(GetFileDiskName(), NULL, NULL, &lpfree)) {
+
+			qwSizeToExpand = GetExpanedPckFilesize(lpfree.QuadPart, qwSizeToExpand, 0);
+		}
+		else {
+			//qwSizeToExpand = GetExpanedPckFilesize(-1, qwSizeToExpand, 0);
+		}
+
+		if (dwFileSizeToWrite > qwSizeToExpand) {
+			//m_PckLogFD.PrintLogW("磁盘空间不足，申请空间：%d，剩余空间：%d", dwFileSizeToWrite, qwSizeToExpand);
+			//SetErrMsgFlag(PCK_ERR_DISKFULL);
+			return FALSE;
+		}
+
+		QWORD qwNewExpectedFileSize = qwOldFileSize + qwSizeToExpand;
+
+		UnmapViewAll();
+		UnMaping();
+
+		if (!Mapping(qwNewExpectedFileSize)) {
+
+			//m_PckLogFD.PrintLogW(TEXT_VIEWMAP_FAIL);
+			//SetErrMsgFlag(PCK_ERR_VIEWMAP_FAIL);
+			Mapping(qwOldFileSize);
+			return FALSE;
+		}
+		//dwExpectedTotalCompressedFileSize = qwNewExpectedFileSize;
+	}
+	return TRUE;
+}
+
+BOOL CMapViewFileMultiWrite::ViewAndWrite2(QWORD dwAddress, LPVOID buffer, DWORD dwSize)
+{
+	LPVOID pViewAddress = NULL;
+
+	if (0 == dwSize)
+		return TRUE;
+
+	QWORD	dwAddressEndAt = dwAddress + dwSize;
+	int iCellIDBegin = GetCellIDByPoint(dwAddress);
+	int iCellIDEnd = GetCellIDByPoint(dwAddressEndAt);
+
+	if ((-1 == iCellIDBegin) || (-1 == iCellIDEnd))
+		return FALSE;
+
+	QWORD	dwRealAddress = dwAddress - m_file_cell[iCellIDBegin].qwCellAddressBegin;
+
+	if (iCellIDBegin == iCellIDEnd) {
+
+		if (NULL != (pViewAddress = m_file_cell[iCellIDBegin].lpMapView->View(dwRealAddress, dwSize))) {
+
+			memcpy(pViewAddress, buffer, dwSize);
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+	else {
+
+		//iCellIDBegin iCellIDMid iCellIDMid iCellIDEnd
+		int iCellIDMidCount = iCellIDEnd - iCellIDBegin - 1;
+		if (0 > iCellIDMidCount)
+			return FALSE;
+
+		//计算一下各个文件需要的大小
+		size_t sizeBegin = m_file_cell[iCellIDBegin].qwCellAddressEnd - dwAddress;
+		size_t sizeEnd = dwAddress + dwSize - m_file_cell[iCellIDEnd].qwCellAddressBegin;
+
+		const BYTE* lpBuffer = (LPBYTE)buffer;
+
+		if (NULL == (pViewAddress = m_file_cell[iCellIDBegin].lpMapView->View(dwRealAddress, sizeBegin))) 
+			return FALSE;
+		
+
+		memcpy(pViewAddress, lpBuffer, sizeBegin);
+		lpBuffer += sizeBegin;
+		
+		if (0 < iCellIDMidCount) {
+			for (int i = (iCellIDBegin + 1); i < iCellIDEnd; i++) {
+
+				if (NULL == (pViewAddress = m_file_cell[i].lpMapView->View(0, m_file_cell[i].qwCellSize))) 
+					return FALSE;
+				
+				memcpy(pViewAddress, lpBuffer, m_file_cell[i].qwCellSize);
+				lpBuffer += m_file_cell[i].qwCellSize;
+
+			}
+		}
+
+		if (NULL == (pViewAddress = m_file_cell[iCellIDEnd].lpMapView->View(0, sizeEnd))) 
+			return FALSE;
+		
+		memcpy(pViewAddress, lpBuffer, sizeEnd);
+		//lpBuffer += sizeEnd;
+
+		return TRUE;
+	}
+	return TRUE;
+}
+
+
+//使用MapViewOfFile进行写操作
+BOOL CMapViewFileMultiWrite::Write2(QWORD dwAddress, LPVOID buffer, DWORD dwBytesToWrite)
+{
+	static int nBytesWriten = 0;
+	//PCK_STEP_ADD_SIZE
+	if (!IsNeedExpandWritingFile(dwAddress, dwBytesToWrite)) {
+		return FALSE;
+	}
+
+	if (!ViewAndWrite2(dwAddress, buffer, dwBytesToWrite)) {
+		return FALSE;
+	}
+
+	nBytesWriten += dwBytesToWrite;
+	if ((32 * 1024 * 1024) < nBytesWriten)
+	{
+		for (int i = 0; i < m_file_cell.size(); i++) {
+			m_file_cell[i].lpMapView->FlushFileBuffers();
+		}
+		
+		nBytesWriten = 0;
+	}
+
+	UnmapViewAll();
+
+	return TRUE;
 }

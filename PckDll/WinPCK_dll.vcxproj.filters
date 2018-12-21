@@ -206,9 +206,6 @@
     <ClInclude Include="PckClass\PckStructs.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
-    <ClInclude Include="PckClass\PckConf.h">
-      <Filter>头文件\PckClass</Filter>
-    </ClInclude>
     <ClInclude Include="PckClass\PckClassVersionDetect.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>

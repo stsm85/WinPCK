@@ -68,6 +68,7 @@ QWORD CPckClassFileDisk::GetPckFilesizeByCompressed(QWORD qwDiskFreeSpace, QWORD
 
 }
 
+#if 0
 BOOL CPckClassFileDisk::IsNeedExpandWritingFile(
 	CMapViewFileMultiPckWrite *lpWrite,
 	QWORD dwWritingAddressPointer,
@@ -82,7 +83,7 @@ BOOL CPckClassFileDisk::IsNeedExpandWritingFile(
 	if((dwWritingAddressPointer + dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) > dwExpectedTotalCompressedFileSize) {
 		
 		//打印日志
-		CPckClassLog			m_PckLogFD;
+		//CPckClassLog			m_PckLogFD;
 
 		QWORD qwSizeToExpand = ((dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) > PCK_STEP_ADD_SIZE ? (dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) : PCK_STEP_ADD_SIZE);
 		ULARGE_INTEGER lpfree;
@@ -114,9 +115,8 @@ BOOL CPckClassFileDisk::IsNeedExpandWritingFile(
 		dwExpectedTotalCompressedFileSize = qwNewExpectedTotalCompressedFileSize;
 	}
 	return TRUE;
-
-
 }
+#endif
 
 //重命名时需要的文件的大小
 QWORD CPckClassFileDisk::GetPckFilesizeRename(LPCTSTR lpszFilename, QWORD qwCurrentPckFilesize)

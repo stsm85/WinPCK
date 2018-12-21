@@ -91,37 +91,24 @@ VOID CPckClassThreadWorker::WriteThread(VOID* pParam)
 	for(nWrite = 0;nWrite<mt_dwFileCountOfWriteTarget;nWrite++){
 
 		if(!pThis->getCompressedDataQueue(dataToWrite, lpPckIndexTableComp)) {
+			//user cacle
 			result = FALSE;
 			break;
 		}
 
 		QWORD dwAddress = lpPckIndexTableComp.dwAddressFileDataToWrite;
 
-		//判断一下dwAddress的值会不会超过dwTotalFileSizeAfterCompress
-		//如果超过，说明文件空间申请的过小，重新申请一下ReCreateFileMapping
-		//新文件大小在原来的基础上增加(lpfirstFile->dwFileSize + 1mb) >= 64mb ? (lpfirstFile->dwFileSize + 1mb) :64mb
-		if(!pThis->IsNeedExpandWritingFile(mt_lpFileWrite, dwAddress, lpPckIndexTableComp.dwCompressedFilesize, dwTotalFileSizeAfterCompress)) {
-			result = FALSE;
-			break;
-		}
-
 		//处理lpPckFileIndex->dwAddressOffset
 		if(0 != lpPckIndexTableComp.dwCompressedFilesize) {
 
-			LPBYTE		lpBufferToWrite;
-
-			if(NULL == (lpBufferToWrite = mt_lpFileWrite->View(dwAddress, lpPckIndexTableComp.dwCompressedFilesize))) {
+			if (!mt_lpFileWrite->Write2(dwAddress, dataToWrite, lpPckIndexTableComp.dwCompressedFilesize)) {
 				pThis->SetErrMsgFlag(PCK_ERR_VIEW);
 				result = FALSE;
 				break;
 			}
 
-			memcpy(lpBufferToWrite, dataToWrite, lpPckIndexTableComp.dwCompressedFilesize);
-
 			dwAddressDataAreaEndAt += lpPckIndexTableComp.dwCompressedFilesize;
-
 			pThis->freeMaxAndSubtractMemory(dataToWrite, lpPckIndexTableComp.dwMallocSize);
-			mt_lpFileWrite->UnmapViewAll();
 		}
 
 	}
@@ -143,7 +130,6 @@ VOID CPckClassThreadWorker::WriteThread(VOID* pParam)
 		logOutput(__FUNCTION__, "Finished with errs\r\n");
 
 		mt_dwFileCountOfWriteTarget = nWrite;
-		//pThis->SetThreadWorkerCanceled();
 
 		if(NULL != dataToWrite)
 			free(dataToWrite);

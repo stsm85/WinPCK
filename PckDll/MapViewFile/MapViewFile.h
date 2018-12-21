@@ -10,6 +10,7 @@
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
 
+#include <exception>
 #include <windows.h>
 #include <assert.h>
 #include <vector>
@@ -91,6 +92,9 @@ public:
 	//获取当前文件的磁盘名
 	const char*	GetFileDiskName();
 
+	//强制缓存写入磁盘
+	virtual BOOL	FlushFileBuffers() { throw std::exception("programe can not reach here"); }
+
 protected:
 	////自动生成CreateFileMappingA时所需要的name
 	LPCSTR	GenerateMapName();
@@ -168,10 +172,15 @@ public:
 
 	DWORD	Write(LPVOID buffer, DWORD dwBytesToWrite);
 
+
 	BOOL	OpenMappingWrite(LPCSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
 	BOOL	OpenMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
 
 	//BOOL	FlushViewOfFile();
+	virtual BOOL	FlushFileBuffers();
+
+	//BOOL	Write2(QWORD dwAddress, LPVOID buffer, DWORD dwBytesToWrite);
+
 
 };
 

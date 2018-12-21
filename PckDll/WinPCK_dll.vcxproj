@@ -378,7 +378,6 @@
     <ClInclude Include="PckClass\PckClassVersionDetect.h" />
     <ClInclude Include="PckClass\PckClassVersionDetectFunctionDefinitions.h" />
     <ClInclude Include="PckClass\PckClassZlib.h" />
-    <ClInclude Include="PckClass\PckConf.h" />
     <ClInclude Include="PckClass\PckDefines.h" />
     <ClInclude Include="PckClass\PckStructs.h" />
     <ClInclude Include="PckControlCenter\PckControlCenter.h" />

@@ -1,10 +1,10 @@
 #include "MapViewFileMulti.h"
 
-CMapViewFileMulti::CMapViewFileMulti()
+CMapViewFileMulti::CMapViewFileMulti():
+	m_uqwCurrentPos{ 0 },
+	m_uqwFullSize{ 0 },
+	m_uqwMaxSize{ 0 }
 {
-	m_uqwCurrentPos.qwValue = 0;
-	m_uqwFullSize.qwValue = 0;
-	m_uqwMaxSize.qwValue = 0;
 	m_cross_view.clear();
 }
 

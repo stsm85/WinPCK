@@ -95,15 +95,15 @@ BOOL CPriviewInDlg::Show(const PCK_UNIFIED_FILE_ENTRY* const lpPckFileIndexToSho
 	if(NULL == dlg)
 		return FALSE;
 
+
 	if(NULL == m_buffer) {
 		//m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		log_PrintA(LOG_IMAGE_ERROR, TEXT_MALLOC_FAIL);
+		if(0 != dwSize)log_PrintA(LOG_IMAGE_ERROR, TEXT_MALLOC_FAIL);
 		delete dlg;
 		return FALSE;
 	}
 
-
-	if(WINPCK_OK == pck_GetSingleFileData(lpPckFileIndexToShow, (char*)m_buffer, m_buffersize))
+	if((WINPCK_OK == pck_GetSingleFileData(lpPckFileIndexToShow, (char*)m_buffer, m_buffersize)))
 		dlg->Exec();
 
 	delete dlg;

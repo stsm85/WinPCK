@@ -11,6 +11,7 @@
 
 #include "MapViewFile.h"
 
+
 CMapViewFileWrite::CMapViewFileWrite()
 {}
 
@@ -93,3 +94,15 @@ DWORD CMapViewFileWrite::Write(LPVOID buffer, DWORD dwBytesToWrite)
 
 	return dwFileBytesWrote;
 }
+
+BOOL CMapViewFileWrite::FlushFileBuffers()
+{
+	return ::FlushFileBuffers(hFile);
+}
+
+////使用MapViewOfFile进行写操作
+//BOOL CMapViewFileWrite::Write2(QWORD dwAddress, LPVOID buffer, DWORD dwBytesToWrite)
+//{
+//	return 1;
+//}
+

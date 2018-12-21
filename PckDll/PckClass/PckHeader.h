@@ -13,6 +13,10 @@
 #if !defined(_PCKHEADER_H_)
 #define _PCKHEADER_H_
 
+#ifndef UNICODE
+#error("please use Unicode charset") 
+#endif
+
 #include "PckStructs.h"
 
 #endif

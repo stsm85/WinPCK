@@ -24,13 +24,12 @@
 
 
 
-CMapViewFile::CMapViewFile()
+CMapViewFile::CMapViewFile() :
+	hFile(NULL),
+	hFileMapping(NULL),
+	m_szDisk{ 0 }
 {
-	hFile = hFileMapping = NULL;
 	vMapAddress.clear();
-
-	memset(m_szDisk, 0, sizeof(m_szDisk));
-
 }
 
 CMapViewFile::~CMapViewFile()

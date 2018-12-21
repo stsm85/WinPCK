@@ -18,6 +18,7 @@ CPckClassBaseFeatures::~CPckClassBaseFeatures()
 
 
 #if _USELOGFILE
+#pragma warning ( disable : 4996 )
 SRWLOCK	CPckClassBaseFeatures::m_LockLogFile;
 
 int CPckClassBaseFeatures::logOutput(const char *file, const char *format, ...)
@@ -126,8 +127,8 @@ void CPckClassBaseFeatures::SetThreadFlag(BOOL isThreadWorking)
 {
 	//if (FALSE == isThreadWorking)
 	//在开始和结束任务后，把强制退出标记置0
-	m_lpPckParams->cVarParams.bForcedStopWorking = FALSE;
-
+	//m_lpPckParams->cVarParams.bForcedStopWorking = FALSE;
+	SetErrMsgFlag(PCK_OK);
 	m_lpPckParams->cVarParams.bThreadRunning = isThreadWorking;
 }
 
@@ -138,6 +139,7 @@ void CPckClassBaseFeatures::SetThreadFlag(BOOL isThreadWorking)
 
 void CPckClassBaseFeatures::SetErrMsgFlag(int errMsg)
 {
+	m_lpPckParams->cVarParams.bForcedStopWorking = (PCK_OK != errMsg);
 	m_lpPckParams->cVarParams.errMessageNo = errMsg;
 }
 #pragma endregion

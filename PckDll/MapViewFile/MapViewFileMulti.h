@@ -4,33 +4,33 @@
 #include <vector>
 using namespace std;
 
-typedef struct _FILE_CELL
-{
-
-	CMapViewFile*	lpMapView;
-
-	QWORD	qwCellAddressBegin;
-	QWORD	qwCellAddressEnd;
-	QWORD	qwMaxCellSize;
-	QWORD	qwCellSize;
-
-	wchar_t	szFilename[MAX_PATH];
-
-}FILE_CELL, *LPFILE_CELL;
-
-typedef struct _CROSS_VIEW
-{
-	LPBYTE	lpBufferTarget;
-	LPBYTE	lpBufferTargetPtr;
-	LPVOID	lpMapAddress;
-	size_t	size;
-	int		iCellID;
-}CROSS_VIEW, *LPCROSS_VIEW;
-
-
-
 class CMapViewFileMulti
 {
+protected:
+	typedef struct _FILE_CELL
+	{
+
+		CMapViewFile*	lpMapView;
+
+		QWORD	qwCellAddressBegin;
+		QWORD	qwCellAddressEnd;
+		QWORD	qwMaxCellSize;
+		QWORD	qwCellSize;
+
+		wchar_t	szFilename[MAX_PATH];
+
+	}FILE_CELL, *LPFILE_CELL;
+
+private:
+	typedef struct _CROSS_VIEW
+	{
+		LPBYTE	lpBufferTarget;
+		LPBYTE	lpBufferTargetPtr;
+		LPVOID	lpMapAddress;
+		size_t	size;
+		int		iCellID;
+	}CROSS_VIEW, *LPCROSS_VIEW;
+
 public:
 	CMapViewFileMulti();
 	~CMapViewFileMulti();
@@ -90,6 +90,7 @@ private:
 
 class CMapViewFileMultiWrite : public CMapViewFileMulti
 {
+
 public:
 	CMapViewFileMultiWrite();
 	~CMapViewFileMultiWrite();
@@ -104,8 +105,21 @@ public:
 
 	DWORD	Write(LPVOID buffer, DWORD dwBytesToWrite);
 
+	BOOL	Write2(QWORD dwAddress, LPVOID buffer, DWORD dwBytesToWrite);
+
 private:
+
 	BOOL	AddFile(CMapViewFileWrite *lpWrite, QWORD qwMaxSize, LPCWSTR lpszFilename);
+
+	//qwCurrentPckFilesize为已经存在的文件大小，qwToAddSpace是需要扩大的大小，返回值为（qwCurrentPckFilesize + 可以再扩大的最大大小）
+	QWORD	GetExpanedPckFilesize(QWORD qwDiskFreeSpace, QWORD qwToAddSpace, QWORD qwCurrentPckFilesize);
+
+	//压缩重建、压缩写入空间不够时扩展空间
+	BOOL	IsNeedExpandWritingFile(
+		QWORD dwWritingAddressPointer,
+		QWORD dwFileSizeToWrite);
+
+	BOOL	ViewAndWrite2(QWORD dwAddress, LPVOID buffer, DWORD dwSize);
 };
 
 
