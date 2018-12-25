@@ -18,8 +18,8 @@ typedef char *				LPSTR;
 typedef PCK_UNIFIED_FILE_ENTRY*			LPPUFE;
 typedef const PCK_UNIFIED_FILE_ENTRY*	CLPPUFE;
 
-#define WINPCK_VERSION        "1.30.0.13"
-#define WINPCK_VERSION_NUMBER  1,30,0,13
+#define WINPCK_VERSION        "1.30.0.14"
+#define WINPCK_VERSION_NUMBER  1,30,0,14
 
 typedef enum _PCKRTN
 {
