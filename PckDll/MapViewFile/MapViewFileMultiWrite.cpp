@@ -212,7 +212,7 @@ BOOL CMapViewFileMultiWrite::IsNeedExpandWritingFile(
 	return TRUE;
 }
 
-BOOL CMapViewFileMultiWrite::ViewAndWrite2(QWORD dwAddress, LPVOID buffer, DWORD dwSize)
+BOOL CMapViewFileMultiWrite::ViewAndWrite2(QWORD dwAddress, const void *  buffer, DWORD dwSize)
 {
 	LPVOID pViewAddress = NULL;
 
@@ -283,7 +283,7 @@ BOOL CMapViewFileMultiWrite::ViewAndWrite2(QWORD dwAddress, LPVOID buffer, DWORD
 
 
 //使用MapViewOfFile进行写操作
-BOOL CMapViewFileMultiWrite::Write2(QWORD dwAddress, LPVOID buffer, DWORD dwBytesToWrite)
+BOOL CMapViewFileMultiWrite::Write2(QWORD dwAddress, const void* buffer, DWORD dwBytesToWrite)
 {
 	static int nBytesWriten = 0;
 	//PCK_STEP_ADD_SIZE

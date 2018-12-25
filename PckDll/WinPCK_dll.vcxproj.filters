@@ -192,6 +192,9 @@
     <ClCompile Include="..\MiscFuncs\AllocMemPool.cpp">
       <Filter>源文件\MiscFuncs</Filter>
     </ClCompile>
+    <ClCompile Include="PckClass\PckIndexCache.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PckControlCenter\PckControlCenter.h">
@@ -289,6 +292,9 @@
     </ClInclude>
     <ClInclude Include="..\MiscFuncs\AllocMemPool.h">
       <Filter>头文件\MiscFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckIndexCache.h">
+      <Filter>头文件\PckClass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

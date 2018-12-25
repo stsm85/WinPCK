@@ -196,7 +196,7 @@ LPBYTE CMapViewFile::ViewReal(QWORD qwAddress, DWORD dwSize, DWORD dwDesiredAcce
 
 LPBYTE CMapViewFile::View(QWORD dwAddress, DWORD dwSize)
 {
-	assert(FALSE);
+	throw std::exception("programe can not reach here");
 	return NULL;
 }
 

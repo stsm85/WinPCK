@@ -283,9 +283,11 @@ BOOL CPckClass::DecompressFile(LPCWSTR	lpszFilename, const PCKINDEXTABLE* lpPckF
 		return FALSE;
 	}
 
+	if(0 == dwFileLengthToWrite)
+		return TRUE;
+
 	if(!cFileWrite.Mapping(dwFileLengthToWrite)) {
-		if(0 == dwFileLengthToWrite)
-			return TRUE;
+
 		m_PckLog.PrintLogEL(TEXT_CREATEMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}

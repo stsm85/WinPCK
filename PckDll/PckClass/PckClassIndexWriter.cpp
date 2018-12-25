@@ -1,5 +1,6 @@
 
 #include "PckClassIndexWriter.h"
+#include "PckIndexCache.h"
 
 CPckClassIndexWriter::CPckClassIndexWriter()
 {}
@@ -7,35 +8,10 @@ CPckClassIndexWriter::CPckClassIndexWriter()
 CPckClassIndexWriter::~CPckClassIndexWriter()
 {}
 
-//写入单个索引
-BOOL CPckClassIndexWriter::WritePckIndex(CMapViewFileMultiPckWrite *lpWrite, const PCKINDEXTABLE_COMPRESS *lpPckIndexTablePtr, QWORD &dwAddress)
-{
-
-	LPBYTE	lpBufferToWrite;
-	DWORD	dwNumberOfBytesToMap = lpPckIndexTablePtr->dwIndexDataLength + 8;
-
-	assert(lpPckIndexTablePtr->dwIndexValueHead != 0);
-
-	if(NULL == (lpBufferToWrite = lpWrite->View(dwAddress, dwNumberOfBytesToMap))) {
-		m_PckLog.PrintLogEL(TEXT_WRITE_PCK_INDEX, __FILE__, __FUNCTION__, __LINE__);
-		return FALSE;
-	}
-
-	memcpy(lpBufferToWrite, lpPckIndexTablePtr->compressed_index_data, dwNumberOfBytesToMap);
-	lpWrite->UnmapViewAll();
-
-	dwAddress += dwNumberOfBytesToMap;
-
-	//窗口中以显示的文件进度
-	SetParams_ProgressInc();
-
-
-	return TRUE;
-}
-
 //写入全部索引
 BOOL CPckClassIndexWriter::WriteAllIndex(CMapViewFileMultiPckWrite *lpWrite, LPPCK_ALL_INFOS lpPckAllInfo,  QWORD &dwAddress)
 {
+	CPckMemoryCache cPckCache;
 
 	//窗口中以显示的文件进度，初始化，显示写索引进度
 	DWORD dwValidFileCount = lpPckAllInfo->dwFileCount + lpPckAllInfo->dwFileCountToAdd;
@@ -50,8 +26,12 @@ BOOL CPckClassIndexWriter::WriteAllIndex(CMapViewFileMultiPckWrite *lpWrite, LPP
 
 		if(!lpPckIndexTableOld->isInvalid) {
 			PCKINDEXTABLE_COMPRESS	pckIndexTableTemp;
-			WritePckIndex(lpWrite, FillAndCompressIndexData(&pckIndexTableTemp, &lpPckIndexTableOld->cFileIndex), dwAddress);
+
+			FillAndCompressIndexData(&pckIndexTableTemp, &lpPckIndexTableOld->cFileIndex);
+			cPckCache.add(pckIndexTableTemp.compressed_index_data, pckIndexTableTemp.dwIndexDataLength + 8);
+			
 			++dwFinalFileCount;
+			SetParams_ProgressInc();
 		}
 		else {
 			--dwValidFileCount;
@@ -73,17 +53,18 @@ BOOL CPckClassIndexWriter::WriteAllIndex(CMapViewFileMultiPckWrite *lpWrite, LPP
 	assert(dwNewPckFileCount <= dwVectorSize);
 #endif
 	for(DWORD i = 0; i < dwNewPckFileCount; i++) {
-		if(!WritePckIndex(lpWrite, &(*lpCompedPckIndexTableNew)[i], dwAddress)) {
-			//如果写入失败，则保留前面写入成功的文件
-			lpPckAllInfo->dwFinalFileCount = dwFinalFileCount;
-			assert(FALSE);
-			return FALSE;
-		}
-		++dwFinalFileCount;
 
+		const PCKINDEXTABLE_COMPRESS *lpPckIndexTablePtr = &(*lpCompedPckIndexTableNew)[i];
+		cPckCache.add(lpPckIndexTablePtr->compressed_index_data, lpPckIndexTablePtr->dwIndexDataLength + 8);
+
+		++dwFinalFileCount;
+		SetParams_ProgressInc();
 	}
 
 	lpPckAllInfo->dwFinalFileCount = dwFinalFileCount;
+
+	lpWrite->Write2(dwAddress, cPckCache.c_buffer(), cPckCache.size());
+	dwAddress += cPckCache.size();
 
 	return TRUE;
 }

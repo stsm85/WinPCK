@@ -105,7 +105,7 @@ public:
 
 	DWORD	Write(LPVOID buffer, DWORD dwBytesToWrite);
 
-	BOOL	Write2(QWORD dwAddress, LPVOID buffer, DWORD dwBytesToWrite);
+	BOOL	Write2(QWORD dwAddress, const void* buffer, DWORD dwBytesToWrite);
 
 private:
 
@@ -119,7 +119,7 @@ private:
 		QWORD dwWritingAddressPointer,
 		QWORD dwFileSizeToWrite);
 
-	BOOL	ViewAndWrite2(QWORD dwAddress, LPVOID buffer, DWORD dwSize);
+	BOOL	ViewAndWrite2(QWORD dwAddress, const void *  buffer, DWORD dwSize);
 };
 
 

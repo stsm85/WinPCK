@@ -342,6 +342,7 @@
     <ClCompile Include="PckClass\PckClassThreadVarsInit.cpp" />
     <ClCompile Include="PckClass\PckClassVersionDetect.cpp" />
     <ClCompile Include="PckClass\PckClassZlib.cpp" />
+    <ClCompile Include="PckClass\PckIndexCache.cpp" />
     <ClCompile Include="PckControlCenter\PckControlCenter.cpp" />
     <ClCompile Include="PckControlCenter\PckControlCenterAttribute.cpp" />
     <ClCompile Include="PckControlCenter\PckControlCenterInterface.cpp" />
@@ -379,6 +380,7 @@
     <ClInclude Include="PckClass\PckClassVersionDetectFunctionDefinitions.h" />
     <ClInclude Include="PckClass\PckClassZlib.h" />
     <ClInclude Include="PckClass\PckDefines.h" />
+    <ClInclude Include="PckClass\PckIndexCache.h" />
     <ClInclude Include="PckClass\PckStructs.h" />
     <ClInclude Include="PckControlCenter\PckControlCenter.h" />
     <ClInclude Include="PckClass\PckClass.h" />
