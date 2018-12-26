@@ -174,6 +174,24 @@ typedef struct _PCK_FILE_INDEX_V2030
 	DWORD		dwUnknown2;
 }PCKFILEINDEX_V2030, *LPPCKFILEINDEX_V2030;
 
+#ifdef _DEBUG
+/*
+新诛仙索引大小改成了288，新加了4字节内容
+目前影响不大，暂时不添加
+*/
+typedef struct _PCK_FILE_INDEX_V2031
+{
+	char		szFilename[MAX_PATH_PCK_260];
+	DWORD		dwUnknown1;
+	QWORD		dwAddressOffset;
+	DWORD		dwFileClearTextSize;
+	DWORD		dwFileCipherTextSize;
+	DWORD		dwUnknown2;
+	DWORD		dwUnknown3;
+}PCKFILEINDEX_V2031, *LPPCKFILEINDEX_V2031;
+
+#endif
+
 typedef struct _PCK_FILE_INDEX_VXAJH
 {
 	char		szFilename[MAX_PATH_PCK_256];

@@ -105,6 +105,7 @@ int CPckClassZlib::decompress(void *dest, unsigned long  *destLen, const void *s
 	assert(0 != *destLen);
 	int rtnd = uncompress((Bytef*)dest, destLen, (Bytef*)source, sourceLen);
 	assert(0 != *destLen);
+	//return (0 != *destLen);
 	assert(rtnd == Z_OK);
 	return (rtnd == Z_OK);
 }

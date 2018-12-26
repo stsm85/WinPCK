@@ -203,13 +203,11 @@ LPBYTE CMapViewFile::View(QWORD dwAddress, DWORD dwSize)
 void CMapViewFile::SetFilePointer(QWORD lDistanceToMove, DWORD dwMoveMethod)
 {
 	UNQWORD uqwCurrentPos;
+	uqwCurrentPos.qwValue = lDistanceToMove;
 	
-	if (INVALID_SET_FILE_POINTER != ::SetFilePointer(hFile, uqwCurrentPos.dwValue, &uqwCurrentPos.lValueHigh, dwMoveMethod)) {
-		uqwCurrentPos.qwValue = lDistanceToMove;
-	}
-	else {
+	if (INVALID_SET_FILE_POINTER == ::SetFilePointer(hFile, uqwCurrentPos.dwValue, &uqwCurrentPos.lValueHigh, dwMoveMethod)) 
 		throw std::exception("SetFilePointer fail");
-	}
+
 }
 
 QWORD CMapViewFile::GetFilePointer()

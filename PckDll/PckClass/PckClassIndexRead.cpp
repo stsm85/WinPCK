@@ -73,12 +73,20 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 				m_PckLog.PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
 				return FALSE;
 			}
-
-			DWORD dwFileBytesRead = dwFileIndexTableClearDataLength;
+			
+			DWORD dwFileBytesRead = MAX_INDEXTABLE_CLEARTEXT_LENGTH/*dwFileIndexTableClearDataLength*/;
 			BYTE pckFileIndexBuf[MAX_INDEXTABLE_CLEARTEXT_LENGTH];
 
 			m_zlib.decompress(pckFileIndexBuf, &dwFileBytesRead,
 				lpFileBuffer, dwFileIndexTableCryptedDataLength[0]);
+
+#ifdef _DEBUG
+			/*
+			新诛仙索引大小改成了288，新加了4字节内容
+			PCKFILEINDEX_V2030->
+			*/
+			PCKFILEINDEX_V2031* testnewindex = (PCKFILEINDEX_V2031*)pckFileIndexBuf;
+#endif
 
 			m_PckAllInfo.lpDetectedPckVerFunc->PickIndexData(&lpPckIndexTable->cFileIndex, pckFileIndexBuf);
 
