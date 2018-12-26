@@ -12,44 +12,26 @@ BOOL CPckClassHeadTailWriter::AfterProcess(CMapViewFileMultiPckWrite *lpWrite, P
 	assert(NULL != dwAddress);
 	assert(0 != (PckAllInfo.dwFileCount + PckAllInfo.dwFileCountToAdd));
 
-	LPBYTE lpBufferToWrite;
-
 	if(isRenewAddtional)
-		strcpy(PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO
-			PCK_ADDITIONAL_INFO_STSM);
+		strcpy(PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO);
 
 	//дpckTail
-	if(NULL == (lpBufferToWrite = lpWrite->View(dwAddress, m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize))) {
-
+	if (!lpWrite->Write2(dwAddress, m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&PckAllInfo), m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)) {
+		
 		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		//lpWrite->SetFilePointer(dwAddress, FILE_BEGIN);
-		//dwAddress += lpWrite->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&PckAllInfo), \
-		//	m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize);
 		return FALSE;
-	} else {
-
-		memcpy(lpBufferToWrite, m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&PckAllInfo), \
-			m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize);
-		dwAddress += m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize;
-		lpWrite->UnmapViewAll();
 	}
+
+	dwAddress += m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize;
 
 	//дpckHead
 	PckAllInfo.qwPckSize = dwAddress;
 
 	assert(0 != PckAllInfo.qwPckSize);
 
-	if(NULL == (lpBufferToWrite = lpWrite->View(0, m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize))) {
-
+	if (!lpWrite->Write2(0, m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(&PckAllInfo), m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize)) {
 		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		//lpWrite->SetFilePointer(0, FILE_BEGIN);
-		//lpWrite->Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(&PckAllInfo), \
-		//	m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize);
 		return FALSE;
-	} else {
-		memcpy(lpBufferToWrite, m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(&PckAllInfo), \
-			m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize);
-		lpWrite->UnmapViewAll();
 	}
 
 	lpWrite->UnMaping();
