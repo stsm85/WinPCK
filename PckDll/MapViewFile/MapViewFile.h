@@ -94,7 +94,7 @@ public:
 
 	//强制缓存写入磁盘
 	virtual BOOL	FlushFileBuffers() { throw std::exception("programe can not reach here"); }
-
+	
 protected:
 	////自动生成CreateFileMappingA时所需要的name
 	LPCSTR	GenerateMapName();
@@ -122,8 +122,11 @@ protected:
 	char szFileMappingName[32];
 
 private:
-	
-	
+/*
+创建为NTFS稀疏文件
+流程为：CreateFile->SetSparseFile->CreateFileMapping->MapViewOfFile->UnmapViewOfFile->CloseHandle
+*/
+	virtual void	SetSparseFile() { throw std::exception("programe can not reach here"); }
 };
 
 
@@ -160,8 +163,8 @@ public:
 	CMapViewFileWrite();
 	virtual ~CMapViewFileWrite();
 
-	BOOL	Open(LPCSTR lpszFilename, DWORD dwCreationDisposition);
-	BOOL	Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition);
+	BOOL	Open(LPCSTR lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile = FALSE);
+	BOOL	Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile = FALSE);
 
 	BOOL	Mapping(QWORD dwMaxSize);
 
@@ -176,9 +179,11 @@ public:
 	BOOL	OpenMappingWrite(LPCSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
 	BOOL	OpenMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
 
-	//BOOL	FlushViewOfFile();
 	virtual BOOL	FlushFileBuffers();
 
+private:
+
+	virtual void	SetSparseFile();
 	//BOOL	Write2(QWORD dwAddress, LPVOID buffer, DWORD dwBytesToWrite);
 
 

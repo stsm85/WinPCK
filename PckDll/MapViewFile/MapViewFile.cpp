@@ -37,7 +37,7 @@ CMapViewFile::~CMapViewFile()
 	clear();
 }
 
-void CMapViewFile::clear()
+void CMapViewFile::clear() throw()
 {
 	UnmapViewAll();
 
@@ -235,7 +235,7 @@ void CMapViewFile::UnmapView(LPVOID lpTargetAddress)
 
 }
 
-void CMapViewFile::UnmapViewAll()
+void CMapViewFile::UnmapViewAll() throw()
 {
 	size_t count = vMapAddress.size();
 	for(int i = 0;i < count;i++) {

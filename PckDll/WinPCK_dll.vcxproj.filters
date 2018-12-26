@@ -193,7 +193,7 @@
       <Filter>源文件\MiscFuncs</Filter>
     </ClCompile>
     <ClCompile Include="PckClass\PckIndexCache.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\PckClass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

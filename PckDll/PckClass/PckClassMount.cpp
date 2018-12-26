@@ -15,15 +15,21 @@
 
 BOOL CPckClass::MountPckFile(LPCTSTR	szFile)
 {
-	if(!DetectPckVerion(szFile))
-		return FALSE;
+	try {
+		if (!DetectPckVerion(szFile))
+			return FALSE;
 
-	if(!ReadPckFileIndexes())
+		if (!ReadPckFileIndexes())
+			return FALSE;
+		//将最后一个Index的entryType置为PCK_ENTRY_TYPE_TAIL_INDEX
+		m_PckAllInfo.lpPckIndexTable[m_PckAllInfo.dwFileCount].entryType = PCK_ENTRY_TYPE_TAIL_INDEX;
+		return TRUE;
+	}
+	catch (exception e) {
+		m_PckLog.PrintLogE(e.what());
 		return FALSE;
-
-	//将最后一个Index的entryType置为PCK_ENTRY_TYPE_TAIL_INDEX
-	m_PckAllInfo.lpPckIndexTable[m_PckAllInfo.dwFileCount].entryType = PCK_ENTRY_TYPE_TAIL_INDEX;
-	return TRUE;
+	}
+	
 }
 
 void CPckClass::BuildDirTree()

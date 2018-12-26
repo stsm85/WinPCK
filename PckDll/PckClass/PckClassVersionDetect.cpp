@@ -385,6 +385,9 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCTSTR lpszPckFile)
 	//判断是不是64位的文件大小，head中的文件大小是否和实际相符
 	QWORD qwPckSizeInHeader = (0x100 < cPckHead.dwHeadCheckTail) ? cPckHead.dwPckSize : ((PCKHEAD_V2030*)&cPckHead)->dwPckSize;
 
+	if (qwPckSizeInHeader > cRead.GetFileSize())
+		throw exception("size in header is bigger than file size");
+
 	cRead.SetFilePointer(qwPckSizeInHeader - ((QWORD)(sizeof(DWORD) * 4)), FILE_BEGIN);
 
 	if (!cRead.Read(&dwTailVals, sizeof(DWORD) * 4)) {

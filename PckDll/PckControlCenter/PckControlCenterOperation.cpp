@@ -146,7 +146,7 @@ BOOL CPckControlCenter::GetSingleFileData(const PCK_UNIFIED_FILE_ENTRY* lpFileEn
 	else
 		lpPckFileIndexTable = ((LPPCK_PATH_NODE)lpFileEntry)->lpPckIndexTable;
 
-	return m_lpClassPck->GetSingleFileData(NULL, lpPckFileIndexTable, buffer, sizeOfBuffer);
+	return m_lpClassPck->GetSingleFileData(lpPckFileIndexTable, buffer, sizeOfBuffer);
 }
 
 //½âÑ¹ÎÄ¼ş

@@ -39,11 +39,11 @@ BOOL CMapViewFileMultiWrite::AddFile(CMapViewFileWrite *lpWrite, QWORD qwMaxSize
 	return TRUE;
 }
 
-BOOL CMapViewFileMultiWrite::AddFile(LPCSTR lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize)
+BOOL CMapViewFileMultiWrite::AddFile(LPCSTR lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize, BOOL isNTFSSparseFile)
 {
 	CMapViewFileWrite *lpWrite = new CMapViewFileWrite();
 
-	if(!lpWrite->Open(lpszFilename, dwCreationDisposition)) {
+	if(!lpWrite->Open(lpszFilename, dwCreationDisposition, isNTFSSparseFile)) {
 
 		delete lpWrite;
 		return FALSE;
@@ -53,11 +53,11 @@ BOOL CMapViewFileMultiWrite::AddFile(LPCSTR lpszFilename, DWORD dwCreationDispos
 	return AddFile(lpWrite, qwMaxSize, cA2U.GetString(lpszFilename));
 }
 
-BOOL CMapViewFileMultiWrite::AddFile(LPCWSTR lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize)
+BOOL CMapViewFileMultiWrite::AddFile(LPCWSTR lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize, BOOL isNTFSSparseFile)
 {
 	CMapViewFileWrite *lpWrite = new CMapViewFileWrite();
 
-	if(!lpWrite->Open(lpszFilename, dwCreationDisposition)) {
+	if(!lpWrite->Open(lpszFilename, dwCreationDisposition, isNTFSSparseFile)) {
 
 		delete lpWrite;
 		return FALSE;

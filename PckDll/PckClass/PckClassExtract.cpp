@@ -13,30 +13,25 @@
 
 #include "PckClass.h"
 
+BOOL CPckClass::GetSingleFileData(const PCKINDEXTABLE* const lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer)
+{
+	CMapViewFileMultiPckRead	cFileRead;
+
+	if (!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
+		return FALSE;
+	}
+	return GetSingleFileData(&cFileRead, lpPckFileIndexTable, buffer, sizeOfBuffer);
+}
+
 BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* const lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer)
 {
 
 	CMapViewFileMultiPckRead	*lpFileRead = (CMapViewFileMultiPckRead*)lpvoidFileRead;
-
 	const PCKFILEINDEX* lpPckFileIndex = &lpPckFileIndexTable->cFileIndex;
-
-	if(NULL == lpvoidFileRead) {
-		lpFileRead = new CMapViewFileMultiPckRead();
-
-		if(!lpFileRead->OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
-			delete lpFileRead;
-			return FALSE;
-		}
-
-	}
 
 	BYTE	*lpMapAddress;
 	if(NULL == (lpMapAddress = lpFileRead->View(lpPckFileIndex->dwAddressOffset, lpPckFileIndex->dwFileCipherTextSize))) {
-
 		m_PckLog.PrintLogEL(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
-
-		if(NULL == lpvoidFileRead)
-			delete lpFileRead;
 		return FALSE;
 	}
 
@@ -44,7 +39,6 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* co
 
 	if(0 != sizeOfBuffer && sizeOfBuffer < dwFileLengthToWrite)
 		dwFileLengthToWrite = sizeOfBuffer;
-
 
 	if(m_zlib.check_zlib_header(lpMapAddress)) {
 
@@ -58,23 +52,17 @@ BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* co
 				assert(FALSE);
 				lpFileRead->UnmapViewAll();
 
-				if(NULL == lpvoidFileRead)
-					delete lpFileRead;
-
 				return FALSE;
 			}
 		}
 	} else {
+		if (lpPckFileIndex->dwFileCipherTextSize < dwFileLengthToWrite)
+			dwFileLengthToWrite = lpPckFileIndex->dwFileCipherTextSize;
+
 		memcpy(buffer, lpMapAddress, dwFileLengthToWrite);
 	}
-
 	lpFileRead->UnmapViewAll();
-
-	if(NULL == lpvoidFileRead)
-		delete lpFileRead;
-
 	return TRUE;
-
 }
 
 BOOL CPckClass::ExtractFiles(const PCKINDEXTABLE **lpIndexToExtract, int nFileCount)

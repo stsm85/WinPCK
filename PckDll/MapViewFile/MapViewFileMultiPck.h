@@ -68,11 +68,11 @@ public:
 	CMapViewFileMultiPckWrite(QWORD qwMaxPckSize);
 	~CMapViewFileMultiPckWrite();
 
-	BOOL OpenPck(LPCSTR lpszFilename, DWORD dwCreationDisposition);
-	BOOL OpenPck(LPCWSTR lpszFilename, DWORD dwCreationDisposition);
+	BOOL OpenPck(LPCSTR lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile = FALSE);
+	BOOL OpenPck(LPCWSTR lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile = FALSE);
 
-	BOOL	OpenPckAndMappingWrite(LPCSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
-	BOOL	OpenPckAndMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
+	BOOL	OpenPckAndMappingWrite(LPCSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap, BOOL isNTFSSparseFile = FALSE);
+	BOOL	OpenPckAndMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap, BOOL isNTFSSparseFile = FALSE);
 
 private:
 

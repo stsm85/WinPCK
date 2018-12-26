@@ -24,9 +24,8 @@ BOOL CPckClassHeadTail::SetAdditionalInfo(const char* lpszAdditionalInfo)
 
 	CMapViewFileMultiPckWrite	cWritefile(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys.dwMaxSinglePckSize);
 
-	if(NULL == strstr(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO)) {
-		strcpy(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO
-			PCK_ADDITIONAL_INFO_STSM);
+	if(NULL == strstr(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_KEY)) {
+		strcpy(m_PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO);
 	}
 
 	if(!cWritefile.OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {

@@ -87,7 +87,7 @@ QWORD CMapViewFileMulti::GetFileSize()
 //
 //}
 
-void CMapViewFileMulti::UnmapViewAll()
+void CMapViewFileMulti::UnmapViewAll() throw()
 {
 	vector<LPVOID> buffer2free;
 	LPBYTE lastBuffer = NULL;
@@ -126,7 +126,7 @@ void CMapViewFileMulti::UnMaping()
 	}
 }
 
-void CMapViewFileMulti::clear()
+void CMapViewFileMulti::clear() throw()
 {
 	UnmapViewAll();
 
@@ -247,12 +247,15 @@ DWORD CMapViewFileMulti::Read(LPVOID buffer, DWORD dwBytesToRead)
 	int iCellIDBegin = GetCellIDByPoint(m_uqwCurrentPos.qwValue);
 	LPBYTE buffer2read = (LPBYTE)buffer;
 
-	DWORD dwBytesLeft = dwBytesToRead;
+	int dwBytesLeft = dwBytesToRead;
 	DWORD dwBytesReadAll = 0;
 
 	while((0 < dwBytesLeft) && (nCellCount >iCellIDBegin)){
 
 		DWORD dwBytesRead = m_file_cell[iCellIDBegin].lpMapView->Read(buffer2read, dwBytesLeft);
+
+		if (0 == dwBytesRead)
+			throw exception("read fail");
 
 		dwBytesLeft -= dwBytesRead;
 		buffer2read += dwBytesRead;
@@ -265,4 +268,19 @@ DWORD CMapViewFileMulti::Read(LPVOID buffer, DWORD dwBytesToRead)
 const char*	CMapViewFileMulti::GetFileDiskName()
 {
 	return m_file_cell[0].lpMapView->GetFileDiskName();
+}
+
+DWORD	CMapViewFileMulti::GetCellCount()
+{
+	return m_file_cell.size();
+}
+
+DWORD	CMapViewFileMulti::GetCellSize()
+{
+	if (1 < m_file_cell.size()) {
+		return m_file_cell[0].qwMaxCellSize;
+	}
+	else {
+		return 0x7fffff00;
+	}
 }

@@ -48,6 +48,10 @@ public:
 	//获取当前文件的磁盘名
 	const char*	GetFileDiskName();
 
+	//返回cell数量和大小
+	DWORD	GetCellCount();
+	DWORD	GetCellSize();
+
 protected:
 	//当前文件指针位置
 	UNQWORD	m_uqwCurrentPos;
@@ -65,8 +69,6 @@ protected:
 
 private:
 	BOOL	BuildCrossViewBuffer(LPBYTE lpCrossBuffer, LPBYTE &lpCrossBufferPtr, int cell_id, QWORD qwAddress, DWORD dwSize, BOOL isReadOnly);
-
-	
 
 };
 
@@ -95,8 +97,8 @@ public:
 	CMapViewFileMultiWrite();
 	~CMapViewFileMultiWrite();
 
-	BOOL	AddFile(LPCSTR lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize);
-	BOOL	AddFile(LPCWSTR lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize);
+	BOOL	AddFile(LPCSTR lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize, BOOL isNTFSSparseFile = FALSE);
+	BOOL	AddFile(LPCWSTR lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize, BOOL isNTFSSparseFile = FALSE);
 
 	BOOL	Mapping(QWORD dwMaxSize);
 	LPBYTE	View(QWORD dwAddress, DWORD dwSize);

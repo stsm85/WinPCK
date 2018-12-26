@@ -18,14 +18,26 @@ CMapViewFileWrite::CMapViewFileWrite()
 CMapViewFileWrite::~CMapViewFileWrite()
 {}
 
-BOOL CMapViewFileWrite::Open(LPCSTR lpszFilename, DWORD dwCreationDisposition)
+BOOL CMapViewFileWrite::Open(LPCSTR lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile)
 {
-	return CMapViewFile::Open(lpszFilename, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL);
+	if (CMapViewFile::Open(lpszFilename, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, dwCreationDisposition, isNTFSSparseFile ? (FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_SPARSE_FILE) : FILE_ATTRIBUTE_NORMAL)) {
+
+		if (isNTFSSparseFile)
+			SetSparseFile();
+		return TRUE;
+	}
+	return FALSE;
 }
 
-BOOL CMapViewFileWrite::Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition)
+BOOL CMapViewFileWrite::Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile)
 {
-	return CMapViewFile::Open(lpszFilename, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL);
+	if (CMapViewFile::Open(lpszFilename, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, dwCreationDisposition, isNTFSSparseFile ? (FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_SPARSE_FILE) : FILE_ATTRIBUTE_NORMAL)) {
+
+		if (isNTFSSparseFile)
+			SetSparseFile();
+		return TRUE;
+	}
+	return FALSE;
 }
 
 BOOL CMapViewFileWrite::Mapping(QWORD qwMaxSize)
@@ -81,6 +93,8 @@ BOOL CMapViewFileWrite::OpenMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDis
 
 BOOL CMapViewFileWrite::SetEndOfFile()
 {
+	UnmapViewAll();
+	UnMaping();
 	return ::SetEndOfFile(hFile);
 }
 
@@ -98,6 +112,12 @@ DWORD CMapViewFileWrite::Write(LPVOID buffer, DWORD dwBytesToWrite)
 BOOL CMapViewFileWrite::FlushFileBuffers()
 {
 	return ::FlushFileBuffers(hFile);
+}
+
+void CMapViewFileWrite::SetSparseFile()
+{
+	DWORD dw;
+	DeviceIoControl(hFile, FSCTL_SET_SPARSE, NULL, 0, NULL, 0, &dw, NULL);
 }
 
 ////使用MapViewOfFile进行写操作

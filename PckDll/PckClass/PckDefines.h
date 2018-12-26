@@ -98,8 +98,8 @@ typedef void(*ShowLogW)(const int log_level, const wchar_t *str);
 #define PCK_ENTRY_TYPE_ROOT				16
 #define PCK_ENTRY_TYPE_TAIL_INDEX		0x80000000
 
-#define	PCK_ADDITIONAL_INFO				"Angelica File Package"
-#define	PCK_ADDITIONAL_INFO_STSM		"\r\nCreate by WinPCK"
+#define	PCK_ADDITIONAL_KEY				"Angelica File Package"
+#define	PCK_ADDITIONAL_INFO				PCK_ADDITIONAL_KEY", Perfect World Co. Ltd. 2002~2008. All Rights Reserved."
 
 //LOG INFO STRING
 #define TEXT_LOG_OPENFILE				"打开文件 %s"

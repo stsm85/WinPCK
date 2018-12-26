@@ -154,7 +154,7 @@ BOOL CZupClass::BuildZupBaseDict()
 				continue;
 			}
 
-			if(GetSingleFileData(NULL, lpPckIndexTable, _incbuf)) {
+			if(GetSingleFileData(lpPckIndexTable, _incbuf)) {
 				char	*__lpincbuf = _incbuf;
 				char	*__lpincbufnextline = _incbuf;
 				char	*__lpincbufEnd = _incbuf + lpPckIndexTable->cFileIndex.dwFileClearTextSize;

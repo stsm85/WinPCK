@@ -13,7 +13,7 @@
 
 #pragma warning ( disable : 4267 )
 
-BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* const lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer)
+BOOL CZupClass::GetSingleFileData(const PCKINDEXTABLE* const lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer)
 {
 
 	const PCKINDEXTABLE* lpPckFileIndexTable;
@@ -39,7 +39,7 @@ BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* co
 			return FALSE;
 		}
 
-		if(CPckClass::GetSingleFileData(lpvoidFileRead, lpPckFileIndexTable, _cipherbuf, dwFileLengthDecompress1)) {
+		if(CPckClass::GetSingleFileData(lpPckFileIndexTable, _cipherbuf, dwFileLengthDecompress1)) {
 
 			if(m_zlib.check_zlib_header(_cipherbuf + 4)) {
 
@@ -67,7 +67,7 @@ BOOL CZupClass::GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* co
 	} else {
 
 		lpPckFileIndexTable = lpZupFileIndexTable;
-		return CPckClass::GetSingleFileData(lpvoidFileRead, lpPckFileIndexTable, buffer, sizeOfBuffer);
+		return CPckClass::GetSingleFileData(lpPckFileIndexTable, buffer, sizeOfBuffer);
 	}
 
 	return TRUE;
