@@ -2,6 +2,12 @@
 
 #include "MapViewFileMulti.h"
 
+#ifdef _DEBUG
+#define _TEST_MAX_PCK_CELL 0
+#else
+#define _TEST_MAX_PCK_CELL 0
+#endif
+
 #define ID_PCK	0
 #define ID_PKX	1
 #define ID_PKG	2

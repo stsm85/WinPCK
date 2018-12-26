@@ -1,6 +1,6 @@
 #include "MapViewFileMultiPck.h"
 
-#ifdef _DEBUG
+#if _TEST_MAX_PCK_CELL
 CMapViewFileMultiPckWrite::CMapViewFileMultiPckWrite(QWORD qwMaxPckSize):
 	m_Max_PckFile_Size(100 * 1024 * 1024)
 {}

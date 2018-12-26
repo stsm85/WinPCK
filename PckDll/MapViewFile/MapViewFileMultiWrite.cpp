@@ -82,13 +82,16 @@ BOOL CMapViewFileMultiWrite::Mapping(QWORD dwMaxSize)
 		m_file_cell[i].qwCellSize = m_file_cell[i].qwMaxCellSize;
 	}
 
-	CMapViewFileWrite *lpWrite = (CMapViewFileWrite*)m_file_cell[iCellID].lpMapView;
+	if (0 != qwLastExpandSize) {
+		CMapViewFileWrite *lpWrite = (CMapViewFileWrite*)m_file_cell[iCellID].lpMapView;
 
-	if(!lpWrite->Mapping(qwLastExpandSize)) {
-		return FALSE;
+		if (!lpWrite->Mapping(qwLastExpandSize)) {
+			return FALSE;
+		}
+
+		m_file_cell[iCellID].qwCellSize = qwLastExpandSize;
+
 	}
-
-	m_file_cell[iCellID].qwCellSize = qwLastExpandSize;
 
 	if(dwMaxSize > m_uqwFullSize.qwValue)
 		m_uqwFullSize.qwValue = dwMaxSize;
