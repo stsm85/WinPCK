@@ -20,7 +20,7 @@ CAllocMemPool::~CAllocMemPool()
 		pNode = pNextNode;
 	}
 #ifdef _DEBUG
-	OutputDebugStringA("CAllocMemPool::~CAllocMemPool()\r\n");
+	OutputDebugStringA(__FUNCTION__"\r\n");
 #endif
 }
 

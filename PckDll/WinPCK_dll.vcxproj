@@ -307,6 +307,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\MiscFuncs\AllocMemPool.cpp" />
+    <ClCompile Include="..\MiscFuncs\TextLineSpliter.cpp" />
     <ClCompile Include="DictHash\DictHash.cpp" />
     <ClCompile Include="MapViewFile\MapViewFile.cpp" />
     <ClCompile Include="MapViewFile\MapViewFileMulti.cpp" />
@@ -357,6 +358,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\MiscFuncs\AllocMemPool.h" />
+    <ClInclude Include="..\MiscFuncs\TextLineSpliter.h" />
     <ClInclude Include="DictHash\DictHash.h" />
     <ClInclude Include="include\pck_dependencies.h" />
     <ClInclude Include="MapViewFile\MapViewFile.h" />
@@ -374,6 +376,7 @@
     <ClInclude Include="PckClass\PckClassIndexWriter.h" />
     <ClInclude Include="PckClass\PckClassLog.h" />
     <ClInclude Include="PckClass\PckClassNode.h" />
+    <ClInclude Include="PckClass\PckClassRebuildFilter.h" />
     <ClInclude Include="PckClass\PckClassWriteOperator.h" />
     <ClInclude Include="PckClass\PckClassThread.h" />
     <ClInclude Include="PckClass\PckClassVersionDetect.h" />

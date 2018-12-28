@@ -170,13 +170,16 @@
 #define ID_LISTVIEW_ATTR                40045
 #define ID_LISTVIEW_POPMENU             40046
 #define ID_40048                        40048
+#define ID_40049                        40049
+#define ID_MENU_SIM                     40050
+#define ID_MENU_SIMPLIFY                40051
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        193
-#define _APS_NEXT_COMMAND_VALUE         40049
+#define _APS_NEXT_RESOURCE_VALUE        192
+#define _APS_NEXT_COMMAND_VALUE         40052
 #define _APS_NEXT_CONTROL_VALUE         1042
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

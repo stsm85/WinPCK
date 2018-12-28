@@ -222,6 +222,7 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 	BOOL		bDeleteClass = !pck_IsValidPck();
 
 	TCHAR		szFilenameToSave[MAX_PATH];
+	TCHAR		szScriptFile[MAX_PATH];
 	TCHAR		szPrintf[288];
 
 	CStopWatch	timer;
@@ -241,8 +242,7 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 	//弹出选项对话框
 	//调用对话框
 	BOOL  bNeedRecompress;
-	TRebuildOptDlg	dlg(&bNeedRecompress, pThis);
-	//DWORD dwCompressLevel = pck_getCompressLevel(pThis->m_PckHandle);
+	TRebuildOptDlg	dlg(szScriptFile, &bNeedRecompress, pThis);
 	if (IDCANCEL == dlg.Exec())
 		return;
 
@@ -263,18 +263,15 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_REBUILDING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
 	pThis->SetStatusBarText(4, szPrintf);
 
-	//pck_setThreadWorking(pThis->m_PckHandle);
-
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, 100, NULL);
 
-	if (WINPCK_OK == pck_RebuildPckFile(szFilenameToSave, bNeedRecompress)) {
+	if (WINPCK_OK == pck_RebuildPckFileWithScript(szScriptFile, szFilenameToSave, bNeedRecompress)) {
 
 		//计时结束
 		timer.stop();
 
 		if (pck_isLastOptSuccess()) {
 
-			//pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 			log_Print(LOG_IMAGE_NOTICE, GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 		}
 		else {
@@ -303,10 +300,7 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 		pThis->SendMessage(WM_CLOSE, 0, 0);
 	}
 
-	//pck_breakThreadWorking(pThis->m_PckHandle);
-
 	return;
-
 }
 
 VOID TInstDlg::CreateNewPckFile(VOID	*pParam)

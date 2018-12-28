@@ -86,12 +86,13 @@ protected:
 
 	TCHAR					szScriptFile[MAX_PATH];
 	BOOL					*lpNeedRecompress;
-
+	TCHAR*					lpszScriptFile;
 public:
-	TRebuildOptDlg(BOOL *_lpNeedRecompress, TWin *_win) : 
+	TRebuildOptDlg(TCHAR* _lpszScriptFile, BOOL *_lpNeedRecompress, TWin *_win) :
 		TDlg(IDD_DIALOG_REBUILD_OPT, _win), 
 		lpNeedRecompress(_lpNeedRecompress), 
-		isScriptParseSuccess(FALSE)
+		isScriptParseSuccess(FALSE),
+		lpszScriptFile(_lpszScriptFile)
 	{
 		*szScriptFile = 0;
 	}

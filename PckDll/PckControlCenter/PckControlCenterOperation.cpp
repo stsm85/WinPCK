@@ -15,6 +15,7 @@
 #include "ZupClass.h"
 #include "PckClassZlib.h"
 #include "PckClassLog.h"
+#include "PckClassRebuildFilter.h"
 
 
 void CPckControlCenter::New()
@@ -165,69 +166,23 @@ BOOL CPckControlCenter::ExtractAllFiles(const wchar_t *lpszDestDirectory)
 
 	return m_lpClassPck->ExtractAllFiles(lpszDestDirectory);
 }
-#if 0
-BOOL CPckControlCenter::ExtractFiles(LPCTSTR lpszFilePathSrc, const wchar_t *lpszDestDirectory, const wchar_t *lpszFileToExtract)
-{
-	CPckControlCenter* new_handle = new CPckControlCenter();
-	BOOL rtn = FALSE;
-
-	if (new_handle->Open(lpszFilePathSrc)) {
-		if (new_handle->IsValidPck()) {
-
-			const PCK_UNIFIED_FILE_ENTRY* lpFileEntry = new_handle->GetFileEntryByPath(lpszFileToExtract);
-
-			rtn = new_handle->ExtractFiles(&lpFileEntry, 1, lpszDestDirectory);
-		}
-	}
-
-	delete new_handle;
-	return rtn;
-}
-
-BOOL CPckControlCenter::ExtractAllFiles(LPCTSTR lpszFilePathSrc, const wchar_t *lpszDestDirectory)
-{
-	CPckControlCenter* new_handle = new CPckControlCenter();
-	BOOL rtn = FALSE;
-
-	if (new_handle->Open(lpszFilePathSrc)) {
-		if (new_handle->IsValidPck()) {
-
-			rtn = new_handle->ExtractAllFiles(lpszDestDirectory);
-		}
-	}
-
-	delete new_handle;
-	return rtn;
-}
-#endif
 #pragma endregion
 
 #pragma region 重建pck文件
 //重建pck文件
-BOOL CPckControlCenter::ParseScript(LPCTSTR lpszScriptFile)
+BOOL CPckControlCenter::TestScript(LPCTSTR lpszScriptFile)
+{
+	CPckClassRebuildFilter cScriptFilter;
+
+	return cScriptFilter.TestScript(lpszScriptFile);
+}
+
+BOOL CPckControlCenter::RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
 
-	return m_lpClassPck->ParseScript(lpszScriptFile);
-}
-
-BOOL CPckControlCenter::RebuildPckFile(LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
-{
-	if (NULL == m_lpClassPck)
-		return FALSE;
-
-	return m_lpClassPck->RebuildPckFile(szRebuildPckFile, bUseRecompress);
-}
-
-BOOL CPckControlCenter::RebuildPckFileWithScript(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
-{
-	if (NULL != lpszScriptFile) {
-		if (!ParseScript(lpszScriptFile))
-			return FALSE;
-	}
-
-	return RebuildPckFile(szRebuildPckFile, bUseRecompress);
+	return m_lpClassPck->RebuildPckFile(lpszScriptFile, szRebuildPckFile, bUseRecompress);
 }
 
 #pragma endregion

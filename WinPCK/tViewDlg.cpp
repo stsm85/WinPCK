@@ -27,7 +27,7 @@ TViewDlg::TViewDlg(LPBYTE *_buf, DWORD _dwSize, const wchar_t *_lpszFile, TWin *
 TViewDlg::~TViewDlg()
 {
 	free(*buf);
-	*buf = NULL;
+	*buf = nullptr;
 }
 
 BOOL TViewDlg::EvCreate(LPARAM lParam)
@@ -37,81 +37,41 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 
 	if(0 != dwSize) {
 
-		*(WORD*)(*buf + dwSize) = 0;
-
-		if(0xfeff == *(WORD*)*buf) {
-			textType = TEXT_TYPE_UCS2;
-			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (Unicode)", lpszFile);
-			lpszTextShow = (char*)*buf + 2;
-
-		} else if((0xbbef == *(WORD*)*buf) && (0xbf == *(*buf + 3))) {
-			textType = TEXT_TYPE_UTF8;
-			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (UTF-8)", lpszFile);
-			lpszTextShow = (char*)*buf + 3;
-
-		} else {
-			textType = DataType((char*)*buf, dwSize);
-
-			switch(textType) {
-			case TEXT_TYPE_UTF8:
-
-				//textType = TEXT_TYPE_UTF8;
-				swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (UTF-8)", lpszFile);
-				break;
-
-			case TEXT_TYPE_ANSI:
-
-				//textType = TEXT_TYPE_ANSI;
-				swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s", lpszFile);
-				break;
-
-			case TEXT_TYPE_RAW:
-
-				if(VIEW_RAW_MAX_BUFFER < dwSize)
-					dwSize = VIEW_RAW_MAX_BUFFER;
-
-				swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (RAW)", lpszFile);
-
-				break;
-
-			}
-
-			lpszTextShow = (char*)*buf;
-		}
-
-
 		SendDlgItemMessage(IDC_RICHEDIT_VIEW, EM_SETTEXTMODE, TM_PLAINTEXT, 0);
 		SendDlgItemMessage(IDC_RICHEDIT_VIEW, EM_EXLIMITTEXT, 0, -1);
 		//SendDlgItemMessage(IDC_RICHEDIT_VIEW, EM_SETSEL, 0, -1);
 
-		switch(textType) {
+		lpszTextShow = (char*)*buf;
+		
+		switch (textType = TextDataType(lpszTextShow, dwSize)) {
+
 		case TEXT_TYPE_UCS2:
-			//SendDlgItemMessageW(IDC_RICHEDIT_VIEW, EM_REPLACESEL, 0, (LPARAM)lpszTextShow);
+			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (Unicode)", lpszFile);
 			SetDlgItemTextW(IDC_RICHEDIT_VIEW, (wchar_t *)lpszTextShow);
-			//SetDlgItemTextW(IDC_EDIT_VIEW, (wchar_t *)lpszTextShow);
-			break;
-
-		case TEXT_TYPE_ANSI:
-			SetDlgItemTextA(IDC_RICHEDIT_VIEW, (char *)lpszTextShow);
-
 			break;
 
 		case TEXT_TYPE_UTF8:
-		{
-			CU82Ucs cU82U;
-			SetDlgItemTextW(IDC_RICHEDIT_VIEW, cU82U.GetString(lpszTextShow));
-			//U8toW("");
-		}
+			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (UTF-8)", lpszFile);
+			{
+				CU82Ucs cU82U;
+				SetDlgItemTextW(IDC_RICHEDIT_VIEW, cU82U.GetString(lpszTextShow));
+			}
 			break;
-
+		case TEXT_TYPE_ANSI:
+			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s", lpszFile);
+			SetDlgItemTextA(IDC_RICHEDIT_VIEW, (char *)lpszTextShow);
+			break;
 		case TEXT_TYPE_RAW:
+			if (VIEW_RAW_MAX_BUFFER < dwSize)
+				dwSize = VIEW_RAW_MAX_BUFFER;
+
+			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (RAW)", lpszFile);
 			ShowRaw((LPBYTE)lpszTextShow, dwSize);
 			break;
-
 		}
 
 		free(*buf);
-		*buf = NULL;
+		*buf = nullptr;
 
 	} else {
 
@@ -141,6 +101,7 @@ BOOL TViewDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	return	FALSE;
 }
 
+#if 0
 #define DATATYPE_UTF8_DETECT_RTN {if(0 == *s) return TEXT_TYPE_RAW;else	{isNotUTF8 = TRUE; break;}}	
 
 int TViewDlg::DataType(const char *_s, size_t size)
@@ -186,6 +147,7 @@ int TViewDlg::DataType(const char *_s, size_t size)
 		return isNotUTF8 ? TEXT_TYPE_ANSI : TEXT_TYPE_UTF8;
 
 }
+#endif
 
 void TViewDlg::ShowRaw(LPBYTE lpbuf, size_t rawlength)
 {

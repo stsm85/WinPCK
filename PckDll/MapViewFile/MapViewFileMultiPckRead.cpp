@@ -15,8 +15,11 @@ BOOL CMapViewFileMultiPckRead::OpenPck(LPCSTR lpszFilename)
 	GetPkXName(m_szPckFileName[ID_PKG], m_szPckFileName[ID_PCK], ID_PKG);
 
 	for(int i = 0;i < ID_END;i++) {
-		if(!AddFile(m_szPckFileName[i]))
+		if (!AddFile(m_szPckFileName[i])) {
+			if (0 < i)
+				SetLastError(NOERROR);
 			break;
+		}
 
 		rtn = TRUE;
 	}
@@ -33,8 +36,11 @@ BOOL CMapViewFileMultiPckRead::OpenPck(LPCWSTR lpszFilename)
 
 	for(int i = 0;i < ID_END;i++) {
 
-		if(!AddFile(m_tszPckFileName[i]))
+		if (!AddFile(m_tszPckFileName[i])) {
+			if (0 < i)
+				SetLastError(NOERROR);
 			break;
+		}
 		rtn = TRUE;
 	}
 

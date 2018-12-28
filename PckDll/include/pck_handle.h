@@ -18,8 +18,8 @@ typedef char *				LPSTR;
 typedef PCK_UNIFIED_FILE_ENTRY*			LPPUFE;
 typedef const PCK_UNIFIED_FILE_ENTRY*	CLPPUFE;
 
-#define WINPCK_VERSION        "1.30.0.18"
-#define WINPCK_VERSION_NUMBER  1,30,0,18
+#define WINPCK_VERSION        "1.30.0.19"
+#define WINPCK_VERSION_NUMBER  1,30,0,19
 
 typedef enum _PCKRTN
 {
@@ -125,7 +125,7 @@ WINPCK_API PCKRTN		do_ExtractPartFiles(CLPWSTR  lpszSrcPckFile, CLPWSTR  lpszDes
 WINPCK_API PCKRTN		do_ExtractAllFiles(CLPWSTR  lpszSrcPckFile, CLPWSTR  lpszDestDirectory);
 
 //重建pck文件
-WINPCK_API PCKRTN		pck_ParseScript(CLPWSTR  lpszScriptFile);
+WINPCK_API PCKRTN		pck_TestScript(CLPWSTR  lpszScriptFile);
 WINPCK_API PCKRTN		pck_RebuildPckFile(CLPWSTR szRebuildPckFile, BOOL bUseRecompress);
 //set lpszScriptFile = NULL to disable Script filter function
 WINPCK_API PCKRTN		pck_RebuildPckFileWithScript(CLPWSTR  lpszScriptFile, CLPWSTR szRebuildPckFile, BOOL bUseRecompress);

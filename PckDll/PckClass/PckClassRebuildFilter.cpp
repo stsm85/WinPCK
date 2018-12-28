@@ -8,92 +8,52 @@
 // 2018.5.15
 //////////////////////////////////////////////////////////////////////
 #include <stdlib.h>
-#include "PckClassWriteOperator.h"
-//chkfile
-//protect
-//delete
-//rmdir
+#include "MapViewFileMultiPck.h"
+#include "PckClassRebuildFilter.h"
+#include "CharsCodeConv.h"
+#include "TextLineSpliter.h"
 
-#define MAX_LINE_LENGTH (MAX_PATH + 10)
 #define MAX_SCRIPT_SIZE	(10*1024*1024)
 
-void CPckClassWriteOperator::SetBufPointer(SCRIPTBUFFER *sfvBuf, int pos)
+CPckClassRebuildFilter::CPckClassRebuildFilter()
 {
-	sfvBuf->dwPos += pos;
-	sfvBuf->bufpos += pos;
 }
 
-BOOL CPckClassWriteOperator::ReadFromBuffer(void *_dstbuf, size_t size, SCRIPTBUFFER *sfvBuf)
+CPckClassRebuildFilter::~CPckClassRebuildFilter()
 {
-	if((sfvBuf->dwPos + size) > sfvBuf->dwSize)
+}
+
+#pragma region 读取文件并转换为Unicode
+
+BOOL CPckClassRebuildFilter::OpenScriptFileAndConvBufToUcs2(LPCTSTR lpszScriptFile)
+{
+	char   * lpBufferToRead;
+	CMapViewFileRead	cFileRead;
+	
+	CTextLineSpliter	cText2Line;
+
+	//读取文件所有字符
+	if (nullptr == (lpBufferToRead = (char*)cFileRead.OpenMappingViewAllRead(lpszScriptFile))) 
 		return FALSE;
 
-	memcpy(_dstbuf, sfvBuf->bufpos, size);
-	SetBufPointer(sfvBuf, size);
+	CTextConv2UCS2 cText2Ucs;
+	const wchar_t* lpszUnicodeString = cText2Ucs.GetUnicodeString(lpBufferToRead, cFileRead.GetFileSize());
+
+	cText2Line.SplitText(lpszUnicodeString, wcslen(lpszUnicodeString), m_ScriptLines, LINE_TRIM_LEFT | LINE_TRIM_RIGHT | LINE_EMPTY_DELETE);
+
 	return TRUE;
 }
+#pragma endregion
 
-VOID CPckClassWriteOperator::GetNextLine(SCRIPTBUFFER *sfvBuf, CHAR * szLineAnsi, CONST UINT uiLengthLine,
-	UINT * puiStringLength, BOOL * pbErrorOccured, BOOL * pbEndOfFile)
+
+BOOL CPckClassRebuildFilter::ParseOneLine(FILEOP * pFileOp, const wchar_t * lpszLine)
 {
-	CHAR myChar;
-
-	UINT uiCount;
-	BOOL bSuccess;
-
-	// 至少需要一个字节存放 \0
-	if(uiLengthLine <= 1) {
-		(*pbErrorOccured) = TRUE;
-		return;
-	}
-
-	ZeroMemory(szLineAnsi, uiLengthLine);
-	uiCount = 0;
-
-	while(TRUE) {
-		//在下次循环中写入szLineAnsi[uiCount]并在 szLineAnsi[uiCount+1] 中写入\0
-		if(uiCount >= uiLengthLine - 1) {
-			(*pbErrorOccured) = TRUE;
-			return;
-		}
-		bSuccess = ReadFromBuffer(&myChar, sizeof(myChar), sfvBuf);
-
-		if(!bSuccess) {
-			(*pbErrorOccured) = FALSE;
-			(*puiStringLength) = uiCount;
-			(*pbEndOfFile) = TRUE;
-			return;
-		}
-
-		if((myChar == '\n') || (myChar == '\r')) {
-			do {
-				bSuccess = ReadFromBuffer(&myChar, sizeof(myChar), sfvBuf);
-
-			} while((bSuccess) && ((myChar == '\n') || (myChar == '\r')));
-
-			if(bSuccess && !((myChar == '\n') || (myChar == '\r')))
-				SetBufPointer(sfvBuf, -1);
-
-			(*pbErrorOccured) = FALSE;
-			(*puiStringLength) = uiCount;
-			(*pbEndOfFile) = FALSE;
-			return;
-		} else {
-			szLineAnsi[uiCount] = myChar;
-			uiCount += 1;
-		}
-	}
-	return;
-}
-
-BOOL CPckClassWriteOperator::ParseOneLine(FILEOP * pFileOp, char * lpszLine, TCHAR *lpszFileName)
-{
-	char szOperator[16] = { 0 };
+	wchar_t szOperator[16] = { 0 };
 	//首先检查16个字符内有没有空格或tab
-	char *lpszCell = lpszLine, *lpszSearch = lpszLine;
+	const wchar_t *lpszCell = lpszLine, *lpszSearch = lpszLine;
 	size_t count = 0;
 
-	char *lpszOperator = szOperator;
+	wchar_t *lpszOperator = szOperator;
 	BOOL isValid = FALSE;
 
 	while((16 > (++count)) &&
@@ -110,7 +70,7 @@ BOOL CPckClassWriteOperator::ParseOneLine(FILEOP * pFileOp, char * lpszLine, TCH
 		return FALSE;
 
 	//解析szOperator
-	const char *lpszOpPos = strstr(szOperators, szOperator);
+	const wchar_t *lpszOpPos = wcsstr(szOperators, szOperator);
 	if(NULL == lpszOpPos)
 		return FALSE;
 
@@ -123,28 +83,29 @@ BOOL CPckClassWriteOperator::ParseOneLine(FILEOP * pFileOp, char * lpszLine, TCH
 	isValid = FALSE;
 	count = 0;
 
-	if((MAX_PATH <= strlen(lpszSearch)) || (0 == *lpszSearch))
+	if((MAX_PATH <= wcslen(lpszSearch)) || (0 == *lpszSearch))
 		return FALSE;
 
-	CPckClassCodepage::NativeFilenameCode2UCS(lpszSearch, pFileOp->szFilename, sizeof(pFileOp->szFilename) / sizeof(TCHAR));
-	wcscpy(pFileOp->szFilenameBuffer, pFileOp->szFilename);
+	wcscpy(pFileOp->szFilename, lpszSearch);
 
-	//检查文件名是否正确
-	if(OP_CheckFile == pFileOp->op) {
+	////检查文件名是否正确
+	//if(OP_CheckFile == pFileOp->op) {
 
-		if(0 == _tcsicmp(lpszFileName, pFileOp->szFilename))
+	//	if(0 == _tcsicmp(lpszFileName, pFileOp->szFilename))
 
-			return TRUE;
-		else
-			return FALSE;
-	}
+	//		return TRUE;
+	//	else
+	//		return FALSE;
+	//}
 
 	return TRUE;
 }
 
 //分解脚本中的目录
-void CPckClassWriteOperator::SepratePaths(FILEOP * pFileOp)
+void CPckClassRebuildFilter::SepratePaths(FILEOP * pFileOp)
 {
+	wcscpy(pFileOp->szFilenameBuffer, pFileOp->szFilename);
+
 	pFileOp->lpszSepratedPaths[0] = pFileOp->szFilenameBuffer;
 
 	wchar_t *lpszSearch = pFileOp->szFilenameBuffer;
@@ -166,7 +127,7 @@ void CPckClassWriteOperator::SepratePaths(FILEOP * pFileOp)
 
 }
 
-LPPCK_PATH_NODE CPckClassWriteOperator::LocationFileIndex(LPWSTR *lpszPaths, LPPCK_PATH_NODE lpNode)
+LPPCK_PATH_NODE CPckClassRebuildFilter::LocationFileIndex(LPWSTR *lpszPaths, LPPCK_PATH_NODE lpNode)
 {
 	LPCWSTR lpszSearchDir = *lpszPaths;
 
@@ -197,7 +158,7 @@ LPPCK_PATH_NODE CPckClassWriteOperator::LocationFileIndex(LPWSTR *lpszPaths, LPP
 	return NULL;
 }
 
-void CPckClassWriteOperator::MarkFilterFlagToFileIndex(LPPCKINDEXTABLE	lpPckIndexTable, SCRIPTOP op)
+void CPckClassRebuildFilter::MarkFilterFlagToFileIndex(LPPCKINDEXTABLE	lpPckIndexTable, SCRIPTOP op)
 {
 	switch(op) {
 
@@ -214,18 +175,20 @@ void CPckClassWriteOperator::MarkFilterFlagToFileIndex(LPPCKINDEXTABLE	lpPckInde
 		}
 		break;
 	}
+	m_EditedNode.push_back(lpPckIndexTable);
 }
 
 //将一行脚本内容应用到查找到的文件列表中
-void CPckClassWriteOperator::MarkFilterFlagToNode(LPPCK_PATH_NODE lpNode, SCRIPTOP op)
+void CPckClassRebuildFilter::MarkFilterFlagToNode(LPPCK_PATH_NODE lpNode, SCRIPTOP op)
 {
 	lpNode = lpNode->child->next;
 
 	while(NULL != lpNode) {
-		if(NULL == lpNode->child) {
-			MarkFilterFlagToFileIndex(lpNode->lpPckIndexTable, op);
-		} else {
+		//if(NULL == lpNode->child) {
+		if (PCK_ENTRY_TYPE_FOLDER & lpNode->entryType) {
 			MarkFilterFlagToNode(lpNode, op);
+		} else {
+			MarkFilterFlagToFileIndex(lpNode->lpPckIndexTable, op);
 		}
 
 		lpNode = lpNode->next;
@@ -237,22 +200,15 @@ void CPckClassWriteOperator::MarkFilterFlagToNode(LPPCK_PATH_NODE lpNode, SCRIPT
 #pragma region ApplyScript2IndexList,将脚本内容应用到文件列表中
 
 //将脚本内容应用到文件列表中
-BOOL CPckClassWriteOperator::ApplyScript2IndexList(VOID *pfirstFileOp, PCK_ALL_INFOS _DstPckAllInfo)
+BOOL CPckClassRebuildFilter::ApplyScript2IndexList(LPPCK_PATH_NODE lpRootNode)
 {
-
-	vector<FILEOP> * lpfirstFileOp = (vector<FILEOP> *)pfirstFileOp;
-	//FILEOP *m_firstFileOp = (FILEOP *)pfirstFileOp;
-	//FILEOP * pFileOp = m_firstFileOp;
-
 	//解析过程是否发生了错误
 	BOOL bHasErrorHappend = FALSE;
+	m_EditedNode.clear();
 
-	size_t nListCount = lpfirstFileOp->size();
+	for(size_t i = 0;i< m_FirstFileOp.size();i++){
 
-	//while(NULL != pFileOp) {
-	for(size_t i = 0;i<nListCount;i++){
-
-		FILEOP * pFileOp = &(*lpfirstFileOp)[i];
+		FILEOP * pFileOp = &m_FirstFileOp[i];
 
 		if(OP_CheckFile != pFileOp->op) {
 
@@ -260,14 +216,16 @@ BOOL CPckClassWriteOperator::ApplyScript2IndexList(VOID *pfirstFileOp, PCK_ALL_I
 			SepratePaths(pFileOp);
 
 			//定位文件索引
-			LPPCK_PATH_NODE lpFoundNode = LocationFileIndex(pFileOp->lpszSepratedPaths, _DstPckAllInfo.cRootNode.child);
+			LPPCK_PATH_NODE lpFoundNode = LocationFileIndex(pFileOp->lpszSepratedPaths, lpRootNode->child);
+
 			if(NULL == lpFoundNode) {
 
 				m_PckLog.PrintLogW(TEXT("已解析脚本失败在: %s, 跳过..."), pFileOp->szFilename);
 				bHasErrorHappend = TRUE;
 
 			} else {
-				if(NULL != lpFoundNode->child) {
+				if(PCK_ENTRY_TYPE_FOLDER & lpFoundNode->entryType){
+				//if(NULL != lpFoundNode->child) {
 
 					MarkFilterFlagToNode(lpFoundNode, pFileOp->op);
 				} else {
@@ -276,7 +234,6 @@ BOOL CPckClassWriteOperator::ApplyScript2IndexList(VOID *pfirstFileOp, PCK_ALL_I
 			}
 
 		}
-		//pFileOp = pFileOp->next;
 	}
 
 	return (!bHasErrorHappend);
@@ -284,133 +241,83 @@ BOOL CPckClassWriteOperator::ApplyScript2IndexList(VOID *pfirstFileOp, PCK_ALL_I
 
 #pragma endregion
 
-BOOL CPckClassWriteOperator::ParseScript(LPCTSTR lpszScriptFile, PCK_ALL_INFOS &_DstPckAllInfo)
+BOOL CPckClassRebuildFilter::ParseScript(LPCTSTR lpszScriptFile)
 {
 
-	CHAR	szLineAnsi[MAX_LINE_LENGTH];
-	char	szLine[MAX_LINE_LENGTH];
-	UINT	uiStringLength;
-	BOOL	bErrorOccured, bEndOfFile;
-	SCRIPTBUFFER sfvBuf = { 0 };
-	FILEOP * pFileOp;
-
-	BYTE   * lpBufferToRead;
-	CMapViewFileRead	cFileRead;
-	//LinkList<FILEOP> m_firstFileOp;
-	vector<FILEOP> cFirstFileOp(1);
-
-	m_PckLog.PrintLogI("开始解析脚本...");
-
-	//读取文件所有字符
-	if(NULL == (lpBufferToRead = cFileRead.OpenMappingViewAllRead(lpszScriptFile))) {
-
-		return FALSE;
+	if (!OpenScriptFileAndConvBufToUcs2(lpszScriptFile)) {
+		m_PckLog.PrintLogI("读取脚本失败");
+		return FALSE; 
 	}
 
-	sfvBuf.dwSize = (DWORD)cFileRead.GetFileSize();
-	//如果大于10MB，退出
-	if(MAX_SCRIPT_SIZE < sfvBuf.dwSize)
-		return FALSE;
+	m_FirstFileOp.push_back(FILEOP{ 0 });
+	FILEOP * pFileOp = &m_FirstFileOp.back();
 
-	if(NULL == (sfvBuf.buffer = (BYTE*)malloc(sfvBuf.dwSize)))
-		return FALSE;
+	for (int i = 0; i < m_ScriptLines.size(); i++) {
 
-	memcpy(sfvBuf.buffer, lpBufferToRead, sfvBuf.dwSize);
+		//过滤注释行
+		if (L';' != m_ScriptLines[i].at(0)) {
+			//一行脚本分为两部分，操作和文件名
+			if (ParseOneLine(pFileOp, m_ScriptLines[i].c_str())) {
 
-	//m_firstFileOp.insertNext();
-	pFileOp = &cFirstFileOp.back();
+				m_FirstFileOp.push_back(FILEOP{ 0 });
+				pFileOp = &m_FirstFileOp.back();
 
-	//处理读取的内容
-	sfvBuf.bufpos = sfvBuf.buffer;
-	GetNextLine(&sfvBuf, szLineAnsi, MAX_LINE_LENGTH, &uiStringLength, &bErrorOccured, &bEndOfFile);
-
-	if(bErrorOccured) {
-		m_PckLog.PrintLogEL("无法读取 SFV 文件", __FILE__, __FUNCTION__, __LINE__);
-		free(sfvBuf.buffer);
-		return FALSE;
-	}
-
-	//记录已经读取到第多少行了
-	int iReadLineNumber = 1;
-	//解析过程是否发生了错误
-	BOOL bHasErrorHappend = FALSE;
-
-	while(!(bEndOfFile && uiStringLength == 0)) {
-
-		if(uiStringLength > 5) {
-			strcpy_s(szLine, MAX_LINE_LENGTH, szLineAnsi);
-
-			//删除尾部多余的空格
-			while((szLine[uiStringLength - 1] == TEXT(' ')) && (uiStringLength > 8)) {
-				szLine[uiStringLength - 1] = NULL;
-				uiStringLength--;
 			}
+			else {
 
-			//排队注释行和空行
-			if((szLine[0] != TEXT(';')) && (szLine[0] != TEXT('\0'))) {
+				m_PckLog.PrintLogW("脚本解析失败在行%d: %ls, 跳过...", i, m_ScriptLines[i].c_str());
 
-				//一行脚本分为两部分，操作和文件名
-				if(ParseOneLine(pFileOp, szLine, _DstPckAllInfo.szFileTitle)) {
-
-					cFirstFileOp.push_back(FILEOP{ 0 });
-					pFileOp = &cFirstFileOp.back();
-					//m_firstFileOp.insertNext();
-					//pFileOp = m_firstFileOp.last();
-
-				} else {
-
-					m_PckLog.PrintLogW("脚本解析失败在行%d: %s, 跳过...", iReadLineNumber, szLine);
-					bHasErrorHappend = TRUE;
-				}
+				return FALSE;
 			}
 		}
-
-		GetNextLine(&sfvBuf, szLineAnsi, MAX_LINE_LENGTH, &uiStringLength, &bErrorOccured, &bEndOfFile);
-		if(bErrorOccured) {
-			m_PckLog.PrintLogEL("无法读取 SFV 文件", __FILE__, __FUNCTION__, __LINE__);
-			free(sfvBuf.buffer);
-			return FALSE;
-		}
-
-		++iReadLineNumber;
-
-	}
-	free(sfvBuf.buffer);
-
-
-	BOOL rtn = FALSE;
-
-	//将数据应用于tree中
-	if(!bHasErrorHappend)
-		rtn = ApplyScript2IndexList(&cFirstFileOp, _DstPckAllInfo);
-
-	if(!rtn) {
-		ResetRebuildFilterInIndexList(_DstPckAllInfo);
-		m_PckLog.PrintLogI("解析脚本失败");
-	} else {
-		m_PckLog.PrintLogI("解析脚本成功");
 	}
 
-	return rtn;
+	m_PckLog.PrintLogI("解析脚本成功");
+	return TRUE;
 }
 
-
 //清除掉重建包时所需要读取的过滤信息
-void CPckClassWriteOperator::ResetRebuildFilterInIndexList(PCK_ALL_INFOS &_DstPckAllInfo)
+void CPckClassRebuildFilter::ResetRebuildFilterInIndexList()
 {
-	LPPCKINDEXTABLE lpPckIndexTable = _DstPckAllInfo.lpPckIndexTable;
+	for(DWORD i = 0;i < m_EditedNode.size();++i) {
 
-	for(DWORD i = 0;i < _DstPckAllInfo.dwFileCount;++i) {
+		LPPCKINDEXTABLE lpPckIndexTable = m_EditedNode[i];
 
 		if(lpPckIndexTable->isToDeDelete) {
 			lpPckIndexTable->isInvalid = FALSE;
 		}
 		lpPckIndexTable->isProtected = lpPckIndexTable->isToDeDelete = FALSE;
-		++lpPckIndexTable;
 	}
 }
 
-BOOL CPckClassWriteOperator::ParseScript(LPCTSTR lpszScriptFile)
+//应用脚本内容
+BOOL CPckClassRebuildFilter::Apply(LPPCK_PATH_NODE lpRootNode)
 {
-	return ParseScript(lpszScriptFile, m_PckAllInfo);
+	BOOL rtn = FALSE;
+
+	//将数据应用于tree中
+	rtn = ApplyScript2IndexList(lpRootNode);
+
+	if (!rtn) {
+		ResetRebuildFilterInIndexList();
+		m_PckLog.PrintLogI("应用脚本失败");
+	}
+	else {
+		m_PckLog.PrintLogI("应用脚本成功");
+	}
+
+	return rtn;
+}
+
+BOOL CPckClassRebuildFilter::ApplyScript(LPCTSTR lpszScriptFile, LPPCK_PATH_NODE lpRootNode)
+{
+	if (!ParseScript(lpszScriptFile))
+		return FALSE;
+
+	return Apply(lpRootNode);
+}
+
+BOOL CPckClassRebuildFilter::TestScript(LPCTSTR lpszScriptFile)
+{
+	return ParseScript(lpszScriptFile);
 }

@@ -79,9 +79,8 @@ public:
 
 #pragma region 重建pck文件
 	//重建pck文件
-	BOOL	ParseScript(LPCTSTR lpszScriptFile);
-	BOOL	RebuildPckFile(LPCTSTR szRebuildPckFile, BOOL bUseRecompress);
-	BOOL	RebuildPckFileWithScript(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress);
+	BOOL	TestScript(LPCTSTR lpszScriptFile);
+	BOOL	RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress);
 
 #pragma endregion
 

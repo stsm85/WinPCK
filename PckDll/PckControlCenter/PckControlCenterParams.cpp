@@ -66,7 +66,7 @@ DWORD CPckControlCenter::getMTMaxMemory()
 	return cParams.dwMTMaxMemory;
 }
 
-//最大内存
+//最大内存getDefaultMaxMemoryAllowed
 DWORD CPckControlCenter::getMaxMemoryAllowed()
 {
 	return MT_MAX_MEMORY;

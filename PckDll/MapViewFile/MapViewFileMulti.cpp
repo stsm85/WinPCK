@@ -8,7 +8,7 @@ CMapViewFileMulti::CMapViewFileMulti():
 	m_cross_view.clear();
 }
 
-CMapViewFileMulti::~CMapViewFileMulti()
+CMapViewFileMulti::~CMapViewFileMulti() throw()
 {
 	clear();
 }
@@ -87,7 +87,7 @@ QWORD CMapViewFileMulti::GetFileSize()
 //
 //}
 
-void CMapViewFileMulti::UnmapViewAll() throw()
+void CMapViewFileMulti::UnmapViewAll()
 {
 	vector<LPVOID> buffer2free;
 	LPBYTE lastBuffer = NULL;
@@ -126,7 +126,7 @@ void CMapViewFileMulti::UnMaping()
 	}
 }
 
-void CMapViewFileMulti::clear() throw()
+void CMapViewFileMulti::clear()
 {
 	UnmapViewAll();
 

@@ -27,11 +27,6 @@ protected:
 
 #pragma region TViewDlg
 
-#define TEXT_TYPE_ANSI	0
-#define TEXT_TYPE_UCS2	1
-#define TEXT_TYPE_UTF8	2
-#define TEXT_TYPE_RAW	3
-
 #define	VIEW_TEXT_MAX_BUFFER	(16*1024*1024)	//16MB
 #define	VIEW_RAW_MAX_BUFFER		(16*1024*1024)	//16MB
 
@@ -39,15 +34,12 @@ class TViewDlg : public TDlg
 {
 protected:
 	LPBYTE	*buf;
-	char	*lpszTextShow;
+	const char	*lpszTextShow;
 
 	DWORD	dwSize;
 	const wchar_t	*lpszFile;
 
 	int		textType;
-
-	//BOOL	IsTextUTF8(char *inputStream, size_t size);
-	int		DataType(const char *_s, size_t size);
 
 	void	ShowRaw(LPBYTE lpbuf, size_t rawlength);
 

@@ -1,5 +1,6 @@
 #include "PckClassWriteOperator.h"
 #include "PckClassFileDisk.h"
+#include "PckClassRebuildFilter.h"
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4267 )
@@ -18,14 +19,25 @@ CPckClassWriteOperator::~CPckClassWriteOperator()
 *
 ********************/
 
-BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
+BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
 {
+
+	if((nullptr == lpszScriptFile) || (0 == *lpszScriptFile)){
+
+		return (bUseRecompress ? RecompressPckFile(szRebuildPckFile) : RebuildPckFile(szRebuildPckFile));
+	}
+
+	CPckClassRebuildFilter cScriptFilter;
+
+	cScriptFilter.ApplyScript(lpszScriptFile, &m_PckAllInfo.cRootNode);
+
 	BOOL rtn = bUseRecompress ? RecompressPckFile(szRebuildPckFile) : RebuildPckFile(szRebuildPckFile);
 
 	//重建后清除过滤数据
-	ResetRebuildFilterInIndexList(m_PckAllInfo);
+	cScriptFilter.ResetRebuildFilterInIndexList();
 
 	return rtn;
+
 }
 
 BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
@@ -82,27 +94,21 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
 			continue;
 		}
 
-		LPBYTE lpBufferToWrite, lpBufferToRead;
+		LPBYTE lpBufferToRead;
 
 		DWORD dwNumberOfBytesToMap = lpPckIndexTableSource->cFileIndex.dwFileCipherTextSize;
 		DWORD dwSrcAddress = lpPckIndexTableSource->cFileIndex.dwAddressOffset;	//保存原来的地址
 
 		if (0 != dwNumberOfBytesToMap) {
 
-			if (NULL == (lpBufferToWrite = cFileWrite.View(dwAddress, dwNumberOfBytesToMap))) {
-				m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
-				return FALSE;
-			}
-
 			if (NULL == (lpBufferToRead = cFileRead.View(dwSrcAddress, dwNumberOfBytesToMap))) {
 				m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
 				return FALSE;
 			}
 
-			memcpy(lpBufferToWrite, lpBufferToRead, dwNumberOfBytesToMap);
-
+			cFileWrite.Write2(dwAddress, lpBufferToRead, dwNumberOfBytesToMap);
 			cFileRead.UnmapViewAll();
-			cFileWrite.UnmapViewAll();
+
 		}
 
 		//写入此文件的PckFileIndex文件压缩信息并压缩

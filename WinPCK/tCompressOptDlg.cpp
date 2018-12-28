@@ -32,7 +32,7 @@ BOOL TCompressOptDlg::EvCreate(LPARAM lParam)
 
 	SetDlgItemTextA(IDC_STATIC_LEVEL, ultoa(pck_getCompressLevel(), szStr, 10));
 	SetDlgItemTextA(IDC_STATIC_THREAD, ultoa(pck_getMaxThread(), szStr, 10));
-	SetDlgItemTextA(IDC_EDIT_MEM, ultoa((pck_getMaxMemoryAllowed()) >> 20, szStr, 10));
+	SetDlgItemTextA(IDC_EDIT_MEM, ultoa((pck_getMTMaxMemory()) >> 20, szStr, 10));
 
 	return	TRUE;
 }

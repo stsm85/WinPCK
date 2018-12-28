@@ -31,6 +31,8 @@ BOOL TRebuildOptDlg::EvCreate(LPARAM lParam)
 	SetDlgItemTextA(IDC_EDIT_SCRIPT, "F:\\!)MyProjects\\VC\\WinPCK\\testpck\\script\\test.txt");
 #endif
 
+	*lpszScriptFile = 0;
+
 	return	TRUE;
 }
 
@@ -96,9 +98,11 @@ BOOL TRebuildOptDlg::EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar)
 BOOL TRebuildOptDlg::ParseScript()
 {
 	GetDlgItemText(IDC_EDIT_SCRIPT, szScriptFile, MAX_PATH);
-	if(isScriptParseSuccess = (WINPCK_OK == pck_ParseScript((LPCTSTR)szScriptFile))) {
+	if(isScriptParseSuccess = (WINPCK_OK == pck_TestScript((LPCTSTR)szScriptFile))) {
 
 		SetDlgItemTextA(IDC_EDIT_RESULT, "解析脚本成功");
+		_tcscpy_s(lpszScriptFile, MAX_PATH, szScriptFile);
+
 		::EnableWindow(GetDlgItem(IDOK), TRUE);
 		return TRUE;
 	} else {

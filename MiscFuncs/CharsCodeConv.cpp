@@ -31,7 +31,141 @@ int WtoU8(const WCHAR *src, char *dst, int bufsize, int max_len)
 	return	::WideCharToMultiByte(CP_UTF8, 0, src, max_len, dst, bufsize, "_", 0);
 }
 
-CCharsCodeConv::CCharsCodeConv() : m_ok(FALSE), m_buffer(NULL)
+#define DATATYPE_UTF8_DETECT_RTN {if(0 == *s) return TEXT_TYPE_RAW;else	{isNotUTF8 = TRUE; break;}}	
+
+static int DataType(const char *_s, size_t size)
+{
+	const u_char *s = (const u_char *)_s;
+	BOOL  isNotUTF8 = FALSE;
+	 
+	while (*s) {
+		if (*s <= 0x7f) {
+		}
+		else if (*s <= 0xdf) {
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN
+		}
+		else if (*s <= 0xef) {
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+		}
+		else if (*s <= 0xf7) {
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+		}
+		else if (*s <= 0xfb) {
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+		}
+		else if (*s <= 0xfd) {
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
+		}
+		++s;
+	}
+
+	while (*s) {
+		++s;
+	}
+
+	//int a = (char*)s - _s;
+
+	if (size > ((char*)s - _s))
+		return TEXT_TYPE_RAW;
+	else
+		return isNotUTF8 ? TEXT_TYPE_ANSI : TEXT_TYPE_UTF8;
+
+}
+
+#undef DATATYPE_UTF8_DETECT_RTN
+
+int	TextDataType(const char* &_s, size_t size)
+{
+	int textType = TEXT_TYPE_ANSI;
+	if (0 != size) {
+
+		*(WORD*)(_s + size) = 0;
+
+		if (0xfeff == *(WORD*)_s) {
+
+			textType = TEXT_TYPE_UCS2;
+			_s += 2;
+		}
+		else if ((0xbbef == *(WORD*)_s) && (0xbf == *(_s + 3))) {
+
+			textType = TEXT_TYPE_UTF8;
+			_s += 3;
+		}
+		else {
+			textType = DataType((char*)_s, size);
+		}
+	}
+	return textType;
+}
+#pragma region CTextConv2UCS2
+
+CTextConv2UCS2::CTextConv2UCS2():
+	unicode_str(nullptr),
+	cA2U(CP_ACP)
+{
+}
+
+CTextConv2UCS2::~CTextConv2UCS2()
+{
+	if (nullptr != unicode_str)
+		free(unicode_str);
+}
+
+const wchar_t* CTextConv2UCS2::GetUnicodeString(const char* _str, int _strlen)
+{
+
+	unicode_str = (char*)malloc(_strlen + 2);
+
+	if (nullptr == unicode_str)
+		return nullptr;
+
+	*(unicode_str + _strlen) = 0;
+	memcpy(unicode_str, _str, _strlen);
+
+	const char* _realstrbuf = unicode_str;
+
+	int textType = TextDataType(_realstrbuf, _strlen);
+
+	switch (textType)
+	{
+	case TEXT_TYPE_ANSI:
+
+		return cA2U.GetString(_realstrbuf);
+		break;
+
+	case TEXT_TYPE_UCS2:
+		
+		return (wchar_t*)_realstrbuf;
+		break;
+
+	case TEXT_TYPE_UTF8:
+		return c82U.GetString(_realstrbuf);
+		break;
+
+	default:
+
+		break;
+
+	}
+
+	return nullptr;
+}
+
+#pragma endregion
+
+#pragma region CCharsCodeConv
+
+CCharsCodeConv::CCharsCodeConv() : m_ok(FALSE), m_buffer(nullptr)
 {}
 
 CCharsCodeConv::~CCharsCodeConv()
@@ -149,3 +283,5 @@ int	CU82Ucs::GetStrlen(const char *_src, wchar_t *_dst, int _dstsize)
 	}
 
 }
+
+#pragma endregion

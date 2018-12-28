@@ -68,56 +68,6 @@ QWORD CPckClassFileDisk::GetPckFilesizeByCompressed(QWORD qwDiskFreeSpace, QWORD
 
 }
 
-#if 0
-BOOL CPckClassFileDisk::IsNeedExpandWritingFile(
-	CMapViewFileMultiPckWrite *lpWrite,
-	QWORD dwWritingAddressPointer,
-	QWORD dwFileSizeToWrite,
-	QWORD &dwExpectedTotalCompressedFileSize)
-{
-	//判断一下dwAddress的值会不会超过dwTotalFileSizeAfterCompress
-	//如果超过，说明文件空间申请的过小，重新申请一下ReCreateFileMapping
-	//新文件大小在原来的基础上增加(lpfirstFile->dwFileSize + 1mb) >= 64mb ? (lpfirstFile->dwFileSize + 1mb) :64mb
-	//1mb=0x100000
-	//64mb=0x4000000
-	if((dwWritingAddressPointer + dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) > dwExpectedTotalCompressedFileSize) {
-		
-		//打印日志
-		//CPckClassLog			m_PckLogFD;
-
-		QWORD qwSizeToExpand = ((dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) > PCK_STEP_ADD_SIZE ? (dwFileSizeToWrite + PCK_SPACE_DETECT_SIZE) : PCK_STEP_ADD_SIZE);
-		ULARGE_INTEGER lpfree;
-
-		if(GetDiskFreeSpaceExA(lpWrite->GetFileDiskName(), NULL, NULL, &lpfree)) {
-
-			qwSizeToExpand = GetPckFilesizeByCompressed(lpfree.QuadPart, qwSizeToExpand, 0);
-		} else {
-			qwSizeToExpand = GetPckFilesizeByCompressed(-1, qwSizeToExpand, 0);
-		}
-
-		if(dwFileSizeToWrite > qwSizeToExpand) {
-			//m_PckLogFD.PrintLogW("磁盘空间不足，申请空间：%d，剩余空间：%d", dwFileSizeToWrite, qwSizeToExpand);
-			SetErrMsgFlag(PCK_ERR_DISKFULL);
-			return FALSE;
-		}
-
-		QWORD qwNewExpectedTotalCompressedFileSize = dwExpectedTotalCompressedFileSize + qwSizeToExpand;
-
-		lpWrite->UnMaping();
-
-		if(!lpWrite->Mapping(qwNewExpectedTotalCompressedFileSize)) {
-
-			//m_PckLogFD.PrintLogW(TEXT_VIEWMAP_FAIL);
-			SetErrMsgFlag(PCK_ERR_VIEWMAP_FAIL);
-			lpWrite->Mapping(dwExpectedTotalCompressedFileSize);
-			return FALSE;
-		}
-		dwExpectedTotalCompressedFileSize = qwNewExpectedTotalCompressedFileSize;
-	}
-	return TRUE;
-}
-#endif
-
 //重命名时需要的文件的大小
 QWORD CPckClassFileDisk::GetPckFilesizeRename(LPCTSTR lpszFilename, QWORD qwCurrentPckFilesize)
 {

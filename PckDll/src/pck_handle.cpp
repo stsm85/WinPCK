@@ -369,7 +369,7 @@ WINPCK_API PCKRTN	do_ExtractAllFiles(CLPWSTR lpszSrcPckFile, CLPWSTR lpszDestDir
 }
 
 //重建pck文件
-WINPCK_API PCKRTN	pck_ParseScript(CLPWSTR lpszScriptFile)
+WINPCK_API PCKRTN	pck_TestScript(CLPWSTR lpszScriptFile)
 {
 	if (!checkIfValidPck())
 		return WINPCK_INVALIDPCK;
@@ -377,7 +377,7 @@ WINPCK_API PCKRTN	pck_ParseScript(CLPWSTR lpszScriptFile)
 	if (checkIfWorking())
 		return WINPCK_WORKING;
 
-	return this_handle.ParseScript(lpszScriptFile) ? WINPCK_OK : WINPCK_ERROR;
+	return this_handle.TestScript(lpszScriptFile) ? WINPCK_OK : WINPCK_ERROR;
 }
 
 WINPCK_API PCKRTN	pck_RebuildPckFile(CLPWSTR szRebuildPckFile, BOOL bUseRecompress)
@@ -388,7 +388,7 @@ WINPCK_API PCKRTN	pck_RebuildPckFile(CLPWSTR szRebuildPckFile, BOOL bUseRecompre
 	if (checkIfWorking())
 		return WINPCK_WORKING;
 
-	return this_handle.RebuildPckFile(szRebuildPckFile, bUseRecompress) ? WINPCK_OK : WINPCK_ERROR;
+	return this_handle.RebuildPckFile(nullptr, szRebuildPckFile, bUseRecompress) ? WINPCK_OK : WINPCK_ERROR;
 }
 
 WINPCK_API PCKRTN	pck_RebuildPckFileWithScript(CLPWSTR lpszScriptFile, CLPWSTR szRebuildPckFile, BOOL bUseRecompress)
@@ -399,7 +399,7 @@ WINPCK_API PCKRTN	pck_RebuildPckFileWithScript(CLPWSTR lpszScriptFile, CLPWSTR s
 	if (checkIfWorking())
 		return WINPCK_WORKING;
 
-	return this_handle.RebuildPckFileWithScript(lpszScriptFile, szRebuildPckFile, bUseRecompress) ? WINPCK_OK : WINPCK_ERROR;
+	return this_handle.RebuildPckFile(lpszScriptFile, szRebuildPckFile, bUseRecompress) ? WINPCK_OK : WINPCK_ERROR;
 }
 
 WINPCK_API PCKRTN do_RebuildPckFileWithScript(CLPWSTR szSrcPckFile, CLPWSTR lpszScriptFile, CLPWSTR szDstRebuildPckFile, BOOL bUseRecompress, int level)
@@ -415,7 +415,7 @@ WINPCK_API PCKRTN do_RebuildPckFileWithScript(CLPWSTR szSrcPckFile, CLPWSTR lpsz
 			if (bUseRecompress)
 				this_handle.setCompressLevel(level);
 
-			rtn = this_handle.RebuildPckFileWithScript(lpszScriptFile, szDstRebuildPckFile, bUseRecompress);
+			rtn = this_handle.RebuildPckFile(lpszScriptFile, szDstRebuildPckFile, bUseRecompress);
 		}
 	}
 

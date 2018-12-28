@@ -195,6 +195,9 @@
     <ClCompile Include="PckClass\PckIndexCache.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
+    <ClCompile Include="..\MiscFuncs\TextLineSpliter.cpp">
+      <Filter>源文件\MiscFuncs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PckControlCenter\PckControlCenter.h">
@@ -295,6 +298,12 @@
     </ClInclude>
     <ClInclude Include="PckClass\PckIndexCache.h">
       <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckClassRebuildFilter.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscFuncs\TextLineSpliter.h">
+      <Filter>头文件\MiscFuncs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
