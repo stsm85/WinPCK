@@ -189,3 +189,12 @@ void TInstDlg::MenuAbout()
 		THIS_NAME,
 		MB_OK | MB_ICONASTERISK);
 }
+
+//ÓÎÏ·¾«¼ò
+void TInstDlg::MenuStrip()
+{
+	if (pck_isThreadWorking())
+		return;
+
+	_beginthread(StripPckFile, 0, this);
+}

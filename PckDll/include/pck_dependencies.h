@@ -8,31 +8,10 @@ typedef void(*SHOW_LIST_CALLBACK)(void*, int, const wchar_t *, int, unsigned __i
 //打开、关闭、复原等事件注册
 #define PCK_FILE_OPEN_SUCESS		1
 #define PCK_FILE_CLOSE				2
-#define PCK_FILE_NEED_RESTORE		3
 
-#define PCK_FEEDBACK_YES			1
-#define PCK_FEEDBACK_NO				2
-#define PCK_FEEDBACK_IGNORE			3
+#include "PckModelStripDefines.h"
 
 typedef int(*FeedbackCallback)(void* pTag, int eventId, WPARAM wParam, LPARAM lParam);
-
-#if 0
-typedef struct _RESTORE_INFOS
-{
-	BOOL			isValid;
-	TCHAR			szFile[MAX_PATH];
-	DWORD			dwMaxSinglePckSize;
-	struct 
-	{
-		DWORD		dwHeadCheckHead;
-		DWORD		dwPckSize;
-		DWORD		dwHeadCheckTail;
-	}Head;
-	QWORD			dwAddressOfFilenameIndex;
-	size_t			sizeOfIndexTailBuffer;
-	LPBYTE			lpIndexTailBuffer;
-}RESTORE_INFOS, *LPRESTORE_INFOS;
-#endif
 
 class CPckControlCenter;
 

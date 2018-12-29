@@ -344,6 +344,7 @@
     <ClCompile Include="tPicDlg.cpp" />
     <ClCompile Include="tRebuildOptDlg.cpp" />
     <ClCompile Include="tSearchDlg.cpp" />
+    <ClCompile Include="tStripDlg.cpp" />
     <ClCompile Include="tViewDlg.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>

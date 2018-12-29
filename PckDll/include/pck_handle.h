@@ -18,8 +18,8 @@ typedef char *				LPSTR;
 typedef PCK_UNIFIED_FILE_ENTRY*			LPPUFE;
 typedef const PCK_UNIFIED_FILE_ENTRY*	CLPPUFE;
 
-#define WINPCK_VERSION        "1.30.0.19"
-#define WINPCK_VERSION_NUMBER  1,30,0,19
+#define WINPCK_VERSION_NUMBER  1,31,0,1
+#define WINPCK_VERSION        "1.31.0.1"
 
 typedef enum _PCKRTN
 {
@@ -130,6 +130,9 @@ WINPCK_API PCKRTN		pck_RebuildPckFile(CLPWSTR szRebuildPckFile, BOOL bUseRecompr
 //set lpszScriptFile = NULL to disable Script filter function
 WINPCK_API PCKRTN		pck_RebuildPckFileWithScript(CLPWSTR  lpszScriptFile, CLPWSTR szRebuildPckFile, BOOL bUseRecompress);
 WINPCK_API PCKRTN		do_RebuildPckFileWithScript(CLPWSTR szSrcPckFile, CLPWSTR  lpszScriptFile, CLPWSTR szDstRebuildPckFile, BOOL bUseRecompress, int level = 9);
+//游戏精简
+WINPCK_API PCKRTN		pck_StripPck(CLPWSTR szStripedPckFile, int flag);
+
 
 //新建、更新pck文件
 WINPCK_API void			pck_StringArrayReset();

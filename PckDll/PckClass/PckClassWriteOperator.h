@@ -18,7 +18,12 @@ public:
 
 protected:
 	BOOL	RebuildPckFile(LPCTSTR szRebuildPckFile);
-	BOOL	RecompressPckFile(LPCTSTR szRecompressPckFile);
+	BOOL	RecompressPckFile(LPCTSTR szRecompressPckFile, int isStripMode = PCK_STRIP_NONE);
+
+public:
+#pragma region ÓÎÏ·¾«¼ò
+	virtual BOOL	StripPck(LPCTSTR lpszStripedPckFile, int flag);
+#pragma endregion
 
 #pragma region PckClassAppendFiles.cpp
 public:

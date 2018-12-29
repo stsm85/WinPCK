@@ -1,4 +1,5 @@
 #include "PckClassThread.h"
+#include "PckModelStrip.h"
 
 //在多线程运算中获取未压缩好的源数据
 FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromFile(CPckClassThreadWorker *pThis, LPDATA_FETCH_METHOD lpDataFetchMethod, PCKINDEXTABLE &pckFileIndex)
@@ -138,12 +139,31 @@ FETCHDATA_RET CPckClassThreadWorker::GetUncompressedDataFromPCK(CPckClassThreadW
 				cDataFetchMethod.lpFileReadPCK->UnmapViewAll();
 				ReleaseSRWLockExclusive(&g_mt_LockReadFileMap);
 
-				pThis->m_zlib.decompress(lpDecompressBuffer, &dwFileClearTextSize, lpSourceBuffer, dwNumberOfBytesToMap);
-				if(dwFileClearTextSize == lpPckIndexTablePtrSrc->cFileIndex.dwFileClearTextSize) {
+				if (pThis->m_zlib.check_zlib_header(lpSourceBuffer)) {
 
-					pThis->m_zlib.compress(lpCompressedBuffer, &pckFileIndex.cFileIndex.dwFileCipherTextSize, lpDecompressBuffer, dwFileClearTextSize);
-				} else {
+					pThis->m_zlib.decompress(lpDecompressBuffer, &dwFileClearTextSize, lpSourceBuffer, dwNumberOfBytesToMap);
+					
+					if (dwFileClearTextSize == lpPckIndexTablePtrSrc->cFileIndex.dwFileClearTextSize) {
+
+						/*
+						在这里加入精简代码
+						*/
+						if (PCK_STRIP_NONE != cDataFetchMethod.iStripFlag) {
+							CPckModelStrip cModelStrip;
+							cModelStrip.StripContent(lpDecompressBuffer, &pckFileIndex.cFileIndex, cDataFetchMethod.iStripFlag);
+						}
+
+						pThis->m_zlib.compress(lpCompressedBuffer, &pckFileIndex.cFileIndex.dwFileCipherTextSize, lpDecompressBuffer, pckFileIndex.cFileIndex.dwFileClearTextSize);
+					}
+					else {
+						memcpy(lpCompressedBuffer, lpSourceBuffer, dwNumberOfBytesToMap);
+						pckFileIndex.cFileIndex.dwFileCipherTextSize = lpPckIndexTablePtrSrc->cFileIndex.dwFileCipherTextSize;
+					}
+				
+				}
+				else {
 					memcpy(lpCompressedBuffer, lpSourceBuffer, dwNumberOfBytesToMap);
+					pckFileIndex.cFileIndex.dwFileCipherTextSize = lpPckIndexTablePtrSrc->cFileIndex.dwFileCipherTextSize;
 				}
 
 				pThis->freeMaxAndSubtractMemory(lpSourceBuffer, dwNumberOfBytesToMap);

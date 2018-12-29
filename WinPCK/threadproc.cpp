@@ -177,8 +177,6 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 
 	pThis->SetStatusBarText(4, szPrintf);
 
-	//pck_setThreadWorking(pThis->m_PckHandle);
-
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
 	if (WINPCK_OK == pck_RenameSubmit()) {
@@ -208,10 +206,7 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 		pThis->SendMessage(WM_CLOSE, 0, 0);
 	}
 
-	//pck_breakThreadWorking(pThis->m_PckHandle);
-
 	return;
-
 }
 
 VOID TInstDlg::RebuildPckFile(VOID	*pParam)
@@ -219,7 +214,7 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 
-	BOOL		bDeleteClass = !pck_IsValidPck();
+	BOOL		bNeedCreatePck = !pck_IsValidPck();
 
 	TCHAR		szFilenameToSave[MAX_PATH];
 	TCHAR		szScriptFile[MAX_PATH];
@@ -227,7 +222,7 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 
 	CStopWatch	timer;
 
-	if (bDeleteClass) {
+	if (bNeedCreatePck) {
 		if (!pThis->OpenPckFile()) {
 			return;
 		}
@@ -287,7 +282,7 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 
 	pThis->EnbaleButtons(ID_MENU_REBUILD, TRUE);
 
-	if (bDeleteClass) {
+	if (bNeedCreatePck) {
 		ListView_DeleteAllItems(pThis->GetDlgItem(IDC_LIST));
 		pck_close();
 	}
@@ -300,6 +295,94 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 		pThis->SendMessage(WM_CLOSE, 0, 0);
 	}
 
+	return;
+}
+
+VOID TInstDlg::StripPckFile(VOID *pParam)
+{
+
+	TInstDlg	*pThis = (TInstDlg*)pParam;
+
+	BOOL		bNeedCreatePck = !pck_IsValidPck();
+
+	TCHAR		szFilenameToSave[MAX_PATH];
+	TCHAR		szScriptFile[MAX_PATH];
+	TCHAR		szPrintf[288];
+
+	CStopWatch	timer;
+
+	if (bNeedCreatePck) {
+		if (!pThis->OpenPckFile()) {
+			return;
+		}
+	}
+
+	_tcscpy_s(szFilenameToSave, pThis->m_Filename);
+
+	TCHAR		*lpszFileTitle = _tcsrchr(szFilenameToSave, TEXT('\\')) + 1;
+	_tcscpy(lpszFileTitle, TEXT("Striped_"));
+	_tcscat_s(szFilenameToSave, _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
+
+	//弹出选项对话框
+	//调用对话框
+	int stripFlag;
+	TStripDlg	dlg(&stripFlag, pThis);
+	if (IDCANCEL == dlg.Exec())
+		return;
+
+	//选择保存的文件名
+	int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->BuildSaveDlgFilterString(), pck_getVersion());
+	if (0 > nSelectFilter) {
+		return;
+	}
+
+	if (WINPCK_OK != pck_setVersion(nSelectFilter))
+		return;
+
+	//开始计时
+	timer.start();
+
+	pThis->EnbaleButtons(ID_MENU_REBUILD, FALSE);
+
+	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_REBUILDING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
+	pThis->SetStatusBarText(4, szPrintf);
+
+	pThis->SetTimer(WM_TIMER_PROGRESS_100, 100, NULL);
+
+	if (WINPCK_OK == pck_StripPck(szFilenameToSave, stripFlag)) {
+
+		//计时结束
+		timer.stop();
+
+		if (pck_isLastOptSuccess()) {
+
+			log_Print(LOG_IMAGE_NOTICE, GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+		}
+		else {
+			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		}
+
+	}
+	else {
+
+		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+
+	}
+
+	pThis->EnbaleButtons(ID_MENU_REBUILD, TRUE);
+
+	if (bNeedCreatePck) {
+		ListView_DeleteAllItems(pThis->GetDlgItem(IDC_LIST));
+		pck_close();
+	}
+
+	pThis->KillTimer(WM_TIMER_PROGRESS_100);
+	pThis->RefreshProgress();
+
+	if ((!(pck_isLastOptSuccess())) && pThis->bGoingToExit) {
+		pThis->bGoingToExit = FALSE;
+		pThis->SendMessage(WM_CLOSE, 0, 0);
+	}
 	return;
 }
 
@@ -354,8 +437,6 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 		timer.stop();
 
 		if (pck_isLastOptSuccess()) {
-
-			//pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_COMPOK), timer.getElapsedTime());
 			log_Print(LOG_IMAGE_NOTICE, GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 		}
 		else {
@@ -381,11 +462,7 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 		pThis->bGoingToExit = FALSE;
 		pThis->SendMessage(WM_CLOSE, 0, 0);
 	}
-
-	//pck_breakThreadWorking(pThis->m_PckHandle);
-
 	return;
-
 }
 
 VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)

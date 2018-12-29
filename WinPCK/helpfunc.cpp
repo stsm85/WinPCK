@@ -202,20 +202,9 @@ int TInstDlg::MyFeedbackCallback(void* pTag, int eventId, WPARAM wParam, LPARAM 
 		pThis->SetWindowTextA(THIS_MAIN_CAPTION);
 
 		break;
-#if 0
-	case PCK_FILE_NEED_RESTORE:
-
-		if(IDYES == pThis->MessageBoxA(TEXT_ERROR_OPEN_AFTER_UPDATE, TEXT_ERROR, MB_YESNO | MB_ICONHAND))
-			return PCK_FEEDBACK_YES;
-		else
-			return PCK_FEEDBACK_NO;
-
-		break;
-#endif
 	}
 
-	return PCK_FEEDBACK_YES;
-
+	return 0;
 }
 
 

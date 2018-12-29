@@ -38,7 +38,7 @@ FETCHDATA_RET CPckClassThreadWorker::detectMaxAndAddMemory(LPBYTE &_out_buffer, 
 
 	if(bMemIsEnough) {
 
-		while(NULL == (_out_buffer = (LPBYTE)malloc(dwMallocSize))) {
+		while(NULL == (_out_buffer = (LPBYTE)malloc(dwMallocSize+1))) {
 			assert(FALSE);
 			logOutput(__FUNCTION__ "_Sleep", "malloc failure\r\n");
 			m_memoryNotEnoughBlocked = TRUE;

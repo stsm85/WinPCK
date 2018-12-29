@@ -31,6 +31,7 @@ public:
 
 	//重建pck文件
 	virtual BOOL	RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
+	virtual BOOL	StripPck(LPCTSTR lpszStripedPckFile, int flag) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
 
 	//新建、更新pck文件
 	virtual BOOL	UpdatePckFile(LPCTSTR szPckFile, const vector<tstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }

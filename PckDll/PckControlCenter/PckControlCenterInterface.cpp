@@ -44,25 +44,12 @@ int CPckControlCenter::DefaultFeedbackCallback(void* pTag, int eventId, WPARAM w
 		SetConsoleTitleA("WinPCK");
 
 		break;
-#if 0
-	case PCK_FILE_NEED_RESTORE:
-		
-		printf("fail to open file\r\n"
-			"Maybe the last operation resulted in the damage of the file.\r\nAre you trying to restore to the last open state? (y/n)");
-		do {
-			scanf("%c\n", &szInput);
-		} while (NULL != strchr("yYnN", szInput));
 
-		if (('y' == szInput) || ('Y' == szInput))
-			return PCK_FEEDBACK_YES;
-		else
-			return PCK_FEEDBACK_NO;
-#endif
 	default:
 		break;
 	}
 
-	return PCK_FEEDBACK_YES;
+	return 0;
 }
 
 #pragma endregion

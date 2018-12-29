@@ -6,9 +6,6 @@
 class TInstDlg : public TDlg
 {
 protected:
-	//TSubClassCtl	staticText;
-	//TInstSheet		*propertySheet;
-	//InstallCfg		cfg;
 	TLogDlg			*logdlg;
 
 public:
@@ -31,20 +28,6 @@ public:
 	virtual BOOL	EvMouseMove(UINT fwKeys, POINTS pos);
 
 	virtual BOOL	EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight);
-	//virtual BOOL	EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-	//virtual BOOL	EventKey(UINT uMsg, int nVirtKey, LONG lKeyData);
-
-	//virtual BOOL	EvSysCommand(WPARAM uCmdType, POINTS pos);
-	//virtual BOOL	
-#if 0
-	virtual BOOL	EvNcDestroy(void);
-#endif
-
-	//BOOL	RunAsAdmin(BOOL is_imme);
-	//void	ChangeMode(void);
-
-
 
 //用户变量
 private:
@@ -94,6 +77,7 @@ private:
 	static VOID UpdatePckFile(VOID *pParam);
 	static VOID RenamePckFile(VOID *pParam);
 	static VOID RebuildPckFile(VOID	*pParam);
+	static VOID StripPckFile(VOID *pParam);
 	static VOID CreateNewPckFile(VOID *pParam);
 	static VOID ToExtractAllFiles(VOID *pParam);
 	static VOID ToExtractSelectedFiles(VOID	*pParam);
@@ -153,6 +137,8 @@ private:
 	void ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlistview, DWORD& dwSortStatus);
 
 	//menu
+
+	void MenuStrip();
 	void MenuClose();
 	void MenuInfo();
 	void MenuSearch();

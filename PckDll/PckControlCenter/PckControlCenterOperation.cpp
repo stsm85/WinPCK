@@ -187,6 +187,18 @@ BOOL CPckControlCenter::RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuild
 
 #pragma endregion
 
+#pragma region 游戏精简
+BOOL CPckControlCenter::StripPck(LPCTSTR lpszStripedPckFile, int flag)
+{
+	if (NULL == m_lpClassPck)
+		return FALSE;
+
+	return m_lpClassPck->StripPck(lpszStripedPckFile, flag);
+	
+}
+
+#pragma endregion
+
 #pragma region 多个文件列表进行压缩时使用的vector操作
 void CPckControlCenter::StringArrayReset()
 {

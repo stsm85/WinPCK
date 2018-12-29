@@ -21,6 +21,7 @@ CPckClassRebuildFilter::CPckClassRebuildFilter()
 
 CPckClassRebuildFilter::~CPckClassRebuildFilter()
 {
+	ResetRebuildFilterInIndexList();
 }
 
 #pragma region 读取文件并转换为Unicode
@@ -320,4 +321,94 @@ BOOL CPckClassRebuildFilter::ApplyScript(LPCTSTR lpszScriptFile, LPPCK_PATH_NODE
 BOOL CPckClassRebuildFilter::TestScript(LPCTSTR lpszScriptFile)
 {
 	return ParseScript(lpszScriptFile);
+}
+
+
+BOOL CPckClassRebuildFilter::ModelTextureCheck(const wchar_t* lpszFilename)
+{
+	//路径规则，*\textures\*.dds
+
+	LPCWSTR constTexturePath = L"\\textures\\";
+	LPCWSTR constDdsExt = L".dds";
+
+	const wchar_t* lpszTexturePath = wcsstr(lpszFilename, constTexturePath);
+
+	if (nullptr == lpszTexturePath)
+		return FALSE;
+
+	lpszTexturePath += wcslen(constTexturePath);
+
+	const wchar_t* subdir = wcschr(lpszTexturePath, L'\\');
+	if (nullptr != subdir) {
+		if (nullptr != wcschr(subdir+1, L'\\'))
+			return FALSE;
+	}
+
+	lpszTexturePath += wcslen(lpszTexturePath) - wcslen(constDdsExt);
+	if (0 != wcsicmp(lpszTexturePath, constDdsExt))
+		return FALSE;
+
+	return TRUE;
+}
+
+void CPckClassRebuildFilter::StripModelTexture(LPPCKINDEXTABLE lpPckIndexHead, DWORD dwFileCount, LPPCK_PATH_NODE lpRootNode, LPCWSTR lpszPckFilename)
+{
+
+	int nDetectOffset = 0;
+#if 0
+	//检测pck目录中的文件夹是否以pck文件名开头
+	//如gfx.pck中根目录为gfx且只有一个
+	LPPCK_PATH_NODE lpRootNodeFirstDir = lpRootNode->next;
+	int nRootDirCount = 0;
+	vector<wstring> sRootDirs;
+
+	while (NULL != lpRootNodeFirstDir) {
+
+		if (PCK_ENTRY_TYPE_FOLDER & lpRootNodeFirstDir->entryType) {
+
+			sRootDirs.push_back(lpRootNodeFirstDir->szName);
+			++nRootDirCount;
+		}
+		lpRootNodeFirstDir = lpRootNodeFirstDir->next;
+	}
+
+	//只有3个不到的根目录，取根目录名,对比文件名
+	if (3 > nRootDirCount) {
+		wchar_t szFileTitle[MAX_PATH];
+		wchar_t* lpszExt = nullptr;
+
+		wcscpy_s(szFileTitle, lpszPckFilename);
+
+		if (nullptr != (lpszExt = wcsrchr(szFileTitle, L'.'))) {
+
+			*lpszExt = 0;
+		}
+
+		//对比
+		for (int i = 0; i < sRootDirs.size(); i++) {
+
+			if (nullptr != wcsstr(szFileTitle, sRootDirs[i].c_str())) {
+
+				nDetectOffset = sRootDirs[i].length() + 1;
+				break;
+			}
+		}
+	}
+#endif
+
+	LPPCKINDEXTABLE lpPckIndexTable = lpPckIndexHead;
+
+	for (DWORD i = 0; i < dwFileCount; i++) {
+
+		if (ModelTextureCheck(lpPckIndexTable->cFileIndex.szwFilename + nDetectOffset)) {
+			if (!lpPckIndexTable->isInvalid) {
+
+				lpPckIndexTable->isToDeDelete = TRUE;
+				lpPckIndexTable->isInvalid = TRUE;
+
+				m_EditedNode.push_back(lpPckIndexTable);
+			}
+		}
+		lpPckIndexTable++;
+	}
 }

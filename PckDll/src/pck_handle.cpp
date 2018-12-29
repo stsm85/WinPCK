@@ -423,6 +423,18 @@ WINPCK_API PCKRTN do_RebuildPckFileWithScript(CLPWSTR szSrcPckFile, CLPWSTR lpsz
 	return rtn ? WINPCK_OK : WINPCK_ERROR;
 }
 
+//游戏精简
+WINPCK_API PCKRTN pck_StripPck(CLPWSTR szStripedPckFile, int flag)
+{
+	if (!checkIfValidPck())
+		return WINPCK_INVALIDPCK;
+
+	if (checkIfWorking())
+		return WINPCK_WORKING;
+
+	return this_handle.StripPck(szStripedPckFile, flag) ? WINPCK_OK : WINPCK_ERROR;
+}
+
 //新建、更新pck文件
 WINPCK_API void	pck_StringArrayReset()
 {

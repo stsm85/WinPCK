@@ -153,6 +153,9 @@
     <ClCompile Include="ShowLogOnDlgListView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="tStripDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPCK.rc">

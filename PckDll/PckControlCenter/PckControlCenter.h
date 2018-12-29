@@ -84,6 +84,10 @@ public:
 
 #pragma endregion
 
+#pragma region сно╥╬╚╪Р
+	BOOL	StripPck(LPCTSTR lpszStripedPckFile, int flag);
+#pragma endregion
+
 
 
 #pragma region create or update pck file

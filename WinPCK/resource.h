@@ -89,6 +89,7 @@
 #define IDS_STRING_RENAMEERROR          189
 #define IDS_STRING_ERROR                190
 #define IDS_STRING_PROCESS_ERROR        191
+#define IDD_DIALOG_STRIP                192
 #define IDC_LIST                        1010
 #define IDC_PROGRESS                    1011
 #define IDC_STATUS                      1012
@@ -123,6 +124,10 @@
 #define IDC_EDIT_RESULT                 1040
 #define IDC_COMBO1                      1041
 #define IDC_CBO_CODEPAGE                1041
+#define IDC_CHECK_DDS                   1042
+#define IDC_CHECK_ATT                   1043
+#define IDC_CHECK3                      1044
+#define IDC_CHECK_GFX                   1044
 #define ID_MENU_COMPRESS_OPT            40000
 #define ID_MENU_OPEN                    40001
 #define ID_MENU_CLOSE                   40002
@@ -178,9 +183,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        192
+#define _APS_NEXT_RESOURCE_VALUE        194
 #define _APS_NEXT_COMMAND_VALUE         40052
-#define _APS_NEXT_CONTROL_VALUE         1042
+#define _APS_NEXT_CONTROL_VALUE         1045
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

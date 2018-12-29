@@ -208,15 +208,7 @@ BOOL CPckClassFileDisk::EnumAllFilesByPathList(const vector<tstring> &lpszFilePa
 
 	for(DWORD i = 0; i < dwAppendCount; i++) {
 
-#ifdef UNICODE
-		
-		//cU2A.GetString(lpszFilePath[i].c_str(), szPathMbsc, MAX_PATH);
 		wcscpy_s(szPathMbsc, lpszFilePath[i].c_str());
-#else
-		CAnsi2Ucs cA2U(CP_ACP);
-		cA2U.GetString(lpszFilePath[i].c_str(), szPathMbsc, MAX_PATH);
-		//strcpy_s(szPathMbsc, lpszFilePath[i].c_str());
-#endif
 		size_t nLen = (size_t)(wcsrchr(szPathMbsc, L'\\') - szPathMbsc) + 1;
 
 		if(FILE_ATTRIBUTE_DIRECTORY == (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributesW(szPathMbsc))) {

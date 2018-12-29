@@ -21,7 +21,9 @@ public:
 
 	BOOL	ApplyScript(LPCTSTR lpszScriptFile, LPPCK_PATH_NODE lpRootNode);
 	BOOL	TestScript(LPCTSTR lpszScriptFile);
-	void	ResetRebuildFilterInIndexList();
+
+	void	StripModelTexture(LPPCKINDEXTABLE lpPckIndexHead, DWORD dwFileCount, LPPCK_PATH_NODE lpRootNode, LPCWSTR lpszPckFilename);
+	
 
 private:
 
@@ -47,6 +49,8 @@ private:
 	BOOL	ParseScript(LPCTSTR lpszScriptFile);
 
 	BOOL	Apply(LPPCK_PATH_NODE lpRootNode);
+	BOOL	ModelTextureCheck(const wchar_t* lpszFilename);
+	void	ResetRebuildFilterInIndexList();
 
 };
 

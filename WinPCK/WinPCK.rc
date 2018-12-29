@@ -207,6 +207,20 @@ BEGIN
     EDITTEXT        IDC_EDIT_RESULT,104,144,101,12,ES_RIGHT | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
 END
 
+IDD_DIALOG_STRIP DIALOGEX 0, 0, 223, 107
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "PCK文件精简"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,170,91,50,14
+    PUSHBUTTON      "取消",IDCANCEL,118,91,50,14
+    LTEXT           "此功能仅用于测试，不得用于商业用途，对于使用此功能造成的后果本程序概不负责，请谨慎使用\n目前可以针对gfx.pck,models.pck,buildings.pck进行精简",IDC_STATIC,2,64,217,26
+    CONTROL         "模型贴图精简",IDC_CHECK_DDS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,13,71,12
+    CONTROL         "击中效果精简",IDC_CHECK_ATT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,29,71,12
+    GROUPBOX        "选项",IDC_STATIC,2,2,218,60
+    CONTROL         "光影特效精简",IDC_CHECK_GFX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,45,71,12
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -275,6 +289,14 @@ BEGIN
         RIGHTMARGIN, 315
         TOPMARGIN, 2
         BOTTOMMARGIN, 157
+    END
+
+    IDD_DIALOG_STRIP, DIALOG
+    BEGIN
+        LEFTMARGIN, 2
+        RIGHTMARGIN, 221
+        TOPMARGIN, 2
+        BOTTOMMARGIN, 105
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -425,20 +447,6 @@ BEGIN
 END
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// AFX_DIALOG_LAYOUT
-//
-
-IDD_DIALOG_COMPRESS AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-IDD_MAIN AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -528,7 +536,7 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""pck_handle.h""\0"
+    "#include ""pck_handle.h""\r\n"
     "#include ""winres.h""\0"
 END
 

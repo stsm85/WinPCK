@@ -21,23 +21,29 @@ CPckClassWriteOperator::~CPckClassWriteOperator()
 
 BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
 {
-
-	if((nullptr == lpszScriptFile) || (0 == *lpszScriptFile)){
-
-		return (bUseRecompress ? RecompressPckFile(szRebuildPckFile) : RebuildPckFile(szRebuildPckFile));
-	}
-
 	CPckClassRebuildFilter cScriptFilter;
 
-	cScriptFilter.ApplyScript(lpszScriptFile, &m_PckAllInfo.cRootNode);
+	if ((nullptr != lpszScriptFile) && (0 != *lpszScriptFile)) 
+		cScriptFilter.ApplyScript(lpszScriptFile, &m_PckAllInfo.cRootNode);
 
-	BOOL rtn = bUseRecompress ? RecompressPckFile(szRebuildPckFile) : RebuildPckFile(szRebuildPckFile);
+	return bUseRecompress ? RecompressPckFile(szRebuildPckFile) : RebuildPckFile(szRebuildPckFile);
+}
 
-	//重建后清除过滤数据
-	cScriptFilter.ResetRebuildFilterInIndexList();
+BOOL CPckClassWriteOperator::StripPck(LPCTSTR lpszStripedPckFile, int flag)
+{
+	//首先过滤*\textures\*.dds
+	CPckClassRebuildFilter cScriptFilter;
 
-	return rtn;
-
+	if (PCK_STRIP_DDS & flag) {
+		
+		cScriptFilter.StripModelTexture(
+			m_PckAllInfo.lpPckIndexTable, 
+			m_PckAllInfo.dwFileCount,
+			m_PckAllInfo.cRootNode.child,
+			m_PckAllInfo.szFileTitle
+		);
+	}
+	return RecompressPckFile(lpszStripedPckFile, flag);
 }
 
 BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
@@ -147,7 +153,7 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
 
 
 //重压缩文件
-BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile)
+BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile, int iStripMode)
 {
 
 	m_PckLog.PrintLogI(TEXT_LOG_RECOMPRESS);
@@ -188,6 +194,7 @@ BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile)
 
 	cThreadParams.pThis = (CPckClassThreadWorker*)this;
 	cThreadParams.cDataFetchMethod.lpFileReadPCK = &cFileRead;
+	cThreadParams.cDataFetchMethod.iStripFlag = iStripMode;
 	cThreadParams.cDataFetchMethod.dwProcessIndex = 0;
 	cThreadParams.cDataFetchMethod.dwTotalIndexCount = pckAllInfo.dwFileCount;
 	cThreadParams.cDataFetchMethod.lpPckIndexTablePtrSrc = pckAllInfo.lpPckIndexTable;

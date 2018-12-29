@@ -82,7 +82,7 @@ public:
 
 class TRebuildOptDlg : public TDlg
 {
-protected:
+private:
 
 	TCHAR					szScriptFile[MAX_PATH];
 	BOOL					*lpNeedRecompress;
@@ -103,7 +103,7 @@ public:
 	virtual BOOL	EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar);
 	virtual BOOL	EvDropFiles(HDROP hDrop);
 
-protected:
+private:
 
 	void OnOK();
 	BOOL OnOpenClick();
@@ -111,4 +111,23 @@ protected:
 	BOOL ParseScript();
 };
 
+
+class TStripDlg : public TDlg
+{
+private:
+
+	int	*pStripFlag;
+
+public:
+	TStripDlg(int *_pStripFlag, TWin *_win) :
+		TDlg(IDD_DIALOG_STRIP, _win),
+		pStripFlag(_pStripFlag)
+	{}
+
+	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
+	virtual BOOL	EvCreate(LPARAM lParam);
+
+private:
+	void OnOK();
+};
 #endif

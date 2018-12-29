@@ -19,6 +19,8 @@ typedef struct _DataFetchMethod
 	DWORD					dwProcessIndex;
 	DWORD					dwTotalIndexCount;
 
+	int						iStripFlag;
+
 	wchar_t					szCurrentNodeString[MAX_PATH_PCK_260];						//（界面线程中当前显示的）节点对应的pck中的文件路径
 	int						nCurrentNodeStringLen;										//其长度
 

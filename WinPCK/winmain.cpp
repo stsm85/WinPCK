@@ -176,6 +176,9 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	case ID_MENU_REBUILD:
 		MenuRebuild(wID);
 		break;
+	case ID_MENU_SIMPLIFY:
+		MenuStrip();
+		break;
 	case ID_MENU_COMPRESS_OPT:
 		MenuCompressOpt();
 		break;
@@ -455,26 +458,3 @@ END_DROP:
 	DragAcceptFiles(hWnd, TRUE);
 	return	TRUE;
 }
-
-#if 0
-BOOL TInstDlg::EventUser(UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	TCHAR szPrintf[256];
-
-	switch(uMsg) {
-	case WM_FRESH_MAIN_CAPTION:
-
-		if(wParam) {
-			_stprintf_s(szPrintf, TEXT("%s - %s"), TEXT(THIS_MAIN_CAPTION), pck_GetCurrentVersionName(m_PckHandle));
-			SetWindowText(szPrintf);
-		} else {
-			SetWindowTextA(THIS_MAIN_CAPTION);
-		}
-
-		break;
-
-	}
-
-	return FALSE;
-}
-#endif
