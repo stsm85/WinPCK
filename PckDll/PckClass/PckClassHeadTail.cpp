@@ -35,10 +35,11 @@ BOOL CPckClassHeadTail::SetAdditionalInfo(const char* lpszAdditionalInfo)
 
 	cWritefile.SetFilePointer(-((QWORD)(m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)), FILE_END);
 
-	if(!cWritefile.Write(m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&m_PckAllInfo), \
+	if(!cWritefile.Write(
+		m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&m_PckAllInfo), 
 		m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)) {
-		m_PckLog.PrintLogEL(TEXT_WRITEFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 
+		m_PckLog.PrintLogEL(TEXT_WRITEFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
 		return FALSE;
 	}
 

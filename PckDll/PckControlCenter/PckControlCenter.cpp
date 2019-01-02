@@ -69,7 +69,7 @@ const char CPckControlCenter::getLogLevelPrefix(int _loglevel)
 	return CPckClassLog::GetLogLevelPrefix(_loglevel);
 }
 
-void CPckControlCenter::Print(const char chLevel, const char *_fmt, ...)
+void CPckControlCenter::Print(const char chLevel, LPCSTR _fmt, ...)
 {
 	va_list	ap;
 	va_start(ap, _fmt);
@@ -77,7 +77,7 @@ void CPckControlCenter::Print(const char chLevel, const char *_fmt, ...)
 	va_end(ap);
 }
 
-void CPckControlCenter::Print(const char chLevel, const wchar_t *_fmt, ...)
+void CPckControlCenter::Print(const char chLevel, LPCWSTR _fmt, ...)
 {
 	va_list	ap;
 	va_start(ap, _fmt);
@@ -85,12 +85,12 @@ void CPckControlCenter::Print(const char chLevel, const wchar_t *_fmt, ...)
 	va_end(ap);
 }
 
-void CPckControlCenter::Print(const char chLevel, const char *_fmt, va_list ap)
+void CPckControlCenter::Print(const char chLevel, LPCSTR _fmt, va_list ap)
 {
 	CPckClassLog::PrintLog(chLevel, _fmt, ap);
 }
 
-void CPckControlCenter::Print(const char chLevel, const wchar_t *_fmt, va_list ap)
+void CPckControlCenter::Print(const char chLevel, LPCWSTR _fmt, va_list ap)
 {
 	CPckClassLog::PrintLog(chLevel, _fmt, ap);
 }

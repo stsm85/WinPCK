@@ -56,7 +56,7 @@ QWORD CPckControlCenter::GetPckRedundancyDataSize()
 	return m_lpClassPck->GetPckRedundancyDataSize();
 }
 
-QWORD CPckControlCenter::GetFileSizeInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+QWORD CPckControlCenter::GetFileSizeInEntry(LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return -1;
@@ -69,7 +69,7 @@ QWORD CPckControlCenter::GetFileSizeInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFile
 		return ((LPPCK_PATH_NODE)lpFileEntry)->lpPckIndexTable->cFileIndex.dwFileClearTextSize;
 }
 
-QWORD CPckControlCenter::GetCompressedSizeInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+QWORD CPckControlCenter::GetCompressedSizeInEntry(LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return -1;
@@ -82,7 +82,7 @@ QWORD CPckControlCenter::GetCompressedSizeInEntry(const PCK_UNIFIED_FILE_ENTRY* 
 		return ((LPPCK_PATH_NODE)lpFileEntry)->lpPckIndexTable->cFileIndex.dwFileCipherTextSize;
 }
 
-DWORD CPckControlCenter::GetFoldersCountInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+DWORD CPckControlCenter::GetFoldersCountInEntry(LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return -1;
@@ -93,7 +93,7 @@ DWORD CPckControlCenter::GetFoldersCountInEntry(const PCK_UNIFIED_FILE_ENTRY* lp
 		return 0;
 }
 
-DWORD CPckControlCenter::GetFilesCountInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+DWORD CPckControlCenter::GetFilesCountInEntry(LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return -1;
@@ -104,7 +104,7 @@ DWORD CPckControlCenter::GetFilesCountInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFi
 		return 0;
 }
 
-size_t CPckControlCenter::GetFilelenBytesOfEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+size_t CPckControlCenter::GetFilelenBytesOfEntry(LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return -1;
@@ -115,7 +115,7 @@ size_t CPckControlCenter::GetFilelenBytesOfEntry(const PCK_UNIFIED_FILE_ENTRY* l
 		return ((LPPCK_PATH_NODE)lpFileEntry)->nNameSizeAnsi;
 }
 
-size_t CPckControlCenter::GetFilelenLeftBytesOfEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+size_t CPckControlCenter::GetFilelenLeftBytesOfEntry(LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return -1;
@@ -126,7 +126,7 @@ size_t CPckControlCenter::GetFilelenLeftBytesOfEntry(const PCK_UNIFIED_FILE_ENTR
 		return ((LPPCK_PATH_NODE)lpFileEntry)->nMaxNameSizeAnsi;
 }
 
-QWORD CPckControlCenter::GetFileOffset(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+QWORD CPckControlCenter::GetFileOffset(LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return -1;
@@ -152,7 +152,7 @@ DWORD CPckControlCenter::GetAdditionalInfoMaxSize()
 	return PCK_ADDITIONAL_INFO_SIZE;
 }
 
-BOOL CPckControlCenter::SetAdditionalInfo(const char *lpszAdditionalInfo)
+BOOL CPckControlCenter::SetAdditionalInfo(LPCSTR lpszAdditionalInfo)
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
@@ -180,12 +180,12 @@ BOOL CPckControlCenter::isSupportAddFileToPck()
 
 #pragma region 节点属性操作
 
-CONST PCK_UNIFIED_FILE_ENTRY* CPckControlCenter::GetRootNode()
+LPCENTRY CPckControlCenter::GetRootNode()
 {
-	return (PCK_UNIFIED_FILE_ENTRY*)m_lpPckRootNode;
+	return (LPENTRY)m_lpPckRootNode;
 }
 
-BOOL CPckControlCenter::GetCurrentNodeString(wchar_t* szCurrentNodePathString, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+BOOL CPckControlCenter::GetCurrentNodeString(LPWSTR szCurrentNodePathString, LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return FALSE;
@@ -199,7 +199,7 @@ BOOL CPckControlCenter::GetCurrentNodeString(wchar_t* szCurrentNodePathString, c
 	}
 }
 
-const PCK_UNIFIED_FILE_ENTRY* CPckControlCenter::GetFileEntryByPath(const wchar_t* _in_szCurrentNodePathString)
+LPCENTRY CPckControlCenter::GetFileEntryByPath(LPCWSTR _in_szCurrentNodePathString)
 {
 	const PCK_PATH_NODE* lpCurrentNode = (PCK_PATH_NODE*)GetRootNode();
 	const PCK_PATH_NODE* lpCurrentNodeToFind = lpCurrentNode;

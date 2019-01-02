@@ -215,10 +215,11 @@ BEGIN
     DEFPUSHBUTTON   "确定",IDOK,170,91,50,14
     PUSHBUTTON      "取消",IDCANCEL,118,91,50,14
     LTEXT           "此功能仅用于测试，不得用于商业用途，对于使用此功能造成的后果本程序概不负责，请谨慎使用\n目前可以针对gfx.pck,models.pck,buildings.pck进行精简",IDC_STATIC,2,64,217,26
-    CONTROL         "模型贴图精简",IDC_CHECK_DDS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,13,71,12
-    CONTROL         "击中效果精简",IDC_CHECK_ATT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,29,71,12
+    CONTROL         "模型贴图精简",IDC_CHECK_DDS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,13,70,12
+    CONTROL         "击中效果精简",IDC_CHECK_ATT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,29,70,12
     GROUPBOX        "选项",IDC_STATIC,2,2,218,60
-    CONTROL         "光影特效精简",IDC_CHECK_GFX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,45,71,12
+    CONTROL         "光影特效精简",IDC_CHECK_GFX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,45,70,12
+    CONTROL         "ECM精简",IDC_CHECK_ECM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,81,13,70,12
 END
 
 
@@ -373,7 +374,7 @@ BEGIN
     POPUP "操作"
     BEGIN
         MENUITEM "添加文件",                        ID_MENU_ADD
-        MENUITEM "游戏精简",                        ID_MENU_SIMPLIFY
+        //MENUITEM "游戏精简",                        ID_MENU_SIMPLIFY
         MENUITEM "整理重建",                        ID_MENU_REBUILD
         MENUITEM SEPARATOR
         MENUITEM "附加信息",                        ID_MENU_INFO

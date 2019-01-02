@@ -5,6 +5,7 @@
 #define STRIP_TYPE_NONE	0
 #define STRIP_TYPE_ATT	1
 #define STRIP_TYPE_GFX	2
+#define STRIP_TYPE_ECM	3
 
 #pragma warning ( disable : 4996 )
 
@@ -31,7 +32,12 @@ BOOL CPckModelStrip::StripContent(BYTE* buffer, LPPCKFILEINDEX lpFileIndex, int 
 		if (PCK_STRIP_GFX & flag)
 			StripGfx(buffer, lpFileIndex);
 		break;
-
+#if _STRIP_ECM_
+	case STRIP_TYPE_ECM:
+		if (PCK_STRIP_ECM & flag)
+			StripEcm(buffer, lpFileIndex);
+		break;
+#endif
 	default:
 		return TRUE;
 	}
@@ -55,7 +61,10 @@ int CPckModelStrip::GetFileTypeByName(const wchar_t* lpszFilename)
 
 	if (0 == wcsicmp(L".gfx", lpszExt))
 		return STRIP_TYPE_GFX;
-
+#if _STRIP_ECM_
+	if (0 == wcsicmp(L".ecm", lpszExt))
+		return STRIP_TYPE_ECM;
+#endif
 	return STRIP_TYPE_NONE;
 }
 
@@ -162,3 +171,20 @@ BOOL CPckModelStrip::StripGfx(BYTE* buffer, LPPCKFILEINDEX lpFileIndex)
 
 	return TRUE;
 }
+#if _STRIP_ECM_
+BOOL CPckModelStrip::StripEcm(BYTE* buffer, LPPCKFILEINDEX lpFileIndex)
+{
+	LPCSTR szEmptyEcm = 
+		"MOXTVersion: 15\r\n"
+		"SkinModelPath: \r\n"
+		"CoGfxNum : 0\r\n"
+		"ComActCount : 0\r\n"
+		"AddiSkinCount : 0\r\n"
+		"ChildCount : 0\r\n";
+
+	memcpy(buffer, szEmptyEcm, strlen(szEmptyEcm));
+	lpFileIndex->dwFileClearTextSize = strlen(szEmptyEcm);
+
+	return TRUE;
+}
+#endif

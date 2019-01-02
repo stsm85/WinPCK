@@ -37,6 +37,7 @@ void TStripDlg::OnOK()
 	flag |= (BST_CHECKED == IsDlgButtonChecked(IDC_CHECK_DDS) ? PCK_STRIP_DDS : PCK_STRIP_NONE);
 	flag |= (BST_CHECKED == IsDlgButtonChecked(IDC_CHECK_ATT) ? PCK_STRIP_ATT : PCK_STRIP_NONE);
 	flag |= (BST_CHECKED == IsDlgButtonChecked(IDC_CHECK_GFX) ? PCK_STRIP_GFX : PCK_STRIP_NONE);
+	flag |= (BST_CHECKED == IsDlgButtonChecked(IDC_CHECK_ECM) ? PCK_STRIP_ECM : PCK_STRIP_NONE);
 
 	*pStripFlag = flag;
 }

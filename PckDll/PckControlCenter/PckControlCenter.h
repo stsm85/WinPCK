@@ -16,7 +16,6 @@
 
 typedef struct _PCK_PATH_NODE * LPPCK_PATH_NODE;
 typedef struct _PCK_RUNTIME_PARAMS * LPPCK_RUNTIME_PARAMS;
-typedef struct _RESTORE_INFOS * LPRESTORE_INFOS;
 
 #if 0
 #ifdef _WINDLL	//.dll
@@ -60,7 +59,7 @@ public:
 #pragma region 重命名节点
 
 	//重命名一个节点
-	BOOL	RenameEntry(PCK_UNIFIED_FILE_ENTRY* lpFileEntry, const wchar_t* lpszReplaceString);
+	BOOL	RenameEntry(LPENTRY lpFileEntry, LPCWSTR lpszReplaceString);
 	//提交
 	BOOL	RenameSubmit();
 
@@ -69,23 +68,23 @@ public:
 #pragma region 预览解压文件
 
 	//预览文件
-	BOOL		GetSingleFileData(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry, char *buffer, size_t sizeOfBuffer = 0);
+	BOOL		GetSingleFileData(LPCENTRY lpFileEntry, char *buffer, size_t sizeOfBuffer = 0);
 
 	//解压文件
-	BOOL		ExtractFiles(const PCK_UNIFIED_FILE_ENTRY **lpFileEntryArray, int nEntryCount, const wchar_t *lpszDestDirectory);
-	BOOL		ExtractAllFiles(const wchar_t *lpszDestDirectory);
+	BOOL		ExtractFiles(const PCK_UNIFIED_FILE_ENTRY **lpFileEntryArray, int nEntryCount, LPCWSTR lpszDestDirectory);
+	BOOL		ExtractAllFiles(LPCWSTR lpszDestDirectory);
 
 #pragma endregion
 
 #pragma region 重建pck文件
 	//重建pck文件
-	BOOL	TestScript(LPCTSTR lpszScriptFile);
-	BOOL	RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress);
+	BOOL	TestScript(LPCWSTR lpszScriptFile);
+	BOOL	RebuildPckFile(LPCWSTR lpszScriptFile, LPCWSTR szRebuildPckFile, BOOL bUseRecompress);
 
 #pragma endregion
 
 #pragma region 游戏精简
-	BOOL	StripPck(LPCTSTR lpszStripedPckFile, int flag);
+	BOOL	StripPck(LPCWSTR lpszStripedPckFile, int flag);
 #pragma endregion
 
 
@@ -94,14 +93,14 @@ public:
 
 	//多个文件列表进行压缩时使用的vector操作
 	void	StringArrayReset();
-	void	StringArrayAppend(const wchar_t * lpszFilePath);
-	BOOL	UpdatePckFileSubmit(LPCTSTR szPckFile, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
+	void	StringArrayAppend(LPCWSTR lpszFilePath);
+	BOOL	UpdatePckFileSubmit(LPCWSTR szPckFile, LPCENTRY lpFileEntry);
 
 #pragma endregion
 
 #pragma region 删除节点
 	//删除一个节点
-	BOOL	DeleteEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
+	BOOL	DeleteEntry(LPCENTRY lpFileEntry);
 	//提交
 	BOOL	DeleteEntrySubmit();
 
@@ -113,19 +112,19 @@ public:
 	int		GetPckVersion();
 	BOOL	SetPckVersion(int verID);
 	//获取当前配置名称
-	LPCTSTR	GetCurrentVersionName();
+	LPCWSTR	GetCurrentVersionName();
 	static DWORD	GetVersionCount();
-	static const wchar_t*	GetVersionNameById(int verID);
+	static LPCWSTR	GetVersionNameById(int verID);
 	static int		AddVersionAlgorithmId(int AlgorithmId, int Version);
 
 #pragma endregion
 
 #pragma region 节点属性操作
 
-	const PCK_UNIFIED_FILE_ENTRY* GetRootNode();
+	LPCENTRY GetRootNode();
 	//获取node路径
-	static BOOL			GetCurrentNodeString(wchar_t* szCurrentNodePathString, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
-	const PCK_UNIFIED_FILE_ENTRY*	GetFileEntryByPath(const wchar_t* _in_szCurrentNodePathString);
+	static BOOL			GetCurrentNodeString(LPWSTR szCurrentNodePathString, LPCENTRY lpFileEntry);
+	LPCENTRY			GetFileEntryByPath(LPCWSTR _in_szCurrentNodePathString);
 #pragma endregion
 
 #pragma region pck文件属性
@@ -139,20 +138,20 @@ public:
 	QWORD				GetPckDataAreaSize();
 	QWORD				GetPckRedundancyDataSize();
 
-	static QWORD		GetFileSizeInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
-	static QWORD		GetCompressedSizeInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
-	static DWORD		GetFoldersCountInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
-	static DWORD		GetFilesCountInEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
+	static QWORD		GetFileSizeInEntry(LPCENTRY lpFileEntry);
+	static QWORD		GetCompressedSizeInEntry(LPCENTRY lpFileEntry);
+	static DWORD		GetFoldersCountInEntry(LPCENTRY lpFileEntry);
+	static DWORD		GetFilesCountInEntry(LPCENTRY lpFileEntry);
 
-	static size_t		GetFilelenBytesOfEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
-	static size_t		GetFilelenLeftBytesOfEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
+	static size_t		GetFilelenBytesOfEntry(LPCENTRY lpFileEntry);
+	static size_t		GetFilelenLeftBytesOfEntry(LPCENTRY lpFileEntry);
 
-	static QWORD		GetFileOffset(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
+	static QWORD		GetFileOffset(LPCENTRY lpFileEntry);
 
 	//设置附加信息
 	const char*			GetAdditionalInfo();
 	static DWORD		GetAdditionalInfoMaxSize();
-	BOOL				SetAdditionalInfo(const char *lpszAdditionalInfo);
+	BOOL				SetAdditionalInfo(LPCSTR lpszAdditionalInfo);
 
 	//是否是支持更新的文件
 	BOOL				isSupportAddFileToPck();
@@ -165,11 +164,11 @@ public:
 
 #pragma region 查询及目录浏览
 private:
-	static void		DefaultShowFilelistCallback(void* _in_param, int sn, const wchar_t *lpszFilename, int entry_type, unsigned __int64 qwFileSize, unsigned __int64 qwFileSizeCompressed, void* fileEntry);
+	static void		DefaultShowFilelistCallback(void* _in_param, int sn, LPCWSTR lpszFilename, int entry_type, unsigned __int64 qwFileSize, unsigned __int64 qwFileSizeCompressed, void* fileEntry);
 
 public:
-	DWORD			SearchByName(const wchar_t* lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
-	static DWORD	ListByNode(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
+	DWORD			SearchByName(LPCWSTR lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
+	static DWORD	ListByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
 
 #pragma endregion
 
@@ -226,10 +225,10 @@ public:
 	//日志
 	static void	regShowFunc(ShowLogW _ShowLogW);
 	static const char	getLogLevelPrefix(int _loglevel);
-	static void	Print(const char chLevel, const char *_fmt, ...);
-	static void	Print(const char chLevel, const wchar_t *_fmt, ...);
-	static void	Print(const char chLevel, const char *_fmt, va_list ap);
-	static void	Print(const char chLevel, const wchar_t *_fmt, va_list ap);
+	static void	Print(const char chLevel, LPCSTR _fmt, ...);
+	static void	Print(const char chLevel, LPCWSTR _fmt, ...);
+	static void	Print(const char chLevel, LPCSTR _fmt, va_list ap);
+	static void	Print(const char chLevel, LPCWSTR _fmt, va_list ap);
 #pragma endregion
 
 
@@ -248,19 +247,8 @@ private:
 
 	FMTPCK	GetPckTypeFromFilename(LPCTSTR lpszFile);
 
-#pragma region 备份的还原数据
-#if 0
-	void	CreateRestoreData();
-	BOOL	RestoreData(LPCTSTR lpszFile, FMTPCK emunFileFormat);
-	void	DeleteRestoreData();
-#endif
-#pragma endregion
-public:
-
-private:
-
 	LPPCK_PATH_NODE				m_lpPckRootNode;
-	vector<tstring>				lpszFilePathToAdd;	//对添加多个文件时提供数据
+	vector<wstring>				lpszFilePathToAdd;	//对添加多个文件时提供数据
 
 	wstring						szUpdateResultString;
 

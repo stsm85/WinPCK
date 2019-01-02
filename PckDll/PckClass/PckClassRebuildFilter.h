@@ -45,11 +45,11 @@ private:
 	void	MarkFilterFlagToFileIndex(LPPCKINDEXTABLE	lpPckIndexTable, SCRIPTOP op);
 	LPPCK_PATH_NODE LocationFileIndex(LPWSTR *lpszPaths, LPPCK_PATH_NODE lpNode);
 	void	SepratePaths(FILEOP * pFileOp);
-	BOOL	ParseOneLine(FILEOP * pFileOp, const wchar_t * lpszLine);
+	BOOL	ParseOneLine(FILEOP * pFileOp, LPCWSTR lpszLine);
 	BOOL	ParseScript(LPCTSTR lpszScriptFile);
 
 	BOOL	Apply(LPPCK_PATH_NODE lpRootNode);
-	BOOL	ModelTextureCheck(const wchar_t* lpszFilename);
+	BOOL	ModelTextureCheck(LPCWSTR lpszFilename);
 	void	ResetRebuildFilterInIndexList();
 
 };

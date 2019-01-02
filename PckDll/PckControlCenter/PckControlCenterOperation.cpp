@@ -101,7 +101,7 @@ void CPckControlCenter::Close()
 
 #pragma region 重命名节点
 
-BOOL CPckControlCenter::RenameEntry(PCK_UNIFIED_FILE_ENTRY* lpFileEntry, const wchar_t* lpszReplaceString)
+BOOL CPckControlCenter::RenameEntry(LPENTRY lpFileEntry, LPCWSTR lpszReplaceString)
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
@@ -136,7 +136,7 @@ BOOL CPckControlCenter::RenameSubmit()
 #pragma region 预览解压文件
 
 //预览文件
-BOOL CPckControlCenter::GetSingleFileData(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry, char *buffer, size_t sizeOfBuffer)
+BOOL CPckControlCenter::GetSingleFileData(LPCENTRY lpFileEntry, char *buffer, size_t sizeOfBuffer)
 {
 	if ((NULL == m_lpClassPck) || (NULL == lpFileEntry))
 		return FALSE;
@@ -151,7 +151,7 @@ BOOL CPckControlCenter::GetSingleFileData(const PCK_UNIFIED_FILE_ENTRY* lpFileEn
 }
 
 //解压文件
-BOOL CPckControlCenter::ExtractFiles(const PCK_UNIFIED_FILE_ENTRY **lpFileEntryArray, int nEntryCount, const wchar_t *lpszDestDirectory)
+BOOL CPckControlCenter::ExtractFiles(const PCK_UNIFIED_FILE_ENTRY **lpFileEntryArray, int nEntryCount, LPCWSTR lpszDestDirectory)
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
@@ -159,7 +159,7 @@ BOOL CPckControlCenter::ExtractFiles(const PCK_UNIFIED_FILE_ENTRY **lpFileEntryA
 	return m_lpClassPck->ExtractFiles(lpFileEntryArray, nEntryCount, lpszDestDirectory);
 }
 
-BOOL CPckControlCenter::ExtractAllFiles(const wchar_t *lpszDestDirectory)
+BOOL CPckControlCenter::ExtractAllFiles(LPCWSTR lpszDestDirectory)
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
@@ -170,14 +170,14 @@ BOOL CPckControlCenter::ExtractAllFiles(const wchar_t *lpszDestDirectory)
 
 #pragma region 重建pck文件
 //重建pck文件
-BOOL CPckControlCenter::TestScript(LPCTSTR lpszScriptFile)
+BOOL CPckControlCenter::TestScript(LPCWSTR lpszScriptFile)
 {
 	CPckClassRebuildFilter cScriptFilter;
 
 	return cScriptFilter.TestScript(lpszScriptFile);
 }
 
-BOOL CPckControlCenter::RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
+BOOL CPckControlCenter::RebuildPckFile(LPCWSTR lpszScriptFile, LPCWSTR szRebuildPckFile, BOOL bUseRecompress)
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
@@ -188,7 +188,7 @@ BOOL CPckControlCenter::RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuild
 #pragma endregion
 
 #pragma region 游戏精简
-BOOL CPckControlCenter::StripPck(LPCTSTR lpszStripedPckFile, int flag)
+BOOL CPckControlCenter::StripPck(LPCWSTR lpszStripedPckFile, int flag)
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
@@ -205,7 +205,7 @@ void CPckControlCenter::StringArrayReset()
 	lpszFilePathToAdd.clear();
 }
 
-void CPckControlCenter::StringArrayAppend(const wchar_t * lpszFilePath)
+void CPckControlCenter::StringArrayAppend(LPCWSTR lpszFilePath)
 {
 	lpszFilePathToAdd.push_back(lpszFilePath);
 }
@@ -214,7 +214,7 @@ void CPckControlCenter::StringArrayAppend(const wchar_t * lpszFilePath)
 
 #pragma region 新建/更新pck文件
 
-BOOL CPckControlCenter::UpdatePckFileSubmit(LPCTSTR szPckFile, const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+BOOL CPckControlCenter::UpdatePckFileSubmit(LPCWSTR szPckFile, LPCENTRY lpFileEntry)
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
@@ -236,7 +236,7 @@ BOOL CPckControlCenter::AddFileToPckFile(LPCTSTR lpszFilePathSrc, LPCTSTR szPckF
 	if (new_handle->Open(szPckFile)) {
 		if (new_handle->IsValidPck()) {
 
-			const PCK_UNIFIED_FILE_ENTRY* lpFileEntry = new_handle->GetFileEntryByPath(lpszPathInPckToAdd);
+			LPCENTRY lpFileEntry = new_handle->GetFileEntryByPath(lpszPathInPckToAdd);
 
 			new_handle->StringArrayReset();
 			new_handle->StringArrayAppend(lpszFilePathSrc);
@@ -272,7 +272,7 @@ BOOL CPckControlCenter::CreatePckFile(LPCTSTR lpszFilePathSrc, LPCTSTR szPckFile
 
 #pragma region 删除节点
 //删除一个节点
-BOOL CPckControlCenter::DeleteEntry(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry)
+BOOL CPckControlCenter::DeleteEntry(LPCENTRY lpFileEntry)
 {
 	if ((NULL == m_lpClassPck) || (NULL == lpFileEntry))
 		return FALSE;
@@ -308,7 +308,7 @@ int	CPckControlCenter::GetPckVersion()
 }
 
 //获取当前配置名称
-LPCTSTR	CPckControlCenter::GetCurrentVersionName()
+LPCWSTR	CPckControlCenter::GetCurrentVersionName()
 {
 	if (NULL == m_lpClassPck)
 		return NULL;
@@ -321,7 +321,7 @@ DWORD	CPckControlCenter::GetVersionCount()
 	return CPckClassVersionDetect::GetPckVersionCount();
 }
 
-const wchar_t*	CPckControlCenter::GetVersionNameById(int verID)
+LPCWSTR	CPckControlCenter::GetVersionNameById(int verID)
 {
 	return CPckClassVersionDetect::GetPckVersionNameById(verID);
 }

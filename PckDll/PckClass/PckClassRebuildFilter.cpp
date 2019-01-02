@@ -47,7 +47,7 @@ BOOL CPckClassRebuildFilter::OpenScriptFileAndConvBufToUcs2(LPCTSTR lpszScriptFi
 #pragma endregion
 
 
-BOOL CPckClassRebuildFilter::ParseOneLine(FILEOP * pFileOp, const wchar_t * lpszLine)
+BOOL CPckClassRebuildFilter::ParseOneLine(FILEOP * pFileOp, LPCWSTR lpszLine)
 {
 	wchar_t szOperator[16] = { 0 };
 	//首先检查16个字符内有没有空格或tab
@@ -324,31 +324,35 @@ BOOL CPckClassRebuildFilter::TestScript(LPCTSTR lpszScriptFile)
 }
 
 
-BOOL CPckClassRebuildFilter::ModelTextureCheck(const wchar_t* lpszFilename)
+BOOL CPckClassRebuildFilter::ModelTextureCheck(LPCWSTR lpszFilename)
 {
 	//路径规则，*\textures\*.dds
 
 	LPCWSTR constTexturePath = L"\\textures\\";
 	LPCWSTR constDdsExt = L".dds";
+	LPCWSTR constTgaExt = L".tga";
 
-	const wchar_t* lpszTexturePath = wcsstr(lpszFilename, constTexturePath);
+	LPCWSTR lpszTexturePath = wcsstr(lpszFilename, constTexturePath);
 
 	if (nullptr == lpszTexturePath)
 		return FALSE;
 
 	lpszTexturePath += wcslen(constTexturePath);
 
-	const wchar_t* subdir = wcschr(lpszTexturePath, L'\\');
+	LPCWSTR subdir = wcschr(lpszTexturePath, L'\\');
 	if (nullptr != subdir) {
 		if (nullptr != wcschr(subdir+1, L'\\'))
 			return FALSE;
 	}
 
 	lpszTexturePath += wcslen(lpszTexturePath) - wcslen(constDdsExt);
-	if (0 != wcsicmp(lpszTexturePath, constDdsExt))
-		return FALSE;
+	if (0 == wcsicmp(lpszTexturePath, constDdsExt))
+		return TRUE;
 
-	return TRUE;
+	if (0 == wcsicmp(lpszTexturePath, constTgaExt))
+		return TRUE;
+
+	return FALSE;
 }
 
 void CPckClassRebuildFilter::StripModelTexture(LPPCKINDEXTABLE lpPckIndexHead, DWORD dwFileCount, LPPCK_PATH_NODE lpRootNode, LPCWSTR lpszPckFilename)

@@ -56,9 +56,9 @@ int CPckControlCenter::DefaultFeedbackCallback(void* pTag, int eventId, WPARAM w
 
 #pragma region ²éÑ¯¼°Ä¿Â¼ä¯ÀÀ
 
-void CPckControlCenter::DefaultShowFilelistCallback(void* _in_param, int sn, const wchar_t *lpszFilename, int entry_type, unsigned __int64 qwFileSize, unsigned __int64 qwFileSizeCompressed, void* fileEntry)
+void CPckControlCenter::DefaultShowFilelistCallback(void* _in_param, int sn, LPCWSTR lpszFilename, int entry_type, unsigned __int64 qwFileSize, unsigned __int64 qwFileSizeCompressed, void* fileEntry)
 {
-	auto fix_print_str = [](int nTabs, const wchar_t * str) {
+	auto fix_print_str = [](int nTabs, LPCWSTR str) {
 		
 		wprintf(str);
 
@@ -110,7 +110,7 @@ void CPckControlCenter::DefaultShowFilelistCallback(void* _in_param, int sn, con
 	printf("\r\n");
 }
 
-DWORD CPckControlCenter::SearchByName(const wchar_t* lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
+DWORD CPckControlCenter::SearchByName(LPCWSTR lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
 {
 	if (NULL == m_lpClassPck)
 		return 0;
@@ -152,7 +152,7 @@ DWORD CPckControlCenter::SearchByName(const wchar_t* lpszSearchString, void* _in
 	return dwFoundCount;
 }
 
-DWORD CPckControlCenter::ListByNode(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
+DWORD CPckControlCenter::ListByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
 {
 	if (NULL == lpFileEntry)
 		return 0;

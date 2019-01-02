@@ -306,7 +306,6 @@ VOID TInstDlg::StripPckFile(VOID *pParam)
 	BOOL		bNeedCreatePck = !pck_IsValidPck();
 
 	TCHAR		szFilenameToSave[MAX_PATH];
-	TCHAR		szScriptFile[MAX_PATH];
 	TCHAR		szPrintf[288];
 
 	CStopWatch	timer;
@@ -480,8 +479,6 @@ VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)
 	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
 	pThis->SetStatusBarText(4, szPrintf);
 
-	//pck_setThreadWorking(pThis->m_PckHandle);
-
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
 	if (WINPCK_OK == pck_ExtractAllFiles(pThis->m_CurrentPath)) {
@@ -506,10 +503,7 @@ VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)
 		pThis->SendMessage(WM_CLOSE, 0, 0);
 	}
 
-	//pck_breakThreadWorking(pThis->m_PckHandle);
-
 	return;
-
 }
 
 VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
@@ -554,8 +548,6 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 
 			if (0 == uiSelectCount)return;
 
-			//pck_setThreadWorking(pThis->m_PckHandle);
-
 			//开始计时
 			timer.start();
 
@@ -592,8 +584,6 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 			}
 		}
 	}
-	//pck_breakThreadWorking(pThis->m_PckHandle);
-
 	return;
 }
 
@@ -636,8 +626,6 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 		//开始计时
 		timer.start();
 
-		//pck_setThreadWorking(pThis->m_PckHandle);
-
 		pThis->EnbaleButtons(ID_MENU_DELETE, FALSE);
 
 		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
@@ -671,10 +659,7 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 		}
 
 	}
-	//pck_breakThreadWorking(pThis->m_PckHandle);
-
 	return;
-
 }
 
 //从拖入的源文件名推出预保存的pck文件名
