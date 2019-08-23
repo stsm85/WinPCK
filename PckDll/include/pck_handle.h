@@ -15,8 +15,8 @@ typedef wchar_t *			LPWSTR;
 typedef const char * 		LPCSTR;
 typedef char *				LPSTR;
 
-#define WINPCK_VERSION_NUMBER  1,31,0,2
-#define WINPCK_VERSION        "1.31.0.2"
+#define WINPCK_VERSION_NUMBER  1,31,0,3
+#define WINPCK_VERSION        "1.31.0.3"
 
 typedef enum _PCKRTN
 {

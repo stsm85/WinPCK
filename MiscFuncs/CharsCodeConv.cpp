@@ -28,7 +28,7 @@ int U8toW(const char *src, WCHAR *dst, int bufsize, int max_len)
 }
 int WtoU8(const WCHAR *src, char *dst, int bufsize, int max_len)
 {
-	return	::WideCharToMultiByte(CP_UTF8, 0, src, max_len, dst, bufsize, "_", 0);
+	return	::WideCharToMultiByte(CP_UTF8, 0, src, max_len, dst, bufsize, NULL, 0);
 }
 
 #define DATATYPE_UTF8_DETECT_RTN {if(0 == *s) return TEXT_TYPE_RAW;else	{isNotUTF8 = TRUE; break;}}	

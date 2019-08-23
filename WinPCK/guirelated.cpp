@@ -42,6 +42,14 @@ void TInstDlg::initCommctrls()
 	//快捷键
 	hAccel = LoadAccelerators(TApp::GetInstance(), MAKEINTRESOURCE(IDR_ACCELERATOR1));
 
+	//任务栏进度
+	CoCreateInstance(
+		CLSID_TaskbarList, NULL, CLSCTX_ALL,
+		IID_ITaskbarList3, (void**)&m_pTaskBarlist);
+
+	if(nullptr != m_pTaskBarlist)
+		m_pTaskBarlist->SetProgressState(hWnd, TBPF_INDETERMINATE);
+
 }
 
 void TInstDlg::initParams()

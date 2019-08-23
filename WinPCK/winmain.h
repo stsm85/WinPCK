@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "pck_handle.h"
 #include "miscdlg.h"
+#include <Shobjidl.h>
 
 class TInstDlg : public TDlg
 {
@@ -60,6 +61,9 @@ private:
 	//Timer String
 	wchar_t		szTimerProcessingFormatString[64];
 	wchar_t		szTimerProcessedFormatString[64];
+
+	//任务栏进度
+	ITaskbarList3* m_pTaskBarlist = nullptr;
 
 	//用户函数
 private:

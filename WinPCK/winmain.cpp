@@ -114,6 +114,9 @@ BOOL TInstDlg::EvClose()
 
 	ShowWindow(SW_HIDE);
 
+	if (nullptr != m_pTaskBarlist)
+		m_pTaskBarlist->Release();
+
 	OleUninitialize();
 
 	ListView_Uninit();

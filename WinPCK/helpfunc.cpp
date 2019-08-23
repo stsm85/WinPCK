@@ -23,6 +23,7 @@
 #include "OpenSaveDlg.h"
 #include "ShowLogOnDlgListView.h"
 
+
 inline LONG RecurseDeleteKey(HKEY hRegKey, LPCTSTR lpszKey);
 inline void CreateAndSetDefaultValue(LPCTSTR pszValueName, LPCTSTR pszValue);
 
@@ -360,6 +361,9 @@ void TInstDlg::RefreshProgress()
 	iNewPos = (INT)((dwUIProgress << 10) / dwUIProgressUpper);
 
 	SendDlgItemMessage(IDC_PROGRESS, PBM_SETPOS, (WPARAM)iNewPos, (LPARAM)0);
+
+	if(nullptr != m_pTaskBarlist)
+		m_pTaskBarlist->SetProgressValue(hWnd, dwUIProgress, dwUIProgressUpper);
 
 	//if(dwUIProgress == dwUIProgressUpper)
 	//	swprintf_s(szString, szTimerProcessedFormatString, dwUIProgress, dwUIProgressUpper);
