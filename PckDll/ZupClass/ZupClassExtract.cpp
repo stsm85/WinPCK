@@ -19,12 +19,12 @@ BOOL CZupClass::GetSingleFileData(const PCKINDEXTABLE* const lpZupFileIndexTable
 	const PCKINDEXTABLE* lpPckFileIndexTable;
 
 	//"element\" = 0x6d656c65, 0x5c746e656d656c65
-	if(0x6d656c65 == *(DWORD*)lpZupFileIndexTable->cFileIndex.szFilename) {
+	if(0x6d656c65 == *(uint32_t*)lpZupFileIndexTable->cFileIndex.szFilename) {
 
 		lpPckFileIndexTable = GetBaseFileIndex(lpZupFileIndexTable, m_lpZupIndexTable);
 
-		DWORD	dwFileLengthDecompress2 = lpZupFileIndexTable->cFileIndex.dwFileClearTextSize;
-		DWORD	dwFileLengthDecompress1 = lpPckFileIndexTable->cFileIndex.dwFileClearTextSize;
+		ulong_t	dwFileLengthDecompress2 = lpZupFileIndexTable->cFileIndex.dwFileClearTextSize;
+		ulong_t	dwFileLengthDecompress1 = lpPckFileIndexTable->cFileIndex.dwFileClearTextSize;
 
 		if(0 != sizeOfBuffer && sizeOfBuffer < dwFileLengthDecompress2) {
 			dwFileLengthDecompress2 = sizeOfBuffer;
@@ -35,7 +35,7 @@ BOOL CZupClass::GetSingleFileData(const PCKINDEXTABLE* const lpZupFileIndexTable
 		char	*_cipherbuf = (char*)malloc(dwFileLengthDecompress1);
 
 		if(NULL == _cipherbuf) {
-			m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+			Logger_el(TEXT_MALLOC_FAIL);
 			return FALSE;
 		}
 
@@ -43,13 +43,13 @@ BOOL CZupClass::GetSingleFileData(const PCKINDEXTABLE* const lpZupFileIndexTable
 
 			if(m_zlib.check_zlib_header(_cipherbuf + 4)) {
 
-				if(Z_OK != m_zlib.decompress_part((BYTE*)buffer, &dwFileLengthDecompress2,
-					(BYTE*)_cipherbuf + 4, dwFileLengthDecompress1 - 4, lpZupFileIndexTable->cFileIndex.dwFileClearTextSize)) {
+				if(Z_OK != m_zlib.decompress_part((uint8_t*)buffer, &dwFileLengthDecompress2,
+					(uint8_t*)_cipherbuf + 4, dwFileLengthDecompress1 - 4, lpZupFileIndexTable->cFileIndex.dwFileClearTextSize)) {
 					if(lpZupFileIndexTable->cFileIndex.dwFileClearTextSize == lpZupFileIndexTable->cFileIndex.dwFileCipherTextSize) {
 						memcpy(buffer, _cipherbuf + 4, dwFileLengthDecompress2);
 					} else {
 						assert(FALSE);
-						m_PckLog.PrintLogE(TEXT_UNCOMPRESSDATA_FAIL, lpZupFileIndexTable->cFileIndex.szFilename);
+						Logger_el(TEXT_UNCOMPRESSDATA_FAIL, lpZupFileIndexTable->cFileIndex.szFilename);
 					}
 				}
 			} else {

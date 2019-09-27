@@ -45,13 +45,13 @@ BOOL CPckControlCenter::isLastOptSuccess()
 
 #pragma region 内存占用
 //内存占用
-DWORD CPckControlCenter::getMTMemoryUsed()
+uint32_t CPckControlCenter::getMTMemoryUsed()
 {
 	return cParams.cVarParams.dwMTMemoryUsed;
 }
 
 //内存值
-void CPckControlCenter::setMTMaxMemory(DWORD dwMTMaxMemory)
+void CPckControlCenter::setMTMaxMemory(uint32_t dwMTMaxMemory)
 {
 	if ((0 < dwMTMaxMemory) && (getMaxMemoryAllowed() >= dwMTMaxMemory)) {
 		cParams.dwMTMaxMemory = dwMTMaxMemory;
@@ -61,13 +61,13 @@ void CPckControlCenter::setMTMaxMemory(DWORD dwMTMaxMemory)
 	}
 }
 
-DWORD CPckControlCenter::getMTMaxMemory()
+uint32_t CPckControlCenter::getMTMaxMemory()
 {
 	return cParams.dwMTMaxMemory;
 }
 
 //最大内存getDefaultMaxMemoryAllowed
-DWORD CPckControlCenter::getMaxMemoryAllowed()
+uint32_t CPckControlCenter::getMaxMemoryAllowed()
 {
 	return MT_MAX_MEMORY;
 }
@@ -77,18 +77,18 @@ DWORD CPckControlCenter::getMaxMemoryAllowed()
 #pragma region 线程数
 
 
-DWORD CPckControlCenter::getMaxThread()
+uint32_t CPckControlCenter::getMaxThread()
 {
 	return cParams.dwMTThread;
 }
 
-void CPckControlCenter::setMaxThread(DWORD dwThread)
+void CPckControlCenter::setMaxThread(uint32_t dwThread)
 {
 	cParams.dwMTThread = dwThread;
 }
 
 //线程默认参数
-DWORD CPckControlCenter::getMaxThreadUpperLimit()
+uint32_t CPckControlCenter::getMaxThreadUpperLimit()
 {
 	return (thread::hardware_concurrency() + ((thread::hardware_concurrency() + (thread::hardware_concurrency() & 1)) >> 1));
 }
@@ -98,24 +98,24 @@ DWORD CPckControlCenter::getMaxThreadUpperLimit()
 #pragma region 压缩等级
 
 //压缩等级
-DWORD CPckControlCenter::getCompressLevel()
+uint32_t CPckControlCenter::getCompressLevel()
 {
 	return cParams.dwCompressLevel;
 }
 
-void CPckControlCenter::setCompressLevel(DWORD dwCompressLevel)
+void CPckControlCenter::setCompressLevel(uint32_t dwCompressLevel)
 {
 	cParams.dwCompressLevel = dwCompressLevel;
 }
 
 //压缩等级默认参数
 //参数默认值
-DWORD CPckControlCenter::getDefaultCompressLevel()
+uint32_t CPckControlCenter::getDefaultCompressLevel()
 {
 	return Z_DEFAULT_COMPRESS_LEVEL;
 }
 
-DWORD CPckControlCenter::getMaxCompressLevel()
+uint32_t CPckControlCenter::getMaxCompressLevel()
 {
 	return MAX_COMPRESS_LEVEL;
 }
@@ -125,17 +125,17 @@ DWORD CPckControlCenter::getMaxCompressLevel()
 
 #pragma region 进度相关
 
-DWORD CPckControlCenter::getUIProgress()
+uint32_t CPckControlCenter::getUIProgress()
 {
 	return cParams.cVarParams.dwUIProgress;
 }
 
-void CPckControlCenter::setUIProgress(DWORD dwUIProgress)
+void CPckControlCenter::setUIProgress(uint32_t dwUIProgress)
 {
 	cParams.cVarParams.dwUIProgress = dwUIProgress;
 }
 
-DWORD CPckControlCenter::getUIProgressUpper()
+uint32_t CPckControlCenter::getUIProgressUpper()
 {
 	return cParams.cVarParams.dwUIProgressUpper;
 }
@@ -149,27 +149,27 @@ DWORD CPckControlCenter::getUIProgressUpper()
 
 #pragma region 打印添加/新增文件结果
 
-DWORD CPckControlCenter::GetUpdateResult_OldFileCount()
+uint32_t CPckControlCenter::GetUpdateResult_OldFileCount()
 {
 	return cParams.cVarParams.dwOldFileCount;
 }
 
-DWORD CPckControlCenter::GetUpdateResult_PrepareToAddFileCount()
+uint32_t CPckControlCenter::GetUpdateResult_PrepareToAddFileCount()
 {
 	return cParams.cVarParams.dwPrepareToAddFileCount;
 }
 
-DWORD CPckControlCenter::GetUpdateResult_ChangedFileCount()
+uint32_t CPckControlCenter::GetUpdateResult_ChangedFileCount()
 {
 	return cParams.cVarParams.dwChangedFileCount;
 }
 
-DWORD CPckControlCenter::GetUpdateResult_DuplicateFileCount()
+uint32_t CPckControlCenter::GetUpdateResult_DuplicateFileCount()
 {
 	return cParams.cVarParams.dwDuplicateFileCount;
 }
 
-DWORD CPckControlCenter::GetUpdateResult_FinalFileCount()
+uint32_t CPckControlCenter::GetUpdateResult_FinalFileCount()
 {
 	return cParams.cVarParams.dwFinalFileCount;
 }

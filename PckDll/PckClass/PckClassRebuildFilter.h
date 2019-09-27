@@ -19,15 +19,13 @@ public:
 	CPckClassRebuildFilter();
 	~CPckClassRebuildFilter();
 
-	BOOL	ApplyScript(LPCTSTR lpszScriptFile, LPPCK_PATH_NODE lpRootNode);
-	BOOL	TestScript(LPCTSTR lpszScriptFile);
+	BOOL	ApplyScript(const wchar_t * lpszScriptFile, LPPCK_PATH_NODE lpRootNode);
+	BOOL	TestScript(const wchar_t * lpszScriptFile);
 
 	void	StripModelTexture(LPPCKINDEXTABLE lpPckIndexHead, DWORD dwFileCount, LPPCK_PATH_NODE lpRootNode, LPCWSTR lpszPckFilename);
 	
 
 private:
-
-	CPckClassLog	m_PckLog;
 	const wchar_t *szOperators =
 		L"chkfile;"
 		 "protect;"
@@ -38,7 +36,7 @@ private:
 	vector<FILEOP>		m_FirstFileOp;
 	vector<LPPCKINDEXTABLE>	m_EditedNode;
 
-	BOOL	OpenScriptFileAndConvBufToUcs2(LPCTSTR lpszScriptFile);
+	BOOL	OpenScriptFileAndConvBufToUcs2(const wchar_t * lpszScriptFile);
 
 	BOOL	ApplyScript2IndexList(LPPCK_PATH_NODE lpRootNode);
 	void	MarkFilterFlagToNode(LPPCK_PATH_NODE lpNode, SCRIPTOP op);
@@ -46,7 +44,7 @@ private:
 	LPPCK_PATH_NODE LocationFileIndex(LPWSTR *lpszPaths, LPPCK_PATH_NODE lpNode);
 	void	SepratePaths(FILEOP * pFileOp);
 	BOOL	ParseOneLine(FILEOP * pFileOp, LPCWSTR lpszLine);
-	BOOL	ParseScript(LPCTSTR lpszScriptFile);
+	BOOL	ParseScript(const wchar_t * lpszScriptFile);
 
 	BOOL	Apply(LPPCK_PATH_NODE lpRootNode);
 	BOOL	ModelTextureCheck(LPCWSTR lpszFilename);

@@ -9,9 +9,22 @@
 // 2017.12.26
 //////////////////////////////////////////////////////////////////////
 
-//#include "globals.h"
-#include "miscdlg.h"
+
+#include "tLogDlg.h"
 #include <stdio.h>
+#include "ShowLogOnDlgListView.h"
+
+#define	LOG_BUFFER						8192
+
+//日志
+#define LOG_IMAGE_NOTICE				0
+#define LOG_IMAGE_INFO					1
+#define LOG_IMAGE_WARNING				2
+#define LOG_IMAGE_ERROR					3
+#define LOG_IMAGE_DEBUG					4
+#define LOG_IMAGE_EMPTY					5
+#define LOG_IMAGE_COUNT					6
+
 
 /*
 日志信息对话框
@@ -216,11 +229,6 @@ BOOL TLogDlg::EvClose()
 	return TRUE;
 }
 
-HWND TLogDlg::GetListWnd()
-{
-	return hWndList;
-}
-
 wchar_t*  TLogDlg::pszLogFileName()
 {
 	static wchar_t logfile[MAX_PATH];
@@ -249,8 +257,101 @@ wchar_t*  TLogDlg::pszTargetListLog(int iItem)
 	item.cchTextMax = 8190;
 	::SendMessageW(hWndList, LVM_GETITEMW, 0, (LPARAM)(LV_ITEMW*)&item);
 
-	*szText = log_getLogLevelPrefix(item.iImage);
+	*szText = m_szLogPrefix[item.iImage];
 
 	return szText;
 }
 
+
+void TLogDlg::InsertLogToList(const char _loglevel, const wchar_t *_logtext)
+{
+
+	if ('N' == _loglevel) {
+		LogUnits.SetStatusBarInfo(_logtext);
+	}
+	else if ('E' == _loglevel) {
+		ShowWindow(SW_SHOW);
+	}
+
+	wchar_t szPrintf[8192];
+	size_t nTextLen = wcslen(_logtext);
+
+	//查找\n 如果存在，\n后的内容换行（用新的列）显示
+	const wchar_t *lpString2Show = _logtext, *lpString2Search = _logtext, *lpStringTail = _logtext + nTextLen;
+	char loglevel = _loglevel;
+
+	while (0 != *lpString2Search) {
+
+		if ('\n' == *lpString2Search) {
+			memcpy(szPrintf, lpString2Show, (lpString2Search - lpString2Show) * 2);
+			*(szPrintf + (lpString2Search - lpString2Show)) = 0;
+			_InsertLogIntoList(loglevel, szPrintf);
+			lpString2Show = lpString2Search + 1;
+			loglevel = ' ';
+		}
+
+		lpString2Search++;
+	}
+	if (0 != *lpString2Show) {
+		memcpy(szPrintf, lpString2Show, (lpString2Search - lpString2Show) * 2);
+		*(szPrintf + (lpString2Search - lpString2Show)) = 0;
+		_InsertLogIntoList(loglevel, szPrintf);
+	}
+}
+
+int TLogDlg::log_level_char_to_int(const char level)
+{
+	switch (level)
+	{
+	case 'N':
+		return LOG_IMAGE_NOTICE;
+	case 'I':
+		return LOG_IMAGE_INFO;
+	case 'W':
+		return LOG_IMAGE_WARNING;
+	case 'E':
+		return LOG_IMAGE_ERROR;
+	case 'D':
+		return LOG_IMAGE_DEBUG;
+	case ' ':
+	default:
+		return LOG_IMAGE_EMPTY;
+	}
+}
+
+#define LEN_OF_PREFIX	9
+
+void TLogDlg::_InsertLogIntoList(const char _loglevel, const wchar_t *_logtext)
+{
+
+	LVITEMW	item;
+	wchar_t szPrintf[LOG_BUFFER + 9];
+	//size_t nLenOfPrefix = wcslen(szPrintf);
+	wchar_t *lpPointToPaestString = szPrintf + LEN_OF_PREFIX;
+	//123456789
+	//09:06:17 WinPCK v1.22.9  is started.
+	if (' ' == _loglevel) {
+		wcsnset(szPrintf, ' ', LEN_OF_PREFIX);
+	}
+	else {
+		SYSTEMTIME systime;
+		GetLocalTime(&systime);
+		swprintf_s(szPrintf, L"%02d:%02d:%02d ", systime.wHour, systime.wMinute, systime.wSecond);
+	}
+
+	wcscpy_s(lpPointToPaestString, LOG_BUFFER, _logtext);
+
+	ZeroMemory(&item, sizeof(LVITEMW));
+
+	item.iItem = INT_MAX;			//从0开始
+	item.iImage = log_level_char_to_int(_loglevel);
+	//item.iSubItem = 0;
+	item.mask = LVIF_TEXT | LVIF_IMAGE;
+	item.pszText = szPrintf;
+
+	if (-1 != (m_LogListCount = ::SendMessageW(hWndList, LVM_INSERTITEMW, 0, (LPARAM)&item))) {
+		ListView_EnsureVisible(hWndList, m_LogListCount, 0);
+		//++m_LogListCount;
+	}
+}
+#undef LEN_OF_PREFIX

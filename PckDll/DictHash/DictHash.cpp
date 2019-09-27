@@ -13,7 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef _DEBUG
+#if PCK_DEBUG_OUTPUT
 #include <windows.h>
 #include <stdio.h>
 #endif
@@ -23,7 +23,7 @@
 
 
 // JS Hash Function
-unsigned int _fastcall JSHash(char *str)
+unsigned int _fastcall JSHash(const char *str)
 {
 	unsigned int hash = 1315423911;
 
@@ -69,7 +69,7 @@ CDictHash::~CDictHash()
 
 }
 
-LPZUP_FILENAME_DICT CDictHash::add(char *keystr)
+LPZUP_FILENAME_DICT CDictHash::add(const char *keystr)
 {
 
 	unsigned char len = strlen(keystr);
@@ -115,7 +115,7 @@ LPZUP_FILENAME_DICT CDictHash::add(char *keystr)
 
 }
 
-LPZUP_FILENAME_DICT CDictHash::find(char *keystr)
+LPZUP_FILENAME_DICT CDictHash::find(const char *keystr)
 {
 	unsigned int key = JSHash(keystr);
 
@@ -142,7 +142,7 @@ LPZUP_FILENAME_DICT CDictHash::find(char *keystr)
 }
 
 
-__inline LPZUP_FILENAME_DICT CDictHash::AllocNode(unsigned int sizeStuct)
+LPZUP_FILENAME_DICT CDictHash::AllocNode(unsigned int sizeStuct)
 {
 	LPZUP_FILENAME_DICT		lpMallocNode;
 
@@ -156,9 +156,9 @@ __inline LPZUP_FILENAME_DICT CDictHash::AllocNode(unsigned int sizeStuct)
 
 }
 
-__inline void CDictHash::Dealloc(LPZUP_FILENAME_DICT lpDictHash)
+void CDictHash::Dealloc(LPZUP_FILENAME_DICT lpDictHash)
 {
-#ifdef _DEBUG
+#if PCK_DEBUG_OUTPUT
 	LPZUP_FILENAME_DICT lpDebug = lpDictHash;
 #endif
 	LPZUP_FILENAME_DICT lpTemp = lpDictHash;

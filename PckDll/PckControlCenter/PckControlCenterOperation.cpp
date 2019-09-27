@@ -26,19 +26,19 @@ void CPckControlCenter::New()
 
 #pragma region 打开关闭文件
 
-FMTPCK	CPckControlCenter::GetPckTypeFromFilename(LPCTSTR lpszFile)
+FMTPCK	CPckControlCenter::GetPckTypeFromFilename(const wchar_t * lpszFile)
 {
-	size_t nFileLength = _tcsnlen(lpszFile, MAX_PATH);
+	size_t nFileLength = wcsnlen(lpszFile, MAX_PATH);
 
-	if(0 == _tcsicmp(lpszFile + nFileLength - 4, TEXT(".pck"))) {
+	if(0 == wcsicmp(lpszFile + nFileLength - 4, L".pck")) {
 		return FMTPCK_PCK;
-	} else if(0 == _tcsicmp(lpszFile + nFileLength - 4, TEXT(".zup"))) {
+	} else if(0 == wcsicmp(lpszFile + nFileLength - 4, L".zup")) {
 		return FMTPCK_ZUP;
 	}
 	return FMTPCK_UNKNOWN;
 }
 
-BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
+BOOL CPckControlCenter::Open(const wchar_t * lpszFile)
 {
 	//判断文件格式
 	FMTPCK emunFileFormat = GetPckTypeFromFilename(lpszFile);
@@ -56,7 +56,7 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 			break;
 		}
 
-		m_lpPckLog->PrintLogI(TEXT(TEXT_LOG_OPENFILE), lpszFile);
+		Logger.i(UCSTEXT(TEXT_LOG_OPENFILE), lpszFile);
 
 		if(m_lpClassPck->Init(lpszFile)) {
 
@@ -65,7 +65,7 @@ BOOL CPckControlCenter::Open(LPCTSTR lpszFile)
 			m_lpPckRootNode = m_lpClassPck->GetPckPathNode();
 
 			//打开成功，刷新标题
-			pFeedbackCallBack(pTag, PCK_FILE_OPEN_SUCESS, NULL, (LPARAM)(m_lpClassPck->GetPckVersion()->name));
+			pFeedbackCallBack(pTag, PCK_FILE_OPEN_SUCESS, NULL, (ssize_t)(m_lpClassPck->GetPckVersion()->name));
 			return TRUE;
 
 		} else {
@@ -80,7 +80,7 @@ void CPckControlCenter::Close()
 	if(NULL != m_lpClassPck) {
 
 		if(IsValidPck())
-			m_lpPckLog->PrintLogI(TEXT_LOG_CLOSEFILE);
+			Logger.i(TEXT_LOG_CLOSEFILE);
 
 		delete m_lpClassPck;
 		m_lpClassPck = NULL;
@@ -227,48 +227,6 @@ BOOL CPckControlCenter::UpdatePckFileSubmit(LPCWSTR szPckFile, LPCENTRY lpFileEn
 	}
 	return rtn;
 }
-#if 0
-BOOL CPckControlCenter::AddFileToPckFile(LPCTSTR lpszFilePathSrc, LPCTSTR szPckFile, const wchar_t *lpszPathInPckToAdd)
-{
-	CPckControlCenter* new_handle = new CPckControlCenter();
-	BOOL rtn = FALSE;
-
-	if (new_handle->Open(szPckFile)) {
-		if (new_handle->IsValidPck()) {
-
-			LPCENTRY lpFileEntry = new_handle->GetFileEntryByPath(lpszPathInPckToAdd);
-
-			new_handle->StringArrayReset();
-			new_handle->StringArrayAppend(lpszFilePathSrc);
-
-			rtn = new_handle->UpdatePckFileSubmit(szPckFile, lpFileEntry);
-		}
-	}
-
-	delete new_handle;
-
-	return rtn;
-}
-
-BOOL CPckControlCenter::CreatePckFile(LPCTSTR lpszFilePathSrc, LPCTSTR szPckFile, int _versionId)
-{
-
-	CPckControlCenter* new_handle = new CPckControlCenter();
-	BOOL rtn = FALSE;
-
-	new_handle->SetPckVersion(_versionId);
-	new_handle->StringArrayReset();
-	new_handle->StringArrayAppend(lpszFilePathSrc);
-
-	rtn = new_handle->UpdatePckFileSubmit(szPckFile, NULL);
-
-	delete new_handle;
-
-	return rtn;
-
-}
-#endif
-#pragma endregion
 
 #pragma region 删除节点
 //删除一个节点
@@ -316,7 +274,7 @@ LPCWSTR	CPckControlCenter::GetCurrentVersionName()
 	return m_lpClassPck->GetPckVersion()->name;
 }
 
-DWORD	CPckControlCenter::GetVersionCount()
+uint32_t	CPckControlCenter::GetVersionCount()
 {
 	return CPckClassVersionDetect::GetPckVersionCount();
 }
@@ -331,54 +289,4 @@ int CPckControlCenter::AddVersionAlgorithmId(int AlgorithmId, int Version)
 	return CPckClassVersionDetect::AddPckVersion(AlgorithmId, Version);
 }
 
-#pragma endregion
-
-#pragma region 备份的还原数据
-#if 0
-void CPckControlCenter::CreateRestoreData()
-{
-	if(FMTPCK_PCK == m_emunFileFormat) {
-		if(!m_lpClassPck->GetPckBasicInfo(&m_RestoreInfomation)) {
-			m_lpPckLog->PrintLogE(TEXT_ERROR_GET_RESTORE_DATA);
-		}
-	}
-}
-
-BOOL CPckControlCenter::RestoreData(LPCTSTR lpszFile, FMTPCK emunFileFormat)
-{
-	BOOL rtn = FALSE;
-	if(FMTPCK_PCK == emunFileFormat) {
-		if(m_RestoreInfomation.isValid) {
-
-			//if(IDYES == MessageBoxA(m_hWndMain, TEXT_ERROR_OPEN_AFTER_UPDATE, TEXT_ERROR, MB_YESNO | MB_ICONHAND)) {
-
-			if(PCK_FEEDBACK_YES == pFeedbackCallBack(pTag, PCK_FILE_NEED_RESTORE, NULL, NULL)) {
-				if(0 == _tcsicmp(m_RestoreInfomation.szFile, lpszFile)) {
-
-					if(!m_lpClassPck->SetPckBasicInfo(&m_RestoreInfomation))
-						m_lpPckLog->PrintLogE(TEXT_ERROR_RESTORING);
-					else {
-						m_lpPckLog->PrintLogI(TEXT_LOG_RESTOR_OK);
-						rtn = TRUE;
-					}
-				}
-			}
-			DeleteRestoreData();
-		}
-	}
-	return rtn;
-}
-
-void CPckControlCenter::DeleteRestoreData()
-{
-	if(m_RestoreInfomation.isValid) {
-		if(NULL != m_RestoreInfomation.lpIndexTailBuffer) {
-
-			free(m_RestoreInfomation.lpIndexTailBuffer);
-			m_RestoreInfomation.lpIndexTailBuffer = NULL;
-		}
-		m_RestoreInfomation.isValid = FALSE;
-	}
-}
-#endif
 #pragma endregion

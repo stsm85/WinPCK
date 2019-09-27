@@ -17,15 +17,20 @@
 #include <assert.h>
 
 
-const char	CPckClassLog::m_szLogPrefix[LOG_IMAGE_COUNT] = { 'N', 'I', 'W', 'E', 'D', ' ' };
-ShowLogW	CPckClassLog::ShowLogExtern = PrintLogToConsole;
+CPckClassLog& Logger = CPckClassLog::GetInstance();
 
-CPckClassLog::CPckClassLog() : m_dwLastError(0)
+ShowLogW	CPckClassLog::ShowLogExtern = CPckClassLog::PrintLogToConsole;
+
+CPckClassLog::CPckClassLog()
 {
 }
 
 CPckClassLog::~CPckClassLog()
-{}
+{
+#if PCK_DEBUG_OUTPUT
+	OutputDebugStringA(__FUNCTION__"\r\n");
+#endif
+}
 
 void CPckClassLog::PckClassLog_func_register(ShowLogW _ShowLogW)
 {
@@ -57,125 +62,130 @@ wchar_t* CPckClassLog::GetErrorMsg(CONST DWORD dwError, wchar_t *szMessage)
 
 #pragma region PrintLogToDst
 
-void CPckClassLog::ShowLog(const int _loglevel, const char *_logtext)
+void CPckClassLog::ShowLog(const char _loglevel, const char *_logtext)
 {
 	CAnsi2Ucs cA2U(936);
 	ShowLog(_loglevel, cA2U.GetString(_logtext));
 }
 
-void CPckClassLog::ShowLog(const int _loglevel, const wchar_t *_logtext)
+void CPckClassLog::ShowLog(const char _loglevel, const wchar_t *_logtext)
 {
 	ShowLogExtern(_loglevel, _logtext);
 }
 
-const char	CPckClassLog::GetLogLevelPrefix(int _loglevel)
-{
-	if((LOG_IMAGE_COUNT > _loglevel) && (0 < _loglevel))
-		return  m_szLogPrefix[_loglevel];
-	else
-		return ' ';
-}
-
-void CPckClassLog::PrintLogToConsole(const int log_level, const wchar_t *str)
+void CPckClassLog::PrintLogToConsole(const char log_level, const wchar_t *str)
 {
 	
 	SYSTEMTIME systime;
 	GetLocalTime(&systime);
-	printf("%02d:%02d:%02d :%c ", systime.wHour, systime.wMinute, systime.wSecond, m_szLogPrefix[log_level]);
+	printf("%02d:%02d:%02d :%c ", systime.wHour, systime.wMinute, systime.wSecond, log_level);
 
 	wprintf(str);
 	printf("\r\n");
 }
 
-#pragma endregion
-#pragma region PrintLog[IWEDN](_text, ...)
-
-#define define_one_PrintLog(_loglvchar, _loglevel)	\
-void CPckClassLog::PrintLog##_loglvchar(const char *_text, ...)\
-{\
-	char _maintext[LOG_BUFFER];\
-	va_list	ap;\
-	va_start(ap, _text);\
-	_vsnprintf(_maintext, sizeof(_maintext), _text, ap);\
-	va_end(ap);\
-	ShowLog(_loglevel, _maintext);\
-}\
-void CPckClassLog::PrintLog##_loglvchar(const wchar_t *_text, ...)\
-{\
-	wchar_t _maintext[LOG_BUFFER];\
-	va_list	ap;\
-	va_start(ap, _text);\
-	_vsnwprintf(_maintext, sizeof(_maintext), _text, ap);\
-	va_end(ap);\
-	ShowLog(_loglevel, _maintext);\
-}\
-void CPckClassLog::PrintLog##_loglvchar(const char *_text, va_list ap)\
-{\
-	char _maintext[LOG_BUFFER];\
-	_vsnprintf(_maintext, sizeof(_maintext), _text, ap);\
-	ShowLog(_loglevel, _maintext);\
-}\
-void CPckClassLog::PrintLog##_loglvchar(const wchar_t *_text, va_list ap)\
-{\
-	wchar_t _maintext[LOG_BUFFER];\
-	_vsnwprintf(_maintext, sizeof(_maintext), _text, ap);\
-	ShowLog(_loglevel, _maintext);\
-}
-
-
-
-define_one_PrintLog(I, LOG_IMAGE_INFO)
-define_one_PrintLog(W, LOG_IMAGE_WARNING)
-define_one_PrintLog(E, LOG_IMAGE_ERROR)
-define_one_PrintLog(D, LOG_IMAGE_DEBUG)
-define_one_PrintLog(N, LOG_IMAGE_NOTICE)
-
-#undef define_one_PrintLog
-#pragma endregion
-#pragma region PrintLogEL
-
-void CPckClassLog::PrintLogEL(const char *_maintext, const char *_file, const char *_func, const long _line)
+void CPckClassLog::e(const char *_text, ...)
 {
-	CAnsi2Ucs cA2U(936);
-	m_dwLastError = GetLastError();
-	PrintLogEL(cA2U.GetString(_maintext), _file, _func, _line);
+	va_list	ap; 
+	va_start(ap, _text); 
+	PrintLog('E', _text, ap);
+	va_end(ap); 
+	PrintErrorLog();
+	assert(FALSE);
 }
 
-void CPckClassLog::PrintLogEL(const wchar_t *_maintext, const char *_file, const char *_func, const long _line)
+void CPckClassLog::w(const char *_text, ...)
+{
+	va_list	ap;
+	va_start(ap, _text);
+	PrintLog('W', _text, ap);
+	va_end(ap);
+}
+
+void CPckClassLog::i(const char *_text, ...)
+{
+	va_list	ap;
+	va_start(ap, _text);
+	PrintLog('I', _text, ap);
+	va_end(ap);
+}
+
+void CPckClassLog::d(const char *_text, ...)
+{
+	va_list	ap;
+	va_start(ap, _text);
+	PrintLog('D', _text, ap);
+	va_end(ap);
+}
+
+void CPckClassLog::n(const char *_text, ...)
+{
+	va_list	ap;
+	va_start(ap, _text);
+	PrintLog('N', _text, ap);
+	va_end(ap);
+}
+
+void CPckClassLog::e(const wchar_t *_text, ...)
+{
+	va_list	ap;
+	va_start(ap, _text);
+	PrintLog('E', _text, ap);
+	va_end(ap);
+	PrintErrorLog();
+	assert(FALSE);
+}
+
+void CPckClassLog::w(const wchar_t *_text, ...)
+{
+	va_list	ap;
+	va_start(ap, _text);
+	PrintLog('W', _text, ap);
+	va_end(ap);
+}
+
+void CPckClassLog::i(const wchar_t *_text, ...)
+{
+	va_list	ap;
+	va_start(ap, _text);
+	PrintLog('I', _text, ap);
+	va_end(ap);
+}
+
+void CPckClassLog::d(const wchar_t *_text, ...)
+{
+	va_list	ap;
+	va_start(ap, _text);
+	PrintLog('D', _text, ap);
+	va_end(ap);
+}
+
+void CPckClassLog::n(const wchar_t *_text, ...)
+{
+	va_list	ap;
+	va_start(ap, _text);
+	PrintLog('N', _text, ap);
+	va_end(ap);
+}
+
+#pragma region PrintLog
+
+void CPckClassLog::PrintErrorLog()
 {
 	wchar_t szMessage[LOG_BUFFER];
 
-	PrintLog(LOG_IMAGE_ERROR, L"%s (%S 发生错误在 %S 行数:%d)", _maintext, _file, _func, _line);
-
-	if(0 == m_dwLastError) {
-		m_dwLastError = GetLastError();
-		if(0 != m_dwLastError)
-			PrintLog(LOG_IMAGE_ERROR, GetErrorMsg(GetLastError(), szMessage));
-	} else {
-		PrintLog(LOG_IMAGE_ERROR, GetErrorMsg(m_dwLastError, szMessage));
+	m_dwLastError = GetLastError();
+	if (0 != m_dwLastError) {
+		ShowLog(' ', GetErrorMsg(m_dwLastError, szMessage));
 		m_dwLastError = 0;
 	}
-	assert(FALSE);
-
+#if PCK_DEBUG_OUTPUT
+	else {
+		ShowLog(' ', "未获取到系统错误代码");
+	}
+#endif
 }
 
-void CPckClassLog::PrintLogEL(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line)
-{
-	CAnsi2Ucs cA2U(936);
-	char szPrintf[LOG_BUFFER];
-	sprintf_s(szPrintf, _fmt, _maintext);
-	PrintLogEL(cA2U.GetString(szPrintf), _file, _func, _line);
-
-}
-void CPckClassLog::PrintLogEL(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line)
-{
-	CAnsi2Ucs cA2U(936);
-	wchar_t szPrintf[LOG_BUFFER];
-	swprintf_s(szPrintf, cA2U.GetString(_fmt), _maintext);
-	PrintLogEL(szPrintf, _file, _func, _line);
-}
-#pragma endregion
-#pragma region PrintLog
 void CPckClassLog::PrintLog(const char chLevel, const char *_fmt, va_list ap)
 {
 	char _maintext[LOG_BUFFER];
@@ -192,24 +202,55 @@ void CPckClassLog::PrintLog(const char chLevel, const wchar_t *_fmt, va_list ap)
 	ShowLog(chLevel, _maintext);
 }
 
-void CPckClassLog::PrintLog(const char chLevel, const char *_fmt, ...)
+#pragma endregion
+
+#if PCK_DEBUG_OUTPUT
+void CPckClassLog::OutputVsIde(const char *_text, ...)
 {
 	char _maintext[LOG_BUFFER];
 	va_list	ap;
-	va_start(ap, _fmt);
-	_vsnprintf(_maintext, sizeof(_maintext), _fmt, ap);
+	va_start(ap, _text);
+	_vsnprintf(_maintext, sizeof(_maintext), _text, ap);
 	va_end(ap);
-	ShowLog(chLevel, _maintext);
+	OutputDebugStringA(_maintext);
 }
+#endif
 
-void CPckClassLog::PrintLog(const char chLevel, const wchar_t *_fmt, ...)
+#if PCK_DEBUG_OUTPUT_FILE
+#pragma warning ( disable : 4996 )
+
+int CPckClassLog::logOutput(const char *file, const char *format, ...)
 {
-	wchar_t _maintext[LOG_BUFFER];
-	va_list	ap;
-	va_start(ap, _fmt);
-	_vsnwprintf(_maintext, sizeof(_maintext), _fmt, ap);
-	va_end(ap);
-	ShowLog(chLevel, _maintext);
-}
+	char szFile[MAX_PATH];
+	const int BUFFER_SIZE = 4097;
+	char strbuf[BUFFER_SIZE];
+	memset(strbuf, 0, sizeof(strbuf));
 
-#pragma endregion
+	const char *lpszTitle = strstr(file, "::");
+	if (0 != lpszTitle) {
+		sprintf_s(szFile, "d:\\pcktest\\dst\\%s.log", lpszTitle + 2);
+	}
+	else {
+		sprintf_s(szFile, "d:\\pcktest\\dst\\%s.log", file);
+	}
+
+
+	FILE *pFile = fopen(szFile, "ab");
+	int ret = -1;
+	if (pFile != NULL) {
+
+		va_list ap;
+		va_start(ap, format);
+		int result = ::vsnprintf(strbuf, BUFFER_SIZE - 1, format, ap);
+		va_end(ap);
+
+		std::lock_guard<std::mutex> lckLogFile(m_LockLogFile);
+		fseek(pFile, 0, SEEK_END);
+		int ret = fwrite(strbuf, 1, strlen(strbuf), pFile);
+		fclose(pFile);
+		pFile = NULL;
+	}
+
+	return ret;
+}
+#endif

@@ -319,6 +319,7 @@
     <ClCompile Include="decode_dds\SavePicture.cpp" />
     <ClCompile Include="decode_dds\ShowPicture.cpp" />
     <ClCompile Include="listViewFunc.cpp" />
+    <ClCompile Include="mainControlStatus.cpp" />
     <ClCompile Include="MenuButtonFuncs.cpp" />
     <ClCompile Include="..\MiscFuncs\CharsCodeConv.cpp" />
     <ClCompile Include="..\MiscFuncs\COpenFileListener.cpp" />
@@ -334,7 +335,7 @@
     <ClCompile Include="guirelated.cpp" />
     <ClCompile Include="helpfunc.cpp" />
     <ClCompile Include="mainfunc.cpp" />
-    <ClCompile Include="PreviewDlg.cpp" />
+    <ClCompile Include="tPreviewDlg.cpp" />
     <ClCompile Include="ShowLogOnDlgListView.cpp" />
     <ClCompile Include="tAttrDlg.cpp" />
     <ClCompile Include="tCompressOptDlg.cpp" />
@@ -376,9 +377,10 @@
     <ClInclude Include="..\MiscFuncs\StopWatch.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="miscdlg.h" />
-    <ClInclude Include="PreviewDlg.h" />
+    <ClInclude Include="tPreviewDlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ShowLogOnDlgListView.h" />
+    <ClInclude Include="tLogDlg.h" />
     <ClInclude Include="winmain.h" />
   </ItemGroup>
   <ItemGroup>

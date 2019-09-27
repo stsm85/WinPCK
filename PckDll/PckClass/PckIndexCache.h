@@ -1,5 +1,5 @@
 #pragma once
-#include <Windows.h>
+#include "pck_default_vars.h"
 
 #define _INIT_SIZE_	(10 * 1024 * 1024)
 

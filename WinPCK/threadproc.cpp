@@ -24,16 +24,16 @@
 #include "OpenSaveDlg.h"
 #include "StopWatch.h"
 
-VOID GetPckFileNameBySource(LPTSTR dst, LPCTSTR src, BOOL isDirectory);
+VOID GetPckFileNameBySource(LPWSTR dst, LPCWSTR src, BOOL isDirectory);
 
 VOID TInstDlg::UpdatePckFile(VOID *pParam)
 {
 
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 	BOOL		bHasPckOpened = !pck_IsValidPck();
-	TCHAR		szFilenameToSave[MAX_PATH];
-	TCHAR		szPrintf[320];
-	CStopWatch	timer;;
+	wchar_t		szFilenameToSave[MAX_PATH];
+	wchar_t		szPrintf[320];
+	CStopWatch	timer;
 
 	*szFilenameToSave = 0;
 
@@ -46,7 +46,7 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 		}
 
 		//选择保存的文件名
-		int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->BuildSaveDlgFilterString());
+		int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, L"pck", pThis->BuildSaveDlgFilterString());
 		if (0 > nSelectFilter) {
 			pck_close();
 			return;
@@ -56,11 +56,11 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 		if(WINPCK_OK != pck_setVersion(nSelectFilter))
 			return;
 
-		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
+		swprintf_s(szPrintf, GetLoadStrW(IDS_STRING_RENEWING), wcsrchr(szFilenameToSave, L'\\') + 1);
 	}
 	else {
-		_tcscpy_s(szFilenameToSave, pThis->m_Filename);
-		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
+		wcscpy_s(szFilenameToSave, pThis->m_Filename);
+		swprintf_s(szPrintf, GetLoadStrW(IDS_STRING_RENEWING), wcsrchr(pThis->m_Filename, L'\\') + 1);
 	}
 
 	//开始计时
@@ -68,7 +68,9 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 
 	pThis->EnbaleButtons(ID_MENU_ADD, FALSE);
 
-	pThis->SetStatusBarText(4, szPrintf);
+	//pThis->SetStatusBarText(4, szPrintf);
+	pThis->SetStatusBarInfo(szPrintf);
+
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
@@ -85,12 +87,13 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 		if (pck_isLastOptSuccess()) {
 
 			//pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
-			log_Print(LOG_IMAGE_NOTICE, GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
+			pck_logN(GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
 			//pThis->SetStatusBarText(4, szPrintf);
 		}
 		else {
 
-			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
 
@@ -103,14 +106,14 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 
 		if (0 != pck_getUpdateResult_PrepareToAddFileCount()) {
 
-			_stprintf_s(szPrintf,
-				TEXT("此更新过程数据如下：\r\n")
-				TEXT("PCK 包中原有文件数： %d\r\n")
-				TEXT("计划更新文件数： %d\r\n")
-				TEXT("实际更新文件数： %d\r\n")
-				TEXT("重名文件数： %d\r\n")
-				TEXT("未更新文件数： %d\r\n")
-				TEXT("更新后 PCK 包中文件数： %d"),
+			swprintf_s(szPrintf,
+				L"此更新过程数据如下：\r\n"
+				L"PCK 包中原有文件数： %d\r\n"
+				L"计划更新文件数： %d\r\n"
+				L"实际更新文件数： %d\r\n"
+				L"重名文件数： %d\r\n"
+				L"未更新文件数： %d\r\n"
+				L"更新后 PCK 包中文件数： %d",
 				pck_getUpdateResult_OldFileCount(),
 				pck_getUpdateResult_PrepareToAddFileCount(),
 				pck_getUpdateResult_ChangedFileCount(),
@@ -118,10 +121,9 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 				pck_getUpdateResult_PrepareToAddFileCount() - pck_getUpdateResult_ChangedFileCount(),
 				pck_getUpdateResult_FinalFileCount());
 
-			pThis->MessageBox(szPrintf, TEXT("更新报告"), MB_OK | MB_ICONINFORMATION);
+			pThis->MessageBoxW(szPrintf, L"更新报告", MB_OK | MB_ICONINFORMATION);
 
-			//pThis->m_PckLog.PrintLogI(szPrintf);
-			log_Print(LOG_IMAGE_INFO, szPrintf);
+			pck_logI(szPrintf);
 		}
 
 
@@ -136,8 +138,8 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 	}
 	else {
 
-		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-
+		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		if (bHasPckOpened) {
 			pck_close();
 		}
@@ -175,7 +177,8 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 
 	pThis->EnbaleButtons(ID_MENU_RENAME, FALSE);
 
-	pThis->SetStatusBarText(4, szPrintf);
+	//pThis->SetStatusBarText(4, szPrintf);
+	pThis->SetStatusBarInfo(szPrintf);
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
@@ -185,14 +188,16 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 		timer.stop();
 		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
 
-		pThis->SetStatusBarText(4, szPrintf);
+		//pThis->SetStatusBarText(4, szPrintf);
+		pThis->SetStatusBarInfo(szPrintf);
 
 		pThis->OpenPckFile(pThis->m_Filename, TRUE);
 
 	}
 	else {
 
-		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		pck_close();
 	}
 
@@ -256,7 +261,8 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 	pThis->EnbaleButtons(ID_MENU_REBUILD, FALSE);
 
 	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_REBUILDING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
-	pThis->SetStatusBarText(4, szPrintf);
+	//pThis->SetStatusBarText(4, szPrintf);
+	pThis->SetStatusBarInfo(szPrintf);
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, 100, NULL);
 
@@ -267,17 +273,18 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 
 		if (pck_isLastOptSuccess()) {
 
-			log_Print(LOG_IMAGE_NOTICE, GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+			pck_logN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 		}
 		else {
-			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
 	}
 	else {
 
-		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-
+		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 	}
 
 	pThis->EnbaleButtons(ID_MENU_REBUILD, TRUE);
@@ -344,7 +351,8 @@ VOID TInstDlg::StripPckFile(VOID *pParam)
 	pThis->EnbaleButtons(ID_MENU_REBUILD, FALSE);
 
 	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_REBUILDING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
-	pThis->SetStatusBarText(4, szPrintf);
+	//pThis->SetStatusBarText(4, szPrintf);
+	pThis->SetStatusBarInfo(szPrintf);
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, 100, NULL);
 
@@ -355,17 +363,18 @@ VOID TInstDlg::StripPckFile(VOID *pParam)
 
 		if (pck_isLastOptSuccess()) {
 
-			log_Print(LOG_IMAGE_NOTICE, GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+			pck_logN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 		}
 		else {
-			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
 	}
 	else {
 
-		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-
+		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 	}
 
 	pThis->EnbaleButtons(ID_MENU_REBUILD, TRUE);
@@ -419,7 +428,8 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 	pThis->EnbaleButtons(ID_MENU_NEW, FALSE);
 
 	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_COMPING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
-	pThis->SetStatusBarText(4, szPrintf);
+	//pThis->SetStatusBarText(4, szPrintf);
+	pThis->SetStatusBarInfo(szPrintf);
 
 	//pck_setThreadWorking(pThis->m_PckHandle);
 
@@ -436,16 +446,18 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 		timer.stop();
 
 		if (pck_isLastOptSuccess()) {
-			log_Print(LOG_IMAGE_NOTICE, GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+			pck_logN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 		}
 		else {
-			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
 	}
 	else {
 
-		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 	}
 
 	pThis->EnbaleButtons(ID_MENU_NEW, TRUE);
@@ -477,7 +489,8 @@ VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)
 	pThis->EnbaleButtons(ID_MENU_UNPACK_ALL, FALSE);
 
 	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
-	pThis->SetStatusBarText(4, szPrintf);
+	//pThis->SetStatusBarText(4, szPrintf);
+	pThis->SetStatusBarInfo(szPrintf);
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
@@ -486,11 +499,13 @@ VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)
 		timer.stop();
 		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPOK), timer.getElapsedTime());
 
-		pThis->SetStatusBarText(4, szPrintf);
+		//pThis->SetStatusBarText(4, szPrintf);
+		pThis->SetStatusBarInfo(szPrintf);
 
 	}
 	else {
-		pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 	}
 
 	pThis->EnbaleButtons(ID_MENU_UNPACK_ALL, TRUE);
@@ -554,7 +569,8 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 			pThis->EnbaleButtons(ID_MENU_UNPACK_SELECTED, FALSE);
 
 			_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
-			pThis->SetStatusBarText(4, szPrintf);
+			//pThis->SetStatusBarText(4, szPrintf);
+			pThis->SetStatusBarInfo(szPrintf);
 
 			pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
@@ -565,10 +581,12 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 				timer.stop();
 				_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPOK), timer.getElapsedTime());
 
-				pThis->SetStatusBarText(4, szPrintf);
+				//pThis->SetStatusBarText(4, szPrintf);
+				pThis->SetStatusBarInfo(szPrintf);
 			}
 			else {
-				pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+				//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+				pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 			}
 
 			free(lpFileEntryArray);
@@ -629,7 +647,8 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 		pThis->EnbaleButtons(ID_MENU_DELETE, FALSE);
 
 		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
-		pThis->SetStatusBarText(4, szPrintf);
+		//pThis->SetStatusBarText(4, szPrintf);
+		pThis->SetStatusBarInfo(szPrintf);
 
 		pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
@@ -639,13 +658,15 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 			timer.stop();
 			_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
 
-			pThis->SetStatusBarText(4, szPrintf);
+			//pThis->SetStatusBarText(4, szPrintf);
+			pThis->SetStatusBarInfo(szPrintf);
 
 			pThis->OpenPckFile(pThis->m_Filename, TRUE);
 
 		}
 		else {
-			pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
 		pThis->EnbaleButtons(ID_MENU_DELETE, TRUE);
@@ -663,16 +684,16 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 }
 
 //从拖入的源文件名推出预保存的pck文件名
-VOID GetPckFileNameBySource(LPTSTR dst, LPCTSTR src, BOOL isDirectory)
+VOID GetPckFileNameBySource(LPWSTR dst, LPCWSTR src, BOOL isDirectory)
 {
 	int szPathToCompressLen;
-	_tcscpy(dst, src);
+	wcscpy(dst, src);
 
 	if (isDirectory) {
-		if ((szPathToCompressLen = lstrlen(dst)) > 13 && 0 == lstrcmp(dst + szPathToCompressLen - 10, TEXT(".pck.files"))) {
+		if ((szPathToCompressLen = lstrlenW(dst)) > 13 && 0 == lstrcmpW(dst + szPathToCompressLen - 10, L".pck.files")) {
 			*(dst + szPathToCompressLen - 10) = 0;
 		}
 	}
 
-	_tcscat(dst, TEXT(".pck"));
+	wcscat(dst, L".pck");
 }

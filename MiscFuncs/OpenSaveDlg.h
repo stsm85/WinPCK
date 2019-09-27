@@ -12,7 +12,7 @@ using namespace std;
 
 BOOL OpenFilesVistaUp(HWND hwnd, TCHAR lpszPathName[MAX_PATH]);
 BOOL OpenSingleFile(HWND hWnd, TCHAR * lpszFileName, LPCTSTR lpstrFilter = NULL, DWORD nFilterIndex = 1);
-BOOL OpenFiles(HWND hWnd, vector <tstring> &lpszFilePathArray);
+BOOL OpenFiles(HWND hWnd, vector <wstring> &lpszFilePathArray);
 int SaveFile(HWND hWnd, char * lpszFileName, LPCSTR lpszDefaultExt = NULL, LPCSTR lpstrFilter = NULL, DWORD nFilterIndex = 0);
 int SaveFile(HWND hWnd, wchar_t * lpszFileName, LPCWSTR lpszDefaultExt = NULL, LPCWSTR lpstrFilter = NULL, DWORD nFilterIndex = 0);
 

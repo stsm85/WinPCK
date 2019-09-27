@@ -22,17 +22,17 @@
 #include <stdio.h>
 #include "StopWatch.h"
 
-BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
+BOOL TInstDlg::OpenPckFile(wchar_t *lpszFileToOpen, BOOL isReOpen)
 {
 
 	CStopWatch	timer;
-	TCHAR	szString[64];
+	wchar_t	szString[64];
 	int		iListTopView;
 
 	m_currentNodeOnShow = NULL;
 
 	if(0 != *lpszFileToOpen && lpszFileToOpen != m_Filename) {
-		_tcscpy_s(m_Filename, MAX_PATH, lpszFileToOpen);
+		wcscpy_s(m_Filename, MAX_PATH, lpszFileToOpen);
 	}
 
 	if(!isReOpen) {
@@ -49,34 +49,41 @@ BOOL TInstDlg::OpenPckFile(TCHAR *lpszFileToOpen, BOOL isReOpen)
 		//转换文件名格式 
 		if(WINPCK_OK == pck_open(m_Filename)) {
 			timer.stop();
-			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENOK), timer.getElapsedTime());
-			SetStatusBarText(4, szString);
+			swprintf_s(szString, 64, GetLoadStrW(IDS_STRING_OPENOK), timer.getElapsedTime());
+			//SetStatusBarText(4, szString);
+			SetStatusBarInfo(szString);
 
-			SetStatusBarText(0, _tcsrchr(m_Filename, TEXT('\\')) + 1);
-			SetStatusBarText(3, TEXT(""));
+			//SetStatusBarText(0, _tcsrchr(m_Filename, TEXT('\\')) + 1);
+			SetStatusBarTitle(wcsrchr(m_Filename, L'\\') + 1);
+			//SetStatusBarText(3, TEXT(""));
+			ClearStatusBarProgress();
 
-			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILESIZE), pck_filesize());
-			SetStatusBarText(1, szString);
+			//_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILESIZE), pck_filesize());
+			//SetStatusBarText(1, szString);
+			SetStatusBarFileSize(pck_filesize());
 
-			_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILECOUNT), pck_filecount());
-			SetStatusBarText(2, szString);
+			//_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILECOUNT), pck_filecount());
+			//SetStatusBarText(2, szString);
+			SetStatusBarFileCount(pck_filecount());
 
 			if(isReOpen) {
 				ShowPckFiles(pck_getFileEntryByPath(m_FolderBrowsed));
 				ListView_EnsureVisible(GetDlgItem(IDC_LIST), iListTopView, NULL);
 				ListView_EnsureVisible(GetDlgItem(IDC_LIST), iListTopView + ListView_GetCountPerPage(GetDlgItem(IDC_LIST)) - 1, NULL);
 			} else
-				ShowPckFiles(/*pck_getFirstNode*/pck_getRootNode());
+				ShowPckFiles(pck_getRootNode());
 
 			return TRUE;
 		} else {
-			SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			//SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			SetStatusBarInfo(GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 			pck_close();
 			return FALSE;
 		}
 
 	}
-	SetStatusBarText(4, GetLoadStr(IDS_STRING_OPENFAIL));
+	//SetStatusBarText(4, GetLoadStr(IDS_STRING_OPENFAIL));
+	SetStatusBarInfo(GetLoadStrW(IDS_STRING_OPENFAIL));
 	return FALSE;
 
 }
@@ -115,7 +122,7 @@ void ShowFilelistCallback(void* _in_param, int sn, const wchar_t *lpszFilename, 
 	}
 #ifdef _DEBUG
 	wchar_t szPrintLine[1024];
-	_stprintf(szPrintLine, L"%s\t%s\t%llu\t%llu\r\n", lpszFilename, (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type)) ? L"Folder" : L"File", qwFileSize, qwFileSizeCompressed);
+	swprintf(szPrintLine, L"%s\t%s\t%llu\t%llu\r\n", lpszFilename, (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type)) ? L"Folder" : L"File", qwFileSize, qwFileSizeCompressed);
 	OutputDebugStringW(szPrintLine);
 #endif
 
@@ -129,7 +136,7 @@ VOID TInstDlg::SearchPckFiles()
 
 	//显示查找文字
 	wchar_t	szPrintf[64];
-	_stprintf_s(szPrintf, 64, GetLoadStrW(IDS_STRING_SEARCHING), m_szStrToSearch);
+	swprintf_s(szPrintf, 64, GetLoadStrW(IDS_STRING_SEARCHING), m_szStrToSearch);
 	SendDlgItemMessageW(IDC_STATUS, SB_SETTEXTW, 4, (LPARAM)szPrintf);
 
 	ListView_DeleteAllItems(hList);
@@ -143,7 +150,7 @@ VOID TInstDlg::SearchPckFiles()
 
 	::SendMessage(hList, WM_SETREDRAW, TRUE, 0);
 
-	_stprintf_s(szPrintf, 64, GetLoadStrW(IDS_STRING_SEARCHOK), m_szStrToSearch, dwFoundCount);
+	swprintf_s(szPrintf, 64, GetLoadStrW(IDS_STRING_SEARCHOK), m_szStrToSearch, dwFoundCount);
 	SendDlgItemMessageW(IDC_STATUS, SB_SETTEXTW, 4, (LPARAM)szPrintf);
 
 }

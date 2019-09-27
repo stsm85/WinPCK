@@ -1,71 +1,79 @@
 #pragma once
-#include <Windows.h>
+//#include <Windows.h>
 #include "PckDefines.h"
+#if PCK_DEBUG_OUTPUT_FILE
+#include <mutex>
+#endif
 
 //日志
 #define	LOG_BUFFER						8192
 
-#if 0
-#define	LOG_FLAG_ERROR					'E'
-#define	LOG_FLAG_WARNING				'W'
-#define	LOG_FLAG_INFO					'I'
-#define	LOG_FLAG_DEBUG					'D'
-#define	LOG_FLAG_NOTICE					'N'
-#endif 
-
 class CPckClassLog
 {
-public:
+private:
 	CPckClassLog();
+	CPckClassLog(const CPckClassLog&) = delete;
 	~CPckClassLog();
 
+	const CPckClassLog& operator=(const CPckClassLog&) = delete;
+
+public:
+
+	static CPckClassLog& GetInstance() {
+		static CPckClassLog onlyInstance;
+		return onlyInstance;
+	}
 	//注册LOG显示方式
-	static void PckClassLog_func_register(ShowLogW _ShowLogW);
+	void PckClassLog_func_register(ShowLogW _ShowLogW);
 
-	//日志显示函数
-#define define_define_one_PrintLog(_loglvchar)	\
-	static void PrintLog##_loglvchar(const char *_text, ...);\
-	static void PrintLog##_loglvchar(const wchar_t *_text, ...);\
-	static void PrintLog##_loglvchar(const char *_text, va_list ap);\
-	static void PrintLog##_loglvchar(const wchar_t *_text, va_list ap);
+	void e(const char *_text, ...);
+	void w(const char *_text, ...);
+	void i(const char *_text, ...);
+	void d(const char *_text, ...);
+	void n(const char *_text, ...);
 
-	//PrintLog[IWEDN]
-	define_define_one_PrintLog(I);
-	define_define_one_PrintLog(W);
-	define_define_one_PrintLog(E);
-	define_define_one_PrintLog(D);
-	define_define_one_PrintLog(N);
+	void e(const wchar_t *_text, ...);
+	void w(const wchar_t *_text, ...);
+	void i(const wchar_t *_text, ...);
+	void d(const wchar_t *_text, ...);
+	void n(const wchar_t *_text, ...);
 
-#undef define_define_one_PrintLog
+	void	PrintErrorLog();
+	void	PrintLog(const char chLevel, const char *_fmt, va_list ap);
+	void	PrintLog(const char chLevel, const wchar_t *_fmt, va_list ap);
 
-	//__FILE__, __FUNCTION__, __LINE__
-	void	PrintLogEL(const char *_maintext, const char *_file, const char *_func, const long _line);
-	void	PrintLogEL(const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
-	void	PrintLogEL(const char *_fmt, const char *_maintext, const char *_file, const char *_func, const long _line);
-	void	PrintLogEL(const char *_fmt, const wchar_t *_maintext, const char *_file, const char *_func, const long _line);
+#if PCK_DEBUG_OUTPUT
+	void OutputVsIde(const char *_text, ...);
+#else
+	void OutputVsIde(...) {};
+#endif
 
+#if PCK_DEBUG_OUTPUT_FILE
+	std::mutex	m_LockLogFile;
+	int logOutput(const char *file, const char *format, ...);
+#else
+	void logOutput(...) {}
+#endif
 
-	static void	PrintLog(const char chLevel, const char *_fmt, va_list ap);
-	static void	PrintLog(const char chLevel, const wchar_t *_fmt, va_list ap);
-	static void	PrintLog(const char chLevel, const char *_fmt, ...);
-	static void	PrintLog(const char chLevel, const wchar_t *_fmt, ...);
-
-	static const char	GetLogLevelPrefix(int _loglevel);
 private:
 
-	static const char	m_szLogPrefix[LOG_IMAGE_COUNT];
-
 	//日志显示方式，默认显示到控制台
-	static void		PrintLogToConsole(const int log_level, const wchar_t *str);
+	static void		PrintLogToConsole(const char log_level, const wchar_t *str);
 
 	static ShowLogW	ShowLogExtern;
-	static void		ShowLog(const int log_level, const char *str);
-	static void		ShowLog(const int log_level, const wchar_t *str);
+
+	void		ShowLog(const char log_level, const char *str);
+	void		ShowLog(const char log_level, const wchar_t *str);
 
 	//错误信息
-	DWORD	m_dwLastError;
+	DWORD	m_dwLastError = 0;
 	//返回具体错误信息
 	wchar_t *GetErrorMsg(CONST DWORD dwError, wchar_t *szMessage);
 
 };
 
+extern CPckClassLog& Logger;
+
+#define LoggerExInternal2(msg, file, func, line, ...) Logger.e(##msg " at: "##file ", function: " func ", line: "#line, ##__VA_ARGS__)
+#define LoggerExInternal(msg, file, func, line, ...) LoggerExInternal2(msg, file, func, line, ##__VA_ARGS__)
+#define Logger_el(msg, ...) LoggerExInternal(msg, __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)

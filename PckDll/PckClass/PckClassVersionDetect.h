@@ -68,7 +68,7 @@ static vector<PCK_VERSION_FUNC>	cPckVersionFunc;
 typedef struct _PCK_VERSION_ID
 {
 	int			id;
-	TCHAR		name[64];
+	wchar_t		name[64];
 	PCK_CATEGORY	VersionId;
 	DWORD		Version;
 	DWORD		AlgorithmId;
@@ -85,13 +85,13 @@ public:
 	const	PCK_KEYS*	GetPckVersion();
 	BOOL	SetSavePckVersion(int verID);
 	static	const	wchar_t*	GetPckVersionNameById(int id);
-	static	size_t	GetPckVersionCount();
+	static	uint32_t	GetPckVersionCount();
 
 	static	int		AddPckVersion(int AlgorithmId, int Version);
 
 protected:
 	//检测pck的版本并写入到iDetectedPckID，同时读取文件头和尾
-	BOOL	DetectPckVerion(LPCTSTR lpszPckFile);
+	BOOL	DetectPckVerion(LPCWSTR lpszPckFile);
 
 private:
 
@@ -108,23 +108,23 @@ private:
 	static void		SetAlgorithmId(DWORD id, LPPCK_VERSION_FUNC lpPckVersionFunc);
 
 	//文件头、尾的数据填写和数据写入
-	static LPVOID	FillHeadData_V2020(void *param);
-	static LPVOID	FillHeadData_V2030(void *param);
+	static void*	FillHeadData_V2020(void *param);
+	static void*	FillHeadData_V2030(void *param);
 
-	static LPVOID	FillTailData_V2020(void *param);
-	static LPVOID	FillTailData_V2030(void *param);
-	static LPVOID	FillTailData_VXAJH(void *param);
+	static void*	FillTailData_V2020(void *param);
+	static void*	FillTailData_V2030(void *param);
+	static void*	FillTailData_VXAJH(void *param);
 
-	static LPVOID FillIndexData_V2020(void *param, void *pckFileIndexBuf);
-	static LPVOID FillIndexData_V2030(void *param, void *pckFileIndexBuf);
-	static LPVOID FillIndexData_VXAJH(void *param, void *pckFileIndexBuf);
+	static void*	FillIndexData_V2020(void *param, void *pckFileIndexBuf);
+	static void*	FillIndexData_V2030(void *param, void *pckFileIndexBuf);
+	static void*	FillIndexData_VXAJH(void *param, void *pckFileIndexBuf);
 
 	//数据从lpIndex -> param
-	static BOOL PickIndexData_V2020(void *param, void* lpIndex);
-	static BOOL PickIndexData_V2030(void *param, void* lpIndex);
-	static BOOL PickIndexData_VXAJH(void *param, void* lpIndex);
+	static BOOL		PickIndexData_V2020(void *param, void* lpIndex);
+	static BOOL		PickIndexData_V2030(void *param, void* lpIndex);
+	static BOOL		PickIndexData_VXAJH(void *param, void* lpIndex);
 
-	void	PrintInvalidVersionDebugInfo(LPCTSTR lpszPckFile);
+	void	PrintInvalidVersionDebugInfo(const wchar_t * lpszPckFile);
 
 
 };

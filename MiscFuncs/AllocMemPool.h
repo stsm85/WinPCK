@@ -5,6 +5,7 @@ source code from:
 https://blog.csdn.net/dustpg/article/details/38756241
 */
 #pragma warning ( disable : 4200 )
+#include <stdint.h>
 
 class CAllocMemPool
 {
@@ -15,9 +16,9 @@ class CAllocMemPool
 		// 已分配数量
 		size_t              allocated = 0;
 		// 上次分配位置
-		BYTE*               last_allocated = nullptr;
+		uint8_t*               last_allocated = nullptr;
 		// 缓冲区
-		BYTE                buffer[0];
+		uint8_t                buffer[0];
 	};
 
 public:
@@ -25,7 +26,7 @@ public:
 	~CAllocMemPool();
 
 	// 申请内存
-	void*               Alloc(size_t size, UINT32 align = sizeof(size_t));
+	void*               Alloc(size_t size, uint32_t align = sizeof(size_t));
 	// 释放内存
 	void                Free(void* address);
 

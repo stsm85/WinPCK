@@ -35,17 +35,17 @@ public:
 	CDictHash();
 	virtual ~CDictHash();
 
-	LPZUP_FILENAME_DICT	find(char *keystr);
+	LPZUP_FILENAME_DICT	find(const char *keystr);
 
-	LPZUP_FILENAME_DICT	add(char *keystr);
+	LPZUP_FILENAME_DICT	add(const char *keystr);
 
 
 protected:
 	
 	LPZUP_FILENAME_DICT	*lpDictHashTable;
 
-	__inline LPZUP_FILENAME_DICT	AllocNode(unsigned int sizeStuct);
-	__inline void	Dealloc(LPZUP_FILENAME_DICT lpDictHash);
+	LPZUP_FILENAME_DICT	AllocNode(unsigned int sizeStuct);
+	void	Dealloc(LPZUP_FILENAME_DICT lpDictHash);
 
 };
 

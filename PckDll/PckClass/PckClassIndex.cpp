@@ -10,6 +10,7 @@ CPckClassIndex::~CPckClassIndex()
 {
 	if(NULL != m_PckAllInfo.lpPckIndexTable)
 		free(m_PckAllInfo.lpPckIndexTable);
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
 }
 
 void* CPckClassIndex::AllocMemory(size_t	sizeStuct)

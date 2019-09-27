@@ -12,7 +12,9 @@
 
 #pragma once
 
-#include "pck_dependencies.h"
+#include "PckStructs.h"
+#include "PckClassLog.h"
+#include <vector>
 
 typedef struct _PCK_PATH_NODE * LPPCK_PATH_NODE;
 typedef struct _PCK_RUNTIME_PARAMS * LPPCK_RUNTIME_PARAMS;
@@ -45,14 +47,13 @@ private:
 
 	void	init();
 	void	uninit();
-	void	Reset(DWORD dwUIProgressUpper = 1);
+	void	Reset(uint32_t dwUIProgressUpper = 1);
 #pragma region 打开关闭文件
 
-	//BOOL	Open(LPCTSTR lpszFile, BOOL isOpenAfterRestore);
 	void	Close();
 public:
 
-	BOOL	Open(LPCTSTR lpszFile);
+	BOOL	Open(const wchar_t * lpszFile);
 
 #pragma endregion
 
@@ -113,7 +114,7 @@ public:
 	BOOL	SetPckVersion(int verID);
 	//获取当前配置名称
 	LPCWSTR	GetCurrentVersionName();
-	static DWORD	GetVersionCount();
+	static uint32_t	GetVersionCount();
 	static LPCWSTR	GetVersionNameById(int verID);
 	static int		AddVersionAlgorithmId(int AlgorithmId, int Version);
 
@@ -132,25 +133,25 @@ public:
 	BOOL				IsValidPck();
 
 	//获取文件数
-	DWORD				GetPckFileCount();
+	uint32_t			GetPckFileCount();
 	//实际文件大小
-	QWORD				GetPckSize();
-	QWORD				GetPckDataAreaSize();
-	QWORD				GetPckRedundancyDataSize();
+	uint64_t			GetPckSize();
+	uint64_t			GetPckDataAreaSize();
+	uint64_t			GetPckRedundancyDataSize();
 
-	static QWORD		GetFileSizeInEntry(LPCENTRY lpFileEntry);
-	static QWORD		GetCompressedSizeInEntry(LPCENTRY lpFileEntry);
-	static DWORD		GetFoldersCountInEntry(LPCENTRY lpFileEntry);
-	static DWORD		GetFilesCountInEntry(LPCENTRY lpFileEntry);
+	static uint64_t		GetFileSizeInEntry(LPCENTRY lpFileEntry);
+	static uint64_t		GetCompressedSizeInEntry(LPCENTRY lpFileEntry);
+	static uint32_t		GetFoldersCountInEntry(LPCENTRY lpFileEntry);
+	static uint32_t		GetFilesCountInEntry(LPCENTRY lpFileEntry);
 
 	static size_t		GetFilelenBytesOfEntry(LPCENTRY lpFileEntry);
 	static size_t		GetFilelenLeftBytesOfEntry(LPCENTRY lpFileEntry);
 
-	static QWORD		GetFileOffset(LPCENTRY lpFileEntry);
+	static uint64_t		GetFileOffset(LPCENTRY lpFileEntry);
 
 	//设置附加信息
 	const char*			GetAdditionalInfo();
-	static DWORD		GetAdditionalInfoMaxSize();
+	static uint32_t		GetAdditionalInfoMaxSize();
 	BOOL				SetAdditionalInfo(LPCSTR lpszAdditionalInfo);
 
 	//是否是支持更新的文件
@@ -160,15 +161,15 @@ public:
 
 	//打开、关闭、复原等事件注册
 	static void		regMsgFeedback(void* pTag, FeedbackCallback _FeedbackCallBack);
-	static int		DefaultFeedbackCallback(void* pTag, int eventId, WPARAM wParam, LPARAM lParam);
+	static int		DefaultFeedbackCallback(void* pTag, int32_t eventId, size_t wParam, ssize_t lParam);
 
 #pragma region 查询及目录浏览
 private:
-	static void		DefaultShowFilelistCallback(void* _in_param, int sn, LPCWSTR lpszFilename, int entry_type, unsigned __int64 qwFileSize, unsigned __int64 qwFileSizeCompressed, void* fileEntry);
+	static void		DefaultShowFilelistCallback(void* _in_param, int sn, LPCWSTR lpszFilename, int entry_type, uint64_t qwFileSize, uint64_t qwFileSizeCompressed, void* fileEntry);
 
 public:
-	DWORD			SearchByName(LPCWSTR lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
-	static DWORD	ListByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
+	uint32_t		SearchByName(LPCWSTR lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
+	static uint32_t	ListByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
 
 #pragma endregion
 
@@ -184,77 +185,64 @@ public:
 
 #pragma region 内存占用
 	//内存占用
-	DWORD			getMTMemoryUsed();
+	uint32_t			getMTMemoryUsed();
 	//内存值
-	void			setMTMaxMemory(DWORD dwMTMaxMemory);
-	DWORD			getMTMaxMemory();
+	void			setMTMaxMemory(uint32_t dwMTMaxMemory);
+	uint32_t			getMTMaxMemory();
 
 	//最大内存
-	static DWORD	getMaxMemoryAllowed();
+	static uint32_t	getMaxMemoryAllowed();
 
 #pragma endregion
 
 #pragma region 线程数
 	//线程数
-	DWORD	getMaxThread();
-	void	setMaxThread(DWORD dwThread);
+	uint32_t	getMaxThread();
+	void	setMaxThread(uint32_t dwThread);
 	//线程默认参数
-	static DWORD	getMaxThreadUpperLimit();
+	static uint32_t	getMaxThreadUpperLimit();
 #pragma endregion
 
 #pragma region 压缩等级
 
 	//压缩等级
-	DWORD	getCompressLevel();
-	void	setCompressLevel(DWORD dwCompressLevel = Z_DEFAULT_COMPRESS_LEVEL);
+	uint32_t	getCompressLevel();
+	void	setCompressLevel(uint32_t dwCompressLevel = Z_DEFAULT_COMPRESS_LEVEL);
 
 	//压缩等级默认参数
-	static DWORD	getMaxCompressLevel();
-	static DWORD	getDefaultCompressLevel();
+	static uint32_t	getMaxCompressLevel();
+	static uint32_t	getDefaultCompressLevel();
 #pragma endregion
 
 #pragma region 进度相关
 
-	DWORD	getUIProgress();
-	void	setUIProgress(DWORD dwUIProgress);
-	DWORD	getUIProgressUpper();
+	uint32_t	getUIProgress();
+	void	setUIProgress(uint32_t dwUIProgress);
+	uint32_t	getUIProgressUpper();
 
 #pragma endregion
-
-
-	//日志
-	static void	regShowFunc(ShowLogW _ShowLogW);
-	static const char	getLogLevelPrefix(int _loglevel);
-	static void	Print(const char chLevel, LPCSTR _fmt, ...);
-	static void	Print(const char chLevel, LPCWSTR _fmt, ...);
-	static void	Print(const char chLevel, LPCSTR _fmt, va_list ap);
-	static void	Print(const char chLevel, LPCWSTR _fmt, va_list ap);
-#pragma endregion
-
-
 
 #pragma region 打印添加/新增文件结果
 
-	DWORD	GetUpdateResult_OldFileCount();
-	DWORD	GetUpdateResult_PrepareToAddFileCount();
-	DWORD	GetUpdateResult_ChangedFileCount();
-	DWORD	GetUpdateResult_DuplicateFileCount();
-	DWORD	GetUpdateResult_FinalFileCount();
+	uint32_t	GetUpdateResult_OldFileCount();
+	uint32_t	GetUpdateResult_PrepareToAddFileCount();
+	uint32_t	GetUpdateResult_ChangedFileCount();
+	uint32_t	GetUpdateResult_DuplicateFileCount();
+	uint32_t	GetUpdateResult_FinalFileCount();
 
 #pragma endregion
 
 private:
 
-	FMTPCK	GetPckTypeFromFilename(LPCTSTR lpszFile);
+	FMTPCK	GetPckTypeFromFilename(const wchar_t * lpszFile);
 
 	LPPCK_PATH_NODE				m_lpPckRootNode;
-	vector<wstring>				lpszFilePathToAdd;	//对添加多个文件时提供数据
+	std::vector<std::wstring>	lpszFilePathToAdd;	//对添加多个文件时提供数据
 
-	wstring						szUpdateResultString;
+	std::wstring				szUpdateResultString;
 
 	PCK_RUNTIME_PARAMS			cParams;
 	CPckClass					*m_lpClassPck;
-	CPckClassLog				*m_lpPckLog;
 
 	//格式
 	FMTPCK						m_emunFileFormat;

@@ -1,3 +1,5 @@
+#include "pck_default_vars.h"
+
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #include "pck_dependencies.h"
 #endif
@@ -5,18 +7,7 @@
 #ifndef WINPCK_DLL_H
 #define WINPCK_DLL_H
 
-typedef unsigned long       DWORD;
-typedef int                 BOOL;
-typedef unsigned char       BYTE;
-typedef unsigned short      WORD;
 
-typedef const wchar_t * 	LPCWSTR;
-typedef wchar_t *			LPWSTR;
-typedef const char * 		LPCSTR;
-typedef char *				LPSTR;
-
-#define WINPCK_VERSION_NUMBER  1,31,0,3
-#define WINPCK_VERSION        "1.31.0.3"
 
 typedef enum _PCKRTN
 {
@@ -39,7 +30,7 @@ typedef enum _PCKRTN
 
 
 #ifdef _WINDLL	//.dll
-#define WINPCK_API EXTERN_C _declspec(dllexport) 
+#define WINPCK_API EXTERN_C _declspec(dllexport)
 #elif defined(_DLL)	//.exe
 #define WINPCK_API EXTERN_C _declspec(dllimport)
 #else	//other
@@ -47,13 +38,13 @@ typedef enum _PCKRTN
 #endif
 
 WINPCK_API LPCSTR		pck_version();
-WINPCK_API PCKRTN		pck_open(LPCTSTR  lpszFile);
+WINPCK_API PCKRTN		pck_open(const wchar_t *  lpszFile);
 WINPCK_API PCKRTN		pck_close();
 
 //return -1 is invalid 
 WINPCK_API int			pck_getVersion();
 WINPCK_API PCKRTN		pck_setVersion(int verID);
-WINPCK_API DWORD		pck_getVersionCount();
+WINPCK_API uint32_t		pck_getVersionCount();
 WINPCK_API LPCWSTR 		pck_getVersionNameById(int verID);
 //AlgorithmId can not be -1, Version must be AFPCK_VERSION_202(0x00020002) or AFPCK_VERSION_203(0x00020003), return value is id , PCK_VERSION_INVALID = -1
 WINPCK_API int 			pck_addVersionAlgorithmId(int AlgorithmId, int Version);
@@ -73,35 +64,35 @@ WINPCK_API LPCENTRY		pck_getFileEntryByPath(LPWSTR _in_szCurrentNodePathString);
 WINPCK_API LPCENTRY		pck_getRootNode();
 
 //pck文件大小
-WINPCK_API QWORD		pck_filesize();
+WINPCK_API uint64_t		pck_filesize();
 //pck有效数据区大小
-WINPCK_API QWORD		pck_file_data_area_size();
+WINPCK_API uint64_t		pck_file_data_area_size();
 //冗余数据大小
-WINPCK_API QWORD		pck_file_redundancy_data_size();
+WINPCK_API uint64_t		pck_file_redundancy_data_size();
 //pck文件数量
-WINPCK_API DWORD		pck_filecount();
+WINPCK_API uint32_t		pck_filecount();
 
 //从节点中获取数据
-WINPCK_API QWORD		pck_getFileSizeInEntry(LPCENTRY lpFileEntry);
-WINPCK_API QWORD		pck_getCompressedSizeInEntry(LPCENTRY lpFileEntry);
-WINPCK_API DWORD		pck_getFoldersCountInEntry(LPCENTRY lpFileEntry);
-WINPCK_API DWORD		pck_getFilesCountInEntry(LPCENTRY lpFileEntry);
+WINPCK_API uint64_t		pck_getFileSizeInEntry(LPCENTRY lpFileEntry);
+WINPCK_API uint64_t		pck_getCompressedSizeInEntry(LPCENTRY lpFileEntry);
+WINPCK_API uint32_t		pck_getFoldersCountInEntry(LPCENTRY lpFileEntry);
+WINPCK_API uint32_t		pck_getFilesCountInEntry(LPCENTRY lpFileEntry);
 
 //当前节点文件名当前长度
-WINPCK_API DWORD		pck_getFilelenBytesOfEntry(LPCENTRY lpFileEntry);
+WINPCK_API uint32_t		pck_getFilelenBytesOfEntry(LPCENTRY lpFileEntry);
 //当前节点文件名最大长度-当前长度
-WINPCK_API DWORD		pck_getFilelenLeftBytesOfEntry(LPCENTRY lpFileEntry);
+WINPCK_API uint32_t		pck_getFilelenLeftBytesOfEntry(LPCENTRY lpFileEntry);
 
 
 //返回文件在pck文件中压缩数据的偏移值
-WINPCK_API QWORD		pck_getFileOffset(LPCENTRY lpFileEntry);
+WINPCK_API uint64_t		pck_getFileOffset(LPCENTRY lpFileEntry);
 
 //是否是支持更新的文件
 WINPCK_API BOOL			pck_isSupportAddFileToPck();
 
 //设置附加信息
 WINPCK_API LPCSTR 		pck_GetAdditionalInfo();
-WINPCK_API DWORD		pck_GetAdditionalInfoMaxSize();
+WINPCK_API uint32_t		pck_GetAdditionalInfoMaxSize();
 //
 WINPCK_API PCKRTN		pck_SetAdditionalInfo(LPCSTR  lpszAdditionalInfo);
 
@@ -149,9 +140,9 @@ WINPCK_API PCKRTN		do_DeleteFromPck(LPCWSTR  szSrcPckFile, int count, ...);
 
 //查询及目录浏览
 //return = searched filecount
-WINPCK_API DWORD		pck_searchByName(LPCWSTR  lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK showListCallback);
-WINPCK_API DWORD		pck_listByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
-WINPCK_API DWORD		do_listPathInPck(LPCWSTR  szSrcPckFile, LPCWSTR  lpszListPath, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
+WINPCK_API uint32_t		pck_searchByName(LPCWSTR  lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK showListCallback);
+WINPCK_API uint32_t		pck_listByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
+WINPCK_API PCKRTN		do_listPathInPck(LPCWSTR  szSrcPckFile, LPCWSTR  lpszListPath, void* _in_param, SHOW_LIST_CALLBACK _showListCallback);
 
 //多线程任务
 //yes -1, no - 0
@@ -161,42 +152,62 @@ WINPCK_API BOOL			pck_isLastOptSuccess();
 WINPCK_API BOOL			pck_getLastErrorMsg();
 
 //内存占用
-WINPCK_API DWORD		pck_getMTMemoryUsed();
-WINPCK_API DWORD		pck_getMTMaxMemory();
-WINPCK_API void			pck_setMTMaxMemory(DWORD dwMTMaxMemoryInMB);
-WINPCK_API DWORD		pck_getMaxMemoryAllowed();
+WINPCK_API uint32_t		pck_getMTMemoryUsed();
+WINPCK_API uint32_t		pck_getMTMaxMemory();
+WINPCK_API void			pck_setMTMaxMemory(uint32_t dwMTMaxMemoryInBytes);
+WINPCK_API uint32_t		pck_getMaxMemoryAllowed();
 //线程数
-WINPCK_API DWORD		pck_getMaxThreadUpperLimit();
-WINPCK_API DWORD		pck_getMaxThread();
-WINPCK_API void			pck_setMaxThread(DWORD dwThread);
+WINPCK_API uint32_t		pck_getMaxThreadUpperLimit();
+WINPCK_API uint32_t		pck_getMaxThread();
+WINPCK_API void			pck_setMaxThread(uint32_t dwThread);
 //压缩等级
-WINPCK_API DWORD		pck_getMaxCompressLevel();
-WINPCK_API DWORD		pck_getDefaultCompressLevel();
-WINPCK_API DWORD		pck_getCompressLevel();
-WINPCK_API void			pck_setCompressLevel(DWORD dwCompressLevel);
+WINPCK_API uint32_t		pck_getMaxCompressLevel();
+WINPCK_API uint32_t		pck_getDefaultCompressLevel();
+WINPCK_API uint32_t		pck_getCompressLevel();
+WINPCK_API void			pck_setCompressLevel(uint32_t dwCompressLevel);
 //进度
-WINPCK_API DWORD		pck_getUIProgress();
-WINPCK_API void			pck_setUIProgress(DWORD dwUIProgress);
-WINPCK_API DWORD		pck_getUIProgressUpper();
+WINPCK_API uint32_t		pck_getUIProgress();
+WINPCK_API void			pck_setUIProgress(uint32_t dwUIProgress);
+WINPCK_API uint32_t		pck_getUIProgressUpper();
 
 
 //添加/新增文件返回结果清单
-WINPCK_API DWORD		pck_getUpdateResult_OldFileCount();
-WINPCK_API DWORD		pck_getUpdateResult_PrepareToAddFileCount();
-WINPCK_API DWORD		pck_getUpdateResult_ChangedFileCount();
-WINPCK_API DWORD		pck_getUpdateResult_DuplicateFileCount();
-WINPCK_API DWORD		pck_getUpdateResult_FinalFileCount();
+WINPCK_API uint32_t		pck_getUpdateResult_OldFileCount();
+WINPCK_API uint32_t		pck_getUpdateResult_PrepareToAddFileCount();
+WINPCK_API uint32_t		pck_getUpdateResult_ChangedFileCount();
+WINPCK_API uint32_t		pck_getUpdateResult_DuplicateFileCount();
+WINPCK_API uint32_t		pck_getUpdateResult_FinalFileCount();
 
 //日志
 WINPCK_API void			log_regShowFunc(ShowLogW _ShowLogCallBack);
-WINPCK_API const char	log_getLogLevelPrefix(int _loglevel);
-WINPCK_API void			log_PrintA(const char chLevel, LPCSTR  _fmt, ...);
-WINPCK_API void			log_PrintW(const char chLevel, LPCWSTR  _fmt, ...);
+
+WINPCK_API void			pck_logNA(LPCSTR  _fmt, ...);
+WINPCK_API void			pck_logNW(LPCWSTR  _fmt, ...);
+
+WINPCK_API void			pck_logIA(LPCSTR  _fmt, ...);
+WINPCK_API void			pck_logIW(LPCWSTR  _fmt, ...);
+
+WINPCK_API void			pck_logWA(LPCSTR  _fmt, ...);
+WINPCK_API void			pck_logWW(LPCWSTR  _fmt, ...);
+
+WINPCK_API void			pck_logEA(LPCSTR  _fmt, ...);
+WINPCK_API void			pck_logEW(LPCWSTR  _fmt, ...);
+
+WINPCK_API void			pck_logDA(LPCSTR  _fmt, ...);
+WINPCK_API void			pck_logDW(LPCWSTR  _fmt, ...);
 
 #ifdef UNICODE
-#define log_Print log_PrintW
+#define pck_logN pck_logNW
+#define pck_logI pck_logIW
+#define pck_logW pck_logWW
+#define pck_logE pck_logEW
+#define pck_logD pck_logDW
 #else
-#define log_Print log_PrintA
+#define pck_logN pck_logNA
+#define pck_logI pck_logIA
+#define pck_logW pck_logWA
+#define pck_logE pck_logEA
+#define pck_logD pck_logDA
 #endif
 
 //打开、关闭、复原等事件注册

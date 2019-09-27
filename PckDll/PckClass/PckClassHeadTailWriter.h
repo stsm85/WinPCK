@@ -12,7 +12,7 @@ public:
 
 protected:
 
-	BOOL AfterProcess(CMapViewFileMultiPckWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional = TRUE);
+	BOOL WriteHeadAndTail(CMapViewFileMultiPckWrite *lpWrite, LPPCK_ALL_INFOS PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional = TRUE);
 
 
 };

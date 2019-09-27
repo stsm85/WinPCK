@@ -18,7 +18,7 @@
 #include "winmain.h"
 #include "miscdlg.h"
 #include <shlwapi.h>
-#include "PreviewDlg.h"
+#include "tPreviewDlg.h"
 #include <process.h>
 #include "OpenSaveDlg.h"
 #include "ShowLogOnDlgListView.h"
@@ -185,7 +185,7 @@ BOOL TInstDlg::AddFiles()
 	return FALSE;
 }
 
-int TInstDlg::MyFeedbackCallback(void* pTag, int eventId, WPARAM wParam, LPARAM lParam)
+int TInstDlg::MyFeedbackCallback(void* pTag, int32_t eventId, size_t wParam, ssize_t lParam)
 {
 	TInstDlg* pThis = (TInstDlg*)pTag;
 
@@ -330,16 +330,20 @@ void TInstDlg::InitLogWindow()
 {
 
 	//Log windows
-	logdlg = new TLogDlg(this);
-	logdlg->Create();
-	SetLogListWnd(logdlg->GetListWnd());
-	SetLogMainWnd(hWnd);
+	//logdlg = new TLogDlg(this);
+	m_logdlg.Create();
+	//SetLogListWnd(logdlg->GetListWnd());
+	//SetLogMainWnd(hWnd);
+
+	//绑定函数
+	LogUnits.setInsertLogFunc(std::bind(&TLogDlg::InsertLogToList, &m_logdlg, std::placeholders::_1, std::placeholders::_2));
+	LogUnits.setSetStatusBarInfoFunc(std::bind(&TInstDlg::SetStatusBarInfo, this, std::placeholders::_1));
 
 	//日志函数绑定
 	log_regShowFunc(PreInsertLogToList);
 
 	//启动日志
-	log_PrintA(LOG_IMAGE_INFO, THIS_MAIN_CAPTION " is started.");
+	pck_logIA(THIS_MAIN_CAPTION " is started.");
 
 }
 
@@ -378,8 +382,8 @@ void TInstDlg::RefreshProgress()
 		StrFormatByteSizeW(dwMTMaxMemory, szMTMaxMemory, CHAR_NUM_LEN),
 		(dwMTMemoryUsed >> 10) * 100.0 / (dwMTMaxMemory >> 10));
 
-	SetStatusBarText(3, szString);
-
+	//SetStatusBarText(3, szString);
+	SetStatusBarProgress(szString);
 }
 
 TCHAR*	TInstDlg::BuildSaveDlgFilterString()

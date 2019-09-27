@@ -1,7 +1,7 @@
 #include "PckClassNode.h"
 
 template <typename T>
-_inline void __fastcall strpathcpy(T * dst, T * &src)
+_inline void strpathcpy(T * dst, T * &src)
 {
 	while((*dst++ = *src) && '\\' != *++src && '/' != *src)
 		;
@@ -15,6 +15,7 @@ CPckClassNode::CPckClassNode()
 
 CPckClassNode::~CPckClassNode()
 {
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
 }
 
 #pragma endregion
@@ -79,7 +80,7 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 
 		do {
 			//下一级目录(next '\\')
-
+			//此级目录是新节点或此节点是有效目录节点
 			if((NULL == lpChildNode->lpPckIndexTable) || (!lpChildNode->lpPckIndexTable->isInvalid)) {
 
 				if (0 == wcscmp(lpChildNode->szName, szToFind)) {
@@ -122,8 +123,11 @@ BOOL CPckClassNode::AddFileToNode(LPPCKINDEXTABLE lpPckIndexTable)
 				}
 			}
 			else {
+				throw MyException("理论上不存在无效目录节点!");
 				//出错了
 			}
+
+			//同级目录的下一个节点
 			lpChildNode = lpChildNode->next;
 
 		} while(1);
@@ -375,7 +379,7 @@ BOOL CPckClassNode::FindDuplicateNodeFromFileList(const PCK_PATH_NODE* lpNodeToI
 		const PCK_PATH_NODE* lpDuplicateNode = FindFileNode(lpNodeToInsertPtr, lpfirstFile->szwFilename + lpfirstFile->nFileTitleLen);
 
 		if(INVALID_NODE == (int)lpDuplicateNode) {
-			m_PckLog.PrintLogE(TEXT_ERROR_DUP_FOLDER_FILE);
+			Logger.w(TEXT_ERROR_DUP_FOLDER_FILE);
 			assert(FALSE);
 			return FALSE;
 		}

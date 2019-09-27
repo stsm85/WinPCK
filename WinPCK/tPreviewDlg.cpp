@@ -1,5 +1,5 @@
 
-#include "PreviewDlg.h"
+#include "tPreviewDlg.h"
 #include <tchar.h>
 #include "DdsTgaDecoderDefine.h"
 
@@ -97,8 +97,10 @@ BOOL CPriviewInDlg::Show(const PCK_UNIFIED_FILE_ENTRY* const lpPckFileIndexToSho
 
 
 	if(NULL == m_buffer) {
-		//m_PckLog.PrintLogEL(TEXT_MALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
-		if(0 != dwSize)log_PrintA(LOG_IMAGE_ERROR, TEXT_MALLOC_FAIL);
+
+		if(0 != dwSize)
+			pck_logEA(TEXT_MALLOC_FAIL);
+
 		delete dlg;
 		return FALSE;
 	}

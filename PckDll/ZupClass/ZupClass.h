@@ -25,37 +25,35 @@ public:
 	CZupClass(LPPCK_RUNTIME_PARAMS inout);
 	virtual ~CZupClass();
 
-	BOOL	Init(LPCTSTR	szFile);
+	BOOL	Init(LPCWSTR	szFile);
 
-	CONST	LPPCKINDEXTABLE		GetPckIndexTable();
+	const	LPPCKINDEXTABLE		GetPckIndexTable();
 
 	//重建pck文件
-	virtual BOOL	RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
-	virtual BOOL	StripPck(LPCTSTR lpszStripedPckFile, int flag) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
+	virtual BOOL	RebuildPckFile(LPCWSTR lpszScriptFile, LPCWSTR szRebuildPckFile, BOOL bUseRecompress) { Logger.e(TEXT_NOTSUPPORT);return FALSE; }
+	virtual BOOL	StripPck(LPCWSTR lpszStripedPckFile, int flag) { Logger.e(TEXT_NOTSUPPORT); return FALSE; }
 
 	//新建、更新pck文件
-	virtual BOOL	UpdatePckFile(LPCTSTR szPckFile, const vector<tstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
+	virtual BOOL	UpdatePckFile(LPCWSTR szPckFile, const vector<wstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert) { Logger.e(TEXT_NOTSUPPORT);return FALSE; }
 
 	//重命名文件
-	virtual BOOL	RenameFilename() { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);return FALSE; }
+	virtual BOOL	RenameFilename() { Logger.e(TEXT_NOTSUPPORT);return FALSE; }
 
 	//删除一个节点
-	virtual VOID	DeleteNode(LPPCK_PATH_NODE lpNode) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT);}
-	virtual VOID	DeleteNode(LPPCKINDEXTABLE lpIndex) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); }
+	virtual void	DeleteNode(LPPCK_PATH_NODE lpNode) { Logger.e(TEXT_NOTSUPPORT);}
+	virtual void	DeleteNode(LPPCKINDEXTABLE lpIndex) { Logger.e(TEXT_NOTSUPPORT); }
 
 	//重命名一个节点
-	virtual	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
-	virtual	BOOL	RenameIndex(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
-	virtual	BOOL	RenameIndex(LPPCKINDEXTABLE lpIndex, const wchar_t* lpszReplaceString) { m_PckLog.PrintLogE(TEXT_NOTSUPPORT); return FALSE; }
+	virtual	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString) { Logger.e(TEXT_NOTSUPPORT); return FALSE; }
+	virtual	BOOL	RenameIndex(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString) { Logger.e(TEXT_NOTSUPPORT); return FALSE; }
+	virtual	BOOL	RenameIndex(LPPCKINDEXTABLE lpIndex, const wchar_t* lpszReplaceString) { Logger.e(TEXT_NOTSUPPORT); return FALSE; }
 
 	//预览文件
 	virtual BOOL	GetSingleFileData(const PCKINDEXTABLE* const lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
 
 private:
 
-	//LPPCK_PATH_NODE				m_lpRootNodeZup;
 	LPPCKINDEXTABLE				m_lpZupIndexTable;
-
 	CDictHash					*m_lpDictHash;
 
 private:
@@ -65,7 +63,8 @@ private:
 	void	DecodeFilename(char *_dst, wchar_t *_wdst, char *_src);
 
 	_inline void	DecodeDict(LPZUP_FILENAME_DICT lpZupDict);
-	VOID	AddDict(char *&lpszStringToAdd);
+	//void	AddDict(char *&lpszStringToAdd);
+	void	AddDict(std::string& base_file);
 
 	const PCKINDEXTABLE* GetBaseFileIndex(const PCKINDEXTABLE* lpIndex, const PCKINDEXTABLE* lpZeroBaseIndex);
 

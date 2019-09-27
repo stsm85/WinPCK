@@ -8,33 +8,6 @@
 #include <stdio.h>
 #include "pck_handle.h"
 
-class TLogDlg : public TDlg
-{
-protected:
-
-	//LPPCK_RUNTIME_PARAMS	lpParams;
-	HWND	hWndList;
-	wchar_t	szExePath[MAX_PATH];
-
-	wchar_t*	pszLogFileName();
-	wchar_t*	pszTargetListLog(int iItem);
-
-	int		m_iCurrentHotItem;
-
-
-public:
-	TLogDlg(TWin *_win) : TDlg(IDD_DIALOG_LOG, _win) { }
-	
-	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
-	virtual BOOL	EvCreate(LPARAM lParam);
-	//virtual BOOL	EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar);
-	virtual BOOL	EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight);
-	virtual BOOL	EvClose();
-	virtual BOOL	EvNotify(UINT ctlID, NMHDR *pNmHdr);
-
-	HWND	GetListWnd();
-};
-
 class TInfoDlg : public TDlg
 {
 public:

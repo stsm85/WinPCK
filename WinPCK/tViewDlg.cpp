@@ -12,7 +12,7 @@
 #pragma warning ( disable : 4018 )
 #pragma warning ( disable : 4267 )
 
-#include "PreviewDlg.h"
+#include "tPreviewDlg.h"
 #include <stdio.h>
 #include "Raw2HexString.h"
 #include <tchar.h>

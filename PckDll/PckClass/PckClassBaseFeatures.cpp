@@ -1,6 +1,6 @@
-#include <Windows.h>
+//#include <Windows.h>
 #include "PckClassBaseFeatures.h"
-#include <tchar.h>
+//#include <tchar.h>
 
 CPckClassBaseFeatures::CPckClassBaseFeatures():
 	m_PckAllInfo({ 0 }),
@@ -8,59 +8,17 @@ CPckClassBaseFeatures::CPckClassBaseFeatures():
 	m_NodeMemPool(10 * 1024 * 1024)
 {
 	m_PckAllInfo.cRootNode.entryType = PCK_ENTRY_TYPE_NODE | PCK_ENTRY_TYPE_FOLDER | PCK_ENTRY_TYPE_ROOT;
-#ifdef _DEBUG
-	InitializeSRWLock(&m_LockLogFile);
-#endif
 }
 
 CPckClassBaseFeatures::~CPckClassBaseFeatures()
-{}
-
-
-#if _USELOGFILE
-#pragma warning ( disable : 4996 )
-SRWLOCK	CPckClassBaseFeatures::m_LockLogFile;
-
-int CPckClassBaseFeatures::logOutput(const char *file, const char *format, ...)
 {
-	char szFile[MAX_PATH];
-	const int BUFFER_SIZE = 4097;
-	char strbuf[BUFFER_SIZE];
-	memset(strbuf, 0, sizeof(strbuf));
-
-	const char *lpszTitle = strstr(file, "::");
-	if(0 != lpszTitle) {
-		sprintf_s(szFile, "d:\\pcktest\\%s.log", lpszTitle + 2);
-	} else {
-		sprintf_s(szFile, "d:\\pcktest\\%s.log", file);
-	}
-
-	
-	FILE *pFile = fopen(szFile, "ab");
-	int ret = -1;
-	if(pFile != NULL) {
-
-		va_list ap;
-		va_start(ap, format);
-		int result = ::vsnprintf(strbuf, BUFFER_SIZE - 1, format, ap);
-		va_end(ap);
-
-		AcquireSRWLockExclusive(&m_LockLogFile);
-		fseek(pFile, 0, SEEK_END);
-		int ret = fwrite(strbuf, 1, strlen(strbuf), pFile);
-		fclose(pFile);
-		pFile = NULL;
-		ReleaseSRWLockExclusive(&m_LockLogFile);
-	}
-	
-	return ret;
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
 }
-#endif
 
 void CPckClassBaseFeatures::ResetPckInfos()
 {
 	memset(&m_PckAllInfo, 0, sizeof(PCK_ALL_INFOS));
-	m_PckAllInfo.dwAddressOfFilenameIndex = PCK_DATA_START_AT;
+	m_PckAllInfo.dwAddressOfFileEntry = PCK_DATA_START_AT;
 }
 
 CONST	LPPCKINDEXTABLE CPckClassBaseFeatures::GetPckIndexTable()
@@ -78,24 +36,24 @@ BOOL CPckClassBaseFeatures::isFileLoaded()
 	return m_PckAllInfo.isPckFileLoaded;
 }
 
-QWORD CPckClassBaseFeatures::GetPckSize()
+uint64_t CPckClassBaseFeatures::GetPckSize()
 {
 	return m_PckAllInfo.qwPckSize;
 }
 
-DWORD CPckClassBaseFeatures::GetPckFileCount()
+uint32_t CPckClassBaseFeatures::GetPckFileCount()
 {
 	return m_PckAllInfo.dwFileCount;
 }
 
-QWORD CPckClassBaseFeatures::GetPckDataAreaSize()
+uint64_t CPckClassBaseFeatures::GetPckDataAreaSize()
 {
-	return m_PckAllInfo.dwAddressOfFilenameIndex - PCK_DATA_START_AT;
+	return m_PckAllInfo.dwAddressOfFileEntry - PCK_DATA_START_AT;
 }
 
-QWORD CPckClassBaseFeatures::GetPckRedundancyDataSize()
+uint64_t CPckClassBaseFeatures::GetPckRedundancyDataSize()
 {
-	return m_PckAllInfo.dwAddressOfFilenameIndex - PCK_DATA_START_AT - m_PckAllInfo.cRootNode.child->qdwDirCipherTextSize;
+	return m_PckAllInfo.dwAddressOfFileEntry - PCK_DATA_START_AT - m_PckAllInfo.cRootNode.child->qdwDirCipherTextSize;
 }
 
 
@@ -132,10 +90,13 @@ void CPckClassBaseFeatures::SetThreadFlag(BOOL isThreadWorking)
 	m_lpPckParams->cVarParams.bThreadRunning = isThreadWorking;
 }
 
-//BOOL CPckClassBaseFeatures::CheckIfNeedForcedStopWorking()
-//{
-//	return m_lpPckParams->cVarParams.bForcedStopWorking;
-//}
+BOOL CPckClassBaseFeatures::CheckIfNeedForcedStopWorking()
+{
+	if (m_lpPckParams->cVarParams.bForcedStopWorking)
+		SetErrMsgFlag(PCK_MSG_USERCANCELED);
+
+	return m_lpPckParams->cVarParams.bForcedStopWorking;
+}
 
 void CPckClassBaseFeatures::SetErrMsgFlag(int errMsg)
 {

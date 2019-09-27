@@ -72,8 +72,8 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 
 	SetDlgItemTextW(IDC_EDIT_ATTR_PATH, lpszPath);
 
-	QWORD qdwDirClearTextSize = pck_getFileSizeInEntry(lpPckInfo);
-	QWORD qdwDirCipherTextSize = pck_getCompressedSizeInEntry(lpPckInfo);
+	uint64_t qdwDirClearTextSize = pck_getFileSizeInEntry(lpPckInfo);
+	uint64_t qdwDirCipherTextSize = pck_getCompressedSizeInEntry(lpPckInfo);
 
 	//压缩大小
 	swprintf_s(szPrintf, PRINTF_SIZE, lpszFileFormat,
@@ -146,7 +146,7 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 	SetDlgItemTextW(IDC_EDIT_ATTR_PCKCMPR, szPrintf);
 
 	//冗余数据量
-	QWORD qwPckFileSize = pck_file_redundancy_data_size();
+	uint64_t qwPckFileSize = pck_file_redundancy_data_size();
 	swprintf_s(szPrintf, PRINTF_SIZE, lpszFormat,
 		StrFormatByteSizeW(qwPckFileSize, szPrintfBytesize, PRINTF_BYTESIZE),
 		qwPckFileSize);

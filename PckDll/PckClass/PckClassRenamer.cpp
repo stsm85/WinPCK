@@ -4,14 +4,14 @@
 BOOL CPckClassWriteOperator::RenameFilename()
 {
 	m_zlib.init_compressor(m_lpPckParams->dwCompressLevel);
-	m_PckLog.PrintLogI(TEXT_LOG_RENAME);
+	Logger.i(TEXT_LOG_RENAME);
 
 	//以下是创建一个文件，用来保存压缩后的文件
 	CMapViewFileMultiPckWrite cFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys.dwMaxSinglePckSize);
 
 	if(!cFileWrite.OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
 
-		m_PckLog.PrintLogEL(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		Logger_el(UCSTEXT(TEXT_OPENWRITENAME_FAIL), m_PckAllInfo.szFilename);
 		assert(FALSE);
 		return FALSE;
 	}
@@ -20,19 +20,19 @@ BOOL CPckClassWriteOperator::RenameFilename()
 
 	if(!cFileWrite.Mapping(dwFileSize)) {
 
-		m_PckLog.PrintLogEL(TEXT_CREATEMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		Logger_el(UCSTEXT(TEXT_CREATEMAPNAME_FAIL), m_PckAllInfo.szFilename);
 		assert(FALSE);
 		return FALSE;
 	}
 
 	//写文件索引
-	QWORD dwAddress = m_PckAllInfo.dwAddressOfFilenameIndex;
+	QWORD dwAddress = m_PckAllInfo.dwAddressOfFileEntry;
 
 	WriteAllIndex(&cFileWrite, &m_PckAllInfo, dwAddress);
 	
-	AfterProcess(&cFileWrite, m_PckAllInfo, dwAddress, FALSE);
+	WriteHeadAndTail(&cFileWrite, &m_PckAllInfo, dwAddress, FALSE);
 
-	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
+	Logger.i(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 }

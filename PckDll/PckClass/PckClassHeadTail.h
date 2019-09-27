@@ -3,7 +3,7 @@
 #include "PckClassZlib.h"
 
 class CPckClassHeadTail :
-	protected virtual CPckClassBaseFeatures
+	public virtual CPckClassBaseFeatures
 {
 public:
 	CPckClassHeadTail();

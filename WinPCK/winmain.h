@@ -2,12 +2,13 @@
 #include "globals.h"
 #include "pck_handle.h"
 #include "miscdlg.h"
+#include "tLogDlg.h"
 #include <Shobjidl.h>
 
 class TInstDlg : public TDlg
 {
 protected:
-	TLogDlg			*logdlg;
+	TLogDlg			m_logdlg;
 
 public:
 	TInstDlg(LPTSTR cmdLine);
@@ -46,7 +47,7 @@ private:
 	wchar_t	m_szStrToSearch[256];
 
 	//addmode
-	vector<tstring>	m_lpszFilePath;
+	vector<wstring>	m_lpszFilePath;
 
 	//用于找窗口的变量
 	BOOL	m_isSearchWindow;
@@ -69,8 +70,7 @@ private:
 private:
 
 	//winmain.cpp
-	VOID SetStatusBarText(int iPart, LPCSTR lpszText);
-	VOID SetStatusBarText(int iPart, LPCWSTR lpszText);
+
 	BOOL IsValidWndAndGetPath(wchar_t * szPath, BOOL isGetPath = FALSE);
 	void RefreshProgress();
 	TCHAR* BuildSaveDlgFilterString();
@@ -89,18 +89,21 @@ private:
 
 
 	//mainfunc.cpp
-	BOOL OpenPckFile(TCHAR *lpszFileToOpen = TEXT(""), BOOL isReOpen = FALSE);
+	BOOL OpenPckFile(wchar_t *lpszFileToOpen = L"", BOOL isReOpen = FALSE);
 	VOID SearchPckFiles();
 	VOID ShowPckFiles(const PCK_UNIFIED_FILE_ENTRY* lpNodeToShow);
 
-
+#pragma region guilated.cpp
+private:
 	//guilated.cpp
 	void		initCommctrls();
 	void		initParams();
 	void		initToolbar();
 	void		initArgument();
+#pragma endregion
 
-
+#pragma region helpfunc.cpp
+private:
 	//helpfunc.cpp
 	VOID ViewFileAttribute();
 	VOID ViewFile(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
@@ -118,8 +121,10 @@ private:
 	void UnpackAllFiles();					//解压所有文件
 	void UnpackSelectedFiles();				//解压选中的文件
 
+#pragma endregion
+private:
 	//打开、关闭、复原等事件注册
-	static int MyFeedbackCallback(void* pTag, int eventId, WPARAM wParam, LPARAM lParam);
+	static int MyFeedbackCallback(void* pTag, int32_t eventId, size_t wParam, ssize_t lParam);
 
 
 	//listViewFunc.cpp
@@ -140,8 +145,10 @@ private:
 
 	void ProcessColumnClick(CONST HWND hWndList, CONST NMLISTVIEW * pnmlistview, DWORD& dwSortStatus);
 
-	//menu
 
+#pragma region MenuButtonFuncs.cpp
+	//menu
+private:
 	void MenuStrip();
 	void MenuClose();
 	void MenuInfo();
@@ -158,6 +165,24 @@ private:
 	void MenuView();
 	void MenuAbout();
 	void ListViewEnter();
+#pragma endregion
+
+#pragma region mainControlStatus.cpp
+
+private:
+	void SetStatusBarText(int iPart, LPCSTR lpszText);
+	void SetStatusBarText(int iPart, LPCWSTR lpszText);
+
+public:
+	void SetStatusBarTitle(LPCWSTR lpszText);
+	void SetStatusBarFileSize(uint64_t size);
+	void SetStatusBarFileCount(uint32_t size);
+	void ClearStatusBarProgress();
+	void SetStatusBarProgress(LPCWSTR lpszText);
+	void SetStatusBarInfo(LPCWSTR lpszText);
+
+#pragma endregion
+
 
 };
 

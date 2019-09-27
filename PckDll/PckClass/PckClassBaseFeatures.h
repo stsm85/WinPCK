@@ -1,7 +1,5 @@
 #pragma once
 #include <stdio.h>
-#include <tchar.h>
-#include <Windows.h>
 #include "PckHeader.h"
 #include "PckClassLog.h"
 
@@ -9,7 +7,6 @@
 #include "PckClassZlib.h"
 
 #include <vector>
-using namespace std;
 
 class CPckClassBaseFeatures 
 {
@@ -24,16 +21,16 @@ public:
 	BOOL	isFileLoaded();
 
 	//文件大小
-	QWORD	GetPckSize();
+	uint64_t	GetPckSize();
 
 	//获取文件数
-	DWORD	GetPckFileCount();
+	uint32_t	GetPckFileCount();
 
 	//数据区大小
-	QWORD	GetPckDataAreaSize();
+	uint64_t	GetPckDataAreaSize();
 
 	//数据区冗余数据大小
-	QWORD	GetPckRedundancyDataSize();
+	uint64_t	GetPckRedundancyDataSize();
 
 protected:
 	//重置信息
@@ -49,20 +46,9 @@ protected:
 
 	//多线程处理进程
 	void	SetThreadFlag(BOOL isThreadWorking);
-	//BOOL	CheckIfNeedForcedStopWorking();
+	BOOL	CheckIfNeedForcedStopWorking();
 	void	SetErrMsgFlag(int errMsg);
 
-#if _DEBUG
-#define _USELOGFILE 1
-	static SRWLOCK	m_LockLogFile;
-	static int logOutput(const char *file, const char *format, ...);
-#else
-#define _USELOGFILE 0
-	static void logOutput(...){}
-#endif
-
-	//打印日志
-	CPckClassLog			m_PckLog;
 	PCK_ALL_INFOS			m_PckAllInfo;
 
 	CAllocMemPool			m_NodeMemPool;

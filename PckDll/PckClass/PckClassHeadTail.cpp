@@ -1,5 +1,5 @@
 
-#include <Windows.h>
+//#include <Windows.h>
 #include "PckClassHeadTail.h"
 #include "MapViewFileMultiPck.h"
 
@@ -7,7 +7,9 @@ CPckClassHeadTail::CPckClassHeadTail()
 {}
 
 CPckClassHeadTail::~CPckClassHeadTail()
-{}
+{
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
+}
 
 
 const char * CPckClassHeadTail::GetAdditionalInfo()
@@ -29,7 +31,7 @@ BOOL CPckClassHeadTail::SetAdditionalInfo(const char* lpszAdditionalInfo)
 	}
 
 	if(!cWritefile.OpenPck(m_PckAllInfo.szFilename, OPEN_EXISTING)) {
-		m_PckLog.PrintLogEL(TEXT_OPENWRITENAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		Logger_el(UCSTEXT(TEXT_OPENWRITENAME_FAIL), m_PckAllInfo.szFilename);
 		return FALSE;
 	}
 
@@ -39,7 +41,7 @@ BOOL CPckClassHeadTail::SetAdditionalInfo(const char* lpszAdditionalInfo)
 		m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&m_PckAllInfo), 
 		m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)) {
 
-		m_PckLog.PrintLogEL(TEXT_WRITEFILE_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		Logger_el(TEXT_WRITEFILE_FAIL);
 		return FALSE;
 	}
 

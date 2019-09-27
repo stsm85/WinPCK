@@ -24,7 +24,7 @@ BOOL CPckControlCenter::IsValidPck()
 }
 
 //获取文件数
-DWORD CPckControlCenter::GetPckFileCount()
+uint32_t CPckControlCenter::GetPckFileCount()
 {
 	if (NULL == m_lpClassPck)
 		return FALSE;
@@ -82,7 +82,7 @@ QWORD CPckControlCenter::GetCompressedSizeInEntry(LPCENTRY lpFileEntry)
 		return ((LPPCK_PATH_NODE)lpFileEntry)->lpPckIndexTable->cFileIndex.dwFileCipherTextSize;
 }
 
-DWORD CPckControlCenter::GetFoldersCountInEntry(LPCENTRY lpFileEntry)
+uint32_t CPckControlCenter::GetFoldersCountInEntry(LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return -1;
@@ -93,7 +93,7 @@ DWORD CPckControlCenter::GetFoldersCountInEntry(LPCENTRY lpFileEntry)
 		return 0;
 }
 
-DWORD CPckControlCenter::GetFilesCountInEntry(LPCENTRY lpFileEntry)
+uint32_t CPckControlCenter::GetFilesCountInEntry(LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return -1;
@@ -126,7 +126,7 @@ size_t CPckControlCenter::GetFilelenLeftBytesOfEntry(LPCENTRY lpFileEntry)
 		return ((LPPCK_PATH_NODE)lpFileEntry)->nMaxNameSizeAnsi;
 }
 
-QWORD CPckControlCenter::GetFileOffset(LPCENTRY lpFileEntry)
+uint64_t CPckControlCenter::GetFileOffset(LPCENTRY lpFileEntry)
 {
 	if (NULL == lpFileEntry)
 		return -1;
@@ -147,7 +147,7 @@ const char*	CPckControlCenter::GetAdditionalInfo()
 	return m_lpClassPck->GetAdditionalInfo();
 }
 
-DWORD CPckControlCenter::GetAdditionalInfoMaxSize()
+uint32_t CPckControlCenter::GetAdditionalInfoMaxSize()
 {
 	return PCK_ADDITIONAL_INFO_SIZE;
 }
@@ -257,7 +257,7 @@ LPCENTRY CPckControlCenter::GetFileEntryByPath(LPCWSTR _in_szCurrentNodePathStri
 
 		while (NULL != lpCurrentNodeToFind) {
 
-			if (0 == _tcscmp(lpCurrentNodeToFind->szName, *lpCurrentDir)) {
+			if (0 == wcscmp(lpCurrentNodeToFind->szName, *lpCurrentDir)) {
 
 				lpCurrentNode = lpCurrentNodeToFind;
 				isDirFound = TRUE;
@@ -268,7 +268,7 @@ LPCENTRY CPckControlCenter::GetFileEntryByPath(LPCWSTR _in_szCurrentNodePathStri
 		}
 
 		if (!isDirFound) {
-#ifdef _DEBUG
+#if PCK_DEBUG_OUTPUT
 			printf("node not found\n");
 #endif
 			return NULL;

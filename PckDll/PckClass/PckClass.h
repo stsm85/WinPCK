@@ -11,6 +11,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include <assert.h>
+#include "pck_default_vars.h"
 
 #include "PckClassVersionDetect.h"
 #include "PckClassWriteOperator.h"
@@ -27,7 +28,7 @@ public:
 	CPckClass(LPPCK_RUNTIME_PARAMS inout);
 	virtual ~CPckClass();
 
-	virtual BOOL	Init(LPCTSTR szFile);
+	virtual BOOL	Init(const wchar_t * szFile);
 
 #pragma region PckClassExtract.cpp
 
@@ -46,13 +47,13 @@ private:
 	virtual BOOL	GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* const lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
 	//PckClassExtract.cpp
 	BOOL	StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpMapAddress);
-	BOOL	DecompressFile(LPCWSTR lpszFilename, const PCKINDEXTABLE* lpPckFileIndexTable, LPVOID lpvoidFileRead);
+	BOOL	DecompressFile(const wchar_t * lpszFilename, const PCKINDEXTABLE* lpPckFileIndexTable, LPVOID lpvoidFileRead);
 #pragma endregion
 
 #pragma region PckClassMount.cpp
 protected:
 	//PckClass.cpp
-	BOOL	MountPckFile(LPCTSTR	szFile);
+	BOOL	MountPckFile(const wchar_t * szFile);
 private:
 	void	BuildDirTree();
 #pragma endregion

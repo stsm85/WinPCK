@@ -10,11 +10,10 @@
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
 
-#include <exception>
+#include "gccException.h"
 #include <windows.h>
 #include <assert.h>
 #include <vector>
-using namespace std;
 
 #define TEST_T 1
 /*
@@ -105,14 +104,14 @@ protected:
 	template <typename T>
 	void GetDiskNameFromFilename(T* lpszFilename);
 
-	LPBYTE	ViewReal(QWORD qwAddress, DWORD dwSize, DWORD dwDesiredAccess);
+	uint8_t*	ViewReal(QWORD qwAddress, DWORD dwSize, DWORD dwDesiredAccess);
 
 protected:
 
 	HANDLE	hFile;
 	HANDLE	hFileMapping;
 	//LPVOID	lpMapAddress;
-	vector<LPVOID> vMapAddress;
+	std::vector<void*> vMapAddress;
 
 
 	//文件对应的磁盘

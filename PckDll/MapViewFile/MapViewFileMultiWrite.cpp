@@ -299,7 +299,7 @@ BOOL CMapViewFileMultiWrite::Write2(QWORD dwAddress, const void* buffer, DWORD d
 	}
 
 	nBytesWriten += dwBytesToWrite;
-	if ((32 * 1024 * 1024) < nBytesWriten)
+	if (FLUSH_SIZE_THRESHOLD < nBytesWriten)
 	{
 		for (int i = 0; i < m_file_cell.size(); i++) {
 			m_file_cell[i].lpMapView->FlushFileBuffers();

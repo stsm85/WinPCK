@@ -13,6 +13,7 @@
 #include "..\base64\base64.h"
 #include <intrin.h>
 #include "CharsCodeConv.h"
+#include "TextLineSpliter.h"
 
 _inline void CZupClass::DecodeDict(LPZUP_FILENAME_DICT lpZupDict)
 {
@@ -28,63 +29,30 @@ _inline void CZupClass::DecodeDict(LPZUP_FILENAME_DICT lpZupDict)
 
 }
 
-VOID CZupClass::AddDict(char *&lpszStringToAdd)
+void CZupClass::AddDict(std::string& base_file)
 {
+	char ch[2] = { 0 };
+	*ch = base_file.at(0);
 
-	LPZUP_FILENAME_DICT lpZupDict;
+	if ('/' == *ch || '\\' == *ch)
+	{
+		std::vector<std::string> line_content;
+		CTextUnitsA::Split(base_file, line_content, ch, LINE_EMPTY_DELETE);
 
-	char			*lpszFilename = lpszStringToAdd;
-	char			*lpszToFind;
-
-
-	if('\\' == *lpszFilename || '/' == *lpszFilename)lpszFilename++;
-
-	lpszToFind = lpszFilename;
-
-	BOOL bContinueWhile = TRUE;
-
-	do {
-
-		switch(*lpszFilename) {
-		case '\\':
-
-			*lpszFilename++ = 0;
-			if(NULL != (lpZupDict = m_lpDictHash->add(lpszToFind))) {
+		for (int i = 0; i < line_content.size(); i++) {
+			LPZUP_FILENAME_DICT lpZupDict;
+			if (NULL != (lpZupDict = m_lpDictHash->add(line_content[i].c_str()))) {
 				DecodeDict(lpZupDict);
 			}
-			lpszToFind = lpszFilename;
-
-			break;
-
-		case '/':
-
-			*lpszFilename++ = 0;
-			if(NULL != (lpZupDict = m_lpDictHash->add(lpszToFind))) {
-				DecodeDict(lpZupDict);
-			}
-			lpszToFind = lpszFilename;
-
-			break;
-
-		case 0x0a:
-
-			*lpszFilename++ = 0;
-			if(NULL != (lpZupDict = m_lpDictHash->add(lpszToFind))) {
-				DecodeDict(lpZupDict);
-			}
-			lpszToFind = lpszFilename;
-
-			bContinueWhile = FALSE;
-			break;
-
-		default:
-			lpszFilename++;
-
-			break;
 		}
-	} while(bContinueWhile);
+	}
+	else {
 
-	lpszStringToAdd = lpszFilename;
+		LPZUP_FILENAME_DICT lpZupDict;
+		if (NULL != (lpZupDict = m_lpDictHash->add(base_file.c_str()))) {
+			DecodeDict(lpZupDict);
+		}
+	}
 }
 
 void CZupClass::DecodeFilename(char *_dst, wchar_t *_wdst, char *_src)
@@ -95,6 +63,7 @@ void CZupClass::DecodeFilename(char *_dst, wchar_t *_wdst, char *_src)
 	memset(_dst + 8, 0, MAX_PATH_PCK - 8);
 	//复制"element\"
 	//memcpy(_dst, _src, 8);
+	//_dst -> _wdst
 
 	__m128i xmm0 = _mm_setzero_si128();
 	__m128i xmm1 = _mm_loadl_epi64((__m128i*)_src);
@@ -139,15 +108,15 @@ BOOL CZupClass::BuildZupBaseDict()
 {
 	LPPCKINDEXTABLE	lpPckIndexTable = m_PckAllInfo.lpPckIndexTable;
 
-	for(unsigned long i = 0;i < m_PckAllInfo.dwFileCount;i++) {
+	for(uint32_t i = 0;i < m_PckAllInfo.dwFileCount;i++) {
 		//以element\开头的都需要解码
 		//其他直接复制
 		//"element\" = 0x6d656c65, 0x5c746e656d656c65
 		//0x2D76 = "v-"
-		if(0x2D76 == *(WORD*)lpPckIndexTable->cFileIndex.szFilename) {
+		if(0x2D76 == *(uint16_t*)lpPckIndexTable->cFileIndex.szFilename) {
 			//wID = atoul(lpNode->szName + 2, NULL, 10);
 			//读取inc文件
-			char	*_incbuf = (char*)malloc(lpPckIndexTable->cFileIndex.dwFileClearTextSize);
+			char	*_incbuf = (char*)malloc(lpPckIndexTable->cFileIndex.dwFileClearTextSize+1);
 
 			if(NULL == _incbuf) {
 				//lpNode = lpNode->next;
@@ -155,102 +124,22 @@ BOOL CZupClass::BuildZupBaseDict()
 			}
 
 			if(GetSingleFileData(lpPckIndexTable, _incbuf)) {
-				char	*__lpincbuf = _incbuf;
-				char	*__lpincbufnextline = _incbuf;
-				char	*__lpincbufEnd = _incbuf + lpPckIndexTable->cFileIndex.dwFileClearTextSize;
-				//char	*lpszTemp;
 
-				//分层
-				//1、'#'://版本
-				//2、!+文件
-				//3、-签名
-				//1、版本
-				while(0x0a != *__lpincbufnextline && __lpincbufnextline < __lpincbufEnd)
-					__lpincbufnextline++;
+				_incbuf[lpPckIndexTable->cFileIndex.dwFileClearTextSize] = 0;
+				std::vector<std::string> lines;
 
-				*__lpincbufnextline++ = 0;
+				CTextUnitsA::SplitLine(_incbuf, lines, LINE_TRIM_LEFT | LINE_TRIM_RIGHT | LINE_EMPTY_DELETE);
+				
+				for (int j = 0; j < lines.size(); j++) {
 
-				//在此处加入处理版本更新的信息
-
-
-				//2、!+文件
-				__lpincbuf = __lpincbufnextline;
-				while('!' == *__lpincbuf || '+' == *__lpincbuf) {
-					//md5值 
-					//34个字节的md5信息
-					//memcpy(szMD5, __lpincbuf, 33);
-					//szMD5[33] = 0;
-					__lpincbuf += 34;
-
-					//文件名，base64
-					AddDict(__lpincbuf);
+					std::string& oneline = lines[j];
+					if (oneline.at(0) == '!' || oneline.at(0) == '+') {
+						std::vector<std::string> line_content;
+						CTextUnitsA::Split(oneline, line_content, " ");
+						AddDict(line_content[1]);
+					}
 				}
-
-				//3、//签名
-
-
-				//while(__lpincbuf <= __lpincbufEnd)
-				//{
-
-				//	while(0x0d != *__lpincbuf && 0x0a != *__lpincbuf && __lpincbuf <= __lpincbufEnd)
-				//		__lpincbuf++;
-
-
-				//	while((0x0d == *__lpincbuf || 0x0a == *__lpincbuf) && __lpincbuf <= __lpincbufEnd)
-				//		__lpincbuf++;
-
-
-				//	switch(*__lpincbuf)
-				//	{
-				//	case '#'://版本
-				//		//while(32 == (*__lpincbuf++))
-				//		//	;
-
-				//		//wMinVersion = strtoul(__lpincbuf, &lpszTemp, 10);
-				//		//__lpincbuf = lpszTemp;
-
-				//		//while(32 == (*__lpincbuf++))
-				//		//	;
-
-				//		//wTargetVersion = strtoul(__lpincbuf, &lpszTemp, 10);
-				//		//__lpincbuf = lpszTemp;
-
-
-				//		//while(32 == (*__lpincbuf++))
-				//		//	;
-
-				//		//dwTotalSize = strtoul(__lpincbuf, &lpszTemp, 10);
-				//		//__lpincbuf = lpszTemp;
-
-				//		break;
-
-				//	case '!':
-				//	case '+':
-				//		//34个字节的md5信息
-				//		//memcpy(szMD5, __lpincbuf, 33);
-				//		//szMD5[33] = 0;
-				//		__lpincbuf += 34;
-
-				//		//文件名，base64
-				//		AddDict(__lpincbuf);
-
-				//		break;
-
-				//	case '-':
-				//		//签名
-				//		
-
-				//		break;
-
-				//	default:
-
-				//		break;
-				//	}
-
-				//}
-
 			}
-
 			free(_incbuf);
 		}
 		lpPckIndexTable++;

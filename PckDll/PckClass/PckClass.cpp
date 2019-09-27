@@ -23,12 +23,14 @@ CPckClass::CPckClass(LPPCK_RUNTIME_PARAMS inout)
 }
 
 CPckClass::~CPckClass()
-{}
-
-BOOL CPckClass::Init(LPCTSTR	szFile)
 {
-	_tcscpy(m_PckAllInfo.szFilename, szFile);
-	GetFileTitle(m_PckAllInfo.szFilename, m_PckAllInfo.szFileTitle, MAX_PATH);
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
+}
+
+BOOL CPckClass::Init(LPCWSTR	szFile)
+{
+	wcscpy_s(m_PckAllInfo.szFilename, szFile);
+	GetFileTitleW(m_PckAllInfo.szFilename, m_PckAllInfo.szFileTitle, MAX_PATH);
 
 	if(!MountPckFile(m_PckAllInfo.szFilename)) {
 

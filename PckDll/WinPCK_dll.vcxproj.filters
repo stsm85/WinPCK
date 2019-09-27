@@ -111,21 +111,6 @@
     <ClCompile Include="PckClass\PckClassBaseFeatures.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
-    <ClCompile Include="PckClass\PckClassThread.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassThreadData.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassThreadMemory.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassThreadQueue.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="PckClass\PckClassThreadVarsInit.cpp">
-      <Filter>源文件\PckClass</Filter>
-    </ClCompile>
     <ClCompile Include="PckClass\PckClassAppendFiles.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
@@ -201,6 +186,18 @@
     <ClCompile Include="PckClass\PckModelStrip.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
+    <ClCompile Include="PckClass\PckThreadRunner.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckThreadRunnerMemory.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckThreadRunnerQueue.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PckClass\PckThreadRunnerData.cpp">
+      <Filter>源文件\PckClass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PckControlCenter\PckControlCenter.h">
@@ -245,16 +242,10 @@
     <ClInclude Include="PckClass\PckClassBaseFeatures.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
-    <ClInclude Include="PckClass\PckClassVersionDetectFunctionDefinitions.h">
-      <Filter>头文件\PckClass</Filter>
-    </ClInclude>
     <ClInclude Include="PckClass\PckClassHeadTailWriter.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
     <ClInclude Include="PckClass\PckClassIndexWriter.h">
-      <Filter>头文件\PckClass</Filter>
-    </ClInclude>
-    <ClInclude Include="PckClass\PckClassThread.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
     <ClInclude Include="PckClass\PckClassWriteOperator.h">
@@ -309,6 +300,12 @@
       <Filter>头文件\MiscFuncs</Filter>
     </ClInclude>
     <ClInclude Include="PckClass\PckModelStrip.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pck_default_vars.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PckClass\PckThreadRunner.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
   </ItemGroup>

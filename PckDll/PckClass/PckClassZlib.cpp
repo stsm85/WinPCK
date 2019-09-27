@@ -1,10 +1,11 @@
 
 #include "zlib.h"
 #include "libdeflate.h"
-#include <Windows.h>
-#include "PckClassZlib.h"
+//#include <Windows.h>
 #include <assert.h>
 #include "PckClassLog.h"
+#include "PckClassZlib.h"
+
 
 #pragma warning ( disable : 4267 )
 
@@ -14,7 +15,9 @@ CPckClassZlib::CPckClassZlib()
 }
 
 CPckClassZlib::~CPckClassZlib()
-{}
+{
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
+}
 
 /*
 在压缩文件时进行调用，目前调用的函数为UpdatePckFile和ReCompress，压缩文件索引时不更新
@@ -49,26 +52,44 @@ int CPckClassZlib::check_zlib_header(void *data)
 	if (Z_DEFLATED != cDeflateFlag)
 		return 0;
 
-	unsigned short header = _byteswap_ushort(*(unsigned short*)data);
+	uint16_t header = _byteswap_ushort(*(uint16_t*)data);
 	return (0 == (header % 31));
 }
 
-unsigned long CPckClassZlib::compressBound(unsigned long sourceLen)
+uint32_t CPckClassZlib::compressBound(uint32_t sourceLen)
 {
-	return m_PckCompressFunc.compressBound(sourceLen);
+	try {
+		return m_PckCompressFunc.compressBound(sourceLen);
+	}
+	catch (std::bad_function_call ex) {
+		Logger.e(ex.what());
+	}
+	catch (...) {
+		Logger_el("Unknown Error.");
+	}
+	return sourceLen + 12;
 }
 
-int	CPckClassZlib::compress(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen)
+int	CPckClassZlib::compress(void *dest, ulong_t *destLen, const void *source, uint32_t sourceLen)
 {
-	return m_PckCompressFunc.compress(dest, destLen, source, sourceLen, m_compress_level);
+	try {
+		return m_PckCompressFunc.compress(dest, destLen, source, sourceLen, m_compress_level);
+	}
+	catch (std::bad_function_call ex) {
+		Logger.e(ex.what());
+	}
+	catch (...) {
+		Logger_el("Unknown Error.");
+	}
+	return Z_ERRNO;
 }
 
-unsigned long CPckClassZlib::compressBound_zlib(unsigned long sourceLen)
+uint32_t CPckClassZlib::compressBound_zlib(uint32_t sourceLen)
 {
 	return ::compressBound(sourceLen);
 }
 
-int	CPckClassZlib::compress_zlib(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen, int level)
+int	CPckClassZlib::compress_zlib(void *dest, ulong_t *destLen, const void *source, uint32_t sourceLen, int level)
 {
 	assert(0 != *destLen);
 	int rtnc = compress2((Bytef*)dest, destLen, (Bytef*)source, sourceLen, level);
@@ -77,12 +98,12 @@ int	CPckClassZlib::compress_zlib(void *dest, unsigned long *destLen, const void 
 	return (rtnc == Z_OK);
 }
 
-unsigned long CPckClassZlib::compressBound_libdeflate(unsigned long sourceLen)
+uint32_t CPckClassZlib::compressBound_libdeflate(uint32_t sourceLen)
 {
 	return libdeflate_zlib_compress_bound(NULL, sourceLen);
 }
 
-int	CPckClassZlib::compress_libdeflate(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen, int level)
+int	CPckClassZlib::compress_libdeflate(void *dest, ulong_t *destLen, const void *source, uint32_t sourceLen, int level)
 {
 	struct libdeflate_compressor* compressor;
 	compressor = libdeflate_alloc_compressor(level);
@@ -100,7 +121,7 @@ int	CPckClassZlib::compress_libdeflate(void *dest, unsigned long *destLen, const
 	return 1;
 }
 
-int CPckClassZlib::decompress(void *dest, unsigned long  *destLen, const void *source, unsigned long sourceLen)
+int CPckClassZlib::decompress(void *dest, ulong_t  *destLen, const void *source, uint32_t sourceLen)
 {
 	assert(0 != *destLen);
 	int rtnd = uncompress((Bytef*)dest, destLen, (Bytef*)source, sourceLen);
@@ -111,7 +132,7 @@ int CPckClassZlib::decompress(void *dest, unsigned long  *destLen, const void *s
 }
 
 //如果只需要解压一部分数据
-int CPckClassZlib::decompress_part(void *dest, unsigned long  *destLen, const void *source, unsigned long sourceLen, unsigned long  fullDestLen)
+int CPckClassZlib::decompress_part(void *dest, ulong_t  *destLen, const void *source, uint32_t sourceLen, uint32_t  fullDestLen)
 {
 	/*
 	#define Z_OK            0
@@ -124,8 +145,6 @@ int CPckClassZlib::decompress_part(void *dest, unsigned long  *destLen, const vo
 	#define Z_BUF_ERROR    (-5)
 	#define Z_VERSION_ERROR (-6)
 	*/
-
-	CPckClassLog m_PckLog;
 
 	unsigned long partlen = *destLen;
 	assert(0 != *destLen);
@@ -154,7 +173,7 @@ int CPckClassZlib::decompress_part(void *dest, unsigned long  *destLen, const vo
 			lpReason = "其他错误";
 		}
 		assert(FALSE);
-		m_PckLog.PrintLogEL(TEXT_UNCOMPRESSDATA_FAIL_REASON, lpReason, __FILE__, __FUNCTION__, __LINE__);
+		Logger_el(TEXT_UNCOMPRESSDATA_FAIL_REASON, lpReason);
 		return rtn;
 	}
 	else {
@@ -163,7 +182,7 @@ int CPckClassZlib::decompress_part(void *dest, unsigned long  *destLen, const vo
 }
 
 //获取数据压缩后的大小，如果源大小小于一定值就不压缩
-unsigned long CPckClassZlib::GetCompressBoundSizeByFileSize(unsigned long &dwFileClearTextSize, unsigned long &dwFileCipherTextSize, unsigned long dwFileSize)
+unsigned long CPckClassZlib::GetCompressBoundSizeByFileSize(ulong_t &dwFileClearTextSize, ulong_t &dwFileCipherTextSize, uint32_t dwFileSize)
 {
 	if (PCK_BEGINCOMPRESS_SIZE < dwFileSize) {
 		dwFileClearTextSize = dwFileSize;

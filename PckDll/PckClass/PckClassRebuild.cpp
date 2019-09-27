@@ -2,6 +2,8 @@
 #include "PckClassFileDisk.h"
 #include "PckClassRebuildFilter.h"
 
+#include <functional>
+
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4267 )
 #pragma warning ( disable : 4311 )
@@ -11,7 +13,9 @@ CPckClassWriteOperator::CPckClassWriteOperator()
 {}
 
 CPckClassWriteOperator::~CPckClassWriteOperator()
-{}
+{
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
+}
 
 /********************************
 *
@@ -19,7 +23,7 @@ CPckClassWriteOperator::~CPckClassWriteOperator()
 *
 ********************/
 
-BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRebuildPckFile, BOOL bUseRecompress)
+BOOL CPckClassWriteOperator::RebuildPckFile(const wchar_t * lpszScriptFile, const wchar_t * szRebuildPckFile, BOOL bUseRecompress)
 {
 	CPckClassRebuildFilter cScriptFilter;
 
@@ -29,7 +33,7 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR lpszScriptFile, LPCTSTR szRe
 	return bUseRecompress ? RecompressPckFile(szRebuildPckFile) : RebuildPckFile(szRebuildPckFile);
 }
 
-BOOL CPckClassWriteOperator::StripPck(LPCTSTR lpszStripedPckFile, int flag)
+BOOL CPckClassWriteOperator::StripPck(const wchar_t * lpszStripedPckFile, int flag)
 {
 	//首先过滤*\textures\*.dds
 	CPckClassRebuildFilter cScriptFilter;
@@ -46,10 +50,10 @@ BOOL CPckClassWriteOperator::StripPck(LPCTSTR lpszStripedPckFile, int flag)
 	return RecompressPckFile(lpszStripedPckFile, flag);
 }
 
-BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
+BOOL CPckClassWriteOperator::RebuildPckFile(const wchar_t * szRebuildPckFile)
 {
 
-	m_PckLog.PrintLogI(TEXT_LOG_REBUILD);
+	Logger.i(TEXT_LOG_REBUILD);
 
 	
 	QWORD	dwAddress = PCK_DATA_START_AT;
@@ -61,7 +65,7 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
 	PCK_ALL_INFOS		pckAllInfo;
 	//构造头和尾时需要的参数
 	memcpy(&pckAllInfo, &m_PckAllInfo, sizeof(PCK_ALL_INFOS));
-	_tcscpy_s(pckAllInfo.szNewFilename, szRebuildPckFile);
+	wcscpy_s(pckAllInfo.szNewFilename, szRebuildPckFile);
 
 	//线程标记
 	SetThreadFlag(TRUE);
@@ -91,7 +95,7 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
 	for(DWORD i = 0; i < dwFileCount; ++i) {
 
 		if(CheckIfNeedForcedStopWorking()) {
-			m_PckLog.PrintLogW(TEXT_USERCANCLE);
+			Logger.w(TEXT_USERCANCLE);
 			break;
 		}
 
@@ -108,7 +112,7 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
 		if (0 != dwNumberOfBytesToMap) {
 
 			if (NULL == (lpBufferToRead = cFileRead.View(dwSrcAddress, dwNumberOfBytesToMap))) {
-				m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+				Logger_el(TEXT_VIEWMAP_FAIL);
 				return FALSE;
 			}
 
@@ -137,35 +141,34 @@ BOOL CPckClassWriteOperator::RebuildPckFile(LPCTSTR szRebuildPckFile)
 
 	//关闭读文件
 	//写文件索引
-	pckAllInfo.dwAddressOfFilenameIndex = dwAddress;
+	pckAllInfo.dwAddressOfFileEntry = dwAddress;
 
 	WriteAllIndex(&cFileWrite, &pckAllInfo, dwAddress);
 
-	AfterProcess(&cFileWrite, pckAllInfo, dwAddress);
+	WriteHeadAndTail(&cFileWrite, &pckAllInfo, dwAddress);
 
 	//线程标记
 	SetThreadFlag(FALSE);
 
-	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
+	Logger.i(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 }
 
 
 //重压缩文件
-BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile, int iStripMode)
+BOOL CPckClassWriteOperator::RecompressPckFile(const wchar_t * szRecompressPckFile, int iStripMode)
 {
 
-	m_PckLog.PrintLogI(TEXT_LOG_RECOMPRESS);
+	Logger.i(TEXT_LOG_RECOMPRESS);
 
-	QWORD	dwAddress = PCK_DATA_START_AT;
-	DWORD	dwFileCount = m_PckAllInfo.dwFileCount;
+	//QWORD	dwAddress = PCK_DATA_START_AT;
+	//DWORD	dwFileCount = m_PckAllInfo.dwFileCount;
 	DWORD	dwNoDupFileCount = ReCountFiles();
 	QWORD	dwTotalFileSizeAfterRebuild = GetPckFilesizeRebuild(szRecompressPckFile, m_PckAllInfo.qwPckSize);
 
 	THREAD_PARAMS		cThreadParams;
 	CMapViewFileMultiPckRead	cFileRead;
-	int					threadnum = m_lpPckParams->dwMTThread;
 
 #pragma region 重置压缩参数
 	m_zlib.init_compressor(m_lpPckParams->dwCompressLevel);
@@ -174,7 +177,7 @@ BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile, int 
 	//构造头和尾时需要的参数
 	PCK_ALL_INFOS		pckAllInfo;
 	memcpy(&pckAllInfo, &m_PckAllInfo, sizeof(PCK_ALL_INFOS));
-	_tcscpy_s(pckAllInfo.szNewFilename, szRecompressPckFile);
+	wcscpy_s(pckAllInfo.szNewFilename, szRecompressPckFile);
 
 	//设置界面进度条总值
 	SetParams_ProgressUpper(dwNoDupFileCount);
@@ -192,42 +195,28 @@ BOOL CPckClassWriteOperator::RecompressPckFile(LPCTSTR szRecompressPckFile, int 
 
 #pragma endregion
 
-	cThreadParams.pThis = (CPckClassThreadWorker*)this;
 	cThreadParams.cDataFetchMethod.lpFileReadPCK = &cFileRead;
 	cThreadParams.cDataFetchMethod.iStripFlag = iStripMode;
 	cThreadParams.cDataFetchMethod.dwProcessIndex = 0;
 	cThreadParams.cDataFetchMethod.dwTotalIndexCount = pckAllInfo.dwFileCount;
 	cThreadParams.cDataFetchMethod.lpPckIndexTablePtrSrc = pckAllInfo.lpPckIndexTable;
-	cThreadParams.GetUncompressedData = &GetUncompressedDataFromPCK;
 
-	if(!initMultiThreadVars(&cFileWriter)) {
-		assert(FALSE);
-		return FALSE;
-	}
-
-	if(!initCompressedDataQueue(dwFileCount, PCK_DATA_START_AT)) {
-		assert(FALSE);
-		return FALSE;
-	}
-
-	mt_dwFileCountOfWriteTarget = dwNoDupFileCount;
-
-	ExecuteMainThreadGroup(pckAllInfo, threadnum, &cThreadParams);
+	cThreadParams.lpPckClassThreadWorker = this;
+	cThreadParams.lpFileWrite = &cFileWriter;
+	cThreadParams.pck_data_src = DATA_FROM_PCK;
+	cThreadParams.dwAddressStartAt = PCK_DATA_START_AT;
+	cThreadParams.lpPckAllInfo = &pckAllInfo;
+	cThreadParams.pckParams = m_lpPckParams;
+	cThreadParams.dwFileCountOfWriteTarget = dwNoDupFileCount;
 
 	//写文件索引
-
 	pckAllInfo.lpPckIndexTable = NULL;
 	pckAllInfo.dwFileCountOld = pckAllInfo.dwFileCount = 0;
 
-	//取消后，文件数量
-	dwAddress = pckAllInfo.dwAddressOfFilenameIndex;
+	CPckThreadRunner m_threadRunner(&cThreadParams);
+	m_threadRunner.start();
 
-	WriteAllIndex(&cFileWriter, &pckAllInfo, dwAddress);
-	AfterProcess(&cFileWriter, pckAllInfo, dwAddress);
-
-	uninitCompressedDataQueue();
-
-	m_PckLog.PrintLogN(TEXT_LOG_WORKING_DONE);
+	Logger.n(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 }

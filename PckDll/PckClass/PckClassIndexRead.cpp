@@ -7,7 +7,7 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 	CMapViewFileMultiPckRead cRead;
 
 	if(!cRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
-		m_PckLog.PrintLogEL(TEXT_OPENNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+		Logger_el(UCSTEXT(TEXT_OPENNAME_FAIL), m_PckAllInfo.szFilename);
 		return FALSE;
 	}
 
@@ -17,8 +17,8 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 
 	//开始读文件
 	BYTE	*lpFileBuffer;
-	if(NULL == (lpFileBuffer = cRead.View(m_PckAllInfo.dwAddressOfFilenameIndex, cRead.GetFileSize() - m_PckAllInfo.dwAddressOfFilenameIndex))) {
-		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+	if(NULL == (lpFileBuffer = cRead.View(m_PckAllInfo.dwAddressOfFileEntry, cRead.GetFileSize() - m_PckAllInfo.dwAddressOfFileEntry))) {
+		Logger_el(TEXT_VIEWMAP_FAIL);
 		return FALSE;
 	}
 
@@ -34,7 +34,7 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 
 	//pck是压缩时，文件名的压缩长度不会超过0x100，所以当
 	//开始一个字节，如果0x75，就没有压缩，如果是0x74就是压缩的	0x75->FILEINDEX_LEVEL0
-	//cRead.SetFilePointer(m_PckAllInfo.dwAddressOfFilenameIndex, FILE_BEGIN);
+	//cRead.SetFilePointer(m_PckAllInfo.dwAddressOfFileEntry, FILE_BEGIN);
 
 	byteLevelKey = (*(DWORD*)lpFileBuffer) ^ IndexCompressedFilenameDataLengthCryptKey[0];
 	isLevel0 = (m_PckAllInfo.lpDetectedPckVerFunc->dwFileIndexSize == byteLevelKey)/* ? TRUE : FALSE*/;
@@ -49,7 +49,7 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 
 			if(dwFileIndexTableCryptedDataLength[0] != dwFileIndexTableCryptedDataLength[1]) {
 
-				m_PckLog.PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
+				Logger_el(TEXT_READ_INDEX_FAIL);
 				return FALSE;
 			}
 
@@ -70,7 +70,7 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 
 			if(dwFileIndexTableCryptedDataLength[0] != dwFileIndexTableCryptedDataLength[1]) {
 
-				m_PckLog.PrintLogEL(TEXT_READ_INDEX_FAIL, __FILE__, __FUNCTION__, __LINE__);
+				Logger_el(TEXT_READ_INDEX_FAIL);
 				return FALSE;
 			}
 			
@@ -80,7 +80,7 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 			m_zlib.decompress(pckFileIndexBuf, &dwFileBytesRead,
 				lpFileBuffer, dwFileIndexTableCryptedDataLength[0]);
 
-#ifdef _DEBUG
+#if PCK_V2031_ENABLE
 			/*
 			新诛仙索引大小改成了288，新加了4字节内容
 			PCKFILEINDEX_V2030->

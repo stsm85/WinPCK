@@ -25,7 +25,7 @@ void CPckControlCenter::regMsgFeedback(void* _pTag, FeedbackCallback _FeedbackCa
 		pFeedbackCallBack = _FeedbackCallBack;
 }
 
-int CPckControlCenter::DefaultFeedbackCallback(void* pTag, int eventId, WPARAM wParam, LPARAM lParam)
+int CPckControlCenter::DefaultFeedbackCallback(void* pTag, int32_t eventId, size_t wParam, ssize_t lParam)
 {
 	wchar_t szTitle[MAX_PATH] = { 0 };
 
@@ -56,7 +56,7 @@ int CPckControlCenter::DefaultFeedbackCallback(void* pTag, int eventId, WPARAM w
 
 #pragma region 查询及目录浏览
 
-void CPckControlCenter::DefaultShowFilelistCallback(void* _in_param, int sn, LPCWSTR lpszFilename, int entry_type, unsigned __int64 qwFileSize, unsigned __int64 qwFileSizeCompressed, void* fileEntry)
+void CPckControlCenter::DefaultShowFilelistCallback(void* _in_param, int sn, LPCWSTR lpszFilename, int entry_type, uint64_t qwFileSize, uint64_t qwFileSizeCompressed, void* fileEntry)
 {
 	auto fix_print_str = [](int nTabs, LPCWSTR str) {
 		
@@ -110,7 +110,7 @@ void CPckControlCenter::DefaultShowFilelistCallback(void* _in_param, int sn, LPC
 	printf("\r\n");
 }
 
-DWORD CPckControlCenter::SearchByName(LPCWSTR lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
+uint32_t CPckControlCenter::SearchByName(LPCWSTR lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
 {
 	if (NULL == m_lpClassPck)
 		return 0;
@@ -121,7 +121,7 @@ DWORD CPckControlCenter::SearchByName(LPCWSTR lpszSearchString, void* _in_param,
 		_showList = DefaultShowFilelistCallback;
 	}
 
-	DWORD	dwFileCount = GetPckFileCount(), dwFoundCount = 0;
+	uint32_t	dwFileCount = GetPckFileCount(), dwFoundCount = 0;
 	const PCKINDEXTABLE	* lpPckIndexTable = m_lpClassPck->GetPckIndexTable();
 
 	//打印顶层
@@ -133,7 +133,7 @@ DWORD CPckControlCenter::SearchByName(LPCWSTR lpszSearchString, void* _in_param,
 		0,
 		(void*)GetRootNode());
 
-	for (DWORD i = 0; i < dwFileCount; i++) {
+	for (uint32_t i = 0; i < dwFileCount; i++) {
 		//while(PCK_ENTRY_TYPE_TAIL_INDEX != lpPckIndexTable->entryType){
 		if (NULL != wcsstr(lpPckIndexTable->cFileIndex.szwFilename, lpszSearchString)) {
 
@@ -152,7 +152,7 @@ DWORD CPckControlCenter::SearchByName(LPCWSTR lpszSearchString, void* _in_param,
 	return dwFoundCount;
 }
 
-DWORD CPckControlCenter::ListByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
+uint32_t CPckControlCenter::ListByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
 {
 	if (NULL == lpFileEntry)
 		return 0;
@@ -169,7 +169,7 @@ DWORD CPckControlCenter::ListByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_
 	int entry_type = lpFileEntry->entryType;
 	//首先要是文件夹
 	if (PCK_ENTRY_TYPE_FOLDER != (PCK_ENTRY_TYPE_FOLDER & entry_type)) {
-#if _DEBUG
+#if PCK_DEBUG_OUTPUT
 		printf("%s:is not a folder\n", __FUNCTION__);
 #endif
 		return 0;
@@ -187,13 +187,13 @@ DWORD CPckControlCenter::ListByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_
 
 	//lpNodeToShow是否为NULL
 	if (NULL == lpNodeToShow) {
-#if _DEBUG
+#if PCK_DEBUG_OUTPUT
 		printf("%s:lpNodeToShow is NULL\n", __FUNCTION__);
 #endif
 		return 0;
 	}
 
-	DWORD dwSerialNumber = 0;
+	uint32_t dwSerialNumber = 0;
 
 	const PCK_PATH_NODE* lpNodeToShowPtr = lpNodeToShow;
 

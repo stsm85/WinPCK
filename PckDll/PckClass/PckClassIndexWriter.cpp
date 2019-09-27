@@ -47,7 +47,7 @@ BOOL CPckClassIndexWriter::WriteAllIndex(CMapViewFileMultiPckWrite *lpWrite, LPP
 	const vector<PCKINDEXTABLE_COMPRESS> *lpCompedPckIndexTableNew = lpPckAllInfo->lpPckIndexTableToAdd;
 
 	DWORD dwNewPckFileCount = lpPckAllInfo->dwFileCountToAdd;
-#ifdef _DEBUG
+#if PCK_DEBUG_OUTPUT
 	DWORD dwVectorSize = 0;
 	if(NULL != lpCompedPckIndexTableNew) dwVectorSize = lpCompedPckIndexTableNew->size();
 	assert(dwNewPckFileCount <= dwVectorSize);

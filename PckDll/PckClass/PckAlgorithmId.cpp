@@ -1,4 +1,8 @@
 #include "PckAlgorithmId.h"
+#include "pck_default_vars.h"
+#if PCK_DEBUG_OUTPUT
+#include "PckClassLog.h"
+#endif
 
 CPckAlgorithmId::CPckAlgorithmId(unsigned __int32 id)
 {
@@ -7,8 +11,7 @@ CPckAlgorithmId::CPckAlgorithmId(unsigned __int32 id)
 
 
 CPckAlgorithmId::~CPckAlgorithmId()
-{
-}
+{}
 
 void CPckAlgorithmId::SetAlgorithmId(unsigned __int32 id)
 {

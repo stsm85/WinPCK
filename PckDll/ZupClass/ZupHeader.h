@@ -16,25 +16,24 @@
 #define	TEXT_NOTSUPPORT		"暂时不支持此功能"
 
 typedef struct _ZUP_INC {
-	unsigned short		wID;
-	char				szMD5[34];
-	unsigned char		abMD5[16];
-
+	uint16_t	wID;
+	char		szMD5[34];
+	uint8_t		abMD5[16];
 	
-	_ZUP_INC			*next;
+	_ZUP_INC	*next;
 }ZUPINC, *LPZUPINC;
 
 typedef struct _ZUP_INC_LIST {
 
-	unsigned short		wID;
-	unsigned short		wMinVersion;
-	unsigned short		wTargetVersion;
-	unsigned long		dwTotalSize;
-	char				szSingature[192];
-	unsigned char		abSingature[128];
-	LPZUPINC			lpZupIncFileList;
+	uint16_t		wID;
+	uint16_t		wMinVersion;
+	uint16_t		wTargetVersion;
+	uint32_t		dwTotalSize;
+	char			szSingature[192];
+	uint8_t			abSingature[128];
+	LPZUPINC		lpZupIncFileList;
 
-	_ZUP_INC_LIST		*next;
+	_ZUP_INC_LIST	*next;
 
 }ZUPINCLIST, *LPZUPINCLIST;
 

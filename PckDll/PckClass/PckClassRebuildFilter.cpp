@@ -22,16 +22,17 @@ CPckClassRebuildFilter::CPckClassRebuildFilter()
 CPckClassRebuildFilter::~CPckClassRebuildFilter()
 {
 	ResetRebuildFilterInIndexList();
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
 }
 
 #pragma region 读取文件并转换为Unicode
 
-BOOL CPckClassRebuildFilter::OpenScriptFileAndConvBufToUcs2(LPCTSTR lpszScriptFile)
+BOOL CPckClassRebuildFilter::OpenScriptFileAndConvBufToUcs2(const wchar_t * lpszScriptFile)
 {
 	char   * lpBufferToRead;
 	CMapViewFileRead	cFileRead;
 	
-	CTextLineSpliter	cText2Line;
+	CTextUnitsW	cText2Line;
 
 	//读取文件所有字符
 	if (nullptr == (lpBufferToRead = (char*)cFileRead.OpenMappingViewAllRead(lpszScriptFile))) 
@@ -40,7 +41,7 @@ BOOL CPckClassRebuildFilter::OpenScriptFileAndConvBufToUcs2(LPCTSTR lpszScriptFi
 	CTextConv2UCS2 cText2Ucs;
 	const wchar_t* lpszUnicodeString = cText2Ucs.GetUnicodeString(lpBufferToRead, cFileRead.GetFileSize());
 
-	cText2Line.SplitText(lpszUnicodeString, wcslen(lpszUnicodeString), m_ScriptLines, LINE_TRIM_LEFT | LINE_TRIM_RIGHT | LINE_EMPTY_DELETE);
+	cText2Line.SplitLine(lpszUnicodeString, m_ScriptLines, LINE_TRIM_LEFT | LINE_TRIM_RIGHT | LINE_EMPTY_DELETE);
 
 	return TRUE;
 }
@@ -221,7 +222,7 @@ BOOL CPckClassRebuildFilter::ApplyScript2IndexList(LPPCK_PATH_NODE lpRootNode)
 
 			if(NULL == lpFoundNode) {
 
-				m_PckLog.PrintLogW(TEXT("已解析脚本失败在: %s, 跳过..."), pFileOp->szFilename);
+				Logger.w(UCSTEXT("已解析脚本失败在: %s, 跳过..."), pFileOp->szFilename);
 				bHasErrorHappend = TRUE;
 
 			} else {
@@ -242,11 +243,11 @@ BOOL CPckClassRebuildFilter::ApplyScript2IndexList(LPPCK_PATH_NODE lpRootNode)
 
 #pragma endregion
 
-BOOL CPckClassRebuildFilter::ParseScript(LPCTSTR lpszScriptFile)
+BOOL CPckClassRebuildFilter::ParseScript(const wchar_t * lpszScriptFile)
 {
 
 	if (!OpenScriptFileAndConvBufToUcs2(lpszScriptFile)) {
-		m_PckLog.PrintLogI("读取脚本失败");
+		Logger.w("读取脚本失败");
 		return FALSE; 
 	}
 
@@ -266,14 +267,14 @@ BOOL CPckClassRebuildFilter::ParseScript(LPCTSTR lpszScriptFile)
 			}
 			else {
 
-				m_PckLog.PrintLogW("脚本解析失败在行%d: %ls, 跳过...", i, m_ScriptLines[i].c_str());
+				Logger.w("脚本解析失败在行%d: %ls, 跳过...", i, m_ScriptLines[i].c_str());
 
 				return FALSE;
 			}
 		}
 	}
 
-	m_PckLog.PrintLogI("解析脚本成功");
+	Logger.i("解析脚本成功");
 	return TRUE;
 }
 
@@ -301,16 +302,16 @@ BOOL CPckClassRebuildFilter::Apply(LPPCK_PATH_NODE lpRootNode)
 
 	if (!rtn) {
 		ResetRebuildFilterInIndexList();
-		m_PckLog.PrintLogI("应用脚本失败");
+		Logger.i("应用脚本失败");
 	}
 	else {
-		m_PckLog.PrintLogI("应用脚本成功");
+		Logger.i("应用脚本成功");
 	}
 
 	return rtn;
 }
 
-BOOL CPckClassRebuildFilter::ApplyScript(LPCTSTR lpszScriptFile, LPPCK_PATH_NODE lpRootNode)
+BOOL CPckClassRebuildFilter::ApplyScript(const wchar_t * lpszScriptFile, LPPCK_PATH_NODE lpRootNode)
 {
 	if (!ParseScript(lpszScriptFile))
 		return FALSE;
@@ -318,7 +319,7 @@ BOOL CPckClassRebuildFilter::ApplyScript(LPCTSTR lpszScriptFile, LPPCK_PATH_NODE
 	return Apply(lpRootNode);
 }
 
-BOOL CPckClassRebuildFilter::TestScript(LPCTSTR lpszScriptFile)
+BOOL CPckClassRebuildFilter::TestScript(const wchar_t * lpszScriptFile)
 {
 	return ParseScript(lpszScriptFile);
 }

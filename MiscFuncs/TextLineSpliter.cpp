@@ -1,144 +1,144 @@
 #include "TextLineSpliter.h"
+#include <assert.h>
+
+//#include "CharsCodeConv.h"
 
 #define MAX_LINE_LENGTH (MAX_PATH + 10)
 
-CTextLineSpliter::CTextLineSpliter()
+//code from Notepad++ project
+//Copyright (C)2003 Don HO <don.h@free.fr>
+enum class EolType : std::uint8_t
 {
-}
+	windows,
+	macos,
+	unix,
 
+	// special values
+	unknown, // can not be the first value for legacy code
+	osdefault = windows,
+};
 
-CTextLineSpliter::~CTextLineSpliter()
+template<class T>
+static EolType getEOLFormatForm(const T* const data, size_t length, EolType defvalue = EolType::osdefault)
 {
-}
+	//assert(length == 0 or data != nullptr && "invalid buffer for getEOLFormatForm()");
 
-void CTextLineSpliter::SetBufPointer(SCRIPTBUFFER *sfvBuf, int pos)
-{
-	sfvBuf->dwPos += pos;
-	sfvBuf->bufpos += pos;
-}
+	for (size_t i = 0; i != length; ++i)
+	{
+		if (data[i] == CR)
+		{
+			if (i + 1 < length && data[i + 1] == LF)
+				return EolType::windows;
 
-BOOL CTextLineSpliter::ReadFromBuffer(void *_dstbuf, size_t size, SCRIPTBUFFER *sfvBuf)
-{
-	if ((sfvBuf->dwPos + size) > sfvBuf->dwSize)
-		return FALSE;
+			return EolType::macos;
+		}
 
-	memcpy(_dstbuf, sfvBuf->bufpos, size * sizeof(wchar_t));
-	SetBufPointer(sfvBuf, size);
-	return TRUE;
-}
-
-#define CHAR_IS_CRLF(ch) ((ch == L'\n') || (ch == L'\r'))
-
-void CTextLineSpliter::GetNextLine(SCRIPTBUFFER *sfvBuf, wchar_t * szLineUnicode, const UINT uiLengthLine,
-	UINT * puiStringLength, BOOL * pbErrorOccured, BOOL * pbEndOfFile)
-{
-	wchar_t myChar;
-
-	UINT uiCount;
-	BOOL bSuccess;
-
-	// 至少需要一个字节存放 \0
-	if (uiLengthLine <= 1) {
-		(*pbErrorOccured) = TRUE;
-		return;
+		if (data[i] == LF)
+			return EolType::unix;
 	}
 
-	ZeroMemory(szLineUnicode, uiLengthLine * sizeof(wchar_t));
-	uiCount = 0;
+	return defvalue; // fallback unknown
+}
 
-	while (TRUE) {
-		//在下次循环中写入szLineAnsi[uiCount]并在 szLineAnsi[uiCount+1] 中写入\0
-		if (uiCount >= uiLengthLine - 1) {
-			(*pbErrorOccured) = TRUE;
-			return;
-		}
-		bSuccess = ReadFromBuffer(&myChar, 1/*sizeof(myChar)*/, sfvBuf);
 
-		if (!bSuccess) {
-			(*pbErrorOccured) = FALSE;
-			(*puiStringLength) = uiCount;
-			(*pbEndOfFile) = TRUE;
-			return;
-		}
+static const int CR = 0x0D;
+static const int LF = 0x0A;
 
-		if (CHAR_IS_CRLF(myChar)) {
-			do {
-				bSuccess = ReadFromBuffer(&myChar, 1/*sizeof(myChar)*/, sfvBuf);
+template<class T, class R, class RI>
+void CTextUnits<T, R, RI>::ProcessLine(T& newline, std::vector<T>& v, int flag)
+{
+	if (flag & LINE_TRIM_LEFT) {
 
-			} while ((bSuccess) && (CHAR_IS_CRLF(myChar)));
-
-			if (bSuccess && !(CHAR_IS_CRLF(myChar)))
-				SetBufPointer(sfvBuf, -1);
-
-			(*pbErrorOccured) = FALSE;
-			(*puiStringLength) = uiCount;
-			(*pbEndOfFile) = FALSE;
-			return;
-		}
-		else {
-			szLineUnicode[uiCount] = myChar;
-			uiCount += 1;
+		T::size_type pos = newline.find_first_not_of(' ');
+		if (T::npos != pos)
+		{
+			newline.erase(0, pos);
 		}
 	}
-	return;
-}
-#undef CHAR_IS_CRLF
 
-void CTextLineSpliter::SplitText(const wchar_t* _src, const UINT _len, vector<wstring>&splitedLine, int flag)
-{
-	wchar_t	szLineUnicode[MAX_LINE_LENGTH];
-	UINT	uiStringLength;
-	BOOL	bErrorOccured, bEndOfFile;
-	SCRIPTBUFFER sfvBuf = { 0 };
+	if (flag & LINE_TRIM_RIGHT) {
+		T::size_type pos = newline.find_last_not_of(' ');
+		if (T::npos != pos)
+		{
+			newline.erase(pos + 1);
+		}
+	}
 
-	sfvBuf.buffer = _src;
-	sfvBuf.dwSize = _len;
-
-	splitedLine.clear();
-
-	//处理读取的内容
-	sfvBuf.bufpos = sfvBuf.buffer;
-
-	do {
-
-		GetNextLine(&sfvBuf, szLineUnicode, MAX_LINE_LENGTH, &uiStringLength, &bErrorOccured, &bEndOfFile);
-		if (bErrorOccured) {
+	if (flag & LINE_EMPTY_DELETE) {
+		if (0 == newline.size())
 			return;
-		}
+	}
 
-		wchar_t* szLineResult = szLineUnicode;
-
-		if (flag & LINE_TRIM_LEFT) {
-			TrimLeft(szLineResult, uiStringLength);
-		}
-
-		if (flag & LINE_TRIM_RIGHT) {
-			TrimRight(szLineResult, uiStringLength);
-		}
-
-		if (flag & LINE_EMPTY_DELETE) {
-			if (!*szLineResult)
-				continue;
-		}
-
-		splitedLine.push_back(szLineResult);
-
-	} while (!(bEndOfFile && uiStringLength == 0));
-
+	v.emplace_back(newline);
 }
 
-void CTextLineSpliter::TrimLeft(wchar_t* &lpszText, UINT &uiStringLength)
+template<class T, class R, class RI>
+void CTextUnits<T, R, RI>::Split(const T& s, std::vector<T>& v, const T& c, int flag)
 {
-	while((' ' == *lpszText ) && (*lpszText)) {
-		lpszText++;
-		uiStringLength--;
+	T::size_type pos1, pos2;
+	size_t len = s.length();
+	pos2 = s.find(c);
+	pos1 = 0;
+	while (T::npos != pos2)
+	{
+		ProcessLine(s.substr(pos1, pos2 - pos1), v, flag);
+
+		pos1 = pos2 + c.size();
+		pos2 = s.find(c, pos1);
+
+	}
+	if (pos1 != len)
+		ProcessLine(s.substr(pos1), v, flag);
+}
+
+template<class T, class R, class RI>
+std::vector<T> CTextUnits<T,R,RI>::SplitRegEx(const T input, const T c, int flag = 0)
+{
+	R re(c);
+	RI p(input.begin(), input.end(), re, -1);
+	RI end;
+	std::vector<T> vec;
+	while (p != end)
+		vec.emplace_back(*p++);
+
+	return vec;
+}
+
+template<class T, class R, class RI>
+void CTextUnits<T, R, RI>::GetEolChars(const std::string& _str, std::string& c)
+{
+	EolType eolType = getEOLFormatForm(_str.c_str(), _str.size());
+	switch (eolType)
+	{
+	case EolType::windows: c = "\r\n"; break;
+	case EolType::macos:   c = "\r"; break;
+	case EolType::unix:    c = "\n"; break;
+	default: c = "\r\n"; break;
+
 	}
 }
 
-void CTextLineSpliter::TrimRight(wchar_t* lpszText, UINT &uiStringLength)
+template<class T, class R, class RI>
+void CTextUnits<T, R, RI>::GetEolChars(const std::wstring& _str, std::wstring& c)
 {
-	while ((lpszText[uiStringLength - 1] == ' ') && (uiStringLength > 0)) {
-		lpszText[uiStringLength - 1] = 0;
-		uiStringLength--;
+	EolType eolType = getEOLFormatForm(_str.c_str(), _str.size());
+	switch (eolType)
+	{
+	case EolType::windows: c = L"\r\n"; break;
+	case EolType::macos:   c = L"\r"; break;
+	case EolType::unix:    c = L"\n"; break;
+	default: c = L"\r\n"; break;
+
 	}
 }
+
+template<class T, class R, class RI>
+void CTextUnits<T, R, RI>::SplitLine(const T _src, std::vector<T>&splitedLine, int flag)
+{
+	T eolChars;
+	GetEolChars(_src, eolChars);
+	Split(_src, splitedLine, eolChars, flag);
+}
+
+template class CTextUnits<std::string, std::regex, std::sregex_token_iterator>;
+template class CTextUnits<std::wstring, std::wregex, std::wsregex_token_iterator>;

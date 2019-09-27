@@ -135,9 +135,6 @@
     <ClCompile Include="decode_dds\DdsTgaDecoderBuildDIB.cpp">
       <Filter>源文件\decode_dds</Filter>
     </ClCompile>
-    <ClCompile Include="PreviewDlg.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="decode_dds\ShowPictureWithZoom.cpp">
       <Filter>源文件\decode_dds</Filter>
     </ClCompile>
@@ -154,6 +151,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="tStripDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tPreviewDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mainControlStatus.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -229,9 +232,6 @@
     <ClInclude Include="decode_dds\DdsTgaDecoderDefine.h">
       <Filter>头文件\decode_dds</Filter>
     </ClInclude>
-    <ClInclude Include="PreviewDlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="decode_dds\ShowPictureWithZoom.h">
       <Filter>头文件\decode_dds</Filter>
     </ClInclude>
@@ -245,6 +245,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ShowLogOnDlgListView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tLogDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tPreviewDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

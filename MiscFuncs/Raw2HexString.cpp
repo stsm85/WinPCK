@@ -9,9 +9,9 @@
 // 2018.5.29
 //////////////////////////////////////////////////////////////////////
 
-
 #include "Raw2HexString.h"
-#include <stdio.h>
+#include <memory>
+
 
 #pragma warning ( disable : 4996 )
 
@@ -25,7 +25,7 @@
 #define LINE_STRLEN			(ADDRESS_STRLEN + BYTEHEX_STRLEN * BYTES_PER_LINE + DATAHEX_STRLEN)
 //#define LINE_STRLEN			76
 
-CRaw2HexString::CRaw2HexString(LPBYTE lpbuf, size_t rawlength, __int64 iShowStartAddr)
+CRaw2HexString::CRaw2HexString(uint8_t* lpbuf, size_t rawlength, __int64 iShowStartAddr)
 {
 
 	const char	*lpszByte2Raw[0x100] = {
@@ -49,7 +49,7 @@ CRaw2HexString::CRaw2HexString(LPBYTE lpbuf, size_t rawlength, __int64 iShowStar
 
 	m_ok = FALSE;
 
-	DWORD dwDst = ((rawlength >> 4) + 2) * LINE_STRLEN;
+	uint32_t dwDst = ((rawlength >> 4) + 2) * LINE_STRLEN;
 	if(NULL == (m_buffer = (char*)malloc(dwDst))) {
 		return;
 	}
@@ -58,7 +58,7 @@ CRaw2HexString::CRaw2HexString(LPBYTE lpbuf, size_t rawlength, __int64 iShowStar
 	__int64 i;
 	char *lpbuffer = m_buffer;
 
-	BYTE raw16[32];
+	uint8_t raw16[32];
 	memset(raw16, 0, 32);
 	raw16[16] = ' ';
 	raw16[17] = '\r';

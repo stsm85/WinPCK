@@ -32,6 +32,7 @@ CPckControlCenter::~CPckControlCenter()
 	regMsgFeedback(NULL, DefaultFeedbackCallback);
 	Close();
 	uninit();
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
 }
 
 void CPckControlCenter::init()
@@ -41,57 +42,15 @@ void CPckControlCenter::init()
 	cParams.dwCompressLevel = getDefaultCompressLevel();
 	cParams.dwMTThread = thread::hardware_concurrency();
 	cParams.dwMTMaxMemory = getMaxMemoryAllowed();
-
-	m_lpPckLog = new CPckClassLog();
 }
 
 void CPckControlCenter::uninit()
 {
 	lpszFilePathToAdd.clear();
-	delete m_lpPckLog;
 }
 
-void CPckControlCenter::Reset(DWORD dwUIProgressUpper)
+void CPckControlCenter::Reset(uint32_t dwUIProgressUpper)
 {
 	memset(&cParams.cVarParams, 0, sizeof(PCK_VARIETY_PARAMS));
 	cParams.cVarParams.dwUIProgressUpper = dwUIProgressUpper;
 }
-
-#pragma region 日志相关功能
-//日志
-void	CPckControlCenter::regShowFunc(ShowLogW _ShowLogW)
-{
-	CPckClassLog::PckClassLog_func_register(_ShowLogW);
-}
-
-const char CPckControlCenter::getLogLevelPrefix(int _loglevel)
-{
-	return CPckClassLog::GetLogLevelPrefix(_loglevel);
-}
-
-void CPckControlCenter::Print(const char chLevel, LPCSTR _fmt, ...)
-{
-	va_list	ap;
-	va_start(ap, _fmt);
-	CPckClassLog::PrintLog(chLevel, _fmt, ap);
-	va_end(ap);
-}
-
-void CPckControlCenter::Print(const char chLevel, LPCWSTR _fmt, ...)
-{
-	va_list	ap;
-	va_start(ap, _fmt);
-	CPckClassLog::PrintLog(chLevel, _fmt, ap);
-	va_end(ap);
-}
-
-void CPckControlCenter::Print(const char chLevel, LPCSTR _fmt, va_list ap)
-{
-	CPckClassLog::PrintLog(chLevel, _fmt, ap);
-}
-
-void CPckControlCenter::Print(const char chLevel, LPCWSTR _fmt, va_list ap)
-{
-	CPckClassLog::PrintLog(chLevel, _fmt, ap);
-}
-#pragma endregion

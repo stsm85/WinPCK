@@ -1,4 +1,5 @@
 #include "PckModelStrip.h"
+#include "pck_default_vars.h"
 
 #define BUFFER_SIZE		0x10000
 
@@ -7,17 +8,11 @@
 #define STRIP_TYPE_GFX	2
 #define STRIP_TYPE_ECM	3
 
-#pragma warning ( disable : 4996 )
-
-
 CPckModelStrip::CPckModelStrip()
-{
-}
-
+{}
 
 CPckModelStrip::~CPckModelStrip()
-{
-}
+{}
 
 BOOL CPckModelStrip::StripContent(BYTE* buffer, LPPCKFILEINDEX lpFileIndex, int flag)
 {

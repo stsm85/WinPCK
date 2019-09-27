@@ -29,7 +29,9 @@ CPckClassFileDisk::CPckClassFileDisk()
 {}
 
 CPckClassFileDisk::~CPckClassFileDisk()
-{}
+{
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
+}
 
 #pragma region 磁盘空间大小
 
@@ -69,7 +71,7 @@ QWORD CPckClassFileDisk::GetPckFilesizeByCompressed(QWORD qwDiskFreeSpace, QWORD
 }
 
 //重命名时需要的文件的大小
-QWORD CPckClassFileDisk::GetPckFilesizeRename(LPCTSTR lpszFilename, QWORD qwCurrentPckFilesize)
+QWORD CPckClassFileDisk::GetPckFilesizeRename(const wchar_t * lpszFilename, QWORD qwCurrentPckFilesize)
 {
 	//查看磁盘空间
 	TCHAR szDiskName[4];
@@ -86,7 +88,7 @@ QWORD CPckClassFileDisk::GetPckFilesizeRename(LPCTSTR lpszFilename, QWORD qwCurr
 
 }
 
-QWORD CPckClassFileDisk::GetPckFilesizeRebuild(LPCTSTR lpszFilename, QWORD qwPckFilesize)
+QWORD CPckClassFileDisk::GetPckFilesizeRebuild(const wchar_t * lpszFilename, QWORD qwPckFilesize)
 {
 	//查看磁盘空间
 	TCHAR szDiskName[4];
@@ -183,7 +185,7 @@ VOID CPckClassFileDisk::EnumFile(LPWSTR szFilename, BOOL IsPatition, DWORD &dwFi
 					mystrcpy(mystrcpy(mystrcpy(pFileinfo->szwFilename, szPath), L"\\"), WFD.cFileName);
 				}
 
-#ifdef _DEBUG
+#if PCK_DEBUG_OUTPUT
 				pFileinfo->id = lpFileLinkList->size();
 #endif
 
@@ -201,7 +203,7 @@ VOID CPckClassFileDisk::EnumFile(LPWSTR szFilename, BOOL IsPatition, DWORD &dwFi
 
 }
 
-BOOL CPckClassFileDisk::EnumAllFilesByPathList(const vector<tstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList)
+BOOL CPckClassFileDisk::EnumAllFilesByPathList(const vector<wstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList)
 {
 	wchar_t		szPathMbsc[MAX_PATH];
 	DWORD		dwAppendCount = lpszFilePath.size();
@@ -233,7 +235,7 @@ BOOL CPckClassFileDisk::EnumAllFilesByPathList(const vector<tstring> &lpszFilePa
 			lpfirstFile->nFileTitleLen = nLen;
 			lpfirstFile->nBytesToCopy = MAX_PATH - nLen;
 
-#ifdef _DEBUG
+#if PCK_DEBUG_OUTPUT
 			lpfirstFile->id = lpFileLinkList->size();
 #endif
 			_out_TotalFileSize += (lpfirstFile->dwFileSize = cFileRead.GetFileSize());

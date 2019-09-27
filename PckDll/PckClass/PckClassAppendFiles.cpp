@@ -2,16 +2,16 @@
 #include "PckClassWriteOperator.h"
 
 //新建、更新pck包
-BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert)
+BOOL CPckClassWriteOperator::UpdatePckFile(const wchar_t * szPckFile, const vector<wstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert)
 {
 	DWORD		dwNewFileCount = 0;			//文件数量, 原pck文件中的文件数
 	DWORD		dwDuplicateFileCount = 0;
-	QWORD		qwTotalNewFileSize = 0;						//未压缩时所有文件大小
+	uint64_t		qwTotalNewFileSize = 0;						//未压缩时所有文件大小
 
 	int			level = m_lpPckParams->dwCompressLevel;
 	int			threadnum = m_lpPckParams->dwMTThread;
 
-	QWORD		dwAddressWhereToAppendData;
+	uint64_t		dwAddressWhereToAppendData;
 	THREAD_PARAMS		cThreadParams;
 
 	//开始查找文件
@@ -42,26 +42,26 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 
 		cThreadParams.cDataFetchMethod.nCurrentNodeStringLen = wcslen(cThreadParams.cDataFetchMethod.szCurrentNodeString);
 
-		m_PckLog.PrintLogI(TEXT_LOG_UPDATE_ADD
+		Logger.i(TEXT_LOG_UPDATE_ADD
 			"-"
 			TEXT_LOG_LEVEL_THREAD, level, threadnum);
 
 	} else {
 		//新建文件
-		//m_PckAllInfo.dwAddressOfFilenameIndex = PCK_DATA_START_AT;
+		//m_PckAllInfo.dwAddressOfFileEntry = PCK_DATA_START_AT;
 		dwAddressWhereToAppendData = PCK_DATA_START_AT;
 
 		lpNodeToInsertPtr = m_PckAllInfo.cRootNode.child;
 		*cThreadParams.cDataFetchMethod.szCurrentNodeString = 0;
 		cThreadParams.cDataFetchMethod.nCurrentNodeStringLen = 0;
 
-		m_PckLog.PrintLogI(TEXT_LOG_UPDATE_NEW
+		Logger.i(TEXT_LOG_UPDATE_NEW
 			"-"
 			TEXT_LOG_LEVEL_THREAD, level, threadnum);
 
 	}
 
-	_tcscpy_s(m_PckAllInfo.szNewFilename, szPckFile);
+	wcscpy_s(m_PckAllInfo.szNewFilename, szPckFile);
 
 #pragma endregion
 
@@ -81,7 +81,7 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 	SetParams_ProgressUpper(dwNewFileCount);
 
 	//计算大概需要多大空间qwTotalFileSize
-	mt_CompressTotalFileSize = GetPckFilesizeByCompressed(szPckFile, qwTotalNewFileSize, m_PckAllInfo.qwPckSize);
+	cThreadParams.qwCompressTotalFileSize = GetPckFilesizeByCompressed(szPckFile, qwTotalNewFileSize, m_PckAllInfo.qwPckSize);
 
 	//与原来目录中的文件对比，是否有重名
 	//策略：无条件覆盖吧				如果重名且都为文件或文件夹，则覆盖
@@ -98,54 +98,43 @@ BOOL CPckClassWriteOperator::UpdatePckFile(LPCTSTR szPckFile, const vector<tstri
 	}
 
 	//日志
-	m_PckLog.PrintLogI(TEXT_UPDATE_FILE_INFO, m_PckAllInfo.dwFileCountToAdd, mt_CompressTotalFileSize);
+	Logger.i(TEXT_UPDATE_FILE_INFO, m_PckAllInfo.dwFileCountToAdd, cThreadParams.qwCompressTotalFileSize);
 
 #pragma region 创建目标文件
 	CMapViewFileMultiPckWrite cFileWriter(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys.dwMaxSinglePckSize);
 
 	//OPEN_ALWAYS，新建新的pck(CREATE_ALWAYS)或更新存在的pck(OPEN_EXISTING)
-	if(!cFileWriter.OpenPckAndMappingWrite(m_PckAllInfo.szNewFilename, OPEN_ALWAYS, mt_CompressTotalFileSize)) {
+	if(!cFileWriter.OpenPckAndMappingWrite(m_PckAllInfo.szNewFilename, OPEN_ALWAYS, cThreadParams.qwCompressTotalFileSize)) {
 		return FALSE;
 	}
 
 #pragma endregion
 
-	cThreadParams.pThis = (CPckClassThreadWorker*)this;
 	cThreadParams.cDataFetchMethod.ciFilesList = m_PckAllInfo.lpFilesToBeAdded->cbegin();
 	cThreadParams.cDataFetchMethod.ciFilesListEnd = m_PckAllInfo.lpFilesToBeAdded->cend();
 
-	cThreadParams.GetUncompressedData = &GetUncompressedDataFromFile;
-
-	//呵呵，下面两个函数好像永远返回TRUE
-	if(!initMultiThreadVars(&cFileWriter)) {
-		return FALSE;
-	}
-
-	if(!initCompressedDataQueue(mt_dwFileCountOfWriteTarget = dwNewFileCount, dwAddressWhereToAppendData/*m_PckAllInfo.dwAddressOfFilenameIndex*/)) {
-		return FALSE;
-	}
-
-	ExecuteMainThreadGroup(m_PckAllInfo, threadnum, &cThreadParams);
-	dwAddressWhereToAppendData = m_PckAllInfo.dwAddressOfFilenameIndex;
+	cThreadParams.lpFileWrite = &cFileWriter;
+	cThreadParams.pck_data_src = DATA_FROM_FILE;
+	cThreadParams.dwFileCountOfWriteTarget = dwNewFileCount;
+	cThreadParams.lpPckClassThreadWorker = this;
+	cThreadParams.dwAddressStartAt = dwAddressWhereToAppendData;
+	cThreadParams.lpPckAllInfo = &m_PckAllInfo;
+	cThreadParams.pckParams = m_lpPckParams;
 
 	//写文件索引
 	m_PckAllInfo.dwFileCount = m_PckAllInfo.dwFileCountOld - dwDuplicateFileCount;
 
-	WriteAllIndex(mt_lpFileWrite, &m_PckAllInfo, dwAddressWhereToAppendData);
-
-	AfterProcess(mt_lpFileWrite, m_PckAllInfo, dwAddressWhereToAppendData);
-
-	uninitCompressedDataQueue();
+	CPckThreadRunner m_threadRunner(&cThreadParams);
+	m_threadRunner.start();
 
 	//在这里重新打开一次，或者直接打开，由界面线程完成
 	m_lpPckParams->cVarParams.dwOldFileCount = m_PckAllInfo.dwFileCountOld;
 	m_lpPckParams->cVarParams.dwPrepareToAddFileCount = dwNewFileCount;
 	m_lpPckParams->cVarParams.dwChangedFileCount = m_PckAllInfo.dwFileCountToAdd;
 	m_lpPckParams->cVarParams.dwDuplicateFileCount = dwDuplicateFileCount;
-	//m_lpPckParams->cVarParams.dwUseNewDataAreaInDuplicateFileSize = m_PckAllInfo.dwFinalFileCount - m_PckAllInfo.dwFileCountOld;
 	m_lpPckParams->cVarParams.dwFinalFileCount = m_PckAllInfo.dwFinalFileCount;
 
-	m_PckLog.PrintLogI(TEXT_LOG_WORKING_DONE);
+	Logger.i(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 

@@ -4,33 +4,35 @@ CPckClassHeadTailWriter::CPckClassHeadTailWriter()
 {}
 
 CPckClassHeadTailWriter::~CPckClassHeadTailWriter()
-{}
+{
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
+}
 
-BOOL CPckClassHeadTailWriter::AfterProcess(CMapViewFileMultiPckWrite *lpWrite, PCK_ALL_INFOS &PckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional)
+BOOL CPckClassHeadTailWriter::WriteHeadAndTail(CMapViewFileMultiPckWrite *lpWrite, LPPCK_ALL_INFOS lpPckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional)
 {
 
 	assert(NULL != dwAddress);
-	assert(0 != (PckAllInfo.dwFileCount + PckAllInfo.dwFileCountToAdd));
+	assert(0 != (lpPckAllInfo->dwFileCount + lpPckAllInfo->dwFileCountToAdd));
 
 	if(isRenewAddtional)
-		strcpy(PckAllInfo.szAdditionalInfo, PCK_ADDITIONAL_INFO);
+		strcpy(lpPckAllInfo->szAdditionalInfo, PCK_ADDITIONAL_INFO);
 
 	//дpckTail
-	if (!lpWrite->Write2(dwAddress, m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(&PckAllInfo), m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)) {
+	if (!lpWrite->Write2(dwAddress, m_PckAllInfo.lpSaveAsPckVerFunc->FillTailData(lpPckAllInfo), m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize)) {
 		
-		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+		Logger_el(TEXT_VIEWMAP_FAIL);
 		return FALSE;
 	}
 
 	dwAddress += m_PckAllInfo.lpSaveAsPckVerFunc->dwTailSize;
 
 	//дpckHead
-	PckAllInfo.qwPckSize = dwAddress;
+	lpPckAllInfo->qwPckSize = dwAddress;
 
-	assert(0 != PckAllInfo.qwPckSize);
+	assert(0 != lpPckAllInfo->qwPckSize);
 
-	if (!lpWrite->Write2(0, m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(&PckAllInfo), m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize)) {
-		m_PckLog.PrintLogEL(TEXT_VIEWMAP_FAIL, __FILE__, __FUNCTION__, __LINE__);
+	if (!lpWrite->Write2(0, m_PckAllInfo.lpSaveAsPckVerFunc->FillHeadData(lpPckAllInfo), m_PckAllInfo.lpSaveAsPckVerFunc->dwHeadSize)) {
+		Logger_el(TEXT_VIEWMAP_FAIL);
 		return FALSE;
 	}
 

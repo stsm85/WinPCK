@@ -164,7 +164,7 @@ BOOL CMapViewFile::Open(LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwSha
 	return TRUE;
 }
 
-LPBYTE CMapViewFile::ViewReal(QWORD qwAddress, DWORD dwSize, DWORD dwDesiredAccess)
+uint8_t* CMapViewFile::ViewReal(QWORD qwAddress, DWORD dwSize, DWORD dwDesiredAccess)
 {
 	//文件映射地址必须是64k(0x10000)的整数
 
@@ -222,14 +222,14 @@ QWORD CMapViewFile::GetFilePointer()
 	return INVALID_SET_FILE_POINTER;
 }
 
-void CMapViewFile::UnmapView(LPVOID lpTargetAddress)
+void CMapViewFile::UnmapView(void* lpTargetAddress)
 {
 
 	if(NULL != lpTargetAddress) {
-		LPVOID lpMapAddress = (LPVOID)(((uintptr_t)lpTargetAddress) & ~(0xffff));
+		void* lpMapAddress = (void*)(((uintptr_t)lpTargetAddress) & ~(0xffff));
 		UnmapViewOfFile(lpMapAddress);
 
-		vector<LPVOID>::const_iterator result = find(vMapAddress.begin(), vMapAddress.end(), lpMapAddress);
+		std::vector<void*>::const_iterator result = find(vMapAddress.begin(), vMapAddress.end(), lpMapAddress);
 		if(result != vMapAddress.end())
 			vMapAddress.erase(result);
 	}

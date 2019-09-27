@@ -1,39 +1,34 @@
 #pragma once
 #include <string>
 #include <vector>
-using namespace std;
-
-#include <Windows.h>
+#include <regex>
 
 #define LINE_TRIM_LEFT		1
 #define LINE_TRIM_RIGHT		2
 #define LINE_EMPTY_DELETE	4
 
-class CTextLineSpliter
+template <class T, class R, class RI>
+class CTextUnits
 {
-
-
 public:
-	CTextLineSpliter();
-	~CTextLineSpliter();
+	CTextUnits() {};
+	~CTextUnits() {};
 
-	void SplitText(const wchar_t* _src, const UINT _len, vector<wstring>&splitedLine, int flag);
+	static void SplitLine(const T _src, std::vector<T>& splitedLine, int flag);
+	static void Split(const T& s, std::vector<T>& v, const T& c, int flag = 0);
+	static std::vector<T> SplitRegEx(const T s, const T c, int flag = 0);
 
 private:
-	typedef struct
-	{
-		const wchar_t*	buffer;
-		const wchar_t*	bufpos;
-		unsigned long	dwSize;
-		unsigned long	dwPos;
 
-	}SCRIPTBUFFER;
+	static void GetEolChars(const std::string& _str, std::string& c);
+	static void GetEolChars(const std::wstring& _str, std::wstring& c);
+	static void ProcessLine(T& newline, std::vector<T>& v, int flag);
 
-	void	GetNextLine(SCRIPTBUFFER *sfvBuf, wchar_t* szLineUnicode, const UINT uiLengthLine, UINT * puiStringLength, BOOL * pbErrorOccured, BOOL * pbEndOfFile);
-	BOOL	ReadFromBuffer(void *_dstbuf, size_t size, SCRIPTBUFFER *sfvBuf);
-	void	SetBufPointer(SCRIPTBUFFER *sfvBuf, int pos);
-
-	void	TrimLeft(wchar_t* &lpszText, UINT &uiStringLength);
-	void	TrimRight(wchar_t* lpszText, UINT &uiStringLength);
 };
 
+
+template class CTextUnits<std::string, std::regex, std::sregex_token_iterator>;
+template class CTextUnits<std::wstring, std::wregex, std::wsregex_token_iterator>;
+
+typedef CTextUnits<std::string, std::regex, std::sregex_token_iterator> CTextUnitsA;
+typedef CTextUnits<std::wstring, std::wregex, std::wsregex_token_iterator> CTextUnitsW;

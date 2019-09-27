@@ -9,11 +9,9 @@
 // 
 // 2015.5.27
 //////////////////////////////////////////////////////////////////////
-#pragma warning ( disable : 4996 )
-
 #include "PckClass.h"
 
-BOOL CPckClass::MountPckFile(LPCTSTR	szFile)
+BOOL CPckClass::MountPckFile(LPCWSTR	szFile)
 {
 	try {
 		if (!DetectPckVerion(szFile))
@@ -25,8 +23,8 @@ BOOL CPckClass::MountPckFile(LPCTSTR	szFile)
 		m_PckAllInfo.lpPckIndexTable[m_PckAllInfo.dwFileCount].entryType = PCK_ENTRY_TYPE_TAIL_INDEX;
 		return TRUE;
 	}
-	catch (exception e) {
-		m_PckLog.PrintLogE(e.what());
+	catch (MyException e) {
+		Logger.e(e.what());
 		return FALSE;
 	}
 	

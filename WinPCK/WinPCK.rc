@@ -374,7 +374,7 @@ BEGIN
     POPUP "操作"
     BEGIN
         MENUITEM "添加文件",                        ID_MENU_ADD
-        //MENUITEM "游戏精简",                        ID_MENU_SIMPLIFY
+        MENUITEM "游戏精简",                        ID_MENU_SIMPLIFY
         MENUITEM "整理重建",                        ID_MENU_REBUILD
         MENUITEM SEPARATOR
         MENUITEM "附加信息",                        ID_MENU_INFO

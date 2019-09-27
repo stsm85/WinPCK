@@ -89,8 +89,8 @@ QWORD CMapViewFileMulti::GetFileSize()
 
 void CMapViewFileMulti::UnmapViewAll()
 {
-	vector<LPVOID> buffer2free;
-	LPBYTE lastBuffer = NULL;
+	std::vector<void*> buffer2free;
+	uint8_t* lastBuffer = NULL;
 
 	size_t cross_view_count = m_cross_view.size();
 	for(int i = 0;i < cross_view_count;i++) {
@@ -205,7 +205,6 @@ LPBYTE CMapViewFileMulti::View(QWORD dwAddress, DWORD dwSize, BOOL isReadOnly)
 
 		return lpCrossBuffer;
 	}
-
 }
 
 BOOL CMapViewFileMulti::BuildCrossViewBuffer(LPBYTE lpCrossBuffer, LPBYTE &lpCrossBufferPtr, int cell_id, QWORD qwAddress, DWORD dwSize, BOOL isReadOnly)
@@ -255,7 +254,7 @@ DWORD CMapViewFileMulti::Read(LPVOID buffer, DWORD dwBytesToRead)
 		DWORD dwBytesRead = m_file_cell[iCellIDBegin].lpMapView->Read(buffer2read, dwBytesLeft);
 
 		if (0 == dwBytesRead)
-			throw exception("read fail");
+			throw MyException("read fail");
 
 		dwBytesLeft -= dwBytesRead;
 		buffer2read += dwBytesRead;

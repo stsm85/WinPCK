@@ -1,0 +1,10 @@
+#include <stdlib.h>
+#define COMPILER_SUPPORTS_TARGET_FUNCTION_ATTRIBUTE 1
+#define __SSE2__ 1
+#define _aligned_attribute
+
+//#define COMPILER_SUPPORTS_AVX_TARGET 1
+//#define COMPILER_SUPPORTS_AVX2_TARGET 1
+//#define COMPILER_SUPPORTS_TARGET_INTRINSICS 1
+
+

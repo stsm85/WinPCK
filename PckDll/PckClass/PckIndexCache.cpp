@@ -1,5 +1,6 @@
 #include "PckIndexCache.h"
-#include <exception>
+#include "gccException.h"
+#include "pck_default_vars.h"
 
 CPckMemoryCache::CPckMemoryCache() :
 	usedsize(0),

@@ -19,23 +19,17 @@ protected:
 private:
 	BOOL		MakeFolderExistInternal(const wchar_t* lpszDirectory);
 protected:
-	BOOL		EnumAllFilesByPathList(const vector<tstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList);
-	////压缩重建、压缩写入空间不够时扩展空间
-	//BOOL		IsNeedExpandWritingFile(
-	//	CMapViewFileMultiPckWrite *lpWrite,
-	//	QWORD dwWritingAddressPointer,
-	//	QWORD dwFileSizeToWrite,
-	//	QWORD &dwExpectedTotalCompressedFileSize);
+	BOOL		EnumAllFilesByPathList(const vector<wstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList);
 
 	//重建pck时需要的磁盘空间（目标文件名，待重建的PCK文件大小）
-	QWORD	GetPckFilesizeRebuild(LPCTSTR lpszFilename, QWORD qwPckFilesize);
+	QWORD	GetPckFilesizeRebuild(const wchar_t * lpszFilename, QWORD qwPckFilesize);
 
 	//重命名时需要的文件的大小
-	QWORD	GetPckFilesizeRename(LPCTSTR lpszFilename, QWORD qwCurrentPckFilesize);
+	QWORD	GetPckFilesizeRename(const wchar_t * lpszFilename, QWORD qwCurrentPckFilesize);
 
 	//添加和新建文件时，写入的pck文件大小
-	QWORD	GetPckFilesizeByCompressed(LPCSTR lpszFilename, QWORD qwToCompressFilesize, QWORD qwCurrentPckFilesize);
-	QWORD	GetPckFilesizeByCompressed(LPCWSTR lpszFilename, QWORD qwToCompressFilesize, QWORD qwCurrentPckFilesize);
+	QWORD	GetPckFilesizeByCompressed(const char* lpszFilename, QWORD qwToCompressFilesize, QWORD qwCurrentPckFilesize);
+	QWORD	GetPckFilesizeByCompressed(const wchar_t * lpszFilename, QWORD qwToCompressFilesize, QWORD qwCurrentPckFilesize);
 
 private:
 

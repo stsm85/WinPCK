@@ -12,7 +12,7 @@
 #pragma warning ( disable : 4018 )
 
 #include <assert.h>
-#include "PreviewDlg.h"
+#include "tPreviewDlg.h"
 #include <stdio.h>
 #include <tchar.h>
 #include "OpenSaveDlg.h"

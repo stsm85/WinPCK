@@ -2,7 +2,12 @@
 #include "MapViewFile.h"
 
 #include <vector>
-using namespace std;
+
+#ifdef _DEBUG
+#define FLUSH_SIZE_THRESHOLD	(320 * 1024 * 1024)
+#else
+#define FLUSH_SIZE_THRESHOLD	(32 * 1024 * 1024)
+#endif
 
 class CMapViewFileMulti
 {
@@ -60,8 +65,8 @@ protected:
 	//当前可用文件的最大大小
 	UNQWORD m_uqwMaxSize;
 
-	vector<FILE_CELL>	m_file_cell;
-	vector<CROSS_VIEW>	m_cross_view;
+	std::vector<FILE_CELL>	m_file_cell;
+	std::vector<CROSS_VIEW>	m_cross_view;
 
 	int	GetCellIDByPoint(QWORD qwPoint);
 

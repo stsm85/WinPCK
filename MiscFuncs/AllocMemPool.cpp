@@ -1,4 +1,4 @@
-#include <windows.h>
+#include <memory>
 #include "AllocMemPool.h"
 #include <assert.h>
 
@@ -19,9 +19,6 @@ CAllocMemPool::~CAllocMemPool()
 		free(pNode);
 		pNode = pNextNode;
 	}
-#ifdef _DEBUG
-	OutputDebugStringA(__FUNCTION__"\r\n");
-#endif
 }
 
 // ÉêÇë½Úµã
@@ -31,14 +28,11 @@ CAllocMemPool::Node* CAllocMemPool::new_Node()
 	//pointer->Node::Node();
 	memset(pointer, 0, m_EachPoolSize);
 
-#ifdef _DEBUG
-	OutputDebugStringA("CAllocMemPool::new_Node()\r\n");
-#endif
 	return pointer;
 }
 
 
-void* CAllocMemPool::Alloc(size_t size, UINT32 align) {
+void* CAllocMemPool::Alloc(size_t size, uint32_t align) {
 	if (size > (m_EachPoolSize - sizeof(Node))) {
 #ifdef _DEBUG
 		assert(!"<AllocOnlyMPool<EachPoolSize>::Alloc>:: Alloc too big");

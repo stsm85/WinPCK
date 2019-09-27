@@ -1,5 +1,7 @@
 #include "pck_handle.h"
 #include "PckControlCenter.h"
+#include "PckDefines.h"
+#include <thread>
 
 CPckControlCenter this_handle;
 
@@ -26,7 +28,7 @@ WINPCK_API LPCSTR pck_version()
 	return WINPCK_VERSION;
 }
 
-WINPCK_API PCKRTN pck_open(LPCTSTR lpszFile)
+WINPCK_API PCKRTN pck_open(const wchar_t * lpszFile)
 {
 	if (checkIfWorking())
 		return WINPCK_WORKING;
@@ -51,7 +53,7 @@ WINPCK_API PCKRTN pck_close()
 
 			if (!checkIfWorking())
 				break;
-			Sleep(500);
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 	}
 
@@ -88,7 +90,7 @@ WINPCK_API PCKRTN pck_setVersion(int verID)
 	}
 }
 
-WINPCK_API DWORD pck_getVersionCount()
+WINPCK_API uint32_t pck_getVersionCount()
 {
 	return CPckControlCenter::GetVersionCount();
 }
@@ -139,7 +141,7 @@ WINPCK_API LPCENTRY pck_getRootNode()
 }
 
 //文件大小
-WINPCK_API QWORD	pck_filesize()
+WINPCK_API uint64_t	pck_filesize()
 {
 	if (!checkIfValidPck())
 		return -1;
@@ -147,7 +149,7 @@ WINPCK_API QWORD	pck_filesize()
 	return this_handle.GetPckSize();
 }
 
-WINPCK_API QWORD	pck_file_data_area_size()
+WINPCK_API uint64_t	pck_file_data_area_size()
 {
 	if (!checkIfValidPck())
 		return -1;
@@ -155,7 +157,7 @@ WINPCK_API QWORD	pck_file_data_area_size()
 	return this_handle.GetPckDataAreaSize();
 }
 
-WINPCK_API QWORD	pck_file_redundancy_data_size()
+WINPCK_API uint64_t	pck_file_redundancy_data_size()
 {
 	if (!checkIfValidPck())
 		return -1;
@@ -163,7 +165,7 @@ WINPCK_API QWORD	pck_file_redundancy_data_size()
 	return this_handle.GetPckRedundancyDataSize();
 }
 
-WINPCK_API DWORD	pck_filecount()
+WINPCK_API uint32_t	pck_filecount()
 {
 	if (!checkIfValidPck())
 		return -1;
@@ -171,39 +173,39 @@ WINPCK_API DWORD	pck_filecount()
 	return this_handle.GetPckFileCount();
 }
 
-WINPCK_API QWORD	pck_getFileSizeInEntry(LPCENTRY lpFileEntry)
+WINPCK_API uint64_t	pck_getFileSizeInEntry(LPCENTRY lpFileEntry)
 {
 	return CPckControlCenter::GetFileSizeInEntry(lpFileEntry);
 }
 
-WINPCK_API QWORD	pck_getCompressedSizeInEntry(LPCENTRY lpFileEntry)
+WINPCK_API uint64_t	pck_getCompressedSizeInEntry(LPCENTRY lpFileEntry)
 {
 	return CPckControlCenter::GetCompressedSizeInEntry(lpFileEntry);
 }
 
-WINPCK_API DWORD	pck_getFoldersCountInEntry(LPCENTRY lpFileEntry)
+WINPCK_API uint32_t	pck_getFoldersCountInEntry(LPCENTRY lpFileEntry)
 {
 	return CPckControlCenter::GetFoldersCountInEntry(lpFileEntry);
 }
 
-WINPCK_API DWORD	pck_getFilesCountInEntry(LPCENTRY lpFileEntry)
+WINPCK_API uint32_t	pck_getFilesCountInEntry(LPCENTRY lpFileEntry)
 {
 	return CPckControlCenter::GetFilesCountInEntry(lpFileEntry);
 }
 
 //当前节点文件名当前长度
-WINPCK_API DWORD	pck_getFilelenBytesOfEntry(LPCENTRY lpFileEntry)
+WINPCK_API uint32_t	pck_getFilelenBytesOfEntry(LPCENTRY lpFileEntry)
 {
 	return CPckControlCenter::GetFilelenBytesOfEntry(lpFileEntry);
 }
 
 //当前节点文件名最大长度-当前长度
-WINPCK_API DWORD pck_getFilelenLeftBytesOfEntry(LPCENTRY lpFileEntry)
+WINPCK_API uint32_t pck_getFilelenLeftBytesOfEntry(LPCENTRY lpFileEntry)
 {
 	return CPckControlCenter::GetFilelenLeftBytesOfEntry(lpFileEntry);
 }
 
-WINPCK_API QWORD pck_getFileOffset(LPCENTRY lpFileEntry)
+WINPCK_API uint64_t pck_getFileOffset(LPCENTRY lpFileEntry)
 {
 	return CPckControlCenter::GetFileOffset(lpFileEntry);
 }
@@ -217,7 +219,7 @@ WINPCK_API LPCSTR pck_GetAdditionalInfo()
 	return this_handle.GetAdditionalInfo();
 }
 
-WINPCK_API DWORD pck_GetAdditionalInfoMaxSize()
+WINPCK_API uint32_t pck_GetAdditionalInfoMaxSize()
 {
 	return CPckControlCenter::GetAdditionalInfoMaxSize();
 }
@@ -581,7 +583,7 @@ WINPCK_API PCKRTN	 do_DeleteFromPck(LPCWSTR szSrcPckFile, int count, ...)
 }
 
 //查询
-WINPCK_API DWORD pck_searchByName(LPCWSTR lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
+WINPCK_API uint32_t pck_searchByName(LPCWSTR lpszSearchString, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
 {
 	if (!checkIfValidPck())
 		return 0;
@@ -592,12 +594,12 @@ WINPCK_API DWORD pck_searchByName(LPCWSTR lpszSearchString, void* _in_param, SHO
 	return this_handle.SearchByName(lpszSearchString, _in_param, _showListCallback);
 }
 
-WINPCK_API DWORD pck_listByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
+WINPCK_API uint32_t pck_listByNode(LPCENTRY lpFileEntry, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
 {
 	return CPckControlCenter::ListByNode(lpFileEntry, _in_param, _showListCallback);
 }
 
-WINPCK_API DWORD do_listPathInPck(LPCWSTR szSrcPckFile, LPCWSTR lpszListPath, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
+WINPCK_API PCKRTN do_listPathInPck(LPCWSTR szSrcPckFile, LPCWSTR lpszListPath, void* _in_param, SHOW_LIST_CALLBACK _showListCallback)
 {
 	if (NULL == lpszListPath)
 		return WINPCK_ERROR;
@@ -648,17 +650,17 @@ WINPCK_API BOOL	pck_getLastErrorMsg()
 }
 
 //内存占用
-WINPCK_API DWORD	pck_getMTMemoryUsed()
+WINPCK_API uint32_t	pck_getMTMemoryUsed()
 {
 	return this_handle.getMTMemoryUsed();
 }
 
-WINPCK_API DWORD	pck_getMTMaxMemory()
+WINPCK_API uint32_t	pck_getMTMaxMemory()
 {
 	return this_handle.getMTMaxMemory();
 }
 
-WINPCK_API void		pck_setMTMaxMemory(DWORD dwMTMaxMemory)
+WINPCK_API void		pck_setMTMaxMemory(uint32_t dwMTMaxMemory)
 {
 	if (checkIfWorking())
 		return;
@@ -666,23 +668,23 @@ WINPCK_API void		pck_setMTMaxMemory(DWORD dwMTMaxMemory)
 	return this_handle.setMTMaxMemory(dwMTMaxMemory);
 }
 
-WINPCK_API DWORD	pck_getMaxMemoryAllowed()
+WINPCK_API uint32_t	pck_getMaxMemoryAllowed()
 {
 	return CPckControlCenter::getMaxMemoryAllowed();
 }
 
 //线程数
-WINPCK_API DWORD	pck_getMaxThreadUpperLimit()
+WINPCK_API uint32_t	pck_getMaxThreadUpperLimit()
 {
 	return CPckControlCenter::getMaxThreadUpperLimit();
 }
 
-WINPCK_API DWORD	pck_getMaxThread()
+WINPCK_API uint32_t	pck_getMaxThread()
 {
 	return this_handle.getMaxThread();
 }
 
-WINPCK_API void		pck_setMaxThread(DWORD dwThread)
+WINPCK_API void		pck_setMaxThread(uint32_t dwThread)
 {
 	if (checkIfWorking())
 		return;
@@ -691,22 +693,22 @@ WINPCK_API void		pck_setMaxThread(DWORD dwThread)
 }
 
 //压缩等级
-WINPCK_API DWORD	pck_getMaxCompressLevel()
+WINPCK_API uint32_t	pck_getMaxCompressLevel()
 {
 	return CPckControlCenter::getMaxCompressLevel();
 }
 
-WINPCK_API DWORD	pck_getDefaultCompressLevel()
+WINPCK_API uint32_t	pck_getDefaultCompressLevel()
 {
 	return CPckControlCenter::getDefaultCompressLevel();
 }
 
-WINPCK_API DWORD	pck_getCompressLevel()
+WINPCK_API uint32_t	pck_getCompressLevel()
 {
 	return this_handle.getCompressLevel();
 }
 
-WINPCK_API void		pck_setCompressLevel(DWORD dwCompressLevel)
+WINPCK_API void		pck_setCompressLevel(uint32_t dwCompressLevel)
 {
 	if (checkIfWorking())
 		return;
@@ -714,43 +716,43 @@ WINPCK_API void		pck_setCompressLevel(DWORD dwCompressLevel)
 	return this_handle.setCompressLevel(dwCompressLevel);
 }
 
-WINPCK_API DWORD	pck_getUIProgress()
+WINPCK_API uint32_t	pck_getUIProgress()
 {
 	return this_handle.getUIProgress();
 }
 
-WINPCK_API void		pck_setUIProgress(DWORD dwUIProgress)
+WINPCK_API void		pck_setUIProgress(uint32_t dwUIProgress)
 {
 	return this_handle.setUIProgress(dwUIProgress);
 }
 
-WINPCK_API DWORD	pck_getUIProgressUpper()
+WINPCK_API uint32_t	pck_getUIProgressUpper()
 {
 	return this_handle.getUIProgressUpper();
 }
 
 //添加/新增文件返回结果清单
-WINPCK_API DWORD	pck_getUpdateResult_OldFileCount()
+WINPCK_API uint32_t	pck_getUpdateResult_OldFileCount()
 {
 	return this_handle.GetUpdateResult_OldFileCount();
 }
 
-WINPCK_API DWORD	pck_getUpdateResult_PrepareToAddFileCount()
+WINPCK_API uint32_t	pck_getUpdateResult_PrepareToAddFileCount()
 {
 	return this_handle.GetUpdateResult_PrepareToAddFileCount();
 }
 
-WINPCK_API DWORD	pck_getUpdateResult_ChangedFileCount()
+WINPCK_API uint32_t	pck_getUpdateResult_ChangedFileCount()
 {
 	return this_handle.GetUpdateResult_ChangedFileCount();
 }
 
-WINPCK_API DWORD	pck_getUpdateResult_DuplicateFileCount()
+WINPCK_API uint32_t	pck_getUpdateResult_DuplicateFileCount()
 {
 	return this_handle.GetUpdateResult_DuplicateFileCount();
 }
 
-WINPCK_API DWORD	pck_getUpdateResult_FinalFileCount()
+WINPCK_API uint32_t	pck_getUpdateResult_FinalFileCount()
 {
 	return this_handle.GetUpdateResult_FinalFileCount();
 }
@@ -758,29 +760,34 @@ WINPCK_API DWORD	pck_getUpdateResult_FinalFileCount()
 //日志
 WINPCK_API void		log_regShowFunc(ShowLogW _ShowLogW)
 {
-	CPckControlCenter::regShowFunc(_ShowLogW);
+	Logger.PckClassLog_func_register(_ShowLogW);
 }
 
-WINPCK_API const char	log_getLogLevelPrefix(int _loglevel)
-{
-	return CPckControlCenter::getLogLevelPrefix(_loglevel);
+
+#define define_one_pck_log(_level) \
+WINPCK_API void		pck_log##_level##A(LPCSTR  _fmt, ...)\
+{\
+	va_list	ap;\
+	va_start(ap, _fmt);\
+	Logger.PrintLog(#@_level, _fmt, ap);\
+	va_end(ap);\
+}\
+WINPCK_API void		pck_log##_level##W(LPCWSTR  _fmt, ...)\
+{\
+	va_list	ap;\
+	va_start(ap, _fmt);\
+	Logger.PrintLog(#@_level, _fmt, ap);\
+	va_end(ap);\
 }
 
-WINPCK_API void		log_PrintA(const char chLevel, LPCSTR _fmt, ...)
-{
-	va_list	ap;
-	va_start(ap, _fmt);
-	CPckControlCenter::Print(chLevel, _fmt, ap);
-	va_end(ap);
-}
+define_one_pck_log(N);
+define_one_pck_log(I);
+define_one_pck_log(W);
+define_one_pck_log(E);
+define_one_pck_log(D);
 
-WINPCK_API void		log_PrintW(const char chLevel, LPCWSTR _fmt, ...)
-{
-	va_list	ap;
-	va_start(ap, _fmt);
-	CPckControlCenter::Print(chLevel, _fmt, ap);
-	va_end(ap);
-}
+#undef define_one_pck_log
+
 
 //打开、关闭、复原等事件注册
 WINPCK_API void		pck_regMsgFeedback(void* pTag, FeedbackCallback _FeedbackCallBack)

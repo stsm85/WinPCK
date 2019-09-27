@@ -50,7 +50,9 @@ void TInstApp::InitWindow(void)
 
 }
 
-TInstDlg::TInstDlg(LPTSTR cmdLine) : TDlg(IDD_MAIN)//, staticText(this)
+TInstDlg::TInstDlg(LPTSTR cmdLine) :
+	TDlg(IDD_MAIN),
+	m_logdlg(this)
 {}
 
 TInstDlg::~TInstDlg() {}
@@ -102,7 +104,8 @@ BOOL TInstDlg::EvClose()
 
 	if(bGoingToExit)return FALSE;
 
-	SetStatusBarText(0, GetLoadStr(IDS_STRING_EXITING));
+	//SetStatusBarText(0, GetLoadStr(IDS_STRING_EXITING));
+	SetStatusBarInfo(GetLoadStr(IDS_STRING_EXITING));
 
 	if(pck_isThreadWorking()) {
 		if(IDNO == MessageBox(GetLoadStr(IDS_STRING_ISEXIT), GetLoadStr(IDS_STRING_ISEXITTITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))return FALSE;
@@ -121,7 +124,7 @@ BOOL TInstDlg::EvClose()
 
 	ListView_Uninit();
 
-	delete logdlg;
+	//delete logdlg;
 
 	::PostQuitMessage(0);
 	return FALSE;
@@ -216,7 +219,7 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		MenuAbout();
 		break;
 	case ID_MENU_LOG:
-		logdlg->Show();
+		m_logdlg.Show();
 		break;
 	case ID_LISTVIEW_ENTER:
 		ListViewEnter();
@@ -231,17 +234,6 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	return	FALSE;
 }
 
-VOID TInstDlg::SetStatusBarText(int	iPart, LPCSTR	lpszText)
-{
-	SendDlgItemMessageA(IDC_STATUS, SB_SETTEXTA, iPart, (LPARAM)lpszText);
-	SendDlgItemMessageA(IDC_STATUS, SB_SETTIPTEXTA, iPart, (LPARAM)lpszText);
-}
-
-VOID TInstDlg::SetStatusBarText(int	iPart, LPCWSTR	lpszText)
-{
-	SendDlgItemMessageW(IDC_STATUS, SB_SETTEXTW, iPart, (LPARAM)lpszText);
-	SendDlgItemMessageW(IDC_STATUS, SB_SETTIPTEXTW, iPart, (LPARAM)lpszText);
-}
 
 BOOL TInstDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 {
@@ -413,24 +405,24 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 
 	if(pck_isThreadWorking())goto END_DROP;
 
-	TCHAR	szFirstFile[MAX_PATH];
+	wchar_t	szFirstFile[MAX_PATH];
 
-	DWORD dwDropFileCount = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+	DWORD dwDropFileCount = DragQueryFileW(hDrop, 0xFFFFFFFF, NULL, 0);
 
 	if(0 == dwDropFileCount)goto END_DROP;
 
 	if(1 == dwDropFileCount) {
 		if(!pck_IsValidPck()) {
 			size_t	nFirstFileLength;
-			DragQueryFile(hDrop, 0, szFirstFile, MAX_PATH);
-			nFirstFileLength = _tcsnlen(szFirstFile, MAX_PATH);
+			DragQueryFileW(hDrop, 0, szFirstFile, MAX_PATH);
+			nFirstFileLength = wcsnlen(szFirstFile, MAX_PATH);
 
 			if(7 <= nFirstFileLength) {
-				if(0 == lstrcmpi(szFirstFile + nFirstFileLength - 4, TEXT(".pck"))) {
+				if(0 == lstrcmpiW(szFirstFile + nFirstFileLength - 4, L".pck")) {
 
 					OpenPckFile(szFirstFile);
 					goto END_DROP;
-				} else if(0 == lstrcmpi(szFirstFile + nFirstFileLength - 4, TEXT(".zup"))) {
+				} else if(0 == lstrcmpiW(szFirstFile + nFirstFileLength - 4, L".zup")) {
 
 					OpenPckFile(szFirstFile);
 					goto END_DROP;
@@ -448,8 +440,8 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 
 	for(DWORD i = 0; i < dwDropFileCount; i++) {
 
-		TCHAR szFile[MAX_PATH];
-		DragQueryFile(hDrop, i, szFile, MAX_PATH);
+		wchar_t szFile[MAX_PATH];
+		DragQueryFileW(hDrop, i, szFile, MAX_PATH);
 		m_lpszFilePath.push_back(szFile);
 	}
 
