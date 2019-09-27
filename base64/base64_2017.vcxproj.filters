@@ -23,13 +23,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="base64.c">
+    <ClCompile Include="base64.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="base64_decoder.c">
+    <ClCompile Include="base64_decoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="base64_encoder.c">
+    <ClCompile Include="base64_encoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

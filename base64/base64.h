@@ -1,7 +1,7 @@
 
 #ifndef _BASE64_H_
 #define _BASE64_H_
-
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,12 +25,13 @@ extern "C" {
 #	define BEXPORT __stdcall
 #endif
 
+#define BASE64_ZUP 0
 
-BEXTERN unsigned long BEXPORT decodeBound(const void* pdata,const unsigned long data_size);
-BEXTERN unsigned long BEXPORT encodeBound(const void* pdata,const unsigned long data_size);
+BEXTERN uint32_t BEXPORT decodeBound(const char* pdata,const uint32_t data_size);
+BEXTERN uint32_t BEXPORT encodeBound(const uint32_t data_size);
 
-BEXTERN void BEXPORT base64_encode(const void* pdata,const unsigned long data_size,void* out_pcode);
-BEXTERN void BEXPORT base64_decode(const void* pdata,const unsigned long data_size,void* out_pcode);
+BEXTERN void BEXPORT base64_encode(const void* pdata,const uint32_t data_size,void* out_pcode);
+BEXTERN void BEXPORT base64_decode(const void* pdata,const uint32_t data_size,void* out_pcode);
 
 #ifdef __cplusplus
 }

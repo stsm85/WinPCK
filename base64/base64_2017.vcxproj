@@ -139,9 +139,9 @@
     <ClInclude Include="base64.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="base64.c" />
-    <ClCompile Include="base64_decoder.c" />
-    <ClCompile Include="base64_encoder.c" />
+    <ClCompile Include="base64.cpp" />
+    <ClCompile Include="base64_decoder.cpp" />
+    <ClCompile Include="base64_encoder.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

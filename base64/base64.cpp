@@ -1,25 +1,15 @@
 
 #include "base64.h"
+#include <string>
 
-unsigned int __cdecl stringlen (
-        const char * str
-        )
+BEXTERN uint32_t BEXPORT decodeBound(const char* pdata,const uint32_t data_size)
 {
-        const char *eos = str;
-
-        while( *eos++ ) ;
-
-        return( eos - str - 1 );
-}
-
-BEXTERN unsigned long BEXPORT decodeBound(const void* pdata,const unsigned long data_size)
-{
-	const unsigned char* input=(const unsigned char*)pdata;
-	unsigned long		size;
-	unsigned long		dstsize;
+	const char* input = pdata;
+	uint32_t		size;
+	uint32_t		dstsize;
 
 	if(0 == data_size){
-		size = stringlen(input);
+		size = strlen(input);
 	}else if(0 == (data_size & 0x3)){
 		size = data_size;
 	}else{
@@ -39,10 +29,8 @@ BEXTERN unsigned long BEXPORT decodeBound(const void* pdata,const unsigned long 
 	return dstsize;
 }
 
-BEXTERN unsigned long BEXPORT encodeBound(const void* pdata,const unsigned long data_size)
+BEXTERN uint32_t BEXPORT encodeBound(const uint32_t data_size)
 {
-	
-	const unsigned char* input=(const unsigned char*)pdata;
 
 	if(0 == data_size)
 		return 0;
