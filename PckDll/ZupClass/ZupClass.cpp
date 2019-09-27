@@ -20,6 +20,7 @@ CZupClass::~CZupClass()
 {
 	if(NULL != m_lpZupIndexTable)
 		free(m_lpZupIndexTable);
+	Logger.OutputVsIde(__FUNCTION__"\r\n");
 }
 
 CONST	LPPCKINDEXTABLE CZupClass::GetPckIndexTable()
@@ -37,27 +38,27 @@ void CZupClass::BuildDirTree()
 	LPPCKINDEXTABLE lpPckIndexTable = m_PckAllInfo.lpPckIndexTable;
 	LPPCKINDEXTABLE lpZupIndexTable = m_lpZupIndexTable;
 
-	for(DWORD i = 0;i < m_PckAllInfo.dwFileCount;i++) {
+	for(uint32_t i = 0;i < m_PckAllInfo.dwFileCount;i++) {
 
 		//以element\开头的都需要解码
 		//其他直接复制
 		//"element\" = 0x6d656c65, 0x5c746e656d656c65
-		if(0x6d656c65 == *(DWORD*)lpPckIndexTable->cFileIndex.szFilename) {
+		if(0x6d656c65 == *(uint32_t*)lpPckIndexTable->cFileIndex.szFilename) {
 
 			//解码文件名
 			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));
 			DecodeFilename(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, lpPckIndexTable->cFileIndex.szFilename);
 
-			BYTE	*lpbuffer = cReadfile.View(lpZupIndexTable->cFileIndex.dwAddressOffset, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
+			uint8_t	*lpbuffer = cReadfile.View(lpZupIndexTable->cFileIndex.dwAddressOffset, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
 			if(NULL == lpbuffer) {
 
-				m_PckLog.PrintLogEL(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename, __FILE__, __FUNCTION__, __LINE__);
+				Logger_el(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename);
 				return;
 			}
 
 			if(lpZupIndexTable->cFileIndex.dwFileCipherTextSize == lpZupIndexTable->cFileIndex.dwFileClearTextSize) {
 
-				lpZupIndexTable->cFileIndex.dwFileClearTextSize = *(DWORD*)lpbuffer;
+				lpZupIndexTable->cFileIndex.dwFileClearTextSize = *(uint32_t*)lpbuffer;
 
 				lpZupIndexTable->cFileIndex.dwAddressOffset += 4;
 				lpZupIndexTable->cFileIndex.dwFileCipherTextSize -= 4;
@@ -65,11 +66,11 @@ void CZupClass::BuildDirTree()
 			} else {
 
 				if(m_zlib.check_zlib_header(lpbuffer)) {
-					DWORD	dwFileBytesRead = 4;
-					m_zlib.decompress_part((BYTE*)&lpZupIndexTable->cFileIndex.dwFileClearTextSize, &dwFileBytesRead,
+					ulong_t	dwFileBytesRead = 4;
+					m_zlib.decompress_part((uint8_t*)&lpZupIndexTable->cFileIndex.dwFileClearTextSize, &dwFileBytesRead,
 						lpbuffer, lpZupIndexTable->cFileIndex.dwFileCipherTextSize, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
 				} else {
-					lpZupIndexTable->cFileIndex.dwFileClearTextSize = *(DWORD*)lpbuffer;
+					lpZupIndexTable->cFileIndex.dwFileClearTextSize = *(uint32_t*)lpbuffer;
 				}
 
 				lpZupIndexTable->cFileIndex.dwFileCipherTextSize = lpPckIndexTable->cFileIndex.dwFileClearTextSize;
@@ -91,10 +92,10 @@ void CZupClass::BuildDirTree()
 
 }
 
-BOOL CZupClass::Init(LPCTSTR szFile)
+BOOL CZupClass::Init(LPCWSTR szFile)
 {
-	_tcscpy(m_PckAllInfo.szFilename, szFile);
-	GetFileTitle(m_PckAllInfo.szFilename, m_PckAllInfo.szFileTitle, MAX_PATH);
+	wcscpy_s(m_PckAllInfo.szFilename, szFile);
+	GetFileTitleW(m_PckAllInfo.szFilename, m_PckAllInfo.szFileTitle, MAX_PATH);
 
 	if(MountPckFile(m_PckAllInfo.szFilename)) {
 

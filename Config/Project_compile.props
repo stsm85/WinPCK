@@ -7,7 +7,7 @@
       <!-- 汇编程序输出 禁用=NoListing 带源代码的程序集=AssemblyAndSourceCode -->
       <AssemblerOutput>NoListing</AssemblerOutput>
       <!-- 调试信息格式 无=None C7兼容=OldStyle 程序数据库=ProgramDatabase -->
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
 	  <!-- 运行库 多线程DLL=MultiThreadedDLL 多线程=MultiThreaded -->
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
 	  <!-- 使用完全路径 是=true 否=false -->
@@ -19,7 +19,7 @@
       <!-- 映像具有安全异常处理程序 -->
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <!-- 调试信息格式 无=false 生成调试信息(/DEBUG)=true 生成经过优化以使链接更快的调试信息 (/DEBUG:FASTLINK)=DebugFastLink 生成经过优化以共享和发布的调试信息 (/DEBUG:FULL)=DebugFull -->
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
 </Project>
