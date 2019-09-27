@@ -1,3 +1,68 @@
+Version 1.3:
+	`make install` now supports customizing the directories into
+	which binaries, headers, and libraries are installed.
+
+	`make install` now installs into /usr/local by default.
+	To change it, use e.g. `make install PREFIX=/usr`.
+
+	`make install` now works on more platforms.
+
+	The Makefile now supports overriding the optimization flags.
+
+	The compression functions now correctly handle an output data
+	buffer >= 4 GiB in size, and `gzip` and `gunzip` now correctly
+	handle multi-gigabyte files (if enough memory is available).
+
+Version 1.2:
+	Slight improvements to decompression speed.
+
+	Added an AVX-512BW implementation of Adler-32.
+
+	The Makefile now supports a user-specified installation PREFIX.
+
+	Fixed build error with some Visual Studio versions.
+
+Version 1.1:
+	Fixed crash in CRC-32 code when the prebuilt libdeflate for
+	32-bit Windows was called by a program built with Visual Studio.
+
+	Improved the worst-case decompression speed of malicious data.
+
+	Fixed build error when compiling for an ARM processor without
+	hardware floating point support.
+
+	Improved performance on the PowerPC64 architecture.
+
+	Added soname to libdeflate.so, to make packaging easier.
+
+	Added 'make install' target to the Makefile.
+
+	The Makefile now supports user-specified CPPFLAGS.
+
+	The Windows binary releases now include the import library for
+	libdeflate.dll.  libdeflate.lib is now the import library, and
+	libdeflatestatic.lib is the static library.
+
+Version 1.0:
+	Added support for multi-member gzip files.
+
+	Moved architecture-specific code into subdirectories.  If you
+	aren't using the provided Makefile to build libdeflate, you now
+	need to compile lib/*.c and lib/*/*.c instead of just lib/*.c.
+
+	Added an ARM PMULL implementation of CRC-32, which speeds up
+	gzip compression and decompression on 32-bit and 64-bit ARM
+	processors that have the Cryptography Extensions.
+
+	Improved detection of CPU features, resulting in accelerated
+	functions being used in more cases.  This includes:
+
+	   - Detect CPU features on 32-bit x86, not just 64-bit as was
+	     done previously.
+
+	   - Detect CPU features on ARM, both 32 and 64-bit.
+	     (Limited to Linux only currently.)
+
 Version 0.8:
 	Build fixes for certain platforms and compilers.
 

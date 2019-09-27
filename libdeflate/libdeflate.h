@@ -9,27 +9,42 @@
 extern "C" {
 #endif
 
-#define LIBDEFLATE_VERSION_MAJOR	0
-#define LIBDEFLATE_VERSION_MINOR	8
-#define LIBDEFLATE_VERSION_STRING	"0.8"
+#define LIBDEFLATE_VERSION_MAJOR	1
+#define LIBDEFLATE_VERSION_MINOR	3
+#define LIBDEFLATE_VERSION_STRING	"1.3"
 
 #include <stddef.h>
 #include <stdint.h>
 
 /*
  * On Windows, if you want to link to the DLL version of libdeflate, then
- * #define LIBDEFLATE_DLL.
+ * #define LIBDEFLATE_DLL.  Note that the calling convention is cdecl.
  */
 #ifdef LIBDEFLATE_DLL
 #  ifdef BUILDING_LIBDEFLATE
-#    define LIBDEFLATEAPI LIBEXPORT
+#    define LIBDEFLATEAPI_SYM_VISIBILITY	LIBEXPORT
 #  elif defined(_WIN32) || defined(__CYGWIN__)
-#    define LIBDEFLATEAPI __declspec(dllimport)
+#    define LIBDEFLATEAPI_SYM_VISIBILITY	__declspec(dllimport)
 #  endif
 #endif
-#ifndef LIBDEFLATEAPI
-#  define LIBDEFLATEAPI
+#ifndef LIBDEFLATEAPI_SYM_VISIBILITY
+#  define LIBDEFLATEAPI_SYM_VISIBILITY
 #endif
+
+#if defined(BUILDING_LIBDEFLATE) && defined(__GNUC__) && \
+	defined(_WIN32) && defined(__i386__)
+    /*
+     * On 32-bit Windows, gcc assumes 16-byte stack alignment but MSVC only 4.
+     * Realign the stack when entering libdeflate to avoid crashing in SSE/AVX
+     * code when called from an MSVC-compiled application.
+     */
+#  define LIBDEFLATEAPI_STACKALIGN	__attribute__((force_align_arg_pointer))
+#endif
+#ifndef LIBDEFLATEAPI_STACKALIGN
+#  define LIBDEFLATEAPI_STACKALIGN
+#endif
+
+#define LIBDEFLATEAPI	LIBDEFLATEAPI_SYM_VISIBILITY LIBDEFLATEAPI_STACKALIGN
 
 /* ========================================================================== */
 /*                             Compression                                    */
@@ -182,13 +197,16 @@ enum libdeflate_result {
 };
 
 /*
- * libdeflate_deflate_decompress() decompresses 'in_nbytes' bytes of
- * raw DEFLATE-compressed data at 'in' and writes the uncompressed data to
- * 'out', which is a buffer of at least 'out_nbytes_avail' bytes.  If
- * decompression was successful, then 0 (LIBDEFLATE_SUCCESS) is returned;
- * otherwise, a nonzero result code such as LIBDEFLATE_BAD_DATA is returned.  If
+ * libdeflate_deflate_decompress() decompresses the DEFLATE-compressed stream
+ * from the buffer 'in' with compressed size up to 'in_nbytes' bytes.  The
+ * uncompressed data is written to 'out', a buffer with size 'out_nbytes_avail'
+ * bytes.  If decompression succeeds, then 0 (LIBDEFLATE_SUCCESS) is returned.
+ * Otherwise, a nonzero result code such as LIBDEFLATE_BAD_DATA is returned.  If
  * a nonzero result code is returned, then the contents of the output buffer are
  * undefined.
+ *
+ * Decompression stops at the end of the DEFLATE stream (as indicated by the
+ * BFINAL flag), even if it is actually shorter than 'in_nbytes' bytes.
  *
  * libdeflate_deflate_decompress() can be used in cases where the actual
  * uncompressed size is known (recommended) or unknown (not recommended):
@@ -217,6 +235,19 @@ libdeflate_deflate_decompress(struct libdeflate_decompressor *decompressor,
 			      size_t *actual_out_nbytes_ret);
 
 /*
+ * Like libdeflate_deflate_decompress(), but adds the 'actual_in_nbytes_ret'
+ * argument.  If decompression succeeds and 'actual_in_nbytes_ret' is not NULL,
+ * then the actual compressed size of the DEFLATE stream (aligned to the next
+ * byte boundary) is written to *actual_in_nbytes_ret.
+ */
+LIBDEFLATEAPI enum libdeflate_result
+libdeflate_deflate_decompress_ex(struct libdeflate_decompressor *decompressor,
+				 const void *in, size_t in_nbytes,
+				 void *out, size_t out_nbytes_avail,
+				 size_t *actual_in_nbytes_ret,
+				 size_t *actual_out_nbytes_ret);
+
+/*
  * Like libdeflate_deflate_decompress(), but assumes the zlib wrapper format
  * instead of raw DEFLATE.
  */
@@ -229,12 +260,30 @@ libdeflate_zlib_decompress(struct libdeflate_decompressor *decompressor,
 /*
  * Like libdeflate_deflate_decompress(), but assumes the gzip wrapper format
  * instead of raw DEFLATE.
+ *
+ * If multiple gzip-compressed members are concatenated, then only the first
+ * will be decompressed.  Use libdeflate_gzip_decompress_ex() if you need
+ * multi-member support.
  */
 LIBDEFLATEAPI enum libdeflate_result
 libdeflate_gzip_decompress(struct libdeflate_decompressor *decompressor,
 			   const void *in, size_t in_nbytes,
 			   void *out, size_t out_nbytes_avail,
 			   size_t *actual_out_nbytes_ret);
+
+/*
+ * Like libdeflate_gzip_decompress(), but adds the 'actual_in_nbytes_ret'
+ * argument.  If 'actual_in_nbytes_ret' is not NULL and the decompression
+ * succeeds (indicating that the first gzip-compressed member in the input
+ * buffer was decompressed), then the actual number of input bytes consumed is
+ * written to *actual_in_nbytes_ret.
+ */
+LIBDEFLATEAPI enum libdeflate_result
+libdeflate_gzip_decompress_ex(struct libdeflate_decompressor *decompressor,
+			      const void *in, size_t in_nbytes,
+			      void *out, size_t out_nbytes_avail,
+			      size_t *actual_in_nbytes_ret,
+			      size_t *actual_out_nbytes_ret);
 
 /*
  * libdeflate_free_decompressor() frees a decompressor that was allocated with
