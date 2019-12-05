@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 #include "pck_default_vars.h"
 #include "PckModelStripDefines.h"
 

@@ -43,8 +43,9 @@ private:
 public:
 	//Ô¤ÀÀÎÄ¼þ
 	virtual BOOL	GetSingleFileData(const PCKINDEXTABLE* const lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
-private:
+protected:
 	virtual BOOL	GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* const lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer = 0);
+private:
 	//PckClassExtract.cpp
 	BOOL	StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpMapAddress);
 	BOOL	DecompressFile(const wchar_t * lpszFilename, const PCKINDEXTABLE* lpPckFileIndexTable, LPVOID lpvoidFileRead);

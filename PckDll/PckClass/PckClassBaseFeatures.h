@@ -14,8 +14,8 @@ public:
 	CPckClassBaseFeatures();
 	~CPckClassBaseFeatures();
 
-	virtual CONST	LPPCKINDEXTABLE		GetPckIndexTable();
-	virtual CONST	LPPCK_PATH_NODE		GetPckPathNode();
+	virtual const	LPPCKINDEXTABLE		GetPckIndexTable();
+	virtual const	LPPCK_PATH_NODE		GetPckPathNode();
 
 	//是否已经加载文件
 	BOOL	isFileLoaded();

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Windows.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include "gccException.h"
 
 typedef unsigned long       ulong_t;
@@ -27,8 +27,8 @@ typedef int ssize_t;
 
 
 //版本信息
-#define WINPCK_VERSION_NUMBER  1,33,0,1
-#define WINPCK_VERSION        "1.33.0.1"
+#define WINPCK_VERSION_NUMBER  1,33,0,2
+#define WINPCK_VERSION        "1.33.0.2"
 
 //调度输出
 #ifdef _DEBUG

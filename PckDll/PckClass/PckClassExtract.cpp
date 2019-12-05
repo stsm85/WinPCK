@@ -20,7 +20,7 @@ BOOL CPckClass::GetSingleFileData(const PCKINDEXTABLE* const lpPckFileIndexTable
 	if (!cFileRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
 		return FALSE;
 	}
-	return GetSingleFileData(&cFileRead, lpPckFileIndexTable, buffer, sizeOfBuffer);
+	return CPckClass::GetSingleFileData(&cFileRead, lpPckFileIndexTable, buffer, sizeOfBuffer);
 }
 
 BOOL CPckClass::GetSingleFileData(LPVOID lpvoidFileRead, const PCKINDEXTABLE* const lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer)

@@ -9,8 +9,8 @@
 // 2015.5.13
 //////////////////////////////////////////////////////////////////////
 
+#include <windows.h>
 #include "PckDefines.h"
-//#include "pck_dependencies.h"
 #include <vector>
 
 #if !defined(_PCKSTRUCTS_H_)
