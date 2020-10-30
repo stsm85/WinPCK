@@ -63,11 +63,10 @@
 typedef PCKHEAD_V2030 PCKHEAD_VXAJH, *LPPCKHEAD_VXAJH;
 
 
-static vector<PCK_VERSION_FUNC>	cPckVersionFunc;
+static std::vector<PCK_VERSION_FUNC>	cPckVersionFunc;
 
 typedef struct _PCK_VERSION_ID
 {
-	int			id;
 	wchar_t		name[64];
 	PCK_CATEGORY	VersionId;
 	DWORD		Version;
@@ -95,36 +94,32 @@ protected:
 
 private:
 
-	static const PCK_VERSION_ID			cPckIDs[];
-	static const PCK_KEYS				cPckSPKeys[];
-	static const PCK_VERSION_FUNC		cPckSPVersionFunc[];
+	static const std::vector <PCK_VERSION_ID>		cPckIDs;
+	static const std::vector<PCK_KEYS>				cPckSPKeys;
+	static const std::vector<PCK_VERSION_FUNC>		cPckSPVersionFunc;
 
 	//填充版本信息
 	static void		FillGeneralVersionInfo();
 	static void		FillSpecialVersionInfo();
+	template<typename T_HEAD, typename T_TAIL, typename T_INDEX>
+	static int		FillVaryVersionInfo(int verID);
 	static int		FillUnknownVersionInfo(DWORD AlgorithmId, DWORD Version);
 
 	//PCK版本判断
 	static void		SetAlgorithmId(DWORD id, LPPCK_VERSION_FUNC lpPckVersionFunc);
-
-	//文件头、尾的数据填写和数据写入
-	static void*	FillHeadData_V2020(void *param);
-	static void*	FillHeadData_V2030(void *param);
-
-	static void*	FillTailData_V2020(void *param);
-	static void*	FillTailData_V2030(void *param);
-	static void*	FillTailData_VXAJH(void *param);
-
-	static void*	FillIndexData_V2020(void *param, void *pckFileIndexBuf);
-	static void*	FillIndexData_V2030(void *param, void *pckFileIndexBuf);
-	static void*	FillIndexData_VXAJH(void *param, void *pckFileIndexBuf);
-
-	//数据从lpIndex -> param
-	static BOOL		PickIndexData_V2020(void *param, void* lpIndex);
-	static BOOL		PickIndexData_V2030(void *param, void* lpIndex);
-	static BOOL		PickIndexData_VXAJH(void *param, void* lpIndex);
-
 	void	PrintInvalidVersionDebugInfo(const wchar_t * lpszPckFile);
 
+};
 
+class detectversion_error : public std::exception { // base of all generic_error exceptions
+public:
+	explicit detectversion_error(const char* prefix, const std::string& _Message) { buf.assign(prefix); buf.append(_Message); }
+	explicit detectversion_error(const char* prefix, const char* _Message) { buf.assign(prefix); buf.append(_Message); }
+	explicit detectversion_error(const std::string& _Message) { buf = _Message; }
+	explicit detectversion_error(const char* _Message) { buf.assign(_Message); }
+
+	virtual char const* what() const { return buf.c_str(); };
+
+protected:
+	std::string buf;
 };

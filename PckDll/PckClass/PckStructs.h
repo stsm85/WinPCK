@@ -12,6 +12,7 @@
 #include <windows.h>
 #include "PckDefines.h"
 #include <vector>
+#include <string>
 
 #if !defined(_PCKSTRUCTS_H_)
 #define _PCKSTRUCTS_H_
@@ -20,7 +21,7 @@
 typedef struct _PCK_KEYS
 {
 	int32_t			id;
-	wchar_t			name[64];
+	std::wstring	name;
 	PCK_CATEGORY	CategoryId;
 	uint32_t		Version;
 	//head
@@ -136,6 +137,17 @@ typedef struct _PCK_TAIL_V2030
 	uint32_t		dwVersion;
 }PCKTAIL_V2030, *LPPCKTAIL_V2030;
 
+typedef struct _PCK_TAIL_V2030_V2
+{
+	uint32_t		dwIndexTableCheckHead;
+	uint32_t		dwVersion0;
+	uint64_t		dwEntryOffset;
+	char			szAdditionalInfo[PCK_ADDITIONAL_INFO_SIZE];
+	uint64_t		dwIndexTableCheckTail;
+	uint32_t		dwFileCount;
+	uint32_t		dwVersion;
+}PCKTAIL_V2030_V2, * LPPCKTAIL_V2030_V2;
+
 typedef struct _PCK_TAIL_VXAJH
 {
 	uint32_t		dwIndexTableCheckHead;
@@ -174,6 +186,16 @@ typedef struct _PCK_FILE_INDEX_V2030
 	uint32_t		dwFileCipherTextSize;
 	uint32_t		dwUnknown2;
 }PCKFILEINDEX_V2030, *LPPCKFILEINDEX_V2030;
+
+typedef struct 
+{
+	char			szFilename[MAX_PATH_PCK_256];
+	uint32_t		dwUnknown1;
+	uint64_t		dwAddressOffset;
+	uint32_t		dwFileClearTextSize;
+	uint32_t		dwFileCipherTextSize;
+	uint32_t		dwUnknown2;
+}PCKFILEINDEX_V2030_V2, * LPPCKFILEINDEX_V2030_V2;
 
 
 #if PCK_V2031_ENABLE

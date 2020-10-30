@@ -65,7 +65,7 @@ BOOL CPckControlCenter::Open(const wchar_t * lpszFile)
 			m_lpPckRootNode = m_lpClassPck->GetPckPathNode();
 
 			//打开成功，刷新标题
-			pFeedbackCallBack(pTag, PCK_FILE_OPEN_SUCESS, NULL, (ssize_t)(m_lpClassPck->GetPckVersion()->name));
+			pFeedbackCallBack(pTag, PCK_FILE_OPEN_SUCESS, NULL, (ssize_t)(m_lpClassPck->GetPckVersion()->name.c_str()));
 			return TRUE;
 
 		} else {
@@ -271,7 +271,7 @@ LPCWSTR	CPckControlCenter::GetCurrentVersionName()
 	if (NULL == m_lpClassPck)
 		return NULL;
 
-	return m_lpClassPck->GetPckVersion()->name;
+	return m_lpClassPck->GetPckVersion()->name.c_str();
 }
 
 uint32_t	CPckControlCenter::GetVersionCount()

@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include "StopWatch.h"
 
-BOOL TInstDlg::OpenPckFile(wchar_t *lpszFileToOpen, BOOL isReOpen)
+BOOL TInstDlg::OpenPckFile(const wchar_t *lpszFileToOpen, BOOL isReOpen)
 {
 
 	CStopWatch	timer;

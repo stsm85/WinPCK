@@ -32,9 +32,9 @@ private:
 		 "delete;;"
 		 "rmdir;;;";
 
-	vector<wstring>		m_ScriptLines;
-	vector<FILEOP>		m_FirstFileOp;
-	vector<LPPCKINDEXTABLE>	m_EditedNode;
+	std::vector<std::wstring>		m_ScriptLines;
+	std::vector<FILEOP>		m_FirstFileOp;
+	std::vector<LPPCKINDEXTABLE>	m_EditedNode;
 
 	BOOL	OpenScriptFileAndConvBufToUcs2(const wchar_t * lpszScriptFile);
 

@@ -41,7 +41,7 @@
 #include <richedit.h>
 #include "commctrl.h"
 //#include <regstr.h>
-//#include <shlobj.h>
+#include <shlobj.h>
 //#include <tchar.h>
 #include "tapi32ex.h"
 //#include "tapi32v.h"
@@ -554,11 +554,11 @@ BOOL TIsUserAnAdmin();
 BOOL TSetThreadLocale(int lcid);
 BOOL TChangeWindowMessageFilter(UINT msg, DWORD flg);
 
-BOOL InstallExceptionFilter(char *title, char *info);
+BOOL InstallExceptionFilter(const char *title, const char *info);
 #ifdef _DEBUG
-void DebugA(char *fmt,...);
-void DebugW(WCHAR *fmt,...);
-void DebugU8(char *fmt,...);
+void DebugA(const char *fmt,...);
+void DebugW(const WCHAR *fmt,...);
+void DebugU8(const char *fmt,...);
 #ifdef UNICODE
 #define Debug  DebugW
 #else

@@ -30,7 +30,7 @@ public:
 #pragma region PckClassAppendFiles.cpp
 public:
 	//新建、更新pck文件
-	virtual BOOL	UpdatePckFile(const wchar_t * szPckFile, const vector<wstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert);
+	virtual BOOL	UpdatePckFile(const wchar_t * szPckFile, const std::vector<std::wstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert);
 #pragma endregion
 #pragma region PckClassRenamer.cpp
 
@@ -41,6 +41,6 @@ public:
 #pragma endregion
 
 private:
-	vector<FILES_TO_COMPRESS>	m_FilesToBeAdded;
+	std::vector<FILES_TO_COMPRESS>	m_FilesToBeAdded;
 };
 

@@ -14,7 +14,7 @@
 #include <Windows.h>
 #include "GetDragPath.h"
 
-static char  *hexstr = "0123456789abcdef";
+const static char  *hexstr = "0123456789abcdef";
 
 
 inline char hexchar2char(wchar_t ch)

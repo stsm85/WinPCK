@@ -34,7 +34,7 @@ public:
 	virtual BOOL	StripPck(LPCWSTR lpszStripedPckFile, int flag) override { Logger.e(TEXT_NOTSUPPORT); return FALSE; }
 
 	//新建、更新pck文件
-	virtual BOOL	UpdatePckFile(LPCWSTR szPckFile, const vector<wstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert) override { Logger.e(TEXT_NOTSUPPORT);return FALSE; }
+	virtual BOOL	UpdatePckFile(LPCWSTR szPckFile, const std::vector<std::wstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert) override{ Logger.e(TEXT_NOTSUPPORT);return FALSE; }
 
 	//重命名文件
 	virtual BOOL	RenameFilename() override { Logger.e(TEXT_NOTSUPPORT);return FALSE; }

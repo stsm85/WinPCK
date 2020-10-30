@@ -143,7 +143,7 @@ QWORD CPckClassFileDisk::GetPckFilesizeByCompressed(LPCWSTR lpszFilename, QWORD 
 }
 
 //////////////////////////以下是程序过程中需要调用的过程///////////////////////////////
-VOID CPckClassFileDisk::EnumFile(LPWSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, vector<FILES_TO_COMPRESS> *lpFileLinkList, QWORD &qwTotalFileSize, size_t nLen)
+VOID CPckClassFileDisk::EnumFile(LPWSTR szFilename, BOOL IsPatition, DWORD &dwFileCount, std::vector<FILES_TO_COMPRESS> *lpFileLinkList, QWORD &qwTotalFileSize, size_t nLen)
 {
 
 	wchar_t		szPath[MAX_PATH], szFile[MAX_PATH];
@@ -203,7 +203,7 @@ VOID CPckClassFileDisk::EnumFile(LPWSTR szFilename, BOOL IsPatition, DWORD &dwFi
 
 }
 
-BOOL CPckClassFileDisk::EnumAllFilesByPathList(const vector<wstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, vector<FILES_TO_COMPRESS> *lpFileLinkList)
+BOOL CPckClassFileDisk::EnumAllFilesByPathList(const std::vector<std::wstring> &lpszFilePath, DWORD &_out_FileCount, QWORD &_out_TotalFileSize, std::vector<FILES_TO_COMPRESS> *lpFileLinkList)
 {
 	wchar_t		szPathMbsc[MAX_PATH];
 	DWORD		dwAppendCount = lpszFilePath.size();

@@ -152,7 +152,7 @@ int CPckClassZlib::decompress_part(void *dest, ulong_t  *destLen, const void *so
 	assert(0 != *destLen);
 
 	if (Z_OK != rtn && !((Z_BUF_ERROR == rtn) && ((partlen == (*destLen)) || ((*destLen) < fullDestLen)))) {
-		char *lpReason;
+		const char *lpReason;
 		switch (rtn) {
 		case Z_NEED_DICT:
 			lpReason = "ÐèÒª×Öµä";

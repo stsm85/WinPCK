@@ -1,4 +1,4 @@
-static char *tmisc_id = 
+const static char *tmisc_id = 
 	"@(#)Copyright (C) 1996-2010 H.Shirouzu		tmisc.cpp	Ver0.99";
 /* ========================================================================
 	Project  Name			: Win32 Lightweight  Class Library Test
@@ -224,11 +224,13 @@ BOOL TSetPrivilege(LPTSTR pszPrivilege, BOOL bEnable)
 }
 */
 
+#if _USE_HEX2BIN_
+
 /*=========================================================================
 	bin <-> hex
 =========================================================================*/
-static char  *hexstr   =  "0123456789abcdef";
-static WCHAR *hexstr_w = L"0123456789abcdef";
+const static char  *hexstr   =  "0123456789abcdef";
+const static WCHAR *hexstr_w = L"0123456789abcdef";
 
 inline u_char hexchar2char(u_char ch)
 {
@@ -311,13 +313,13 @@ _int64 hex2ll(char *buf)
 	}
 	return	ret;
 }
-
+#endif
 
 /*=========================================================================
 	Debug
 =========================================================================*/
 #ifdef _DEBUG
-void DebugA(char *fmt,...)
+void DebugA(const char *fmt,...)
 {
 	char buf[8192];
 
@@ -328,7 +330,7 @@ void DebugA(char *fmt,...)
 	::OutputDebugStringA(buf);
 }
 
-void DebugW(WCHAR *fmt,...)
+void DebugW(const WCHAR *fmt,...)
 {
 	WCHAR buf[8192];
 
@@ -341,7 +343,7 @@ void DebugW(WCHAR *fmt,...)
 
 
 #ifdef DEBUG_U8
-void DebugU8(char *fmt,...)
+void DebugU8(const char *fmt,...)
 {
 	char buf[8192];
 
@@ -361,7 +363,7 @@ void DebugU8(char *fmt,...)
 =========================================================================*/
 static char *ExceptionTitle;
 static char *ExceptionLogFile;
-static char *ExceptionLogInfo;
+const static char *ExceptionLogInfo;
 #define STACKDUMP_SIZE		256
 #define MAX_STACKDUMP_SIZE	8192
 
@@ -447,7 +449,7 @@ LONG WINAPI Local_UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *info)
 	return	EXCEPTION_EXECUTE_HANDLER;
 }
 
-BOOL InstallExceptionFilter(char *title, char *info)
+BOOL InstallExceptionFilter(const char *title, const char *info)
 {
 	char	buf[MAX_PATH];
 
@@ -503,7 +505,7 @@ int strncmpi(const char *str1, const char *str2, int num)
 	return	0;
 }
 
-#ifdef _USE_T_CHARCONV_
+#if _USE_T_CHARCONV_
 /*=========================================================================
 	UCS2(W) - ANSI(A) ‘ŠŒÝ•ÏŠ·
 =========================================================================*/

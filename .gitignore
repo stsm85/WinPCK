@@ -41,6 +41,8 @@
 .vs/*
 build/*
 Debug/*
+Release/*.pdb
+Release_static/*.pdb
 Release/libs/*
 Release_static/libs/*
 Release/dlltester_*.exe

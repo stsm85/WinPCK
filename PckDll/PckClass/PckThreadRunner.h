@@ -21,8 +21,8 @@ class CPckClassWriteOperator;
 
 typedef struct _DataFetchMethod
 {
-	vector<FILES_TO_COMPRESS>::const_iterator ciFilesList;
-	vector<FILES_TO_COMPRESS>::const_iterator ciFilesListEnd;
+	std::vector<FILES_TO_COMPRESS>::const_iterator ciFilesList;
+	std::vector<FILES_TO_COMPRESS>::const_iterator ciFilesListEnd;
 
 	CMapViewFileMultiPckRead		*lpFileReadPCK;
 	LPPCKINDEXTABLE					lpPckIndexTablePtrSrc;
@@ -107,8 +107,8 @@ private:
 	std::condition_variable		m_cvReadyToPut, m_cvMemoryNotEnough;
 	BOOL						m_memoryNotEnoughBlocked = FALSE;
 
-	deque<PCKINDEXTABLE>		m_QueueContent;
-	vector<PCKINDEXTABLE_COMPRESS> m_Index_Compress;
+	std::deque<PCKINDEXTABLE>		m_QueueContent;
+	std::vector<PCKINDEXTABLE_COMPRESS> m_Index_Compress;
 
 
 

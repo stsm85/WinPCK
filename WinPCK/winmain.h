@@ -4,6 +4,7 @@
 #include "miscdlg.h"
 #include "tLogDlg.h"
 #include <Shobjidl.h>
+#include <string>
 
 class TInstDlg : public TDlg
 {
@@ -47,7 +48,7 @@ private:
 	wchar_t	m_szStrToSearch[256];
 
 	//addmode
-	vector<wstring>	m_lpszFilePath;
+	std::vector<std::wstring>	m_lpszFilePath;
 
 	//用于找窗口的变量
 	BOOL	m_isSearchWindow;
@@ -89,7 +90,7 @@ private:
 
 
 	//mainfunc.cpp
-	BOOL OpenPckFile(wchar_t *lpszFileToOpen = L"", BOOL isReOpen = FALSE);
+	BOOL OpenPckFile(const wchar_t *lpszFileToOpen = L"", BOOL isReOpen = FALSE);
 	VOID SearchPckFiles();
 	VOID ShowPckFiles(const PCK_UNIFIED_FILE_ENTRY* lpNodeToShow);
 

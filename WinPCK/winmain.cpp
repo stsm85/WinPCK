@@ -403,13 +403,20 @@ BOOL TInstDlg::EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis)
 BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 {
 
-	if(pck_isThreadWorking())goto END_DROP;
+	if (pck_isThreadWorking()) {
+		DragFinish(hDrop);
+		return	TRUE;
+	}
 
 	wchar_t	szFirstFile[MAX_PATH];
 
 	DWORD dwDropFileCount = DragQueryFileW(hDrop, 0xFFFFFFFF, NULL, 0);
 
-	if(0 == dwDropFileCount)goto END_DROP;
+	if (0 == dwDropFileCount) {
+
+		DragFinish(hDrop);
+		return	TRUE;
+	}
 
 	if(1 == dwDropFileCount) {
 		if(!pck_IsValidPck()) {
@@ -421,18 +428,25 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 				if(0 == lstrcmpiW(szFirstFile + nFirstFileLength - 4, L".pck")) {
 
 					OpenPckFile(szFirstFile);
-					goto END_DROP;
+					DragFinish(hDrop);
+					return	TRUE;
+
 				} else if(0 == lstrcmpiW(szFirstFile + nFirstFileLength - 4, L".zup")) {
 
 					OpenPckFile(szFirstFile);
-					goto END_DROP;
+					DragFinish(hDrop);
+					return	TRUE;
+
 				}
 			}
 		}
 	}
 
-	if(IDCANCEL == MessageBoxW(L"确定添加这些文件吗？", L"询问", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2))
-		goto END_DROP;
+	if(IDCANCEL == MessageBoxW(L"确定添加这些文件吗？", L"询问", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2)) {
+
+		DragFinish(hDrop);
+		return	TRUE;
+	}
 
 	DragAcceptFiles(hWnd, FALSE);
 
@@ -448,8 +462,6 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 	_beginthread(UpdatePckFile, 0, this);
 
 
-END_DROP:
 	DragFinish(hDrop);
-	DragAcceptFiles(hWnd, TRUE);
 	return	TRUE;
 }

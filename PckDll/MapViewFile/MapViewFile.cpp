@@ -55,7 +55,7 @@ void CMapViewFile::clear()
 
 void CMapViewFile::MakeUnlimitedPath(LPWSTR _dst, LPCWSTR	_src, size_t size)
 {
-	WCHAR	*prefix;
+	const WCHAR	*prefix;
 	// (isUNC ? 1 : 0) ... PATH_UNC_PREFIX §Œàˆ∫œ°¢\\server -> \\?\UNC\server 
 	//  §À§π§Î§ø§·°¢\\server §ŒÓ^§Œ \ §Ú“ª§ƒù¢§π°£
 	BOOL	isUNC = ('\\' == *_src) ? _src++, TRUE : FALSE;
@@ -69,7 +69,7 @@ void CMapViewFile::MakeUnlimitedPath(LPWSTR _dst, LPCWSTR	_src, size_t size)
 
 void CMapViewFile::MakeUnlimitedPath(LPSTR _dst, LPCSTR _src, size_t size)
 {
-	char	*prefix;
+	const char	*prefix;
 	BOOL	isUNC = ('\\' == *_src) ? _src++, TRUE : FALSE;
 	prefix = isUNC ? PATH_UNC_PREFIX : PATH_LOCAL_PREFIX;
 

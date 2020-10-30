@@ -2,7 +2,7 @@
 #include "PckClassWriteOperator.h"
 
 //新建、更新pck包
-BOOL CPckClassWriteOperator::UpdatePckFile(const wchar_t * szPckFile, const vector<wstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert)
+BOOL CPckClassWriteOperator::UpdatePckFile(const wchar_t * szPckFile, const std::vector<std::wstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert)
 {
 	DWORD		dwNewFileCount = 0;			//文件数量, 原pck文件中的文件数
 	DWORD		dwDuplicateFileCount = 0;

@@ -85,7 +85,7 @@ BOOL CPckClassWriteOperator::RebuildPckFile(const wchar_t * szRebuildPckFile)
 	if(!cFileWrite.OpenPckAndMappingWrite(szRebuildPckFile, CREATE_ALWAYS, dwTotalFileSizeAfterRebuild))
 		return FALSE;
 
-	vector<PCKINDEXTABLE_COMPRESS> cPckIndexTable(dwValidFileCount);
+	std::vector<PCKINDEXTABLE_COMPRESS> cPckIndexTable(dwValidFileCount);
 
 	//不使用Enum进行遍历处理，改用_PCK_INDEX_TABLE
 

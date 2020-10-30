@@ -105,7 +105,7 @@ BOOL OpenSingleFile(HWND hWnd, TCHAR * lpszFileName, LPCTSTR lpstrFilter, DWORD 
 }
 
 
-BOOL OpenFiles(HWND hWnd, vector<wstring> &lpszFilePathArray)
+BOOL OpenFiles(HWND hWnd, std::vector<std::wstring> &lpszFilePathArray)
 {
 
 	OPENFILENAME ofn;

@@ -1,15 +1,12 @@
 #ifndef _GCC_EXCEPTION_H
 #define _GCC_EXCEPTION_H
 
-using namespace std;
-
 #if defined(_MSC_VER)
-#include <exception>
-#define MyException exception
+#include <stdexcept>
+#define MyException std::exception
 
 #else
 #include <string>
-
 class MyException
 {
 public:

@@ -44,7 +44,7 @@ BOOL CPckClassIndexWriter::WriteAllIndex(CMapViewFileMultiPckWrite *lpWrite, LPP
 
 	lpPckAllInfo->dwFileCount = dwFinalFileCount;
 
-	const vector<PCKINDEXTABLE_COMPRESS> *lpCompedPckIndexTableNew = lpPckAllInfo->lpPckIndexTableToAdd;
+	const std::vector<PCKINDEXTABLE_COMPRESS> *lpCompedPckIndexTableNew = lpPckAllInfo->lpPckIndexTableToAdd;
 
 	DWORD dwNewPckFileCount = lpPckAllInfo->dwFileCountToAdd;
 #if PCK_DEBUG_OUTPUT

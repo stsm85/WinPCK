@@ -15,7 +15,6 @@
 #include <windows.h>
 #include <assert.h>
 #include <vector>
-using namespace std;
 
 #ifndef UNICODE
 #error("please use Unicode charset") 

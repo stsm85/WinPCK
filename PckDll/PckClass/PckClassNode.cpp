@@ -370,7 +370,7 @@ BOOL CPckClassNode::GetCurrentNodeString(wchar_t *szCurrentNodePathString, const
 
 BOOL CPckClassNode::FindDuplicateNodeFromFileList(const PCK_PATH_NODE* lpNodeToInsertPtr, DWORD &_in_out_DuplicateFileCount)
 {
-	vector<FILES_TO_COMPRESS> *lpFilesList = m_PckAllInfo.lpFilesToBeAdded;
+	std::vector<FILES_TO_COMPRESS> *lpFilesList = m_PckAllInfo.lpFilesToBeAdded;
 	size_t sizeOfFileList = lpFilesList->size();
 
 	for(size_t i=0;i<sizeOfFileList;i++){

@@ -1,9 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ShowPlatformName>false</ShowPlatformName>
-    <VSPlatformName Condition="('$(PlatformToolset)'=='v141') And ('$(ShowPlatformName)'=='true')">VS2017</VSPlatformName>
-    <VSPlatformName Condition="'$(ShowPlatformName)'=='false'"></VSPlatformName>
+    <!--检测是否是Debug编译-->
+    <UseDebugLibraries Condition="('$(UseDebugLibraries)'=='') And ('$(Configuration)'=='Debug')">true</UseDebugLibraries>
+    <UseDebugLibraries Condition="('$(UseDebugLibraries)'=='')">false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!--<ShowPlatformName>false</ShowPlatformName>
+    <VSPlatformName Condition="('$(VisualStudioVersion)'=='16.0') And ('$(ShowPlatformName)'=='true')">VS2019</VSPlatformName>
+    <VSPlatformName Condition="'$(ShowPlatformName)'=='false'"></VSPlatformName>-->
     <IntDirName>build</IntDirName>
     <!-- 生成文件=Makefile 应用程序(.exe)=Application dll=DynamicLibrary lib=StaticLibrary 实用工具=Utility -->
     <IsExecuteFile Condition="('$(ConfigurationType)'=='Application') Or ('$(ConfigurationType)'=='DynamicLibrary')">true</IsExecuteFile>

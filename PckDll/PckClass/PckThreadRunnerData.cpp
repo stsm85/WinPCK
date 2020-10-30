@@ -13,7 +13,7 @@ FETCHDATA_RET CPckThreadRunner::GetUncompressedDataFromFile(LPDATA_FETCH_METHOD 
 		if (lpDataFetchMethod->ciFilesList == lpDataFetchMethod->ciFilesListEnd)
 			return FD_END;
 
-		vector<FILES_TO_COMPRESS>::const_pointer lpOneFile = &lpDataFetchMethod->ciFilesList[0];
+		std::vector<FILES_TO_COMPRESS>::const_pointer lpOneFile = &lpDataFetchMethod->ciFilesList[0];
 		lpDataFetchMethod->ciFilesList++;
 		lckCompressedflag.unlock();
 

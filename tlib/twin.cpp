@@ -1,4 +1,4 @@
-static char *twin_id = 
+const static char *twin_id = 
 	"@(#)Copyright (C) 1996-2009 H.Shirouzu		twin.cpp	Ver0.97";
 /* ========================================================================
 	Project  Name			: Win32 Lightweight  Class Library Test

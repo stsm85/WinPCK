@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-using namespace std;
 
 typedef std::function<void(const char, const wchar_t*)> InsertLogFunc;
 typedef std::function<void(const wchar_t*)> SetStatusBarInfoFunc;

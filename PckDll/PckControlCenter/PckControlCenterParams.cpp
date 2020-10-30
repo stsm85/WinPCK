@@ -90,7 +90,7 @@ void CPckControlCenter::setMaxThread(uint32_t dwThread)
 //线程默认参数
 uint32_t CPckControlCenter::getMaxThreadUpperLimit()
 {
-	return (thread::hardware_concurrency() + ((thread::hardware_concurrency() + (thread::hardware_concurrency() & 1)) >> 1));
+	return (std::thread::hardware_concurrency() + ((std::thread::hardware_concurrency() + (std::thread::hardware_concurrency() & 1)) >> 1));
 }
 
 #pragma endregion

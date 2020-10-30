@@ -308,6 +308,9 @@
     <ClInclude Include="PckClass\PckThreadRunner.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
+    <ClInclude Include="PckClass\PckClassVersionFillDataTemplate.h">
+      <Filter>头文件\PckClass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="pckdll.rc">

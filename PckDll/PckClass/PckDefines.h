@@ -31,12 +31,12 @@ typedef enum _FMTPCK
 	FMTPCK_UNKNOWN = 0x7fffffff
 }FMTPCK;
 
-typedef enum _PCKVER
+enum class PCK_CATEGORY
 {
 	PCK_V2020,
 	PCK_V2030,
 	PCK_VXAJH
-}PCK_CATEGORY;
+};
 
 //LOG INFO STRING
 #define TEXT_LOG_OPENFILE				"打开文件 %s"

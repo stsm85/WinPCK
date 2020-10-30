@@ -1,4 +1,4 @@
-static char *tapp_id = 
+const static char *tapp_id = 
 	"@(#)Copyright (C) 1996-2009 H.Shirouzu		tapp.cpp	Ver0.99";
 /* ========================================================================
 	Project  Name			: Win32 Lightweight  Class Library Test
