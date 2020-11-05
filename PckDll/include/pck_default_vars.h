@@ -27,8 +27,8 @@ typedef int ssize_t;
 
 
 //版本信息
-#define WINPCK_VERSION_NUMBER  1,34,0,0
-#define WINPCK_VERSION        "1.34.0.0"
+#define WINPCK_VERSION_NUMBER  1,34,1,0
+#define WINPCK_VERSION        "1.34.1.0"
 
 //调度输出
 #ifdef _DEBUG

@@ -48,6 +48,9 @@ int CPckClassZlib::init_compressor(int level)
 
 int CPckClassZlib::check_zlib_header(void *data)
 {
+	if (0x78 != *(char*)data)
+		return 0;
+
 	char cDeflateFlag = (*(char*)data) & 0xf;
 	if (Z_DEFLATED != cDeflateFlag)
 		return 0;

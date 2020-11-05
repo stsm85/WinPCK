@@ -67,11 +67,22 @@ static std::vector<PCK_VERSION_FUNC>	cPckVersionFunc;
 
 typedef struct _PCK_VERSION_ID
 {
-	wchar_t		name[64];
+	wchar_t			name[64];
 	PCK_CATEGORY	VersionId;
-	DWORD		Version;
-	DWORD		AlgorithmId;
-}PCK_VERSION_ID, *LPPCK_VERSION_ID;
+	uint32_t		Version;
+	uint32_t		AlgorithmId;
+}PCK_VERSION_ID;
+
+typedef struct _PCK_SP_VERSION_ID
+{
+	wchar_t			name[64];
+	uint32_t		Version;
+	uint32_t		AlgorithmId;
+	uint32_t		SafeHeaderTag1 = AFPCK_SAFEHEAFER_TAG1;
+	uint32_t		SafeHeaderTag2 = 0xffffffff;
+	uint64_t		MaskDword = 0xffffffff;
+	uint32_t		MaxPackageSize = MAX_FILE_PACKAGE;
+}PCK_SP_VERSION_ID;
 
 class CPckClassVersionDetect :
 	private virtual CPckClassBaseFeatures
@@ -95,18 +106,18 @@ protected:
 private:
 
 	static const std::vector <PCK_VERSION_ID>		cPckIDs;
+	static const std::map <PCK_CATEGORY, PCK_SP_VERSION_ID>	cPckSPIDs;
 	static const std::vector<PCK_KEYS>				cPckSPKeys;
 	static const std::vector<PCK_VERSION_FUNC>		cPckSPVersionFunc;
 
 	//填充版本信息
 	static void		FillGeneralVersionInfo();
 	static void		FillSpecialVersionInfo();
-	template<typename T_HEAD, typename T_TAIL, typename T_INDEX>
-	static int		FillVaryVersionInfo(int verID);
 	static int		FillUnknownVersionInfo(DWORD AlgorithmId, DWORD Version);
 
 	//PCK版本判断
-	static void		SetAlgorithmId(DWORD id, LPPCK_VERSION_FUNC lpPckVersionFunc);
+	static void		SetAlgorithmId(DWORD id, PCK_VERSION_FUNC* lpPckVersionFunc);
+	static void		SetDataFmtFunc(PCK_VERSION_FUNC* lpPckVersionFunc);
 	void	PrintInvalidVersionDebugInfo(const wchar_t * lpszPckFile);
 
 };

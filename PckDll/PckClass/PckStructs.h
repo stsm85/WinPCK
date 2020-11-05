@@ -137,7 +137,7 @@ typedef struct _PCK_TAIL_V2030
 	uint32_t		dwVersion;
 }PCKTAIL_V2030, *LPPCKTAIL_V2030;
 
-typedef struct _PCK_TAIL_V2030_V2
+typedef struct _PCK_TAIL_VMXXDL
 {
 	uint32_t		dwIndexTableCheckHead;
 	uint32_t		dwVersion0;
@@ -146,7 +146,7 @@ typedef struct _PCK_TAIL_V2030_V2
 	uint64_t		dwIndexTableCheckTail;
 	uint32_t		dwFileCount;
 	uint32_t		dwVersion;
-}PCKTAIL_V2030_V2, * LPPCKTAIL_V2030_V2;
+}PCKTAIL_VMXXDL, * LPPCKTAIL_VMXXDL;
 
 typedef struct _PCK_TAIL_VXAJH
 {
@@ -195,7 +195,7 @@ typedef struct
 	uint32_t		dwFileClearTextSize;
 	uint32_t		dwFileCipherTextSize;
 	uint32_t		dwUnknown2;
-}PCKFILEINDEX_V2030_V2, * LPPCKFILEINDEX_V2030_V2;
+}PCKFILEINDEX_VMXXDL, * LPPCKFILEINDEX_VMXXDL;
 
 
 #if PCK_V2031_ENABLE

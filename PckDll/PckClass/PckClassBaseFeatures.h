@@ -7,6 +7,7 @@
 #include "PckClassZlib.h"
 
 #include <vector>
+#include <map>
 
 class CPckClassBaseFeatures 
 {
