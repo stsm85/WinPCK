@@ -1,8 +1,7 @@
 
-#include "tPreviewDlg.h"
-#include <tchar.h>
-#include "DdsTgaDecoderDefine.h"
+#include "guipch.h"
 
+#include "tPreviewDlg.h"
 
 CPriviewInDlg::CPriviewInDlg() : m_buffer(NULL), dlg(NULL) {};
 CPriviewInDlg::~CPriviewInDlg()
@@ -99,7 +98,7 @@ BOOL CPriviewInDlg::Show(const PCK_UNIFIED_FILE_ENTRY* const lpPckFileIndexToSho
 	if(NULL == m_buffer) {
 
 		if(0 != dwSize)
-			pck_logEA(TEXT_MALLOC_FAIL);
+			pck_logEA("malloc memory fail");
 
 		delete dlg;
 		return FALSE;

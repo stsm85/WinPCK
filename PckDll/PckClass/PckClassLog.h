@@ -1,9 +1,5 @@
 #pragma once
-//#include <Windows.h>
 #include "PckDefines.h"
-#if PCK_DEBUG_OUTPUT_FILE
-#include <mutex>
-#endif
 
 //»’÷æ
 #define	LOG_BUFFER						8192

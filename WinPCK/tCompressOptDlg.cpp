@@ -9,30 +9,27 @@
 // 2017.12.26
 //////////////////////////////////////////////////////////////////////
 
-#include "globals.h"
-#include "miscdlg.h"
-#include "pck_handle.h"
+#include "guipch.h"
+#include "tCompressOptDlg.h"
 
 /*
 Ñ¹ËõÑ¡Ïî
 */
 BOOL TCompressOptDlg::EvCreate(LPARAM lParam)
 {
-	char	szStr[8];
+	this->SendDlgItemMessage(IDC_EDIT_MEM, EM_LIMITTEXT, 4, 0);
 
-	SendDlgItemMessage(IDC_EDIT_MEM, EM_LIMITTEXT, 4, 0);
+	this->SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETRANGE, FALSE, MAKELONG(1, pck_getMaxCompressLevel()));
+	this->SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_SETRANGE, FALSE, MAKELONG(1, pck_getMaxThreadUpperLimit()));
+	this->SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETPOS, TRUE, (LPARAM)pck_getCompressLevel());
+	this->SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_SETPOS, TRUE, (LPARAM)pck_getMaxThread());
 
-	SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETRANGE, FALSE, MAKELONG(1, pck_getMaxCompressLevel()));
-	SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_SETRANGE, FALSE, MAKELONG(1, pck_getMaxThreadUpperLimit()));
-	SendDlgItemMessage(IDC_SLIDER_LEVEL, TBM_SETPOS, TRUE, (LPARAM)pck_getCompressLevel());
-	SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_SETPOS, TRUE, (LPARAM)pck_getMaxThread());
+	this->SendDlgItemMessageA(IDC_CBO_CODEPAGE, CB_ADDSTRING, 0, (LPARAM)"CP936");
+	this->SendDlgItemMessageA(IDC_CBO_CODEPAGE, CB_SETCURSEL, 0, 0);
 
-	SendDlgItemMessageA(IDC_CBO_CODEPAGE, CB_ADDSTRING, 0, (LPARAM)"CP936");
-	SendDlgItemMessageA(IDC_CBO_CODEPAGE, CB_SETCURSEL, 0, 0);
-
-	SetDlgItemTextA(IDC_STATIC_LEVEL, ultoa(pck_getCompressLevel(), szStr, 10));
-	SetDlgItemTextA(IDC_STATIC_THREAD, ultoa(pck_getMaxThread(), szStr, 10));
-	SetDlgItemTextA(IDC_EDIT_MEM, ultoa((pck_getMTMaxMemory()) >> 20, szStr, 10));
+	this->SetDlgItemTextA(IDC_STATIC_LEVEL, std::to_string(pck_getCompressLevel()).c_str());
+	this->SetDlgItemTextA(IDC_STATIC_THREAD, std::to_string(pck_getMaxThread()).c_str());
+	this->SetDlgItemTextA(IDC_EDIT_MEM, std::to_string((pck_getMTMaxMemory()) >> 20).c_str());
 
 	return	TRUE;
 }
@@ -49,14 +46,14 @@ BOOL TCompressOptDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 		pck_setMaxThread(SendDlgItemMessage(IDC_SLIDER_THREAD, TBM_GETPOS, 0, 0));
 
-		GetDlgItemTextA(IDC_EDIT_MEM, szStr, 8);
-		pck_setMTMaxMemory((atoi(szStr) << 20));
+		this->GetDlgItemTextA(IDC_EDIT_MEM, szStr, 8);
+		pck_setMTMaxMemory((std::stoul(szStr) << 20));
 
-		EndDialog(wID);
+		this->EndDialog(wID);
 		return	TRUE;
 	}
 	case IDCANCEL:
-		EndDialog(wID);
+		this->EndDialog(wID);
 		return	TRUE;
 	}
 	return	FALSE;
@@ -64,22 +61,19 @@ BOOL TCompressOptDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 BOOL TCompressOptDlg::EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar)
 {
-	int		iPos;
-	char	szStr[4];
-
 	switch(nCode) {
 	case TB_THUMBTRACK:
 	case TB_PAGEDOWN:
 	case TB_PAGEUP:
 
-		iPos = ::SendMessage(scrollBar, TBM_GETPOS, 0, 0);
+		int iPos = ::SendMessage(scrollBar, TBM_GETPOS, 0, 0);
 
-		if(scrollBar == GetDlgItem(IDC_SLIDER_LEVEL)) {
-			SetDlgItemTextA(IDC_STATIC_LEVEL, ultoa(iPos, szStr, 10));
+		if(scrollBar == this->GetDlgItem(IDC_SLIDER_LEVEL)) {
+			this->SetDlgItemTextA(IDC_STATIC_LEVEL, std::to_string(iPos).c_str());
 			break;
 		}
-		if(scrollBar == GetDlgItem(IDC_SLIDER_THREAD)) {
-			SetDlgItemTextA(IDC_STATIC_THREAD, ultoa(iPos, szStr, 10));
+		if(scrollBar == this->GetDlgItem(IDC_SLIDER_THREAD)) {
+			this->SetDlgItemTextA(IDC_STATIC_THREAD, std::to_string(iPos).c_str());
 			break;
 		}
 

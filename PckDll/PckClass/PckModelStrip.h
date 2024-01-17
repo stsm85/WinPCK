@@ -2,7 +2,6 @@
 
 #define _STRIP_ECM_ 0
 
-#include <windows.h>
 #include "PckStructs.h"
 #include "PckModelStripDefines.h"
 

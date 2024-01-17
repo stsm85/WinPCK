@@ -22,17 +22,11 @@
     <Filter Include="头文件\PckClass">
       <UniqueIdentifier>{42f9514c-977b-450f-955c-7d8133f5bc0b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\MapViewFile">
-      <UniqueIdentifier>{8b88d815-a0ab-425e-924a-7484f5a3efbe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\DictHash">
       <UniqueIdentifier>{4fcdb324-3994-4179-bac4-967b7387e7d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件\DictHash">
       <UniqueIdentifier>{adc7731f-259f-417d-aac7-3609a1cfb16e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\MapViewFile">
-      <UniqueIdentifier>{eafc3962-d9d6-4b6d-b476-d5b480b3986c}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件\PckClass">
       <UniqueIdentifier>{4ce84adb-dc57-4cee-87f8-f62da1391b3b}</UniqueIdentifier>
@@ -42,12 +36,6 @@
     </Filter>
     <Filter Include="源文件\ZupClass">
       <UniqueIdentifier>{229c4c48-5c97-41ea-b058-8c2aa51e6d06}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\MiscFuncs">
-      <UniqueIdentifier>{79d1a900-c835-40ad-ba1e-00ec234f8731}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\MiscFuncs">
-      <UniqueIdentifier>{489345cc-453c-4390-9568-149e5e7158f9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -74,12 +62,6 @@
     </ClCompile>
     <ClCompile Include="PckClass\PckClassRebuildFilter.cpp">
       <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="..\MiscFuncs\Raw2HexString.cpp">
-      <Filter>源文件\MiscFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\MiscFuncs\CharsCodeConv.cpp">
-      <Filter>源文件\MiscFuncs</Filter>
     </ClCompile>
     <ClCompile Include="PckClass\PckClassFileDisk.cpp">
       <Filter>源文件\PckClass</Filter>
@@ -117,33 +99,6 @@
     <ClCompile Include="PckClass\PckClassIndexRead.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFile.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFileMulti.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFileMultiPck.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFileMultiPckRead.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFileMultiPckWrite.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFileMultiRead.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFileMultiWrite.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFileRead.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
-    <ClCompile Include="MapViewFile\MapViewFileWrite.cpp">
-      <Filter>源文件\MapViewFile</Filter>
-    </ClCompile>
     <ClCompile Include="PckClass\PckClassIndexWriter.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
@@ -174,14 +129,8 @@
     <ClCompile Include="ZupClass\ZupClassFunction.cpp">
       <Filter>源文件\ZupClass</Filter>
     </ClCompile>
-    <ClCompile Include="..\MiscFuncs\AllocMemPool.cpp">
-      <Filter>源文件\MiscFuncs</Filter>
-    </ClCompile>
     <ClCompile Include="PckClass\PckIndexCache.cpp">
       <Filter>源文件\PckClass</Filter>
-    </ClCompile>
-    <ClCompile Include="..\MiscFuncs\TextLineSpliter.cpp">
-      <Filter>源文件\MiscFuncs</Filter>
     </ClCompile>
     <ClCompile Include="PckClass\PckModelStrip.cpp">
       <Filter>源文件\PckClass</Filter>
@@ -198,13 +147,13 @@
     <ClCompile Include="PckClass\PckThreadRunnerData.cpp">
       <Filter>源文件\PckClass</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PckControlCenter\PckControlCenter.h">
       <Filter>头文件\PckControlCenter</Filter>
-    </ClInclude>
-    <ClInclude Include="MapViewFile\MapViewFile.h">
-      <Filter>头文件\MapViewFile</Filter>
     </ClInclude>
     <ClInclude Include="PckClass\PckDefines.h">
       <Filter>头文件\PckClass</Filter>
@@ -214,12 +163,6 @@
     </ClInclude>
     <ClInclude Include="PckClass\PckClassVersionDetect.h">
       <Filter>头文件\PckClass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MiscFuncs\Raw2HexString.h">
-      <Filter>头文件\MiscFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MiscFuncs\CharsCodeConv.h">
-      <Filter>头文件\MiscFuncs</Filter>
     </ClInclude>
     <ClInclude Include="PckClass\PckClassFileDisk.h">
       <Filter>头文件\PckClass</Filter>
@@ -251,12 +194,6 @@
     <ClInclude Include="PckClass\PckClassWriteOperator.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
-    <ClInclude Include="MapViewFile\MapViewFileMulti.h">
-      <Filter>头文件\MapViewFile</Filter>
-    </ClInclude>
-    <ClInclude Include="MapViewFile\MapViewFileMultiPck.h">
-      <Filter>头文件\MapViewFile</Filter>
-    </ClInclude>
     <ClInclude Include="PckClass\PckClassCodepage.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
@@ -287,17 +224,11 @@
     <ClInclude Include="include\pck_dependencies.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\MiscFuncs\AllocMemPool.h">
-      <Filter>头文件\MiscFuncs</Filter>
-    </ClInclude>
     <ClInclude Include="PckClass\PckIndexCache.h">
       <Filter>头文件\PckClass</Filter>
     </ClInclude>
     <ClInclude Include="PckClass\PckClassRebuildFilter.h">
       <Filter>头文件\PckClass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MiscFuncs\TextLineSpliter.h">
-      <Filter>头文件\MiscFuncs</Filter>
     </ClInclude>
     <ClInclude Include="PckClass\PckModelStrip.h">
       <Filter>头文件\PckClass</Filter>
@@ -310,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="PckClass\PckClassVersionFillDataTemplate.h">
       <Filter>头文件\PckClass</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

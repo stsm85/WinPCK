@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Author: liqf -->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MediaPropsImported>true</MediaPropsImported>
+    <!--<UserDefinitions>_CRT_SECURE_NO_WARNINGS;</UserDefinitions>-->
+    <!-- Include Paths -->
+    <LibrariesBaseDir>$(MSBuildThisFileDirectory)</LibrariesBaseDir>
+	
+	<!-- 库引用目录 -->
+    <FreeImage_Include>$(LibrariesBaseDir)FreeImage/Source;$(LibrariesBaseDir)FreeImage/Metadata;$(LibrariesBaseDir)FreeImage/DeprecationManager</FreeImage_Include>
+    <PDFWriter_Include>$(LibrariesBaseDir)PDF-Writer/PDFWriter</PDFWriter_Include>
+    
+    <FreeImageCpp_Include>$(LibrariesBaseDir)FreeImageCpp;</FreeImageCpp_Include>
+    
+    <MINIZIP_Include>$(LibrariesBaseDir)minizip</MINIZIP_Include>
+	<json_Include>$(LibrariesBaseDir)nlohmann;</json_Include>
+    <HttpLib_Include>$(LibrariesBaseDir)httplib;</HttpLib_Include>
+	
+	<ShowImage_Include>$(LibrariesBaseDir)ShowImage;</ShowImage_Include>
+	
+	<ThreadPool_Include>$(LibrariesBaseDir)thread-pool/include;</ThreadPool_Include>
+	
+    <!-- thirdparty Include Paths -->
+    <ThirdpartyBaseDir>$(LibrariesBaseDir)thirdparty/</ThirdpartyBaseDir>
+    
+    <FreeType_Include>$(ThirdpartyBaseDir)FreeType/include;$(ThirdpartyBaseDir)FreeType/include/freetype;$(ThirdpartyBaseDir)FreeType/include/freetype/config;$(ThirdpartyBaseDir)FreeType/include/src;$(ThirdpartyBaseDir)FreeType/include/freetype/internal;$(ThirdpartyBaseDir)FreeType/include/freetype/internal/services;</FreeType_Include>
+    <LibAesgm_Include>$(ThirdpartyBaseDir)LibAesgm</LibAesgm_Include>
+    <LibJPEG_Include>$(ThirdpartyBaseDir)LibJPEG</LibJPEG_Include>
+    <LibJXR_Include>$(ThirdpartyBaseDir)LibJXR/image/sys;$(ThirdpartyBaseDir)LibJXR/jxrgluelib</LibJXR_Include>
+    <LibLzma_Include>$(ThirdpartyBaseDir)LibLzma;</LibLzma_Include>
+    <LibOpenJPEG_Include>$(ThirdpartyBaseDir)LibOpenJPEG</LibOpenJPEG_Include>
+    <LibPNG_Include>$(ThirdpartyBaseDir)LibPNG</LibPNG_Include>
+    <LibRawLite_Include>$(ThirdpartyBaseDir)LibRawLite</LibRawLite_Include>
+    <LibTIFF_Include>$(ThirdpartyBaseDir)LibTIFF</LibTIFF_Include>
+    <LibWebP_Include>$(ThirdpartyBaseDir)LibWebP</LibWebP_Include>
+    <OpenEXR_Include>$(ThirdpartyBaseDir)OpenEXR;$(ThirdpartyBaseDir)OpenEXR/Half;$(ThirdpartyBaseDir)OpenEXR/Iex;$(ThirdpartyBaseDir)OpenEXR/IlmImf;$(ThirdpartyBaseDir)OpenEXR/Imath;$(ThirdpartyBaseDir)OpenEXR/IlmThread;$(ThirdpartyBaseDir)OpenEXR/IexMath</OpenEXR_Include>
+    <ZLIB_Include>$(ThirdpartyBaseDir)zlib</ZLIB_Include>
+	<libDeflate_Include>$(ThirdpartyBaseDir)libdeflate</libDeflate_Include>
+	
+	<Openssl_Include>$(ThirdpartyBaseDir)openssl/include;</Openssl_Include>
+	<Openssl_Library>$(ThirdpartyBaseDir)openssl/libs;</Openssl_Library>
+	
+	<ICONV_Include>$(ThirdpartyBaseDir)libiconv;$(ThirdpartyBaseDir)libiconv/include;$(ThirdpartyBaseDir)libiconv/lib;$(ThirdpartyBaseDir)libiconv/libcharset/include</ICONV_Include>
+    
+  </PropertyGroup>
+</Project>

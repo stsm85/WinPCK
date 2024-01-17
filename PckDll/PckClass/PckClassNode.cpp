@@ -1,3 +1,4 @@
+#include <pch.h>
 #include "PckClassNode.h"
 
 template <typename T>

@@ -1,3 +1,4 @@
+#include <pch.h>
 #include "PckModelStrip.h"
 #include "pck_default_vars.h"
 

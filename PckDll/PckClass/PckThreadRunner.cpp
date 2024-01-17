@@ -1,8 +1,7 @@
+#include <pch.h>
 #include "PckThreadRunner.h"
 
-#include <vector>
-#include <thread>
-#include <algorithm>
+
 
 CPckThreadRunner::CPckThreadRunner(LPTHREAD_PARAMS threadparams) :
 	m_threadparams(threadparams)

@@ -1,3 +1,4 @@
+#include <pch.h>
 #include "PckClassCodepage.h"
 
 #pragma region 文件名转码
@@ -26,6 +27,8 @@ size_t  CPckClassCodepage::PckFilenameCode2Ansi(const wchar_t *_in, char *_out, 
 		return cUcs2Ansi.GetStrlen(_in);
 	}
 }
+
+#if 0
 size_t  CPckClassCodepage::NativeFilenameCode2UCS(const char *_in, wchar_t *_out, size_t _outsize)
 {
 	CAnsi2Ucs cAnsi2Ucs(CP_ACP);
@@ -49,4 +52,5 @@ size_t  CPckClassCodepage::NativeFilenameCode2Ansi(const wchar_t *_in, char *_ou
 		return cUcs2Ansi.GetStrlen(_in);
 	}
 }
+#endif
 #pragma endregion

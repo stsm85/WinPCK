@@ -7,11 +7,9 @@
 // 
 // 2018.5.15
 //////////////////////////////////////////////////////////////////////
-#include <stdlib.h>
-#include "MapViewFileMultiPck.h"
+#include <pch.h>
+
 #include "PckClassRebuildFilter.h"
-#include "CharsCodeConv.h"
-#include "TextLineSpliter.h"
 
 #define MAX_SCRIPT_SIZE	(10*1024*1024)
 
@@ -32,8 +30,6 @@ BOOL CPckClassRebuildFilter::OpenScriptFileAndConvBufToUcs2(const wchar_t * lpsz
 	char   * lpBufferToRead;
 	CMapViewFileRead	cFileRead;
 	
-	CTextUnitsW	cText2Line;
-
 	//读取文件所有字符
 	if (nullptr == (lpBufferToRead = (char*)cFileRead.OpenMappingViewAllRead(lpszScriptFile))) 
 		return FALSE;
@@ -41,18 +37,20 @@ BOOL CPckClassRebuildFilter::OpenScriptFileAndConvBufToUcs2(const wchar_t * lpsz
 	CTextConv2UCS2 cText2Ucs;
 	const wchar_t* lpszUnicodeString = cText2Ucs.GetUnicodeString(lpBufferToRead, cFileRead.GetFileSize());
 
-	cText2Line.SplitLine(lpszUnicodeString, m_ScriptLines, LINE_TRIM_LEFT | LINE_TRIM_RIGHT | LINE_EMPTY_DELETE);
+	CTextUnitsW	cText2Line;
+	this->m_ScriptLines = cText2Line.SplitLine(lpszUnicodeString, wcslen(lpszUnicodeString), SPLIT_FLAG::TRIM_LEFT | SPLIT_FLAG::TRIM_RIGHT | SPLIT_FLAG::DELETE_NULL_LINE);
 
 	return TRUE;
 }
 #pragma endregion
 
 
-BOOL CPckClassRebuildFilter::ParseOneLine(FILEOP * pFileOp, LPCWSTR lpszLine)
+BOOL CPckClassRebuildFilter::ParseOneLine(FILEOP * pFileOp, const std::wstring& lpszLine)
 {
 	wchar_t szOperator[16] = { 0 };
 	//首先检查16个字符内有没有空格或tab
-	const wchar_t *lpszCell = lpszLine, *lpszSearch = lpszLine;
+	//const wchar_t* lpszCell = lpszLine;
+	const wchar_t* lpszSearch = lpszLine.c_str();
 	size_t count = 0;
 
 	wchar_t *lpszOperator = szOperator;
@@ -259,15 +257,15 @@ BOOL CPckClassRebuildFilter::ParseScript(const wchar_t * lpszScriptFile)
 		//过滤注释行
 		if (L';' != m_ScriptLines[i].at(0)) {
 			//一行脚本分为两部分，操作和文件名
-			if (ParseOneLine(pFileOp, m_ScriptLines[i].c_str())) {
+			if (ParseOneLine(pFileOp, std::wstring(m_ScriptLines[i]))) {
 
 				m_FirstFileOp.push_back(FILEOP{ 0 });
 				pFileOp = &m_FirstFileOp.back();
 
 			}
 			else {
-
-				Logger.w("脚本解析失败在行%d: %ls, 跳过...", i, m_ScriptLines[i].c_str());
+				//cause error m_ScriptLines
+				Logger.w("脚本解析失败在行%d: %ls, 跳过...", i, m_ScriptLines[i]);
 
 				return FALSE;
 			}

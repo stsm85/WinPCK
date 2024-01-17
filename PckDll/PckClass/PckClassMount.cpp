@@ -9,6 +9,7 @@
 // 
 // 2015.5.27
 //////////////////////////////////////////////////////////////////////
+#include <pch.h>
 #include "PckClass.h"
 
 BOOL CPckClass::MountPckFile(LPCWSTR	szFile)

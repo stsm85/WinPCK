@@ -2,7 +2,6 @@
 #include "PckClassBaseFeatures.h"
 #include "PckClassCodepage.h"
 #include "PckClassZlib.h"
-#include "MapViewFileMultiPck.h"
 
 class CPckClassIndex :
 	public virtual CPckClassBaseFeatures

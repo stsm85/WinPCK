@@ -8,9 +8,9 @@
 // 
 // 2018.12.29
 //////////////////////////////////////////////////////////////////////
-
-#include "miscdlg.h"
-#include "PckModelStripDefines.h"
+#include "guipch.h"
+#include "tStripDlg.h"
+//#include <PckModelStripDefines.h>
 
 BOOL TStripDlg::EvCreate(LPARAM lParam)
 {

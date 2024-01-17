@@ -66,7 +66,7 @@ private:
 
 	_inline void	DecodeDict(LPZUP_FILENAME_DICT lpZupDict);
 	//void	AddDict(char *&lpszStringToAdd);
-	void	AddDict(std::string& base_file);
+	void	AddDict(const std::string_view base_file);
 
 	const PCKINDEXTABLE* GetBaseFileIndex(const PCKINDEXTABLE* lpIndex, const PCKINDEXTABLE* lpZeroBaseIndex);
 

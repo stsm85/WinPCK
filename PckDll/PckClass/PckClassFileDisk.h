@@ -1,9 +1,7 @@
 #pragma once
 
-typedef unsigned __int64	QWORD;
 #include "PckStructs.h"
 #include "PckClassLog.h"
-#include "MapViewFileMultiPck.h"
 #include "PckClassBaseFeatures.h"
 
 

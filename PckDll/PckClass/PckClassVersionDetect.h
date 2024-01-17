@@ -92,9 +92,9 @@ public:
 	~CPckClassVersionDetect();
 
 	//…Ë÷√∞Ê±æ
-	const	PCK_KEYS*	GetPckVersion();
+	const	PCK_KEYS*	GetPckVersion() const noexcept;
 	BOOL	SetSavePckVersion(int verID);
-	static	const	wchar_t*	GetPckVersionNameById(int id);
+	static	const	wchar_t*	GetPckVersionNameById(int id) noexcept;
 	static	uint32_t	GetPckVersionCount();
 
 	static	int		AddPckVersion(int AlgorithmId, int Version);
@@ -129,7 +129,7 @@ public:
 	explicit detectversion_error(const std::string& _Message) { buf = _Message; }
 	explicit detectversion_error(const char* _Message) { buf.assign(_Message); }
 
-	virtual char const* what() const { return buf.c_str(); };
+	virtual char const* what() const override { return buf.c_str(); };
 
 protected:
 	std::string buf;

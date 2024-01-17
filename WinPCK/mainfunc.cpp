@@ -14,78 +14,85 @@
 #pragma warning ( disable : 4311 )
 #pragma warning ( disable : 4005 )
 
-#include "tlib.h"
-#include "resource.h"
+#include "guipch.h"
 #include "winmain.h"
-#include <shlwapi.h>
-#include "OpenSaveDlg.h"
-#include <stdio.h>
-#include "StopWatch.h"
 
-BOOL TInstDlg::OpenPckFile(const wchar_t *lpszFileToOpen, BOOL isReOpen)
+BOOL TInstDlg::NewPckFile()
 {
+	std::wstring Filename(this->m_Filename);
 
-	CStopWatch	timer;
-	wchar_t	szString[64];
+	try {
+
+		std::wstring ext = ::MakeFileExtFilter<wchar_t>({ { L"PCK压缩文件(*.pck;*.zup)", L"*.pck;*.zup" }, { L"所有文件(*.*)", L"*.*" } });
+		::OpenSingleFile<wchar_t>(this->hWnd, Filename, ext);
+	}
+	catch (std::exception) {
+
+		this->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_OPENFAIL));
+		return FALSE;
+	}
+
+	this->m_Filename = std::move(fs::path(Filename));
+	return this->OpenPckFile(FALSE);
+}
+
+BOOL TInstDlg::OpenPckFile(std::wstring sFileToOpen, BOOL isReOpen)
+{
+	if (0 == sFileToOpen.size())
+		return this->NewPckFile();
+	else {
+		this->m_Filename = std::move(fs::absolute(fs::path(sFileToOpen)));
+		return this->OpenPckFile(isReOpen);
+	}
+}
+
+BOOL TInstDlg::OpenPckFile(BOOL isReOpen)
+{
 	int		iListTopView;
 
-	m_currentNodeOnShow = NULL;
-
-	if(0 != *lpszFileToOpen && lpszFileToOpen != m_Filename) {
-		wcscpy_s(m_Filename, MAX_PATH, lpszFileToOpen);
-	}
+	this->m_currentNodeOnShow = nullptr;
 
 	if(!isReOpen) {
 
-		*m_FolderBrowsed = 0;
+		this->m_FolderBrowsed.clear();
 	} else {
-		//记录位置
-		iListTopView = ListView_GetTopIndex(GetDlgItem(IDC_LIST));
+		//记录位置，目前选中的是第几行
+		iListTopView = ListView_GetTopIndex(this->GetDlgItem(IDC_LIST));
 	}
 
-	if(0 != *lpszFileToOpen || OpenSingleFile(hWnd, m_Filename, TEXT_FILE_FILTER)) {
-		timer.start();
+	CStopWatch	timer;
+	timer.start();
 
-		//转换文件名格式 
-		if(WINPCK_OK == pck_open(m_Filename)) {
-			timer.stop();
-			swprintf_s(szString, 64, GetLoadStrW(IDS_STRING_OPENOK), timer.getElapsedTime());
-			//SetStatusBarText(4, szString);
-			SetStatusBarInfo(szString);
+	//转换文件名格式 
+	if (WINPCK_OK == pck_open(this->m_Filename.wstring().c_str())) {
+		//成功打开
+		timer.stop();
 
-			//SetStatusBarText(0, _tcsrchr(m_Filename, TEXT('\\')) + 1);
-			SetStatusBarTitle(wcsrchr(m_Filename, L'\\') + 1);
-			//SetStatusBarText(3, TEXT(""));
-			ClearStatusBarProgress();
+		//显示打开消耗时间
+		this->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_OPENOK), std::make_wformat_args(timer.getElapsedTime())).c_str());
 
-			//_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILESIZE), pck_filesize());
-			//SetStatusBarText(1, szString);
-			SetStatusBarFileSize(pck_filesize());
+		//显示文件名
+		this->SetStatusBarTitle(this->m_Filename.filename().wstring().c_str());
+		this->ClearStatusBarProgress();
 
-			//_stprintf_s(szString, 64, GetLoadStr(IDS_STRING_OPENFILECOUNT), pck_filecount());
-			//SetStatusBarText(2, szString);
-			SetStatusBarFileCount(pck_filecount());
+		this->SetStatusBarFileSize(pck_filesize());
+		this->SetStatusBarFileCount(pck_filecount());
 
-			if(isReOpen) {
-				ShowPckFiles(pck_getFileEntryByPath(m_FolderBrowsed));
-				ListView_EnsureVisible(GetDlgItem(IDC_LIST), iListTopView, NULL);
-				ListView_EnsureVisible(GetDlgItem(IDC_LIST), iListTopView + ListView_GetCountPerPage(GetDlgItem(IDC_LIST)) - 1, NULL);
-			} else
-				ShowPckFiles(pck_getRootNode());
-
-			return TRUE;
-		} else {
-			//SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-			SetStatusBarInfo(GetLoadStrW(IDS_STRING_PROCESS_ERROR));
-			pck_close();
-			return FALSE;
+		if (isReOpen) {
+			this->ShowPckFiles(pck_getFileEntryByPath(this->m_FolderBrowsed.c_str()));
+			ListView_EnsureVisible(this->GetDlgItem(IDC_LIST), iListTopView, NULL);
+			ListView_EnsureVisible(this->GetDlgItem(IDC_LIST), iListTopView + ListView_GetCountPerPage(this->GetDlgItem(IDC_LIST)) - 1, NULL);
 		}
+		else
+			this->ShowPckFiles(pck_getRootNode());
 
+		return TRUE;
 	}
-	//SetStatusBarText(4, GetLoadStr(IDS_STRING_OPENFAIL));
-	SetStatusBarInfo(GetLoadStrW(IDS_STRING_OPENFAIL));
-	return FALSE;
-
+	else {
+		this->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
+		pck_close();
+		return FALSE;
+	}
 }
 
 void ShowFilelistCallback(void* _in_param, int sn, const wchar_t *lpszFilename, int entry_type, unsigned __int64 qwFileSize, unsigned __int64 qwFileSizeCompressed, void* fileEntry)
@@ -95,21 +102,20 @@ void ShowFilelistCallback(void* _in_param, int sn, const wchar_t *lpszFilename, 
 	const HWND	hList = pThis->GetDlgItem(IDC_LIST);
 
 	if (PCK_ENTRY_TYPE_DOTDOT != (PCK_ENTRY_TYPE_DOTDOT & entry_type)) {
-		wchar_t	szClearTextSize[CHAR_NUM_LEN], szCipherTextSize[CHAR_NUM_LEN];
-		wchar_t	szCompressionRatio[CHAR_NUM_LEN];
+		std::wstring	szCompressionRatio;
 
 		if (0 == qwFileSize)
-			wcscpy(szCompressionRatio, L"-");
+			szCompressionRatio.assign(L"-");
 		else
-			swprintf_s(szCompressionRatio, CHAR_NUM_LEN, L"%.1f%%", qwFileSizeCompressed / (float)qwFileSize * 100.0);
+			szCompressionRatio = std::format(L"{:.1f}%", qwFileSizeCompressed / (float)qwFileSize * 100.0);
 
 		pThis->InsertList(hList, sn,
 			LVIF_PARAM | LVIF_IMAGE, (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type)) ? IMGLIST_FOLDER : IMGLIST_FILE,
 			fileEntry, 4,
 			lpszFilename,
-			StrFormatByteSizeW(qwFileSize, szClearTextSize, CHAR_NUM_LEN),
-			StrFormatByteSizeW(qwFileSizeCompressed, szCipherTextSize, CHAR_NUM_LEN),
-			szCompressionRatio);
+			::wbyte_format(qwFileSize).c_str(),
+			::wbyte_format(qwFileSizeCompressed).c_str(),
+			szCompressionRatio.c_str());
 
 	}
 	else {
@@ -121,50 +127,50 @@ void ShowFilelistCallback(void* _in_param, int sn, const wchar_t *lpszFilename, 
 		);
 	}
 #ifdef _DEBUG
-	wchar_t szPrintLine[1024];
-	swprintf(szPrintLine, L"%s\t%s\t%llu\t%llu\r\n", lpszFilename, (PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type)) ? L"Folder" : L"File", qwFileSize, qwFileSizeCompressed);
-	OutputDebugStringW(szPrintLine);
+	OutputDebugStringW(std::format(
+		L"{}\t{}\t{}\t{}\r\n", 
+		lpszFilename,
+		(PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entry_type)) ? L"Folder" : L"File", 
+		qwFileSize, 
+		qwFileSizeCompressed).c_str()
+	);
 #endif
 
 }
 
 VOID TInstDlg::SearchPckFiles()
 {
-	if(0 == pck_filecount())return;
+	if(0 == pck_filecount())
+		return;
 
-	HWND	hList = GetDlgItem(IDC_LIST);
+	HWND	hList = this->GetDlgItem(IDC_LIST);
 
 	//显示查找文字
-	wchar_t	szPrintf[64];
-	swprintf_s(szPrintf, 64, GetLoadStrW(IDS_STRING_SEARCHING), m_szStrToSearch);
-	SendDlgItemMessageW(IDC_STATUS, SB_SETTEXTW, 4, (LPARAM)szPrintf);
+	this->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_SEARCHING), std::make_wformat_args(this->m_szStrToSearch)).c_str());
 
 	ListView_DeleteAllItems(hList);
 
 	//清除浏览记录
-	*m_FolderBrowsed = 0;
+	this->m_FolderBrowsed.clear();
 
 	::SendMessage(hList, WM_SETREDRAW, FALSE, 0);
-
-	DWORD dwFoundCount = pck_searchByName(m_szStrToSearch, this, ShowFilelistCallback);
-
+	auto dwFoundCount = pck_searchByName(this->m_szStrToSearch, this, ShowFilelistCallback);
 	::SendMessage(hList, WM_SETREDRAW, TRUE, 0);
 
-	swprintf_s(szPrintf, 64, GetLoadStrW(IDS_STRING_SEARCHOK), m_szStrToSearch, dwFoundCount);
-	SendDlgItemMessageW(IDC_STATUS, SB_SETTEXTW, 4, (LPARAM)szPrintf);
+	this->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_SEARCHOK), std::make_wformat_args(this->m_szStrToSearch, dwFoundCount)).c_str());
 
 }
 
 VOID TInstDlg::ShowPckFiles(const PCK_UNIFIED_FILE_ENTRY*	lpNodeToShow)
 {
-	HWND	hList = GetDlgItem(IDC_LIST);
+	HWND	hList = this->GetDlgItem(IDC_LIST);
 
-	if (NULL == lpNodeToShow) {
-		MessageBoxW(L"Node Not Found!!!\r\nShow Root Node");
+	if (nullptr == lpNodeToShow) {
+		this->MessageBoxW(L"Node Not Found!!!\r\nShow Root Node");
 		lpNodeToShow = pck_getRootNode();
 	}
 
-	m_currentNodeOnShow = lpNodeToShow;
+	this->m_currentNodeOnShow = lpNodeToShow;
 
 	ListView_DeleteAllItems(hList);
 

@@ -1,4 +1,4 @@
-
+#include <pch.h>
 #include "PckClassIndexWriter.h"
 #include "PckIndexCache.h"
 

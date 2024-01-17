@@ -7,7 +7,7 @@
 	Copyright				: H.Shirouzu
 	Reference				: 
 	======================================================================== */
-
+#include "tlibpch.h"
 #include "tlib.h"
 #ifdef _USE_T_LIST_
 static char *tlist_id =

@@ -9,9 +9,8 @@
 // 2017.12.26
 //////////////////////////////////////////////////////////////////////
 
-
+#include "guipch.h"
 #include "tLogDlg.h"
-#include <stdio.h>
 #include "ShowLogOnDlgListView.h"
 
 #define	LOG_BUFFER						8192

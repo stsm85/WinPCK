@@ -1,12 +1,9 @@
 #pragma once
 
-#include <Windows.h>
-#include <stdint.h>
-#include "gccException.h"
-
 typedef unsigned long       ulong_t;
 typedef int                 BOOL;
 typedef unsigned char       BYTE;
+typedef unsigned __int64	QWORD;
 
 typedef const wchar_t * 	LPCWSTR;
 typedef wchar_t *			LPWSTR;
@@ -27,8 +24,8 @@ typedef int ssize_t;
 
 
 //版本信息
-#define WINPCK_VERSION_NUMBER  1,34,1,0
-#define WINPCK_VERSION        "1.34.1.0"
+#define WINPCK_VERSION_NUMBER  1,34,3,0
+#define WINPCK_VERSION        "1.34.3.0"
 
 //调度输出
 #ifdef _DEBUG
@@ -38,8 +35,6 @@ typedef int ssize_t;
 #define PCK_DEBUG_OUTPUT		0
 #define PCK_DEBUG_OUTPUT_FILE	0
 #endif
-
-#define PCK_V2031_ENABLE		0
 
 //打开、关闭、复原等事件注册
 #define PCK_FILE_OPEN_SUCESS		1

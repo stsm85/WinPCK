@@ -1,7 +1,6 @@
-
+#include <pch.h>
 #include "PckClassIndex.h"
-#include <thread>
-#include <vector>
+
 
 CPckClassIndex::CPckClassIndex()
 {}

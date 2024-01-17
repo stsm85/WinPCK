@@ -9,6 +9,7 @@
 // 
 // 2012.10.10
 //////////////////////////////////////////////////////////////////////
+#include <pch.h>
 
 #include "PckControlCenter.h"
 #include "PckClass.h"
@@ -154,7 +155,7 @@ uint32_t CPckControlCenter::GetAdditionalInfoMaxSize()
 
 BOOL CPckControlCenter::SetAdditionalInfo(LPCSTR lpszAdditionalInfo)
 {
-	if (NULL == m_lpClassPck)
+	if (nullptr == m_lpClassPck)
 		return FALSE;
 
 	return m_lpClassPck->SetAdditionalInfo(lpszAdditionalInfo);

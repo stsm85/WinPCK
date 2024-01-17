@@ -1,8 +1,8 @@
+#include <pch.h>
 #include "PckClassWriteOperator.h"
 #include "PckClassFileDisk.h"
 #include "PckClassRebuildFilter.h"
 
-#include <functional>
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4267 )

@@ -14,14 +14,8 @@
 //#pragma warning ( disable : 4018 )
 #pragma warning ( disable : 4005 )
 
-#include "tlib.h"
-#include "resource.h"
-#include "globals.h"
+#include "guipch.h"
 #include "winmain.h"
-#include <process.h>
-#include <shlobj.h>
-#include <tchar.h>
-#include "GetDragPath.h"
 
 /*
 	WinMain
@@ -45,7 +39,7 @@ void TInstApp::InitWindow(void)
 	*/
 	TDlg *maindlg = new TInstDlg(cmdLine);
 	mainWnd = maindlg;
-	maindlg->InitRichEdit2();
+	maindlg->InitRichEdit();
 	maindlg->Create();
 
 }
@@ -77,7 +71,7 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 	//MoveWindow((cx - xsize) / 2, (cy - ysize) / 2, xsize, ysize, TRUE);
 
 	//界面和数据初始化
-	SetWindowTextA(THIS_MAIN_CAPTION);
+	SetWindowTextW(THIS_MAIN_CAPTION);
 	//初始化数据
 	initParams();
 
@@ -102,7 +96,7 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 BOOL TInstDlg::EvClose()
 {
 
-	if(bGoingToExit)return FALSE;
+	if(this->bGoingToExit)return FALSE;
 
 	//SetStatusBarText(0, GetLoadStr(IDS_STRING_EXITING));
 	SetStatusBarInfo(GetLoadStr(IDS_STRING_EXITING));
@@ -110,7 +104,7 @@ BOOL TInstDlg::EvClose()
 	if(pck_isThreadWorking()) {
 		if(IDNO == MessageBox(GetLoadStr(IDS_STRING_ISEXIT), GetLoadStr(IDS_STRING_ISEXITTITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))return FALSE;
 
-		bGoingToExit = TRUE;
+		this->bGoingToExit = TRUE;
 		pck_forceBreakThreadWorking();
 		return FALSE;
 	}
@@ -151,78 +145,81 @@ BOOL TInstDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		return	TRUE;
 	case IDCANCEL:
 		return	TRUE;
-	case ID_OPEN_PCK:
+	case ID_OPEN_PCK: //[[fallthrough]]
 	case ID_MENU_OPEN:
-		OpenPckFile();
+		this->NewPckFile();
 		break;
 	case ID_MENU_UNPACK_ALL:
-		UnpackAllFiles();
+		this->UnpackAllFiles();
 		break;
 	case ID_MENU_UNPACK_SELECTED:
-		UnpackSelectedFiles();
+		this->UnpackSelectedFiles();
 		break;
-	case ID_CLOSE_PCK:
+	case ID_CLOSE_PCK://[[fallthrough]]
 	case ID_MENU_CLOSE:
-		MenuClose();
+		this->MenuClose();
 		break;
 	case ID_MENU_INFO:
-		MenuInfo();
+		this->MenuInfo();
 		break;
 	case ID_MENU_SEARCH:
-		MenuSearch();
+		this->MenuSearch();
 		break;
-	case ID_CREATE_NEWPCK:
+	case ID_CREATE_NEWPCK: //[[fallthrough]]
 	case ID_MENU_NEW:
-		MenuNew(wID);
+		this->MenuNew(wID);
 		break;
-	case ID_ADD_FILE_TO_PCK:
+	case ID_ADD_FILE_TO_PCK: //[[fallthrough]]
 	case ID_MENU_ADD:
-		MenuAdd(wID);
+		this->MenuAdd(wID);
 		break;
 	case ID_MENU_REBUILD:
-		MenuRebuild(wID);
+		this->MenuRebuild(wID);
 		break;
 	case ID_MENU_SIMPLIFY:
-		MenuStrip();
+		this->MenuStrip();
 		break;
 	case ID_MENU_COMPRESS_OPT:
-		MenuCompressOpt();
+		this->MenuCompressOpt();
 		break;
 	case ID_MENU_RENAME:
-		MenuRename();
+		this->MenuRename();
 		break;
 	case ID_MENU_DELETE:
-		MenuDelete();
+		this->MenuDelete();
 		break;
 	case ID_MENU_SELECTALL:
-		MenuSelectAll();
+		this->MenuSelectAll();
 		break;
 	case ID_MENU_SELECTORP:
-		MenuSelectReverse();
+		this->MenuSelectReverse();
 		break;
 	case ID_MENU_ATTR:
-		MenuAttribute();
+		this->MenuAttribute();
 		break;
 	case ID_MENU_EXIT:
-		SendMessage(WM_CLOSE, 0, 0);
+		this->SendMessage(WM_CLOSE, 0, 0);
 		break;
 	case ID_MENU_VIEW:
-		MenuView();
+		this->MenuView();
 		break;
 	case ID_MENU_SETUP:
-		AddSetupReg();
+		this->AddSetupReg();
 		break;
 	case ID_MENU_UNSETUP:
-		DeleteSetupReg();
+		this->DeleteSetupReg();
 		break;
 	case ID_MENU_ABOUT:
-		MenuAbout();
+		this->MenuAbout();
 		break;
 	case ID_MENU_LOG:
-		m_logdlg.Show();
+		this->m_logdlg.Show();
+		break;
+	case ID_MENU_CANCEL:
+		this->MenuCancelPckOper();
 		break;
 	case ID_LISTVIEW_ENTER:
-		ListViewEnter();
+		this->ListViewEnter();
 		break;
 	//case ID_LISTVIEW_BACK:
 	//	DbClickListView(0);
@@ -263,7 +260,7 @@ BOOL TInstDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 				if(pck_IsValidPck()) {
 					if(!pck_isThreadWorking()) {
 
-						wcscpy_s(m_CurrentPath, szPath);
+						this->m_CurrentPath.assign(szPath);
 						pck_setMTMaxMemory(0);
 
 						_beginthread(ToExtractSelectedFiles, 0, this);
@@ -410,33 +407,29 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 
 	wchar_t	szFirstFile[MAX_PATH];
 
-	DWORD dwDropFileCount = DragQueryFileW(hDrop, 0xFFFFFFFF, NULL, 0);
+	auto dwDropFileCount = ::DragQueryFileW(hDrop, 0xFFFFFFFF, NULL, 0);
 
 	if (0 == dwDropFileCount) {
 
-		DragFinish(hDrop);
+		::DragFinish(hDrop);
 		return	TRUE;
 	}
 
+	//没打开pck文件，且只拖入了一个文件，如果后缀为zup 或 pck，视为打开pck文件
 	if(1 == dwDropFileCount) {
 		if(!pck_IsValidPck()) {
-			size_t	nFirstFileLength;
-			DragQueryFileW(hDrop, 0, szFirstFile, MAX_PATH);
-			nFirstFileLength = wcsnlen(szFirstFile, MAX_PATH);
+			::DragQueryFileW(hDrop, 0, szFirstFile, MAX_PATH);
 
-			if(7 <= nFirstFileLength) {
-				if(0 == lstrcmpiW(szFirstFile + nFirstFileLength - 4, L".pck")) {
+			fs::path one_file_name(szFirstFile);
 
-					OpenPckFile(szFirstFile);
-					DragFinish(hDrop);
+			std::wstring valid_pck_ext(L".pck;.zup;");
+
+			if (one_file_name.has_extension()) {
+				if (std::wstring::npos != valid_pck_ext.find(one_file_name.extension().wstring())) {
+
+					this->OpenPckFile(szFirstFile);
+					::DragFinish(hDrop);
 					return	TRUE;
-
-				} else if(0 == lstrcmpiW(szFirstFile + nFirstFileLength - 4, L".zup")) {
-
-					OpenPckFile(szFirstFile);
-					DragFinish(hDrop);
-					return	TRUE;
-
 				}
 			}
 		}
@@ -451,17 +444,16 @@ BOOL TInstDlg::EvDropFiles(HDROP hDrop)
 	DragAcceptFiles(hWnd, FALSE);
 
 	m_lpszFilePath.clear();
+	m_lpszFilePath.reserve(dwDropFileCount);
 
-	for(DWORD i = 0; i < dwDropFileCount; i++) {
+	for(auto i = 0; i < dwDropFileCount; i++) {
 
 		wchar_t szFile[MAX_PATH];
-		DragQueryFileW(hDrop, i, szFile, MAX_PATH);
-		m_lpszFilePath.push_back(szFile);
+		::DragQueryFileW(hDrop, i, szFile, MAX_PATH);
+		this->m_lpszFilePath.emplace_back(szFile);
 	}
 
 	_beginthread(UpdatePckFile, 0, this);
-
-
 	DragFinish(hDrop);
 	return	TRUE;
 }

@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TextLineSpliter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CharsCodeConv.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="template_type.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StdFileFuncs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="UnknownExceptionFilter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StackWalker.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StackWalkerLiqf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AccessCheck.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AppEnv.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MemPool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BytesConv.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BytesSpeed.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="driver_funcs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MemBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MemBufferReader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MemBufferWriter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="getopt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDragPath.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StopWatch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Raw2HexString.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TextLineSpliter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CharsCodeConv.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StdFileFuncs.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="UnknownExceptionFilter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StackWalker.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StackWalkerLiqf.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AccessCheck.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AppEnv.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MemPool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BytesConv.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BytesSpeed.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="driver_funcs.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MemBufferReader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MemBufferWriter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDragPath.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StopWatch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Raw2HexString.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -45,36 +45,36 @@
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
     <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <PlatformToolset>v142</PlatformToolset>
     <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -82,31 +82,27 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\Config\WinPCK_Includes.props" />
+    <Import Project="$(SolutionDir)\Config\Project_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\VC-LTL\VC-LTL helper for Visual Studio.props" />
-    <Import Project="..\Config\WinPCK_Includes.props" />
+    <Import Project="$(SolutionDir)\Config\Project_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\Config\WinPCK_Includes.props" />
-    <Import Project="..\VC-LTL\VC-LTL helper for Visual Studio.props" />
+    <Import Project="$(SolutionDir)\Config\Project_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\Config\WinPCK_Includes.props" />
+    <Import Project="$(SolutionDir)\Config\Project_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\VC-LTL\VC-LTL helper for Visual Studio.props" />
-    <Import Project="..\Config\WinPCK_Includes.props" />
+    <Import Project="$(SolutionDir)\Config\Project_Includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\Config\WinPCK_Includes.props" />
-    <Import Project="..\VC-LTL\VC-LTL helper for Visual Studio.props" />
+    <Import Project="$(SolutionDir)\Config\Project_Includes.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -141,8 +137,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
@@ -176,8 +170,7 @@
       <UseProcessorExtensions>SSE2</UseProcessorExtensions>
       <CompileAsManaged>
       </CompileAsManaged>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -205,9 +198,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_WIN64;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -221,6 +213,7 @@
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
       <UseProcessorExtensions>SSE3</UseProcessorExtensions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -241,6 +234,7 @@
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <GenerateAlternateCodePaths>SSE3</GenerateAlternateCodePaths>
       <UseProcessorExtensions>SSE3</UseProcessorExtensions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -265,8 +259,7 @@
       <UseProcessorExtensions>SSE2</UseProcessorExtensions>
       <CompileAsManaged>
       </CompileAsManaged>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -296,26 +289,22 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <SupportJustMyCode>false</SupportJustMyCode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\MiscFuncs\AllocMemPool.cpp" />
-    <ClCompile Include="..\MiscFuncs\TextLineSpliter.cpp" />
     <ClCompile Include="DictHash\DictHash.cpp" />
-    <ClCompile Include="MapViewFile\MapViewFile.cpp" />
-    <ClCompile Include="MapViewFile\MapViewFileMulti.cpp" />
-    <ClCompile Include="MapViewFile\MapViewFileMultiPck.cpp" />
-    <ClCompile Include="MapViewFile\MapViewFileMultiPckRead.cpp" />
-    <ClCompile Include="MapViewFile\MapViewFileMultiPckWrite.cpp" />
-    <ClCompile Include="MapViewFile\MapViewFileMultiRead.cpp" />
-    <ClCompile Include="MapViewFile\MapViewFileMultiWrite.cpp" />
-    <ClCompile Include="MapViewFile\MapViewFileRead.cpp" />
-    <ClCompile Include="MapViewFile\MapViewFileWrite.cpp" />
-    <ClCompile Include="..\MiscFuncs\CharsCodeConv.cpp" />
-    <ClCompile Include="..\MiscFuncs\Raw2HexString.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="PckClass\PckThreadRunner.cpp" />
     <ClCompile Include="PckClass\PckAlgorithmId.cpp" />
     <ClCompile Include="PckClass\PckClassAppendFiles.cpp" />
@@ -353,16 +342,10 @@
     <ClCompile Include="ZupClass\ZupClassFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\MiscFuncs\AllocMemPool.h" />
-    <ClInclude Include="..\MiscFuncs\TextLineSpliter.h" />
     <ClInclude Include="DictHash\DictHash.h" />
     <ClInclude Include="include\pck_default_vars.h" />
     <ClInclude Include="include\pck_dependencies.h" />
-    <ClInclude Include="MapViewFile\MapViewFile.h" />
-    <ClInclude Include="MapViewFile\MapViewFileMulti.h" />
-    <ClInclude Include="MapViewFile\MapViewFileMultiPck.h" />
-    <ClInclude Include="..\MiscFuncs\CharsCodeConv.h" />
-    <ClInclude Include="..\MiscFuncs\Raw2HexString.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="PckClass\PckClassVersionFillDataTemplate.h" />
     <ClInclude Include="PckClass\PckThreadRunner.h" />
     <ClInclude Include="PckClass\PckAlgorithmId.h" />
@@ -392,14 +375,20 @@
     <ClInclude Include="ZupClass\ZupHeader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\base64\base64_2017.vcxproj">
-      <Project>{4526ffba-6cee-4c01-8d22-535617fe88e5}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\libdeflate\libdeflate_2017.vcxproj">
+    <ProjectReference Include="..\Libraries\thirdparty\libdeflate\libdeflate.vcxproj">
       <Project>{2a3f22c4-d534-497b-82fc-f92a634fb20f}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\zlib\zlib_2017.vcxproj">
+    <ProjectReference Include="..\Libraries\thirdparty\zlib\zlib.vcxproj">
       <Project>{1d5981bc-51af-4748-9ef6-9458e10abba4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\self-dev\base64\base64.vcxproj">
+      <Project>{4526ffba-6cee-4c01-8d22-535617fe88e5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\self-dev\MapViewFile\MapViewFile.vcxproj">
+      <Project>{fad0e83b-abd6-4bf0-a7c7-81007bbe9345}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\self-dev\MiscUtil\MiscUtil.vcxproj">
+      <Project>{07355a14-ce36-40fe-9193-9117d3d5ab4f}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,10 +1,5 @@
 
-#include "globals.h"
-#include "pck_handle.h"
-#include "miscdlg.h"
 #include "tLogDlg.h"
-#include <Shobjidl.h>
-#include <string>
 
 class TInstDlg : public TDlg
 {
@@ -15,28 +10,31 @@ public:
 	TInstDlg(LPTSTR cmdLine);
 	virtual ~TInstDlg();
 
-	virtual BOOL	EvCreate(LPARAM lParam);
-	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
-	virtual BOOL	EvClose();
-	virtual BOOL	EvTimer(WPARAM timerID, TIMERPROC proc);
-	virtual BOOL	EvNotify(UINT ctlID, NMHDR *pNmHdr);
+	virtual BOOL	EvCreate(LPARAM lParam) override;
+	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl) override;
+	virtual BOOL	EvClose() override;
+	virtual BOOL	EvTimer(WPARAM timerID, TIMERPROC proc) override;
+	virtual BOOL	EvNotify(UINT ctlID, NMHDR *pNmHdr) override;
 #ifdef _USE_CUSTOMDRAW_
-	virtual BOOL	EvMeasureItem(UINT ctlID, MEASUREITEMSTRUCT *lpMis);
-	virtual BOOL	EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis);
+	virtual BOOL	EvMeasureItem(UINT ctlID, MEASUREITEMSTRUCT *lpMis) override;
+	virtual BOOL	EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis) override;
 #endif
 
-	virtual BOOL	EvDropFiles(HDROP hDrop);
+	virtual BOOL	EvDropFiles(HDROP hDrop) override;
 
-	virtual BOOL	EventButton(UINT uMsg, int nHitTest, POINTS pos);
-	virtual BOOL	EvMouseMove(UINT fwKeys, POINTS pos);
+	virtual BOOL	EventButton(UINT uMsg, int nHitTest, POINTS pos) override;
+	virtual BOOL	EvMouseMove(UINT fwKeys, POINTS pos) override;
 
-	virtual BOOL	EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight);
+	virtual BOOL	EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight) override;
 
 //用户变量
 private:
 
-	TCHAR	m_MyFileName[MAX_PATH];
-	TCHAR	m_Filename[MAX_PATH], m_CurrentPath[MAX_PATH];
+	//当前程序名
+	std::wstring	m_MyFileName;
+	fs::path	m_Filename;
+	//程序当前工作路径
+	std::wstring	m_CurrentPath;
 
 	BOOL	m_isListviewRenaming;
 
@@ -55,14 +53,10 @@ private:
 
 	HCURSOR	m_hCursorOld, m_hCursorAllow, m_hCursorNo;
 
-	wchar_t		m_FolderBrowsed[MAX_PATH];
+	//当前浏览的pck文件中的目录路径
+	std::wstring	m_FolderBrowsed;
 
 	HIMAGELIST	m_imageList;
-	_inline BOOL EnableButton(UINT buttonID, BOOL enable) { return (BOOL)(SendDlgItemMessage(IDC_TOOLBAR, TB_ENABLEBUTTON, buttonID, MAKELONG(enable, 0))); }
-
-	//Timer String
-	wchar_t		szTimerProcessingFormatString[64];
-	wchar_t		szTimerProcessedFormatString[64];
 
 	//任务栏进度
 	ITaskbarList3* m_pTaskBarlist = nullptr;
@@ -74,11 +68,11 @@ private:
 
 	BOOL IsValidWndAndGetPath(wchar_t * szPath, BOOL isGetPath = FALSE);
 	void RefreshProgress();
-	TCHAR* BuildSaveDlgFilterString();
+	std::wstring BuildSaveDlgFilterString();
 
 
 	//threadproc.cpp
-	void EnbaleButtons(int ctlExceptID, BOOL bEnbale);
+	void EnbaleButtons(BOOL bEnbale);
 	static VOID UpdatePckFile(VOID *pParam);
 	static VOID RenamePckFile(VOID *pParam);
 	static VOID RebuildPckFile(VOID	*pParam);
@@ -90,7 +84,9 @@ private:
 
 
 	//mainfunc.cpp
-	BOOL OpenPckFile(const wchar_t *lpszFileToOpen = L"", BOOL isReOpen = FALSE);
+	BOOL NewPckFile();
+	BOOL OpenPckFile(std::wstring sFileToOpen, BOOL isReOpen = FALSE);
+	BOOL OpenPckFile(BOOL isReOpen = FALSE);
 	VOID SearchPckFiles();
 	VOID ShowPckFiles(const PCK_UNIFIED_FILE_ENTRY* lpNodeToShow);
 
@@ -109,6 +105,8 @@ private:
 	VOID ViewFileAttribute();
 	VOID ViewFile(const PCK_UNIFIED_FILE_ENTRY* lpFileEntry);
 	BOOL AddFiles();
+
+	void SetupRegAsso(bool isInstall) const;
 	void AddSetupReg();
 	void DeleteSetupReg();
 
@@ -119,6 +117,7 @@ private:
 	void DbClickListView(const int itemIndex);	//进入列表中的itemIndex项（进入目录或预览文件）
 	void PopupRightMenu(const int itemIndex);		//listview上右击出菜单
 
+	void UnpackFiles(int id, auto func);
 	void UnpackAllFiles();					//解压所有文件
 	void UnpackSelectedFiles();				//解压选中的文件
 
@@ -139,7 +138,7 @@ private:
 	BOOL InitListView(CONST HWND hWndListView, const LPTSTR *lpszText, const int *icx, const int *ifmt);
 
 	BOOL ListView_BeginLabelEdit(const HWND hWndList, LPARAM lParam);
-	BOOL ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr);
+	BOOL ListView_EndLabelEdit(const NMLVDISPINFOW* pNmHdr);
 
 	void ListView_Init();
 	void ListView_Uninit();
@@ -166,12 +165,12 @@ private:
 	void MenuView();
 	void MenuAbout();
 	void ListViewEnter();
+	void MenuCancelPckOper();
 #pragma endregion
 
 #pragma region mainControlStatus.cpp
 
 private:
-	void SetStatusBarText(int iPart, LPCSTR lpszText);
 	void SetStatusBarText(int iPart, LPCWSTR lpszText);
 
 public:
@@ -193,5 +192,5 @@ public:
 	TInstApp(HINSTANCE _hI, LPTSTR _cmdLine, int _nCmdShow);
 	virtual ~TInstApp();
 
-	void InitWindow(void);
+	virtual void InitWindow(void) override;
 };

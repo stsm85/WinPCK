@@ -15,62 +15,56 @@
 //#pragma warning ( disable : 4018 )
 #pragma warning ( disable : 4005 )
 
-#include "tlib.h"
-#include "resource.h"
-#include "globals.h"
+#include "guipch.h"
 #include "winmain.h"
-#include <process.h>
-#include <tchar.h>
-#include "OpenSaveDlg.h"
-#include "StopWatch.h"
+#include "tRebuildOptDlg.h"
+#include "tStripDlg.h"
 
-VOID GetPckFileNameBySource(LPWSTR dst, LPCWSTR src, BOOL isDirectory);
+fs::path GetPckFileNameBySource(fs::path src, BOOL isDirectory);
 
 VOID TInstDlg::UpdatePckFile(VOID *pParam)
 {
 
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 	BOOL		bHasPckOpened = !pck_IsValidPck();
-	wchar_t		szFilenameToSave[MAX_PATH];
-	wchar_t		szPrintf[320];
+	std::wstring		szFilenameToSave;
 	CStopWatch	timer;
-
-	*szFilenameToSave = 0;
 
 	if (bHasPckOpened) {
 		//此时没有打开文件，这时的操作相当于新建文档
 		pThis->m_currentNodeOnShow = NULL;
 
 		if (1 == pThis->m_lpszFilePath.size()) {
-			GetPckFileNameBySource(szFilenameToSave, pThis->m_lpszFilePath[0].c_str(), FALSE);
+			szFilenameToSave = GetPckFileNameBySource(pThis->m_lpszFilePath[0], FALSE).c_str();
 		}
 
-		//选择保存的文件名
-		int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, L"pck", pThis->BuildSaveDlgFilterString());
-		if (0 > nSelectFilter) {
+		try {
+			//选择保存的文件名
+			int nSelectFilter = ::SaveFile<wchar_t>(pThis->hWnd, szFilenameToSave, std::wstring(L"pck"), pThis->BuildSaveDlgFilterString());
+
+			//设定目标pck的版本
+			if (WINPCK_OK != pck_setVersion(nSelectFilter))
+				return;
+		}
+		catch (std::exception)
+		{
 			pck_close();
 			return;
 		}
 
-		//设定目标pck的版本
-		if(WINPCK_OK != pck_setVersion(nSelectFilter))
-			return;
-
-		swprintf_s(szPrintf, GetLoadStrW(IDS_STRING_RENEWING), wcsrchr(szFilenameToSave, L'\\') + 1);
 	}
 	else {
-		wcscpy_s(szFilenameToSave, pThis->m_Filename);
-		swprintf_s(szPrintf, GetLoadStrW(IDS_STRING_RENEWING), wcsrchr(pThis->m_Filename, L'\\') + 1);
+		szFilenameToSave.assign(pThis->m_Filename);
 	}
 
 	//开始计时
 	timer.start();
 
-	pThis->EnbaleButtons(ID_MENU_ADD, FALSE);
+	pThis->EnbaleButtons(FALSE);
 
-	//pThis->SetStatusBarText(4, szPrintf);
-	pThis->SetStatusBarInfo(szPrintf);
+	fs::path filepath(szFilenameToSave);
 
+	pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_RENEWING), std::make_wformat_args(filepath.filename().wstring())).c_str());
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
@@ -79,21 +73,17 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 		pck_StringArrayAppend(pThis->m_lpszFilePath[i].c_str());
 	}
 
-	if (WINPCK_OK == pck_UpdatePckFileSubmit(szFilenameToSave, pThis->m_currentNodeOnShow)) {
+	if (WINPCK_OK == pck_UpdatePckFileSubmit(szFilenameToSave.c_str(), pThis->m_currentNodeOnShow)) {
 
 		//计时结束
 		timer.stop();
 
 		if (pck_isLastOptSuccess()) {
 
-			//pThis->m_PckLog.PrintLogN(GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
-			pck_logN(GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
-			//pThis->SetStatusBarText(4, szPrintf);
+			pck_logN(::GetLoadStrW(IDS_STRING_RENEWOK), timer.getElapsedTime());
 		}
 		else {
-
-			//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			pThis->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 		}
 
 
@@ -106,46 +96,46 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 
 		if (0 != pck_getUpdateResult_PrepareToAddFileCount()) {
 
-			swprintf_s(szPrintf,
+			auto sUpdateDetail = std::format(
 				L"此更新过程数据如下：\r\n"
-				L"PCK 包中原有文件数： %d\r\n"
-				L"计划更新文件数： %d\r\n"
-				L"实际更新文件数： %d\r\n"
-				L"重名文件数： %d\r\n"
-				L"未更新文件数： %d\r\n"
-				L"更新后 PCK 包中文件数： %d",
+				L"PCK 包中原有文件数： {}\r\n"
+				L"计划更新文件数： {}\r\n"
+				L"实际更新文件数： {}\r\n"
+				L"重名文件数： {}\r\n"
+				L"未更新文件数： {}\r\n"
+				L"更新后 PCK 包中文件数： {}",
 				pck_getUpdateResult_OldFileCount(),
 				pck_getUpdateResult_PrepareToAddFileCount(),
 				pck_getUpdateResult_ChangedFileCount(),
 				pck_getUpdateResult_DuplicateFileCount(),
 				pck_getUpdateResult_PrepareToAddFileCount() - pck_getUpdateResult_ChangedFileCount(),
-				pck_getUpdateResult_FinalFileCount());
+				pck_getUpdateResult_FinalFileCount()
+			);
 
-			pThis->MessageBoxW(szPrintf, L"更新报告", MB_OK | MB_ICONINFORMATION);
+			pThis->MessageBoxW(sUpdateDetail.c_str(), L"更新报告", MB_OK | MB_ICONINFORMATION);
 
-			pck_logI(szPrintf);
+			pck_logI(sUpdateDetail.c_str());
 		}
 
 
 		if (bHasPckOpened) {
 
-			pThis->OpenPckFile(szFilenameToSave, TRUE);
+			pThis->OpenPckFile(szFilenameToSave.c_str(), TRUE);
 		}
 		else {
-			pThis->OpenPckFile(pThis->m_Filename, TRUE);
+			pThis->OpenPckFile(TRUE);
 		}
 
 	}
 	else {
 
-		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		if (bHasPckOpened) {
 			pck_close();
 		}
 	}
 
-	pThis->EnbaleButtons(ID_MENU_ADD, TRUE);
+	pThis->EnbaleButtons(TRUE);
 
 	pThis->KillTimer(WM_TIMER_PROGRESS_100);
 	pThis->RefreshProgress();
@@ -167,18 +157,13 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 {
 
 	TInstDlg	*pThis = (TInstDlg*)pParam;
-	TCHAR		szPrintf[64];
 	CStopWatch	timer;
-
-	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
-
 	//开始计时
 	timer.start();
 
-	pThis->EnbaleButtons(ID_MENU_RENAME, FALSE);
+	pThis->EnbaleButtons(FALSE);
 
-	//pThis->SetStatusBarText(4, szPrintf);
-	pThis->SetStatusBarInfo(szPrintf);
+	pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_RENEWING), std::make_wformat_args(pThis->m_Filename.filename().wstring())).c_str());
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
@@ -186,22 +171,18 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 
 		//计时结束
 		timer.stop();
-		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
 
-		//pThis->SetStatusBarText(4, szPrintf);
-		pThis->SetStatusBarInfo(szPrintf);
+		pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_RENEWOK), std::make_wformat_args(timer.getElapsedTime())).c_str());
 
-		pThis->OpenPckFile(pThis->m_Filename, TRUE);
+		pThis->OpenPckFile(TRUE);
 
 	}
 	else {
-
-		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		pThis->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 		pck_close();
 	}
 
-	pThis->EnbaleButtons(ID_MENU_RENAME, TRUE);
+	pThis->EnbaleButtons(TRUE);
 
 	pThis->KillTimer(WM_TIMER_PROGRESS_100);
 	pThis->RefreshProgress();
@@ -216,90 +197,90 @@ VOID TInstDlg::RenamePckFile(VOID *pParam)
 
 VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 {
+	try {
 
-	TInstDlg	*pThis = (TInstDlg*)pParam;
+		TInstDlg* pThis = (TInstDlg*)pParam;
 
-	BOOL		bNeedCreatePck = !pck_IsValidPck();
+		BOOL		bNeedCreatePck = !pck_IsValidPck();
 
-	TCHAR		szFilenameToSave[MAX_PATH];
-	TCHAR		szScriptFile[MAX_PATH];
-	TCHAR		szPrintf[288];
+		TCHAR		szScriptFile[MAX_PATH];
+		CStopWatch	timer;
 
-	CStopWatch	timer;
+		if (bNeedCreatePck) {
+			if (!pThis->NewPckFile()) {
+				return;
+			}
+		}
 
-	if (bNeedCreatePck) {
-		if (!pThis->OpenPckFile()) {
+		fs::path filepath(pThis->m_Filename);
+		filepath.replace_filename(L"Rebuild_" + filepath.filename().wstring());
+
+		std::wstring szFilenameToSave(filepath.wstring());
+
+		//弹出选项对话框
+		//调用对话框
+		BOOL  bNeedRecompress;
+		TRebuildOptDlg	dlg(szScriptFile, &bNeedRecompress, pThis);
+		if (IDCANCEL == dlg.Exec())
+			return;
+
+		//选择保存的文件名
+		int nSelectFilter = ::SaveFile<wchar_t>(pThis->hWnd, szFilenameToSave, std::wstring(L"pck"), pThis->BuildSaveDlgFilterString(), pck_getVersion());
+
+		if (0 > nSelectFilter) {
 			return;
 		}
-	}
 
-	_tcscpy_s(szFilenameToSave, pThis->m_Filename);
+		if (WINPCK_OK != pck_setVersion(nSelectFilter))
+			return;
 
-	TCHAR		*lpszFileTitle = _tcsrchr(szFilenameToSave, TEXT('\\')) + 1;
-	_tcscpy(lpszFileTitle, TEXT("Rebuild_"));
-	_tcscat_s(szFilenameToSave, _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
+		//开始计时
+		timer.start();
 
-	//弹出选项对话框
-	//调用对话框
-	BOOL  bNeedRecompress;
-	TRebuildOptDlg	dlg(szScriptFile, &bNeedRecompress, pThis);
-	if (IDCANCEL == dlg.Exec())
-		return;
+		pThis->EnbaleButtons(FALSE);
 
-	//选择保存的文件名
-	int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->BuildSaveDlgFilterString(), pck_getVersion());
-	if (0 > nSelectFilter) {
-		return;
-	}
+		filepath = fs::path(szFilenameToSave);
 
-	if (WINPCK_OK != pck_setVersion(nSelectFilter))
-		return;
+		pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_REBUILDING), std::make_wformat_args(filepath.filename().wstring())).c_str());
 
-	//开始计时
-	timer.start();
+		pThis->SetTimer(WM_TIMER_PROGRESS_100, 100, NULL);
 
-	pThis->EnbaleButtons(ID_MENU_REBUILD, FALSE);
+		if (WINPCK_OK == pck_RebuildPckFileWithScript(szScriptFile, szFilenameToSave.c_str(), bNeedRecompress)) {
 
-	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_REBUILDING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
-	//pThis->SetStatusBarText(4, szPrintf);
-	pThis->SetStatusBarInfo(szPrintf);
+			//计时结束
+			timer.stop();
 
-	pThis->SetTimer(WM_TIMER_PROGRESS_100, 100, NULL);
+			if (pck_isLastOptSuccess()) {
 
-	if (WINPCK_OK == pck_RebuildPckFileWithScript(szScriptFile, szFilenameToSave, bNeedRecompress)) {
+				pck_logN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+			}
+			else {
+				pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			}
 
-		//计时结束
-		timer.stop();
-
-		if (pck_isLastOptSuccess()) {
-
-			pck_logN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 		}
 		else {
-			//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
+		pThis->EnbaleButtons(TRUE);
+
+		if (bNeedCreatePck) {
+			ListView_DeleteAllItems(pThis->GetDlgItem(IDC_LIST));
+			pck_close();
+		}
+
+		pThis->KillTimer(WM_TIMER_PROGRESS_100);
+		pThis->RefreshProgress();
+
+		if ((!(pck_isLastOptSuccess())) && pThis->bGoingToExit) {
+			pThis->bGoingToExit = FALSE;
+			pThis->SendMessage(WM_CLOSE, 0, 0);
+		}
 	}
-	else {
-
-		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
-	}
-
-	pThis->EnbaleButtons(ID_MENU_REBUILD, TRUE);
-
-	if (bNeedCreatePck) {
-		ListView_DeleteAllItems(pThis->GetDlgItem(IDC_LIST));
-		pck_close();
-	}
-
-	pThis->KillTimer(WM_TIMER_PROGRESS_100);
-	pThis->RefreshProgress();
-
-	if ((!(pck_isLastOptSuccess())) && pThis->bGoingToExit) {
-		pThis->bGoingToExit = FALSE;
-		pThis->SendMessage(WM_CLOSE, 0, 0);
+	catch (std::exception ex)
+	{
+		pck_logIA(ex.what());
 	}
 
 	return;
@@ -309,25 +290,19 @@ VOID TInstDlg::StripPckFile(VOID *pParam)
 {
 
 	TInstDlg	*pThis = (TInstDlg*)pParam;
-
 	BOOL		bNeedCreatePck = !pck_IsValidPck();
-
-	TCHAR		szFilenameToSave[MAX_PATH];
-	TCHAR		szPrintf[288];
-
 	CStopWatch	timer;
 
 	if (bNeedCreatePck) {
-		if (!pThis->OpenPckFile()) {
+		if (!pThis->NewPckFile()) {
 			return;
 		}
 	}
 
-	_tcscpy_s(szFilenameToSave, pThis->m_Filename);
+	fs::path filepath(pThis->m_Filename);
+	filepath.replace_filename(L"Striped_" + filepath.filename().wstring());
 
-	TCHAR		*lpszFileTitle = _tcsrchr(szFilenameToSave, TEXT('\\')) + 1;
-	_tcscpy(lpszFileTitle, TEXT("Striped_"));
-	_tcscat_s(szFilenameToSave, _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
+	std::wstring szFilenameToSave(filepath.wstring());
 
 	//弹出选项对话框
 	//调用对话框
@@ -336,27 +311,29 @@ VOID TInstDlg::StripPckFile(VOID *pParam)
 	if (IDCANCEL == dlg.Exec())
 		return;
 
-	//选择保存的文件名
-	int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->BuildSaveDlgFilterString(), pck_getVersion());
-	if (0 > nSelectFilter) {
+	try {
+		//选择保存的文件名
+		int nSelectFilter = ::SaveFile<wchar_t>(pThis->hWnd, szFilenameToSave, std::wstring(L"pck"), pThis->BuildSaveDlgFilterString(), pck_getVersion());
+
+		if (WINPCK_OK != pck_setVersion(nSelectFilter))
+			return;
+	}
+	catch (std::exception)
+	{
 		return;
 	}
-
-	if (WINPCK_OK != pck_setVersion(nSelectFilter))
-		return;
 
 	//开始计时
 	timer.start();
 
-	pThis->EnbaleButtons(ID_MENU_REBUILD, FALSE);
+	pThis->EnbaleButtons(FALSE);
 
-	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_REBUILDING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
-	//pThis->SetStatusBarText(4, szPrintf);
-	pThis->SetStatusBarInfo(szPrintf);
+	filepath = fs::path(szFilenameToSave);
+	pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_REBUILDING), std::make_wformat_args(filepath.filename().wstring())).c_str());
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, 100, NULL);
 
-	if (WINPCK_OK == pck_StripPck(szFilenameToSave, stripFlag)) {
+	if (WINPCK_OK == pck_StripPck(szFilenameToSave.c_str(), stripFlag)) {
 
 		//计时结束
 		timer.stop();
@@ -366,18 +343,15 @@ VOID TInstDlg::StripPckFile(VOID *pParam)
 			pck_logN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 		}
 		else {
-			//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		}
 
 	}
 	else {
-
-		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 	}
 
-	pThis->EnbaleButtons(ID_MENU_REBUILD, TRUE);
+	pThis->EnbaleButtons(TRUE);
 
 	if (bNeedCreatePck) {
 		ListView_DeleteAllItems(pThis->GetDlgItem(IDC_LIST));
@@ -399,39 +373,42 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 	TInstDlg	*pThis = (TInstDlg*)pParam;
 
 	BOOL		isNotOpenedPck = !pck_IsValidPck();
-	TCHAR		szFilenameToSave[MAX_PATH];
-
-	TCHAR		szPrintf[64];
 
 	CStopWatch	timer;
 
-	//选择目录
-	if (!OpenFilesVistaUp(pThis->hWnd, pThis->m_CurrentPath))
+	try {
+		//选择目录
+		CDlgOpenDirectory cDlgOpenDirectory;
+		pThis->m_CurrentPath = cDlgOpenDirectory.Show(pThis->hWnd);
+	}
+	catch (std::exception) {
 		return;
+	}
 
 	pThis->m_lpszFilePath.push_back(pThis->m_CurrentPath);
 
-	GetPckFileNameBySource(szFilenameToSave, pThis->m_CurrentPath, TRUE);
+	auto szFilenameToSave = GetPckFileNameBySource(pThis->m_CurrentPath, TRUE).wstring();
 
-	//选择保存的文件名
-	int nSelectFilter = SaveFile(pThis->hWnd, szFilenameToSave, TEXT("pck"), pThis->BuildSaveDlgFilterString());
-	if (0 > nSelectFilter)
-		return;
+	try {
+		//选择保存的文件名
+		int nSelectFilter = ::SaveFile<wchar_t>(pThis->hWnd, szFilenameToSave, std::wstring(L"pck"), pThis->BuildSaveDlgFilterString());
 
-	//设定目标pck的版本
-	if (WINPCK_OK != pck_setVersion(nSelectFilter))
+		//设定目标pck的版本
+		if (WINPCK_OK != pck_setVersion(nSelectFilter))
+			return;
+	}
+	catch (std::exception) {
 		return;
+	}
 
 	//开始计时
 	timer.start();
 
-	pThis->EnbaleButtons(ID_MENU_NEW, FALSE);
+	pThis->EnbaleButtons(FALSE);
 
-	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_COMPING), _tcsrchr(szFilenameToSave, TEXT('\\')) + 1);
-	//pThis->SetStatusBarText(4, szPrintf);
-	pThis->SetStatusBarInfo(szPrintf);
+	fs::path filenameToSave(szFilenameToSave);
 
-	//pck_setThreadWorking(pThis->m_PckHandle);
+	pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_COMPING), std::make_wformat_args( filenameToSave.filename().wstring())).c_str());
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
@@ -440,7 +417,7 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 		pck_StringArrayAppend(pThis->m_lpszFilePath[i].c_str());
 	}
 
-	if (WINPCK_OK == pck_UpdatePckFileSubmit(szFilenameToSave, pThis->m_currentNodeOnShow)) {
+	if (WINPCK_OK == pck_UpdatePckFileSubmit(szFilenameToSave.c_str(), pThis->m_currentNodeOnShow)) {
 
 		//计时结束
 		timer.stop();
@@ -449,18 +426,15 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 			pck_logN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 		}
 		else {
-			//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			pThis->SetStatusBarInfo(GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 		}
 
 	}
 	else {
-
-		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		pThis->SetStatusBarInfo(GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 	}
 
-	pThis->EnbaleButtons(ID_MENU_NEW, TRUE);
+	pThis->EnbaleButtons(TRUE);
 
 	if (isNotOpenedPck)
 		pck_close();
@@ -479,36 +453,31 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)
 {
 	TInstDlg	*pThis = (TInstDlg*)pParam;
-	TCHAR		szPrintf[64];
 
 	CStopWatch	timer;
 
 	//开始计时
 	timer.start();
 
-	pThis->EnbaleButtons(ID_MENU_UNPACK_ALL, FALSE);
+	pThis->EnbaleButtons(FALSE);
 
-	_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
-	//pThis->SetStatusBarText(4, szPrintf);
-	pThis->SetStatusBarInfo(szPrintf);
+	fs::path filepath(pThis->m_Filename);
+	pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_EXPING), std::make_wformat_args(filepath.filename().wstring())).c_str());
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
-	if (WINPCK_OK == pck_ExtractAllFiles(pThis->m_CurrentPath)) {
+	if (WINPCK_OK == pck_ExtractAllFiles(pThis->m_CurrentPath.c_str())) {
 		//计时结束
 		timer.stop();
-		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPOK), timer.getElapsedTime());
-
-		//pThis->SetStatusBarText(4, szPrintf);
-		pThis->SetStatusBarInfo(szPrintf);
+		pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_EXPOK), std::make_wformat_args(timer.getElapsedTime())).c_str());
 
 	}
 	else {
-		//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
+
 		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 	}
 
-	pThis->EnbaleButtons(ID_MENU_UNPACK_ALL, TRUE);
+	pThis->EnbaleButtons(TRUE);
 
 	pThis->KillTimer(WM_TIMER_PROGRESS_100);
 	pThis->RefreshProgress();
@@ -535,7 +504,6 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 
 	if (0 != uiSelectCount) {
 		if (NULL != (lpFileEntryArray = (const PCK_UNIFIED_FILE_ENTRY **)malloc(sizeof(PCK_UNIFIED_FILE_ENTRY *) * uiSelectCount))) {
-			TCHAR		szPrintf[64];
 
 			//取lpNodeToShow
 			int	nCurrentItemCount = ListView_GetItemCount(hList);
@@ -566,32 +534,27 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 			//开始计时
 			timer.start();
 
-			pThis->EnbaleButtons(ID_MENU_UNPACK_SELECTED, FALSE);
+			pThis->EnbaleButtons(FALSE);
 
-			_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
-			//pThis->SetStatusBarText(4, szPrintf);
-			pThis->SetStatusBarInfo(szPrintf);
+			fs::path filepath(pThis->m_Filename);
+			pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_EXPING), std::make_wformat_args(filepath.filename().wstring())).c_str());
 
 			pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
 			lpFileEntryArrayPtr = lpFileEntryArray;
 
-			if (WINPCK_OK == pck_ExtractFilesByEntrys(lpFileEntryArray, uiSelectCount, pThis->m_CurrentPath)) {
+			if (WINPCK_OK == pck_ExtractFilesByEntrys(lpFileEntryArray, uiSelectCount, pThis->m_CurrentPath.c_str())) {
 				//计时结束
 				timer.stop();
-				_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_EXPOK), timer.getElapsedTime());
-
-				//pThis->SetStatusBarText(4, szPrintf);
-				pThis->SetStatusBarInfo(szPrintf);
+				pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_EXPOK), std::make_wformat_args(timer.getElapsedTime())).c_str());
 			}
 			else {
-				//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
 				pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
 			}
 
 			free(lpFileEntryArray);
 
-			pThis->EnbaleButtons(ID_MENU_UNPACK_SELECTED, TRUE);
+			pThis->EnbaleButtons(TRUE);
 
 			pThis->KillTimer(WM_TIMER_PROGRESS_100);
 			pThis->RefreshProgress();
@@ -612,20 +575,17 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 
 	HWND	hList = pThis->GetDlgItem(IDC_LIST);
 
-	CStopWatch	timer;
-
 	UINT uiSelectCount = ListView_GetSelectedCount(hList);
 
 	if (0 != uiSelectCount) {
 
-		TCHAR		szPrintf[64];
-
 		int	nCurrentItemCount = ListView_GetItemCount(hList);
 
-		LVITEM item;
-		item.mask = LVIF_PARAM | LVIF_STATE;
-		item.iSubItem = 0;
-		item.stateMask = LVIS_SELECTED;		// get all state flags
+		LVITEMW item {
+			.mask = LVIF_PARAM | LVIF_STATE,
+			.iSubItem = 0,
+			.stateMask = LVIS_SELECTED,		// get all state flags
+		};
 
 		uiSelectCount = 0;
 
@@ -641,35 +601,29 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 
 		if (0 == uiSelectCount)return;
 
+		CStopWatch	timer;
 		//开始计时
 		timer.start();
 
-		pThis->EnbaleButtons(ID_MENU_DELETE, FALSE);
+		pThis->EnbaleButtons(FALSE);
 
-		_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWING), _tcsrchr(pThis->m_Filename, TEXT('\\')) + 1);
-		//pThis->SetStatusBarText(4, szPrintf);
-		pThis->SetStatusBarInfo(szPrintf);
+		pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_RENEWING), std::make_wformat_args(pThis->m_Filename.filename().wstring())).c_str());
 
 		pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
-
 
 		if (WINPCK_OK == pck_RenameSubmit()) {
 			//计时结束
 			timer.stop();
-			_stprintf_s(szPrintf, GetLoadStr(IDS_STRING_RENEWOK), timer.getElapsedTime());
-
-			//pThis->SetStatusBarText(4, szPrintf);
-			pThis->SetStatusBarInfo(szPrintf);
-
-			pThis->OpenPckFile(pThis->m_Filename, TRUE);
+			pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_RENEWOK), std::make_wformat_args(timer.getElapsedTime())).c_str());
+			pThis->OpenPckFile(TRUE);
 
 		}
 		else {
-			//pThis->SetStatusBarText(4, GetLoadStr(IDS_STRING_PROCESS_ERROR));
-			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+
+			pThis->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 		}
 
-		pThis->EnbaleButtons(ID_MENU_DELETE, TRUE);
+		pThis->EnbaleButtons(TRUE);
 
 		pThis->KillTimer(WM_TIMER_PROGRESS_100);
 		pThis->RefreshProgress();
@@ -684,16 +638,23 @@ VOID TInstDlg::DeleteFileFromPckFile(VOID	*pParam)
 }
 
 //从拖入的源文件名推出预保存的pck文件名
-VOID GetPckFileNameBySource(LPWSTR dst, LPCWSTR src, BOOL isDirectory)
+fs::path GetPckFileNameBySource(fs::path src, BOOL isDirectory)
 {
-	int szPathToCompressLen;
-	wcscpy(dst, src);
+	constexpr wchar_t file_end_with[] = L".pck.files";
+	constexpr auto filepath_min_len = sizeof("c:\\") - 1 + sizeof(file_end_with) / sizeof(wchar_t) - 1;
+
+	fs::path dst = src;
 
 	if (isDirectory) {
-		if ((szPathToCompressLen = lstrlenW(dst)) > 13 && 0 == lstrcmpW(dst + szPathToCompressLen - 10, L".pck.files")) {
-			*(dst + szPathToCompressLen - 10) = 0;
-		}
-	}
 
-	wcscat(dst, L".pck");
+		if (dst.wstring().ends_with(file_end_with) && dst.wstring().size() > filepath_min_len)
+		{
+			dst.replace_extension("");
+		}
+
+	}
+	else {
+		dst.replace_extension(dst.extension().string() + ".pck");
+	}
+	return dst;
 }

@@ -1,3 +1,4 @@
+#include "tlibpch.h"
 const static char *twin_id = 
 	"@(#)Copyright (C) 1996-2009 H.Shirouzu		twin.cpp	Ver0.97";
 /* ========================================================================
@@ -463,6 +464,44 @@ UINT TWin::GetDlgItemTextW(int ctlId, LPWSTR buf, int len)
 	return	::GetDlgItemTextW(hWnd, ctlId, buf, len);
 }
 
+UINT TWin::GetDlgItemTextLengthA(int ctlId)
+{
+	return ::GetWindowTextLengthA(this->GetDlgItem(ctlId));
+}
+
+UINT TWin::GetDlgItemTextLengthW(int ctlId)
+{
+	return ::GetWindowTextLengthW(this->GetDlgItem(ctlId));
+}
+
+std::string TWin::GetDlgItemStringA(int ctlId)
+{
+	std::string buf;
+	buf.resize(this->GetDlgItemTextLengthA(ctlId));
+	this->GetDlgItemTextA(ctlId, buf.data(), buf.size() + 1);
+	return buf;
+}
+
+std::wstring TWin::GetDlgItemStringW(int ctlId)
+{
+	std::wstring buf;
+	buf.resize(this->GetDlgItemTextLengthW(ctlId));
+	this->GetDlgItemTextW(ctlId, buf.data(), buf.size() + 1);
+	return buf;
+}
+
+LRESULT	TWin::AppendDlgItemTextA(int ctlId, LPCSTR buf)
+{
+	this->SendDlgItemMessageW(ctlId, EM_SETSEL, -2, -1);
+	return this->SendDlgItemMessageA(ctlId, EM_REPLACESEL, 0, (LPARAM)buf);
+}
+
+LRESULT	TWin::AppendDlgItemTextW(int ctlId, LPCWSTR buf)
+{
+	this->SendDlgItemMessageW(ctlId, EM_SETSEL, -2, -1);
+	return this->SendDlgItemMessageW(ctlId, EM_REPLACESEL, 0, (LPARAM)buf);
+}
+
 BOOL TWin::SetDlgItemTextA(int ctlId, LPCSTR buf)
 {
 	return	::SetDlgItemTextA(hWnd, ctlId, buf);
@@ -507,6 +546,11 @@ BOOL TWin::IsWindowVisible(void)
 BOOL TWin::EnableWindow(BOOL is_enable)
 {
 	return	::EnableWindow(hWnd, is_enable);
+}
+
+BOOL TWin::EnableWindow(int ctlId, BOOL is_enable)
+{
+	return	::EnableWindow(this->GetDlgItem(ctlId), is_enable);
 }
 
 int TWin::MessageBoxA(LPCSTR msg, LPCSTR title, UINT style)

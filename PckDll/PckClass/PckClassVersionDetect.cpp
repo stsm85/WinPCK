@@ -9,10 +9,10 @@
 // 2017.6.27
 //////////////////////////////////////////////////////////////////////
 
-#include "MapViewFileMultiPck.h"
+#include <pch.h>
+
 #include "PckClassVersionDetect.h"
 #include "PckAlgorithmId.h"
-
 #include "PckClassVersionFillDataTemplate.h"
 
 #pragma warning ( disable : 4996 )
@@ -118,24 +118,24 @@ CPckClassVersionDetect::~CPckClassVersionDetect()
 
 const std::vector <PCK_VERSION_ID> CPckClassVersionDetect::cPckIDs =
 {
-	{ TEXT("诛仙"),			PCK_CATEGORY::PCK_V2020, AFPCK_VERSION_202, 0 },
-	{ TEXT("诛仙(新)"),		PCK_CATEGORY::PCK_V2030, AFPCK_VERSION_203, 0 },
-	{ TEXT("圣斗士"),		PCK_CATEGORY::PCK_V2020, AFPCK_VERSION_202, 161 },
-	{ TEXT("圣斗士(新)"),	PCK_CATEGORY::PCK_V2030, AFPCK_VERSION_203, 161 },
-	{ TEXT("神魔"),			PCK_CATEGORY::PCK_V2020, AFPCK_VERSION_202, 131 },
-	{ TEXT("神魔(新)"),		PCK_CATEGORY::PCK_V2030, AFPCK_VERSION_203, 131 },
+	{ L"诛仙",			PCK_CATEGORY::PCK_V2020, AFPCK_VERSION_202, 0 },
+	{ L"诛仙(新)",		PCK_CATEGORY::PCK_V2030, AFPCK_VERSION_203, 0 },
+	{ L"圣斗士",			PCK_CATEGORY::PCK_V2020, AFPCK_VERSION_202, 161 },
+	{ L"圣斗士(新)",		PCK_CATEGORY::PCK_V2030, AFPCK_VERSION_203, 161 },
+	{ L"神魔",			PCK_CATEGORY::PCK_V2020, AFPCK_VERSION_202, 131 },
+	{ L"神魔(新)",		PCK_CATEGORY::PCK_V2030, AFPCK_VERSION_203, 131 },
 #ifndef _DEBUG
-	{ TEXT("口袋西游"),		PCK_CATEGORY::PCK_V2020, AFPCK_VERSION_202, 121 },
-	{ TEXT("口袋西游(新)"),	PCK_CATEGORY::PCK_V2030, AFPCK_VERSION_203, 121 },
-	{ TEXT("热舞派对"),		PCK_CATEGORY::PCK_V2020, AFPCK_VERSION_202, 111 },
-	{ TEXT("热舞派对(新)"),	PCK_CATEGORY::PCK_V2030, AFPCK_VERSION_203, 111 },
+	{ L"口袋西游",		PCK_CATEGORY::PCK_V2020, AFPCK_VERSION_202, 121 },
+	{ L"口袋西游(新)",	PCK_CATEGORY::PCK_V2030, AFPCK_VERSION_203, 121 },
+	{ L"热舞派对",		PCK_CATEGORY::PCK_V2020, AFPCK_VERSION_202, 111 },
+	{ L"热舞派对(新)",	PCK_CATEGORY::PCK_V2030, AFPCK_VERSION_203, 111 },
 #endif
 };
 
 const std::map <PCK_CATEGORY, PCK_SP_VERSION_ID> CPckClassVersionDetect::cPckSPIDs =
 {
-	{ PCK_CATEGORY::PCK_VXAJH,	{ TEXT("笑傲江湖"),		AFPCK_VERSION_203, 161, 0x5edb34f0, 0x00000000, 0x49ab7f1d33c3eddb, 0xffffff00 }},
-	{ PCK_CATEGORY::PCK_VMXXDL,	{ TEXT("梦想新大陆"),	AFPCK_VERSION_203, 161 }},
+	{ PCK_CATEGORY::PCK_VXAJH,	{ L"笑傲江湖",	AFPCK_VERSION_203, 161, 0x5edb34f0, 0x00000000, 0x49ab7f1d33c3eddb, 0xffffff00 }},
+	{ PCK_CATEGORY::PCK_VMXXDL,	{ L"梦想新大陆",	AFPCK_VERSION_203, 161 }},
 };
 
 #define PCK_VER_FUNC_LINE(_id, _head_ver, _tail_ver, _index_ver) \
@@ -179,8 +179,8 @@ void CPckClassVersionDetect::FillGeneralVersionInfo()
 		lpPckKeys->CategoryId = pckid.VersionId;
 		lpPckKeys->Version = pckid.Version;
 
-		SetAlgorithmId(pckid.AlgorithmId, &cPckVersionFuncToAdd);
-		SetDataFmtFunc(&cPckVersionFuncToAdd);
+		CPckClassVersionDetect::SetAlgorithmId(pckid.AlgorithmId, &cPckVersionFuncToAdd);
+		CPckClassVersionDetect::SetDataFmtFunc(&cPckVersionFuncToAdd);
 
 		cPckVersionFunc.push_back(cPckVersionFuncToAdd);
 		++id;
@@ -203,10 +203,10 @@ void CPckClassVersionDetect::FillSpecialVersionInfo()
 				auto& spid = pairSPIDs->second;
 
 				pckXorKey.id = id;
-				pckXorKey.name = std::wstring(spid.name);
+				pckXorKey.name.assign(spid.name);
 				pckXorKey.Version = spid.Version;
 
-				SetAlgorithmId(spid.AlgorithmId, &sp_ver);
+				CPckClassVersionDetect::SetAlgorithmId(spid.AlgorithmId, &sp_ver);
 
 				pckXorKey.HeadVerifyKey1 = spid.SafeHeaderTag1;
 
@@ -236,17 +236,15 @@ int CPckClassVersionDetect::FillUnknownVersionInfo(DWORD AlgorithmId, DWORD Vers
 
 		PCK_VERSION_FUNC cPckVersionFuncToAdd;
 
-		LPPCK_KEYS lpUnknownPckKeys = &cPckVersionFuncToAdd.cPckXorKeys;
-		LPPCK_VERSION_FUNC lpUnknownPckVersionFunc = &cPckVersionFuncToAdd;
+		auto lpUnknownPckKeys = &cPckVersionFuncToAdd.cPckXorKeys;
+		//LPPCK_VERSION_FUNC lpUnknownPckVersionFunc = &cPckVersionFuncToAdd;
 		lpUnknownPckKeys->id = cPckVersionFunc.size();
-		wchar_t name[128];
-		swprintf_s(name, L"识别的未知格式(ver=0x%x id=%d)", Version, AlgorithmId);
-		lpUnknownPckKeys->name = std::wstring(name);
-
+		lpUnknownPckKeys->name = std::format(L"识别的未知格式(ver=0x{:x} id={})", Version, AlgorithmId);
 		lpUnknownPckKeys->CategoryId = AFPCK_VERSION_202 == Version ? PCK_CATEGORY::PCK_V2020 : PCK_CATEGORY::PCK_V2030;
 		lpUnknownPckKeys->Version = Version;
 
-		SetAlgorithmId(AlgorithmId, &cPckVersionFuncToAdd);
+		CPckClassVersionDetect::SetAlgorithmId(AlgorithmId, &cPckVersionFuncToAdd);
+		CPckClassVersionDetect::SetDataFmtFunc(&cPckVersionFuncToAdd);
 		cPckVersionFunc.push_back(cPckVersionFuncToAdd);
 
 		return cPckVersionFunc.size() - 1;
@@ -263,7 +261,7 @@ void CPckClassVersionDetect::SetAlgorithmId(DWORD id, PCK_VERSION_FUNC* lpPckVer
 {
 	CPckAlgorithmId AlgorithmId(id);
 
-	LPPCK_KEYS lpPckKey = &lpPckVersionFunc->cPckXorKeys;
+	auto lpPckKey = &lpPckVersionFunc->cPckXorKeys;
 
 	lpPckKey->HeadVerifyKey1 = AFPCK_SAFEHEAFER_TAG1;
 	lpPckKey->TailVerifyKey1 = AlgorithmId.GetPckGuardByte0();
@@ -288,7 +286,7 @@ void CPckClassVersionDetect::SetAlgorithmId(DWORD id, PCK_VERSION_FUNC* lpPckVer
 
 void CPckClassVersionDetect::SetDataFmtFunc(PCK_VERSION_FUNC* lpPckVersionFunc)
 {
-	LPPCK_KEYS lpPckKey = &lpPckVersionFunc->cPckXorKeys;
+	auto const lpPckKey = &lpPckVersionFunc->cPckXorKeys;
 
 	if (AFPCK_VERSION_202 == lpPckKey->Version) {
 
@@ -315,7 +313,7 @@ void CPckClassVersionDetect::SetDataFmtFunc(PCK_VERSION_FUNC* lpPckVersionFunc)
 	}
 }
 
-const PCK_KEYS* CPckClassVersionDetect::GetPckVersion()
+const PCK_KEYS* CPckClassVersionDetect::GetPckVersion() const noexcept
 {
 	return &m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys;
 }
@@ -324,12 +322,12 @@ const PCK_KEYS* CPckClassVersionDetect::GetPckVersion()
 BOOL CPckClassVersionDetect::SetSavePckVersion(int verID)
 {
 	if (cPckVersionFunc.empty()) {
-		FillGeneralVersionInfo();
-		FillSpecialVersionInfo();
+		CPckClassVersionDetect::FillGeneralVersionInfo();
+		CPckClassVersionDetect::FillSpecialVersionInfo();
 	}
 
 	if (0 <= verID && cPckVersionFunc.size() > verID) {
-		m_PckAllInfo.lpSaveAsPckVerFunc = &cPckVersionFunc[verID];
+		this->m_PckAllInfo.lpSaveAsPckVerFunc = &cPckVersionFunc[verID];
 		return TRUE;
 	}
 	else
@@ -338,7 +336,7 @@ BOOL CPckClassVersionDetect::SetSavePckVersion(int verID)
 	return FALSE;
 }
 
-const wchar_t* CPckClassVersionDetect::GetPckVersionNameById(int id)
+const wchar_t* CPckClassVersionDetect::GetPckVersionNameById(int id) noexcept
 {
 	if ((id >= 0) && (cPckVersionFunc.size() > id))
 		return cPckVersionFunc[id].cPckXorKeys.name.c_str();
@@ -362,37 +360,41 @@ void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(const wchar_t * lpszPc
 {
 	//打印详细原因：
 	//hex 一行长度89 数据一共402行，大小0x8BC2
-	char szPrintf[8192];
+	//char szPrintf[8192];
+	std::string szPrintf;
 
 	BYTE buf[PRINT_HEAD_SIZE + PRINT_TAIL_SIZE + 0x10];
 
 	//读取文件头
-	CMapViewFileMultiPckRead *lpRead = new CMapViewFileMultiPckRead();
+	//CMapViewFileMultiPckRead *lpRead = new CMapViewFileMultiPckRead();
+	auto lpRead = std::make_unique<CMapViewFileMultiPckRead>();
 
 	if (!lpRead->OpenPck(lpszPckFile)) {
 		Logger_el(TEXT_OPENNAME_FAIL, lpszPckFile);
-		goto dect_err;
+		return;
 	}
 
 	if (lpRead->GetFileSize() <= (PRINT_TAIL_SIZE + PRINT_HEAD_SIZE)) {
 
 		if (!lpRead->Read(buf, lpRead->GetFileSize())) {
 			Logger_el(TEXT_READFILE_FAIL);
-			goto dect_err;
+			return;
 		}
 
 		CRaw2HexString cHexStr(buf, lpRead->GetFileSize());
 
-		sprintf_s(szPrintf, "文件信息：\n文件大小：%lld\n文件概要数据：\n", lpRead->GetFileSize());
-		strcat_s(szPrintf, cHexStr.GetHexString());
+		//sprintf_s(szPrintf, "文件信息：\n文件大小：%lld\n文件概要数据：\n", lpRead->GetFileSize());
+		//strcat_s(szPrintf, cHexStr.GetHexString());
 
+		szPrintf = std::format("文件信息：\n文件大小：{}\n文件概要数据：\n", lpRead->GetFileSize());
+		szPrintf.append(cHexStr.GetHexString());
 
 	}
 	else {
 
 		if (!lpRead->Read(buf, PRINT_HEAD_SIZE)) {
 			Logger_el(TEXT_READFILE_FAIL);
-			goto dect_err;
+			return;
 		}
 
 		uint64_t qwWhereToMove = (lpRead->GetFileSize() - PRINT_TAIL_SIZE) & 0xfffffffffffffff0;
@@ -402,26 +404,24 @@ void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(const wchar_t * lpszPc
 
 		if (!lpRead->Read(buf + PRINT_HEAD_SIZE, qwBytesToRead)) {
 			Logger_el(TEXT_READFILE_FAIL);
-			goto dect_err;
+			return;
 		}
 
 		CRaw2HexString cHexStrHead(buf, PRINT_HEAD_SIZE);
 		CRaw2HexString cHexStrTail(buf + PRINT_HEAD_SIZE, qwBytesToRead, qwWhereToMove);
 
-		sprintf_s(szPrintf, "文件信息：\n文件大小：%lld\n文件概要数据：\n", lpRead->GetFileSize());
-#if PCK_DEBUG_OUTPUT
-		size_t len1 = strlen(cHexStrHead.GetHexString());
-		size_t len2 = strlen(cHexStrTail.GetHexString());
-		size_t lens = len1 + len2 + strlen(szPrintf) + strlen("......\n");
-#endif
-		strcat_s(szPrintf, cHexStrHead.GetHexString());
-		strcat_s(szPrintf, "......\n");
-		strcat_s(szPrintf, cHexStrTail.GetHexString());
+		//sprintf_s(szPrintf, "文件信息：\n文件大小：%lld\n文件概要数据：\n", lpRead->GetFileSize());
+		//strcat_s(szPrintf, cHexStrHead.GetHexString());
+		//strcat_s(szPrintf, "......\n");
+		//strcat_s(szPrintf, cHexStrTail.GetHexString());
+
+		szPrintf = std::format("文件信息：\n文件大小：{}\n文件概要数据：\n", lpRead->GetFileSize());
+		szPrintf.append(cHexStrHead.GetHexString()).append("......\n").append(cHexStrTail.GetHexString());
 	}
 
-	Logger.d(szPrintf);
-dect_err:
-	delete lpRead;
+	Logger.d(szPrintf.c_str());
+//dect_err:
+	//delete lpRead;
 
 }
 #undef PRINT_HEAD_SIZE

@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\CommDlg">
+      <UniqueIdentifier>{0fa4b1b5-5517-4da6-ba49-dbb831077e79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\CommDlg">
+      <UniqueIdentifier>{144494ea-fb60-4b8e-8291-113b0d39fd2e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CommDlg\COpenFileListener.cpp">
+      <Filter>源文件\CommDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="CommDlg\ListViewCtrl.cpp">
+      <Filter>源文件\CommDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="CommDlg\ComboBox.cpp">
+      <Filter>源文件\CommDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="CommDlg\WinControl.cpp">
+      <Filter>源文件\CommDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="CommDlg\MyCommDlg.cpp">
+      <Filter>源文件\CommDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="CommDlg\TabControl.cpp">
+      <Filter>源文件\CommDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="CommDlg\CRichEdit.cpp">
+      <Filter>源文件\CommDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="CommDlg\CEdit.cpp">
+      <Filter>源文件\CommDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="CommDlg\CEditNumber.cpp">
+      <Filter>源文件\CommDlg</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CommDlg\COpenFileListener.h">
+      <Filter>头文件\CommDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="CommDlg\ListViewCtrl.h">
+      <Filter>头文件\CommDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="CommDlg\ComboBox.h">
+      <Filter>头文件\CommDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="CommDlg\WinControl.h">
+      <Filter>头文件\CommDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="CommDlg\MyCommDlg.h">
+      <Filter>头文件\CommDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="CommDlg\TabControl.h">
+      <Filter>头文件\CommDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="CommDlg\CRichEdit.h">
+      <Filter>头文件\CommDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="CommDlg\Colors.h">
+      <Filter>头文件\CommDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="CommDlg\CEdit.h">
+      <Filter>头文件\CommDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="CommDlg\CEditNumber.h">
+      <Filter>头文件\CommDlg</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

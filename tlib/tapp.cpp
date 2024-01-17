@@ -1,3 +1,4 @@
+#include "tlibpch.h"
 const static char *tapp_id = 
 	"@(#)Copyright (C) 1996-2009 H.Shirouzu		tapp.cpp	Ver0.99";
 /* ========================================================================

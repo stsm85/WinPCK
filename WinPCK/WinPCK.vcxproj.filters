@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="winmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="helpfunc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mainfunc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="threadproc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="guirelated.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="listViewFunc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tLogDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tInfoDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tSearchDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tCompressOptDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tViewDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tAttrDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tPicDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tRebuildOptDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuButtonFuncs.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ShowLogOnDlgListView.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tStripDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tPreviewDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mainControlStatus.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="guipch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WinPCK.rc">
+      <Filter>源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="winmain.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tStripDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ShowLogOnDlgListView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tLogDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tPreviewDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="guipch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tInfoDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tSearchDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tCompressOptDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tAttrDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tRebuildOptDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\file.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\dir.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\chinaz1.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\edit.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\edit_add.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\fileclose.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\filenew.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\fileopen.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\filesave.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\info.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\lin_agt_wrench.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\rebuild.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\save_all.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\search.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\exit.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\stop.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\DROP.cur">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\logerror.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\loginfo.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\logwarning.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="icons\logdebug.ico">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="X86-64.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icons\icon2.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="icons\stripsave.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

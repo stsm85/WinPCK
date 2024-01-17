@@ -9,10 +9,7 @@
 // 2015.5.13
 //////////////////////////////////////////////////////////////////////
 
-#include <windows.h>
 #include "PckDefines.h"
-#include <vector>
-#include <string>
 
 #if !defined(_PCKSTRUCTS_H_)
 #define _PCKSTRUCTS_H_
@@ -196,25 +193,6 @@ typedef struct
 	uint32_t		dwFileCipherTextSize;
 	uint32_t		dwUnknown2;
 }PCKFILEINDEX_VMXXDL, * LPPCKFILEINDEX_VMXXDL;
-
-
-#if PCK_V2031_ENABLE
-/*
-新诛仙索引大小改成了288，新加了4字节内容
-目前影响不大，暂时不添加
-*/
-typedef struct _PCK_FILE_INDEX_V2031
-{
-	char			szFilename[MAX_PATH_PCK_260];
-	uint32_t		dwUnknown1;
-	uint64_t		dwAddressOffset;
-	uint32_t		dwFileClearTextSize;
-	uint32_t		dwFileCipherTextSize;
-	uint32_t		dwUnknown2;
-	uint32_t		dwUnknown3;
-}PCKFILEINDEX_V2031, *LPPCKFILEINDEX_V2031;
-
-#endif
 
 typedef struct _PCK_FILE_INDEX_VXAJH
 {

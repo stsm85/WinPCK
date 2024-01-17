@@ -90,6 +90,9 @@
 #define IDS_STRING_ERROR                190
 #define IDS_STRING_PROCESS_ERROR        191
 #define IDD_DIALOG_STRIP                192
+#define IDS_STRING192                   192
+#define IDS_STRING_STRIPPCK             192
+#define IDI_ICON_STRIPSAVE              197
 #define IDC_LIST                        1010
 #define IDC_PROGRESS                    1011
 #define IDC_STATUS                      1012
@@ -131,6 +134,7 @@
 #define IDC_CHECK_GFX2                  1045
 #define IDC_CHECK_ECM                   1045
 #define IDC_RICHEDIT21                  1045
+#define IDC_PIC                         1046
 #define ID_MENU_COMPRESS_OPT            40000
 #define ID_MENU_OPEN                    40001
 #define ID_MENU_CLOSE                   40002
@@ -181,14 +185,17 @@
 #define ID_40049                        40049
 #define ID_MENU_SIM                     40050
 #define ID_MENU_SIMPLIFY                40051
+#define ID_40052                        40052
+#define ID_MENU_CANCLE                  40053
+#define ID_MENU_CANCEL                  40054
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        196
-#define _APS_NEXT_COMMAND_VALUE         40052
-#define _APS_NEXT_CONTROL_VALUE         1046
+#define _APS_NEXT_RESOURCE_VALUE        199
+#define _APS_NEXT_COMMAND_VALUE         40055
+#define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

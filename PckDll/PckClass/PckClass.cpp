@@ -9,6 +9,7 @@
 // 
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
+#include <pch.h>
 
 #include "PckClass.h"
 
@@ -30,7 +31,7 @@ CPckClass::~CPckClass()
 BOOL CPckClass::Init(LPCWSTR	szFile)
 {
 	wcscpy_s(m_PckAllInfo.szFilename, szFile);
-	GetFileTitleW(m_PckAllInfo.szFilename, m_PckAllInfo.szFileTitle, MAX_PATH);
+	::GetFileTitleW(m_PckAllInfo.szFilename, m_PckAllInfo.szFileTitle, MAX_PATH);
 
 	if(!MountPckFile(m_PckAllInfo.szFilename)) {
 

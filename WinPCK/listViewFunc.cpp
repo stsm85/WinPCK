@@ -8,15 +8,13 @@
 // 
 // 2019.12.25
 //////////////////////////////////////////////////////////////////////
-#include "tlib.h"
-#include "resource.h"
+#include "guipch.h"
+// no pass
 #include "winmain.h"
-#include <process.h>
-#include <CommCtrl.h>
 
 #define DEBUG_THIS 0
 #if !DEBUG_THIS
-#include "tDebug.h"
+#include <tDebug.h>
 #endif
 
 #define MAX_COLUMN_COUNT		64
@@ -329,7 +327,7 @@ BOOL TInstDlg::ListView_BeginLabelEdit(const HWND hWndList, LPARAM lParam)
 	return FALSE;
 }
 
-BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
+BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFOW* pNmHdr)
 {
 
 	m_isListviewRenaming = FALSE;
@@ -339,7 +337,7 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 	if(NULL != pNmHdr->item.pszText) {
 		if(0 == *pNmHdr->item.pszText)return FALSE;
 
-		PCK_UNIFIED_FILE_ENTRY* lpFileEntry = (LPPCK_UNIFIED_FILE_ENTRY)pNmHdr->item.lParam;
+		auto lpFileEntry = reinterpret_cast<PCK_UNIFIED_FILE_ENTRY*>(pNmHdr->item.lParam);
 
 		if (0 == wcscmp(lpFileEntry->szName, pNmHdr->item.pszText))
 			return FALSE;
@@ -352,7 +350,7 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 		}
 
 		while(0 != *lpszInvalid) {
-			if(NULL != _tcschr(pNmHdr->item.pszText, *lpszInvalid)) {
+			if(NULL != wcschr(pNmHdr->item.pszText, *lpszInvalid)) {
 				TCHAR szPrintf[64];
 				_stprintf_s(szPrintf, 64, GetLoadStr(IDS_STRING_INVALIDFILENAME), lpszInvalid);
 				MessageBox(szPrintf, TEXT("ÌבÊ¾"), MB_OK | MB_ICONASTERISK);
@@ -364,7 +362,7 @@ BOOL TInstDlg::ListView_EndLabelEdit(const NMLVDISPINFO* pNmHdr)
 
 		if (WINPCK_OK != pck_RenameEntry(lpFileEntry, pNmHdr->item.pszText)) {
 				MessageBox(GetLoadStr(IDS_STRING_RENAMEERROR), GetLoadStr(IDS_STRING_ERROR), MB_OK | MB_ICONERROR);
-				OpenPckFile(m_Filename, TRUE);
+				OpenPckFile(TRUE);
 				return FALSE;
 		}
 

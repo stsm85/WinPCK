@@ -1,3 +1,4 @@
+#include <pch.h>
 #include "PckClassIndex.h"
 #include "PckClassZlib.h"
 
@@ -79,14 +80,6 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 
 			m_zlib.decompress(pckFileIndexBuf, &dwFileBytesRead,
 				lpFileBuffer, dwFileIndexTableCryptedDataLength[0]);
-
-#if PCK_V2031_ENABLE
-			/*
-			新诛仙索引大小改成了288，新加了4字节内容
-			PCKFILEINDEX_V2030->
-			*/
-			PCKFILEINDEX_V2031* testnewindex = (PCKFILEINDEX_V2031*)pckFileIndexBuf;
-#endif
 
 			m_PckAllInfo.lpDetectedPckVerFunc->PickIndexData(&lpPckIndexTable->cFileIndex, pckFileIndexBuf);
 

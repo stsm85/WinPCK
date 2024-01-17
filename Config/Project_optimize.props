@@ -1,42 +1,62 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <!-- 全程序优化 
-    <WholeProgramOptimization Condition="('$(UseDebugLibraries)'!='true')">true</WholeProgramOptimization>
-	<WholeProgramOptimization Condition="('$(UseDebugLibraries)'=='true')">false</WholeProgramOptimization>-->
-	<!-- 启用增量链接 -->
-	<LinkIncremental Condition="('$(UseDebugLibraries)'!='true')">false</LinkIncremental>
+    <!-- 全程序优化 -->
+    <!--<WholeProgramOptimization Condition="'$(UseDebugLibraries)'!='true'">true</WholeProgramOptimization>-->
+    <!--<WholeProgramOptimization Condition="'$(UseDebugLibraries)'=='true'">false</WholeProgramOptimization>-->
+    <!-- 启用增量链接 -->
+    <!--<LinkIncremental Condition="'$(UseDebugLibraries)'!='true'">false</LinkIncremental>-->
+    <!-- 启用地址擦除系统 -->
+    <EnableASAN>false</EnableASAN>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(UseDebugLibraries)'=='true'">
+    <!-- 全程序优化 -->
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(UseDebugLibraries)'=='false'">
+    <!-- 全程序优化 -->
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <!-- 启用增量链接 -->
+    <LinkIncremental>false</LinkIncremental>
+    <!-- 启用地址擦除系统 -->
     <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-	  <!-- 使用最新C++标准 -->
-	  <LanguageStandard>stdcpplatest</LanguageStandard>
-	  <!-- 是否开启符合模式 -->
-	  <ConformanceMode>true</ConformanceMode>
+      <!-- 使用最新C++标准 -->
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <!-- 使用最新C标准 -->
+      <!--<LanguageStandard_C>stdc17</LanguageStandard_C>-->
+      <!-- 是否开启符合模式 默认=Default 是 (/permissive-)=true 否 (/permissive)=false-->
+      <ConformanceMode>true</ConformanceMode>
+      <!-- 是否使用预编译头 Create Use NotUsing -->
+      <!-- <PrecompiledHeader>Use</PrecompiledHeader> -->
+      <!-- 预编译头文件 -->
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(UseDebugLibraries)'=='true_disable'">
+  <!-- 暂时不使用 -->
+  <ItemDefinitionGroup Condition="'$(UseDebugLibraries)'=='true'">
     <ClCompile>
-		<OptimizeForWindowsApplication>false</OptimizeForWindowsApplication>
-		<!-- 优化 /O1=MinSpace /O2=MaxSpeed /Ox=Full -->
-		<Optimization>NONE</Optimization>
-		<!-- 优选大小或速度 /Ot=Speed /Os=Size 均不=Neither -->
-		<FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-		<!-- 支持纤程安全的线程本地存储区 -->
-		<EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-		<!-- 省略帧指针 -->
-		<OmitFramePointers>false</OmitFramePointers>
-		<!-- 启用字符串池 -->
-		<StringPooling>false</StringPooling>
-		<!-- 启用内部函数 -->
-		<IntrinsicFunctions>false</IntrinsicFunctions>
-		<!-- 启用函数级链接 -->
-		<FunctionLevelLinking>true</FunctionLevelLinking>
-		<!-- 安全检查 -->
-		<BufferSecurityCheck>true</BufferSecurityCheck>
-		<!-- 浮点模型 快速=Fast 严格=Strict 精度=Precise -->
-		<FloatingPointModel>Precise</FloatingPointModel>
+      <!--<OptimizeForWindowsApplication>false</OptimizeForWindowsApplication>-->
+      <!-- 优化 Disabled /O1=MinSpace /O2=MaxSpeed /Ox=Full -->
+      <Optimization>Disabled</Optimization>
+      <!-- 优选大小或速度 /Ot=Speed /Os=Size 均不=Neither -->
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <!-- 支持纤程安全的线程本地存储区 -->
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <!-- 省略帧指针 -->
+      <OmitFramePointers>false</OmitFramePointers>
+      <!-- 启用字符串池 -->
+      <StringPooling>false</StringPooling>
+      <!-- 启用内部函数 -->
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <!-- 启用函数级链接 -->
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <!-- 安全检查 -->
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <!-- 浮点模型 快速=Fast 严格=Strict 精度=Precise -->
+      <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
       <!-- 引用 是(/OPT:REF)=true 否(/OPT:NOREF)=false /OPT:REF 将消除从未引用过的函数和/或数据，而 /OPT:NOREF 则保留从未引用过的函数和/或数据。 -->
@@ -51,7 +71,7 @@
       <!-- 优化 /O1=MinSpace /O2=MaxSpeed /Ox=Full -->
       <Optimization>MaxSpeed</Optimization>
       <!-- 优选大小或速度 /Ot=Speed /Os=Size 均不=Neither -->
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <!-- 支持纤程安全的线程本地存储区 -->
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <!-- 省略帧指针 -->
@@ -82,7 +102,4 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ImportGroup Label="PropertySheets">
-    <Import Project="$(SolutionDir)\Config\Project_compile.props" Condition=" ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_compile.props'))"/>
-  </ImportGroup>
 </Project>

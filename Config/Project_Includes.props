@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Author: liqf -->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(SolutionDir)\Libraries\Libraries_defs.props" Condition="('$(MediaPropsImported)'!='true') And ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Libraries\Libraries_defs.props'))"/>
+  </ImportGroup>
+  <PropertyGroup>
+    <UserDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;APPNAME="WinPCK";</UserDefinitions>
+    <!-- Include Paths -->
+    <TLIB_Include>$(SolutionDir)tlib;</TLIB_Include>
+    <BASE64_Include>$(SolutionDir)self-dev/base64;</BASE64_Include>
+    <MAPFILE_Include>$(SolutionDir)self-dev/MapViewFile;</MAPFILE_Include>
+    <WinCtl_Include>$(SolutionDir)self-dev/WinCtl;</WinCtl_Include>
+    <Spdlog_Include>$(SolutionDir)logger/spdlog/include;$(SolutionDir)logger/spdloghelper;</Spdlog_Include>
+    <MiscUtil_Include>$(SolutionDir)self-dev/MiscUtil;$(ICONV_Include);</MiscUtil_Include>
+	
+    <WinPCK_Include>$(SolutionDir)PckDll/include;$(SolutionDir)PckDll/PckClass;$(WinCtl_Include);$(MiscUtil_Include);$(ShowImage_Include);$(TLIB_Include);$(ZLIB_Include);$(libDeflate_Include);</WinPCK_Include>
+    <PCKDLL_Include>$(MiscUtil_Include);$(BASE64_Include);$(ProjectDir)include;$(ProjectDir)DictHash;$(ProjectDir)PckClass;$(ProjectDir)PckControlCenter;$(ProjectDir)ZupClass;$(MAPFILE_Include);$(ProjectDir);$(ZLIB_Include);$(libDeflate_Include);</PCKDLL_Include>	
+
+    <!--<IncludePath Condition="('$(ConfigurationType)'=='Application') Or ('$(ConfigurationType)'=='DynamicLibrary')">$(IncludePath);$(WinPCK_Include)</IncludePath>-->
+
+    <IncludePath Condition="'$(ProjectName)'=='MiscUtil'">$(IncludePath);$(MiscUtil_Include);</IncludePath>
+	
+    <IncludePath Condition="'$(ProjectName)'=='spdlog'">$(IncludePath);$(Spdlog_Include);</IncludePath>
+    <IncludePath Condition="'$(ProjectName)'=='spdloghelper'">$(IncludePath);$(Spdlog_Include);$(WinCtl_Include);</IncludePath>
+    <IncludePath Condition="('$(ProjectName)'=='WinPCK')">$(IncludePath);$(WinPCK_Include)</IncludePath>
+    <IncludePath Condition="('$(ProjectName)'=='dlltester')">$(IncludePath);$(WinPCK_Include)</IncludePath>
+    <IncludePath Condition="('$(ProjectName)'=='pckdll')">$(IncludePath);$(PCKDLL_Include)</IncludePath>
+
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- 结构成员对齐 -->
+      <!-- <StructMemberAlignment>16Bytes</StructMemberAlignment> -->
+      <!-- 禁用特定警告 
+	  warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+	  warning C4267: “参数”: 从“size_t”转换到“DWORD”，可能丢失数据
+	  warning C4018: “<”: 有符号/无符号不匹配
+	  warning C4996: 'uint32': libtiff type deprecated; please use corresponding C99 stdint.h type
+	  warning C4334: “<<”: 32 位移位的结果被隐式转换为 64 位(是否希望进行 64 位移位?)
+	  warning C4244: “=”: 从“__int64”转换到“int”，可能丢失数据
+	  warning C4101: “c”: 未引用的局部变量 (编译源文件 internal\demosaic_packs.cpp)
+	  warning C4305: “=”: 从“double”到“float”截断
+	  warning C4146: 一元负运算符应用于无符号类型，结果仍为无符号类型
+	  warning C4804: “<=”: 在操作中使用类型“bool”不安全
+	  warning C4005: “_CRT_SECURE_NO_WARNINGS”: 宏重定义
+	  warning C4838: 从“int64_t”转换到“LONG”需要收缩转换
+	  warning C4311: “类型强制转换”
+	  warning C4302: “类型强制转换”
+	  -->
+      <DisableSpecificWarnings Condition="'$(UseDebugLibraries)'=='true'">4819;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+	  <DisableSpecificWarnings Condition="'$(UseDebugLibraries)'!='true'">4819;4267;4018;4996;4244;4305;4146;4804;4838;4311;4302;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="('$(ConfigurationType)'=='Application')">
+    <ClCompile>
+      <PreprocessorDefinitions>$(UserDefinitions);_MAKE_EXE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="('$(ConfigurationType)'=='DynamicLibrary')">
+    <ClCompile>
+      <PreprocessorDefinitions>$(UserDefinitions);_MAKE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="('$(ConfigurationType)'=='StaticLibrary')">
+    <ClCompile>
+      <PreprocessorDefinitions>$(UserDefinitions);_LIB;_MAKE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(SolutionDir)\Config\Project_paths.props" Condition=" ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_paths.props'))"/>
+	<Import Project="$(SolutionDir)\Config\Project_optimize.props" Condition="('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_optimize.props'))"/>
+	<Import Project="$(SolutionDir)\Config\Project_compile.props" Condition=" ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_compile.props'))"/>
+	<Import Project="$(SolutionDir)\Config\VC-LTL helper for Visual Studio.props" Condition="('$(Configuration)'=='Release') And ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\VC-LTL helper for Visual Studio.props'))"/>
+	<Import Project="$(SolutionDir)\Config\VC-LTL helper for Visual Studio.props" Condition="('$(Configuration)'=='Release_static') And ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\VC-LTL helper for Visual Studio.props'))"/>
+  </ImportGroup>
+</Project>

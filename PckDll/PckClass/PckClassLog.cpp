@@ -10,11 +10,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #pragma warning ( disable : 4996 )
+#include <pch.h>
 
-#include <stdio.h>
 #include "PckClassLog.h"
-#include "CharsCodeConv.h"
-#include <assert.h>
 
 
 CPckClassLog& Logger = CPckClassLog::GetInstance();

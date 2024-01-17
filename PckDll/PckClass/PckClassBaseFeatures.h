@@ -1,13 +1,10 @@
 #pragma once
-#include <stdio.h>
 #include "PckHeader.h"
 #include "PckClassLog.h"
 
-#include "AllocMemPool.h"
+#include <MemPool.h>
 #include "PckClassZlib.h"
 
-#include <vector>
-#include <map>
 
 class CPckClassBaseFeatures 
 {

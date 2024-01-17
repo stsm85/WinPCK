@@ -7,14 +7,12 @@
 	Copyright				: H.Shirouzu
 	Reference				: 
 	======================================================================== */
+#include "tlibpch.h"
 #include "tlib.h"
 #ifdef _USE_T_INI_
 static char *tini_id =
 "@(#)Copyright (C) 1996-2010 H.Shirouzu		tini.cpp	Ver0.97";
 
-#include <stdio.h>
-#include <io.h>
-#include <mbstring.h>
 #include "tini.h"
 
 TInifile::TInifile(const char *_ini_file)

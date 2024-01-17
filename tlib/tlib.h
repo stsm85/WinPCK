@@ -8,6 +8,9 @@
 	Reference				: 
 	======================================================================== */
 #include "tconf.h"
+#include <richedit.h>
+#include <commctrl.h>
+#include <shlobj.h>
 
 #ifndef TLIB_H
 #define TLIB_H
@@ -34,18 +37,11 @@
 #pragma warning ( disable : 4244 )
 #pragma warning ( disable : 4312 )
 
-#include <windows.h>
-//#include <windowsx.h>
-//#include <stdio.h>
-//#include <stdlib.h>
-#include <richedit.h>
-#include "commctrl.h"
-//#include <regstr.h>
-#include <shlobj.h>
-//#include <tchar.h>
+
 #include "tapi32ex.h"
 //#include "tapi32v.h"
 //#include "tapi32u8.h"	 /* describe last line */
+#include <string>
 
 extern DWORD TWinVersion;	// define in tmisc.cpp
 
@@ -301,6 +297,15 @@ public:
 
 	virtual UINT	GetDlgItemTextA(int ctlId, LPSTR buf, int len);
 	virtual UINT	GetDlgItemTextW(int ctlId, LPWSTR buf, int len);
+	virtual UINT	GetDlgItemTextLengthA(int ctlId);
+	virtual UINT	GetDlgItemTextLengthW(int ctlId);
+	virtual std::string GetDlgItemStringA(int ctlId);
+	virtual std::wstring GetDlgItemStringW(int ctlId);
+
+	virtual LRESULT	AppendDlgItemTextA(int ctlId, LPCSTR buf);
+	virtual LRESULT	AppendDlgItemTextW(int ctlId, LPCWSTR buf);
+
+
 #ifdef UNICODE
 #define GetDlgItemText  GetDlgItemTextW
 #else
@@ -320,6 +325,7 @@ public:
 	virtual UINT	IsDlgButtonChecked(int ctlId);
 	virtual BOOL	IsWindowVisible(void);
 	virtual BOOL	EnableWindow(BOOL is_enable);
+	virtual BOOL	EnableWindow(int ctlId, BOOL is_enable);
 
 	virtual	int		MessageBoxA(LPCSTR msg, LPCSTR title="msg", UINT style=MB_OK);
 	virtual	int		MessageBoxW(LPCWSTR msg, LPCWSTR title=L"msg", UINT style=MB_OK);
@@ -414,22 +420,22 @@ public:
 	virtual ~TDlg();
 
 	virtual BOOL	Create(HINSTANCE hI = NULL);
-	virtual	void	Destroy(void);
+	virtual	void	Destroy(void) override;
 	virtual int		Exec(void);
 	virtual void	EndDialog(int);
 	UINT			ResId(void) { return resId; }
 	virtual int		SetDlgItem(UINT ctl_id, DWORD flags=0);
 	virtual BOOL	FitDlgItems();
 
-	virtual BOOL	EvCreate(LPARAM lParam);
-	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
-	virtual BOOL	EvSysCommand(WPARAM uCmdType, POINTS pos);
-	virtual BOOL	EvQueryOpen(void);
+	virtual BOOL	EvCreate(LPARAM lParam) override;
+	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl) override;
+	virtual BOOL	EvSysCommand(WPARAM uCmdType, POINTS pos) override;
+	virtual BOOL	EvQueryOpen(void) override;
 
-	virtual	BOOL	PreProcMsg(MSG *msg);
-	virtual LRESULT	WinProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	virtual	BOOL	PreProcMsg(MSG *msg) override;
+	virtual LRESULT	WinProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
-	virtual BOOL	InitRichEdit2();
+	virtual BOOL	InitRichEdit(bool isRicheditVer5 = false);
 };
 
 class TSubClass : public TWin {
@@ -450,7 +456,7 @@ protected:
 public:
 	TSubClassCtl(TWin *_parent);
 
-	virtual	BOOL	PreProcMsg(MSG *msg);
+	virtual	BOOL	PreProcMsg(MSG *msg) override;
 };
 
 BOOL TRegisterClassA(LPCSTR class_name, UINT style=CS_DBLCLKS, HICON hIcon=0, HCURSOR hCursor=0,
@@ -466,7 +472,7 @@ BOOL TRegisterClassW(LPCWSTR class_name, UINT style=CS_DBLCLKS, HICON hIcon=0, H
 
 class TWinHashTbl : public THashTbl {
 protected:
-	virtual BOOL	IsSameVal(THashObj *obj, const void *val) {
+	virtual BOOL	IsSameVal(THashObj *obj, const void *val) override {
 		return ((TWin *)obj)->hWnd == *(HWND *)val;
 	}
 

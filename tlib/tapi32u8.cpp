@@ -7,6 +7,7 @@
 	Copyright				: H.Shirouzu
 	Reference				: 
 	======================================================================== */
+#include "tlibpch.h"
 #include "tlib.h"
 #ifdef _USE_T_U8FUNC_
 static char *tap32u8_id =
@@ -14,10 +15,6 @@ static char *tap32u8_id =
 
 #include "tapi32u8.h"
 
-#include <stdio.h>
-#include <mbstring.h>
-#include <stdlib.h>
-#include <stddef.h>
 
 /*=========================================================================
 	UCS2(W) - UTF-8(U8) - ANSI(A) ‘ŠŒÝ•ÏŠ·

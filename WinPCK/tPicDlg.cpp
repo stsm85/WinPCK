@@ -10,21 +10,17 @@
 //////////////////////////////////////////////////////////////////////
 
 #pragma warning ( disable : 4018 )
+#include "guipch.h"
 
-#include <assert.h>
 #include "tPreviewDlg.h"
-#include <stdio.h>
-#include <tchar.h>
-#include "OpenSaveDlg.h"
-//#include "CharsCodeConv.h"
 
 #define MIN_CX	640
 #define MIN_CY	480
 
+#define TIMER_TITLE (WM_USER + 1)
+
 TPicDlg::TPicDlg(LPBYTE *_buf, UINT32 _dwSize, PICFORMAT _iFormat, const wchar_t *_lpszFile, TWin *_win) :
 	TDlg(IDD_DIALOG_PIC, _win),
-	lpShowPicture(NULL),
-	isMouseDown(FALSE),
 	buf(_buf),
 	dwSize(_dwSize),
 	lpszFile(_lpszFile),
@@ -32,16 +28,15 @@ TPicDlg::TPicDlg(LPBYTE *_buf, UINT32 _dwSize, PICFORMAT _iFormat, const wchar_t
 { }
 
 TPicDlg::~TPicDlg()
-{
-	if (NULL != lpShowPicture)
-		delete lpShowPicture;
-}
+{}
 
 BOOL TPicDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {
 	switch(wID) {
 	case IDOK:
 	case IDCANCEL:
+
+		this->KillTimer(TIMER_TITLE);
 
 		EndDialog(wID);
 		return	TRUE;
@@ -50,151 +45,106 @@ BOOL TPicDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	return	FALSE;
 }
 
-BOOL TPicDlg::SaveFile()
+bool TPicDlg::SaveFile()
 {
 	//导出
-	if(FMT_RAW != iFormat) {
-		WCHAR	szFilename[MAX_PATH];
-		::GetCurrentDirectoryW(MAX_PATH, szFilename);
+	if(FMT_RAW != this->iFormat) {
 
-		WCHAR *lpTail = szFilename + wcslen(szFilename) - 1;
-		if('\\' == *lpTail) {
-			*lpTail = 0;
+		auto filepath = fs::current_path() / this->lpszFile;
+		filepath.replace_extension(".png");		
+
+		auto ext = ::MakeFileExtFilter<wchar_t>({ { L"PNG文件(*.png)", L"*.png" } });
+		auto szFilename = filepath.wstring();
+
+		try {
+			::SaveFile<wchar_t>(this->hWnd, szFilename, std::wstring(L"png"), ext);
+			return lpShowPicture->Save(szFilename.c_str());
 		}
-
-		wcscat_s(szFilename, MAX_PATH, L"\\");
-		wcscat_s(szFilename, MAX_PATH, lpszFile);
-		wcscpy(wcsrchr(szFilename, L'.'), L".png\0\0");
-
-		if(::SaveFile(hWnd, szFilename, L"png", TEXT_SAVE_FILTER)) {
-
-			return lpShowPicture->Save(szFilename);
+		catch (std::exception)
+		{
+			return true;
 		}
 	}
 	
-	return TRUE;
+	return true;
 }
 
 void TPicDlg::InitFixedShowPositionAndShowWindow()
 {
 
-	__int64 cx, cy;
-	BOOL bNeedShowMax = lpShowPicture->CalcFixedRatioAndSizeOnInit(cx, cy, MIN_CX, MIN_CY);
+	int64_t cx, cy;
+	BOOL bNeedShowMax = this->lpShowPicture->CalcFixedRatioAndSizeOnInit(cx, cy, MIN_CX, MIN_CY);
 
-	FreshWindowTitle();
+	this->FreshWindowTitle();
 
 	if(bNeedShowMax) {
 
-		ShowWindow(SW_SHOWMAXIMIZED);
+		this->ShowWindow(SW_SHOWMAXIMIZED);
 	} else {
 
 		::SetWindowPos(hWnd, NULL, 0, 0, cx, cy, SWP_NOZORDER | SWP_NOMOVE);
 		//显示窗口
-		Show();
+		this->Show();
 	}
 }
 
 void TPicDlg::FreshWindowTitle()
 {
-	wchar_t szTitle[MAX_PATH];
-	swprintf_s(szTitle, L"%s (%d%%)", m_szTitle, (int)(lpShowPicture->GetZoomRatio() * 100.0 + 0.5));
-	SetWindowTextW(szTitle);
+	this->SetWindowTextW(std::format(L"{} ({}%)", this->m_szTitle, (int)(lpShowPicture->GetZoomRatio() * 100.0 + 0.5)).c_str());
 }
 
 BOOL TPicDlg::EvCreate(LPARAM lParam)
 {
 
-	lpShowPicture = new CShowPictureWithZoom(hWnd, *buf, dwSize, lpszFile, iFormat);
+	this->lpShowPicture = MakeZoomShowPictureInstance();
 
-	if (!lpShowPicture->Decode())
+	if(!this->lpShowPicture->Attach(this->GetDlgItem(IDC_PIC), *buf, dwSize, lpszFile, iFormat))
 		return FALSE;
 
-	lpShowPicture->GetWindowTitle(m_szTitle, sizeof(m_szTitle) / sizeof(wchar_t));
+	this->lpShowPicture->SetDbClickFunc(std::bind(&TPicDlg::SaveFile, this));
 
-	InitFixedShowPositionAndShowWindow();
+	this->m_szTitle = this->lpShowPicture->GetWindowTitle();
+
+	this->InitFixedShowPositionAndShowWindow();
+
+	this->SetTimer(TIMER_TITLE, 200, nullptr);
 
 	return	FALSE;
 }
 
+BOOL TPicDlg::EvTimer(WPARAM timerID, TIMERPROC proc)
+{
+	switch (timerID)
+	{
+	case TIMER_TITLE:
+		this->FreshWindowTitle();
+		break;
+	}
+	return	FALSE;
+}
 
 BOOL TPicDlg::EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight)
 {
-	if(NULL != lpShowPicture)
-		lpShowPicture->ChangeClientSize(nWidth, nHeight);
+	if (nullptr != this->lpShowPicture) {
+		
+		::MoveWindow(this->GetDlgItem(IDC_PIC), 0, 0, nWidth, nHeight, TRUE);
+	}
+
+#ifdef _DEBUG
+	//::OutputDebugStringA(std::format("func:{}, nWidth={}, nHeight={}\r\n", __FUNCTION__, nWidth, nHeight).c_str());
+#endif
 
 	return	FALSE;
-
 }
 
 BOOL TPicDlg::EventButton(UINT uMsg, int nHitTest, POINTS pos)
 {
 	switch(uMsg) {
-	case WM_LBUTTONUP:
-		//ReleaseCapture();
-		isMouseDown = FALSE;
-		break;
-
-	case WM_LBUTTONDOWN:
-
-		isMouseDown = TRUE;
-		//SetCapture();
-		GetCursorPos(&pointMouse);
-
-		break;
-
-	case WM_RBUTTONDOWN:
-
-		if(NULL != lpShowPicture) {
-			lpShowPicture->ZoomToOriginalResolution(pos.x, pos.y);
-			FreshWindowTitle();
-		}
-
-		break;
 	case WM_LBUTTONDBLCLK:
 		//导出
 		this->SaveFile();
 		break;
 
 	}
-
 	return FALSE;
-}
-
-BOOL TPicDlg::EvMouseWheel(UINT nFlags, short zDelta, POINTS pos)
-{
-	if(NULL != lpShowPicture) {
-
-		POINT pointMouse = { pos.x , pos.y };
-		ScreenToClient(hWnd, &pointMouse);
-
-		lpShowPicture->ZoomWithMousePoint(nFlags, zDelta, pointMouse.x, pointMouse.y);
-
-		FreshWindowTitle();
-	}
-	return FALSE;
-}
-
-
-BOOL TPicDlg::EvMouseMove(UINT fwKeys, POINTS pos)
-{
-
-	if(isMouseDown) {
-		POINT	pointLast = pointMouse;
-		GetCursorPos(&pointMouse);
-
-		int		xOffset = pointLast.x - pointMouse.x;
-		int		yOffset = pointLast.y - pointMouse.y;
-
-		if(NULL != lpShowPicture) 
-			lpShowPicture->MovePicture(xOffset, yOffset);
-
-	}
-
-	return FALSE;
-}
-
-BOOL TPicDlg::EvPaint(void)
-{
-	lpShowPicture->Paint();
-	return TRUE;
 }

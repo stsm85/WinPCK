@@ -9,11 +9,11 @@
 // 
 // 2012.10.10
 //////////////////////////////////////////////////////////////////////
+#include <pch.h>
 
 #include "PckControlCenter.h"
 #include "PckClass.h"
 #include "PckClassLog.h"
-#include <thread>
 	
 //const DWORD	CPckControlCenter::m_dwNumberOfProcessors = thread::hardware_concurrency();
 

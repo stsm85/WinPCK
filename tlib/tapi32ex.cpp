@@ -7,13 +7,13 @@
 	Copyright				: H.Shirouzu
 	Reference				: 
 	======================================================================== */
+#include "tlibpch.h"
 #include "tlib.h"
 
 #ifdef _USE_T_CRYPT_
 static char *tap32ex_id =
 "@(#)Copyright (C) 1996-2010 H.Shirouzu		tap32ex.cpp	Ver0.99";
 
-#include <stdio.h>
 
 BOOL (WINAPI *pCryptAcquireContext)(HCRYPTPROV *, LPCTSTR, LPCTSTR, DWORD, DWORD);//////
 BOOL (WINAPI *pCryptReleaseContext)(HCRYPTPROV, DWORD);

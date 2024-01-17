@@ -1,7 +1,5 @@
 #pragma once
 #include "PckClassHeadTail.h"
-#include "MapViewFileMultiPck.h"
-
 
 class CPckClassHeadTailWriter :
 	public virtual CPckClassHeadTail

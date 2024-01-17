@@ -8,15 +8,8 @@
 // 
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
-
+#include <pch.h>
 #include "DictHash.h"
-#include <string.h>
-#include <stdlib.h>
-
-#if PCK_DEBUG_OUTPUT
-#include <windows.h>
-#include <stdio.h>
-#endif
 
 #pragma warning ( disable : 4996 )
 #pragma warning ( disable : 4267 )
@@ -69,12 +62,13 @@ CDictHash::~CDictHash()
 
 }
 
-LPZUP_FILENAME_DICT CDictHash::add(const char *keystr)
+LPZUP_FILENAME_DICT CDictHash::add(const std::string_view& keystr)
 {
 
-	unsigned char len = strlen(keystr);
+	unsigned char len = keystr.size();
 	char szlwrstr[MAX_PATH_PCK];
-	memcpy(szlwrstr, keystr, len + 1);
+	memcpy(szlwrstr, keystr.data(), len);
+	szlwrstr[len] = 0;
 
 	unsigned int key = JSHash(strlwr(szlwrstr));
 	unsigned int sizeStuct = sizeof(ZUP_FILENAME_DICT);
@@ -86,7 +80,7 @@ LPZUP_FILENAME_DICT CDictHash::add(const char *keystr)
 		lpDict->realstrlength = len;
 		memcpy(lpDict->base64str, szlwrstr, len);
 		//memcpy(lpDict->realbase64str, keystr, len);
-		zupbase64cpy(lpDict->realbase64str, keystr, len);
+		zupbase64cpy(lpDict->realbase64str, keystr.data(), len);
 
 		return lpDict;
 	} else {
@@ -102,7 +96,7 @@ LPZUP_FILENAME_DICT CDictHash::add(const char *keystr)
 				lpDict->realstrlength = len;
 				memcpy(lpDict->base64str, szlwrstr, len);
 				//memcpy(lpDict->realbase64str, keystr, len);
-				zupbase64cpy(lpDict->realbase64str, keystr, len);
+				zupbase64cpy(lpDict->realbase64str, keystr.data(), len);
 
 				return lpDict;
 			} else {

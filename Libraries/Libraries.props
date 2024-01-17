@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Author: liqf -->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ImportGroup Label="PropertySheets">
+    <Import Project="Libraries_defs.props"  Condition="('$(MediaPropsImported)'!='true') And (Exists('Libraries_defs.props'))"/>
+  </ImportGroup>
+  <PropertyGroup>
+	<!-- 各项目设置 -->
+	<IncludePath Condition="'$(ProjectName)'=='FreeImage'">$(IncludePath);$(FreeImage_Include);$(ZLIB_Include);$(OpenEXR_Include);$(LibJXR_Include);$(LibTIFF_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='minizip'">$(IncludePath);$(ZLIB_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='PDFWriter'">$(IncludePath);$(ZLIB_Include);$(FreeType_Include);$(LibAesgm_Include);$(LibJPEG_Include);$(LibTIFF_Include);$(LibPNG_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='FreeImageCpp'">$(IncludePath);$(FreeImageCpp_Include);$(FreeImage_Include);</IncludePath>
+	
+	<IncludePath Condition="'$(ProjectName)'=='FreeType'">$(IncludePath);$(FreeType_Include);$(ZLIB_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='LibAesgm'">$(IncludePath);$(LibAesgm_Include);</IncludePath>
+	
+	<IncludePath Condition="'$(ProjectName)'=='LibJPEG'">$(IncludePath);$(ZLIB_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='LibJXR'">$(IncludePath);$(LibJXR_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='LibLzma'">$(IncludePath);$(LibLzma_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='LibOpenJPEG'">$(IncludePath);$(LibOpenJPEG_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='LibPNG'">$(IncludePath);$(ZLIB_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='LibRaw'">$(IncludePath);$(LibRawLite_Include);$(ZLIB_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='LibTIFF'">$(IncludePath);$(ZLIB_Include);$(LibJPEG_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='LibWebP'">$(IncludePath);$(LibWebP_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='OpenEXR'">$(IncludePath);$(OpenEXR_Include);$(ZLIB_Include);</IncludePath>
+	
+	<IncludePath Condition="'$(ProjectName)'=='libiconv'">$(IncludePath);$(ICONV_Include);</IncludePath>
+	
+	<IncludePath Condition="'$(ProjectName)'=='openssl'">$(IncludePath);.;$(Openssl_Include);</IncludePath>
+	
+	<IncludePath Condition="'$(ProjectName)'=='zlib'">$(IncludePath);$(ZLIB_Include);</IncludePath>
+	<IncludePath Condition="'$(ProjectName)'=='libdeflate'">$(IncludePath);$(libDeflate_Include);</IncludePath>
+	<!--<LibraryPath Condition="'$(ProjectName)'=='openssl'">$(LibraryPath);$(ThirdpartyBaseDir)openssl/libs;</LibraryPath>-->
+	
+  </PropertyGroup>
+  <!--
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions Condition="'$(ProjectName)'=='LibJPEG'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  -->
+</Project>

@@ -10,7 +10,6 @@
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
 
-#include <assert.h>
 #include "pck_default_vars.h"
 
 #include "PckClassVersionDetect.h"

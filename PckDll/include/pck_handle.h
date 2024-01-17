@@ -58,7 +58,7 @@ WINPCK_API BOOL			pck_IsValidPck();
 
 //获取node路径
 WINPCK_API BOOL			pck_getNodeRelativePath(LPWSTR _out_szCurrentNodePathString, LPCENTRY lpFileEntry);
-WINPCK_API LPCENTRY		pck_getFileEntryByPath(LPWSTR _in_szCurrentNodePathString);
+WINPCK_API LPCENTRY		pck_getFileEntryByPath(const wchar_t* _in_szCurrentNodePathString);
 
 //节点查询 
 WINPCK_API LPCENTRY		pck_getRootNode();

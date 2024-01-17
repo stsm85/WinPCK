@@ -1,5 +1,5 @@
+#include <pch.h>
 #include "PckIndexCache.h"
-#include "gccException.h"
 #include "pck_default_vars.h"
 
 CPckMemoryCache::CPckMemoryCache() :

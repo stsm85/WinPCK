@@ -12,7 +12,7 @@
 //#include "imagehlp.h"
 //#pragma comment(lib,"imagehlp.lib")
 
-#include <windows.h>
+#include <pch.h>
 #include "PckClassFileDisk.h"
 
 

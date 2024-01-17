@@ -32,7 +32,7 @@ private:
 		 "delete;;"
 		 "rmdir;;;";
 
-	std::vector<std::wstring>		m_ScriptLines;
+	std::vector<std::wstring_view>		m_ScriptLines;
 	std::vector<FILEOP>		m_FirstFileOp;
 	std::vector<LPPCKINDEXTABLE>	m_EditedNode;
 
@@ -43,7 +43,7 @@ private:
 	void	MarkFilterFlagToFileIndex(LPPCKINDEXTABLE	lpPckIndexTable, SCRIPTOP op);
 	LPPCK_PATH_NODE LocationFileIndex(LPWSTR *lpszPaths, LPPCK_PATH_NODE lpNode);
 	void	SepratePaths(FILEOP * pFileOp);
-	BOOL	ParseOneLine(FILEOP * pFileOp, LPCWSTR lpszLine);
+	BOOL	ParseOneLine(FILEOP * pFileOp, const std::wstring& lpszLine);
 	BOOL	ParseScript(const wchar_t * lpszScriptFile);
 
 	BOOL	Apply(LPPCK_PATH_NODE lpRootNode);

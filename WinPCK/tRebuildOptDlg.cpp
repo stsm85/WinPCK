@@ -8,11 +8,8 @@
 // 
 // 2018.05.11
 //////////////////////////////////////////////////////////////////////
-
-#include "globals.h"
-#include "miscdlg.h"
-#include "OpenSaveDlg.h"
-
+#include "guipch.h"
+#include "tRebuildOptDlg.h"
 
 /*
 压缩选项
@@ -60,12 +57,23 @@ BOOL TRebuildOptDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 BOOL TRebuildOptDlg::OnOpenClick()
 {
-	if(OpenSingleFile(hWnd, szScriptFile)) {
+	try {
 
-		SetDlgItemText(IDC_EDIT_SCRIPT, szScriptFile);
+		::OpenSingleFile<wchar_t>(hWnd, szScriptFile);
+		SetDlgItemText(IDC_EDIT_SCRIPT, szScriptFile.c_str());
 		return ParseScript();
 	}
-	return FALSE;
+	catch (std::exception) {
+		return FALSE;
+	}
+
+
+	//if(::OpenSingleFile(hWnd, szScriptFile)) {
+
+	//	SetDlgItemText(IDC_EDIT_SCRIPT, szScriptFile);
+	//	return ParseScript();
+	//}
+	//return FALSE;
 }
 
 void TRebuildOptDlg::OnOK()
@@ -97,16 +105,17 @@ BOOL TRebuildOptDlg::EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar)
 
 BOOL TRebuildOptDlg::ParseScript()
 {
-	GetDlgItemText(IDC_EDIT_SCRIPT, szScriptFile, MAX_PATH);
-	if(isScriptParseSuccess = (WINPCK_OK == pck_TestScript((LPCTSTR)szScriptFile))) {
+	GetDlgItemTextW(IDC_EDIT_SCRIPT, szScriptFile.data(), MAX_PATH);
+	
+	if(isScriptParseSuccess = (WINPCK_OK == pck_TestScript(szScriptFile.c_str()))) {
 
-		SetDlgItemTextA(IDC_EDIT_RESULT, "解析脚本成功");
-		_tcscpy_s(lpszScriptFile, MAX_PATH, szScriptFile);
+		SetDlgItemTextW(IDC_EDIT_RESULT, L"解析脚本成功");
+		wcscpy_s(lpszScriptFile, MAX_PATH, szScriptFile.c_str());
 
 		::EnableWindow(GetDlgItem(IDOK), TRUE);
 		return TRUE;
 	} else {
-		SetDlgItemTextA(IDC_EDIT_RESULT, "解析脚本失败");
+		SetDlgItemTextW(IDC_EDIT_RESULT, L"解析脚本失败");
 		::EnableWindow(GetDlgItem(IDOK), FALSE);
 		return FALSE;
 	}

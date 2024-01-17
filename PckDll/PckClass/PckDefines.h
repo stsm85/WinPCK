@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "pck_dependencies.h"
-#include <limits.h>
+
 
 #define __UCSTEXT(quote) L##quote
 #define UCSTEXT(quote) __UCSTEXT(quote)

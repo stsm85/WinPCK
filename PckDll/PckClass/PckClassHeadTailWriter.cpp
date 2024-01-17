@@ -1,4 +1,4 @@
-
+#include <pch.h>
 #include "PckClassHeadTailWriter.h"
 CPckClassHeadTailWriter::CPckClassHeadTailWriter()
 {}

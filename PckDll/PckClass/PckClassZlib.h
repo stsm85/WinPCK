@@ -2,7 +2,7 @@
 #define Z_MAX_COMPRESSION				12
 #define Z_Default_COMPRESSION			9
 
-#include <functional>
+
 
 typedef std::function<uint32_t(uint32_t)>	CompressBoundFunc;
 typedef std::function<int(void*, ulong_t*, const void *, uint32_t, int)> CompressFunc;

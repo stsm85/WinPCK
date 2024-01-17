@@ -1,3 +1,4 @@
+#include "tlibpch.h"
 const static char *tdlg_id = 
 	"@(#)Copyright (C) 1996-2009 H.Shirouzu		tdlg.cpp	Ver0.97";
 /* ========================================================================
@@ -51,12 +52,26 @@ BOOL TDlg::Create(HINSTANCE hInstance)
 	}
 }
 
-BOOL TDlg::InitRichEdit2()
+BOOL TDlg::InitRichEdit(bool isRicheditVer5)
 {
-	if(NULL == (hRichEditLib = LoadLibraryA("RICHED20.DLL")))
-		return FALSE;
-	else
-		return TRUE;
+	//RICHEDIT50W
+	//RichEdit20A
+	if (isRicheditVer5) {
+		if (NULL == (hRichEditLib = LoadLibraryA("msftedit.dll")))
+		{
+			if (NULL == (hRichEditLib = LoadLibraryA("RICHED20.DLL")))
+				return FALSE;
+			else
+				return TRUE;
+		}
+	}
+	else {
+		if (NULL == (hRichEditLib = LoadLibraryA("RICHED20.DLL")))
+			return FALSE;
+		else
+			return TRUE;
+	}
+	return FALSE;
 }
 
 int TDlg::Exec(void)
@@ -96,8 +111,9 @@ LRESULT TDlg::WinProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return	0;
 
 	case WM_SYSCOMMAND:
-		EvSysCommand(wParam, MAKEPOINTS(lParam));
-		return	0;
+		//返回TRUE 后不再处理此消息
+		return EvSysCommand(wParam, MAKEPOINTS(lParam));
+		//return	0;
 
 	case WM_TIMER:
 		EvTimer(wParam, (TIMERPROC)lParam);

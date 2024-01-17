@@ -1,7 +1,7 @@
+#include <pch.h>
 #include "pck_handle.h"
 #include "PckControlCenter.h"
 #include "PckDefines.h"
-#include <thread>
 
 CPckControlCenter this_handle;
 
@@ -124,7 +124,7 @@ WINPCK_API BOOL	pck_getNodeRelativePath(LPWSTR _out_szCurrentNodePathString, LPC
 	return CPckControlCenter::GetCurrentNodeString(_out_szCurrentNodePathString, lpFileEntry);
 }
 
-WINPCK_API LPCENTRY pck_getFileEntryByPath(LPWSTR _in_szCurrentNodePathString)
+WINPCK_API LPCENTRY pck_getFileEntryByPath(const wchar_t* _in_szCurrentNodePathString)
 {
 	if (!checkIfValidPck())
 		return NULL;

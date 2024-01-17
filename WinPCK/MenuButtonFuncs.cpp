@@ -9,18 +9,18 @@
 // 2018.9.4
 //////////////////////////////////////////////////////////////////////
 
-#include "tlib.h"
-#include "resource.h"
-#include "globals.h"
+#include "guipch.h"
 #include "winmain.h"
-#include <process.h>
+#include "tInfoDlg.h"
+#include "tSearchDlg.h"
+#include "tCompressOptDlg.h"
 
 void TInstDlg::ListViewEnter()
 {
-	if (!m_isListviewRenaming)
-		DbClickListView(m_iListHotItem);
+	if (!this->m_isListviewRenaming)
+		this->DbClickListView(this->m_iListHotItem);
 	else
-		keybd_event(VK_TAB, 0, 0, 0);
+		::keybd_event(VK_TAB, 0, 0, 0);
 }
 
 void TInstDlg::MenuClose()
@@ -28,7 +28,7 @@ void TInstDlg::MenuClose()
 	if (pck_isThreadWorking())
 		pck_forceBreakThreadWorking();
 
-	ListView_DeleteAllItems(GetDlgItem(IDC_LIST));
+	ListView_DeleteAllItems(this->GetDlgItem(IDC_LIST));
 	pck_close();
 }
 
@@ -43,9 +43,9 @@ void TInstDlg::MenuInfo()
 void TInstDlg::MenuSearch()
 {
 	if (pck_IsValidPck()) {
-		TSearchDlg	dlg(m_szStrToSearch, this);
+		TSearchDlg	dlg(this->m_szStrToSearch, this);
 		if (dlg.Exec() == TRUE) {
-			SearchPckFiles();
+			this->SearchPckFiles();
 		}
 	}
 }
@@ -53,37 +53,27 @@ void TInstDlg::MenuSearch()
 void TInstDlg::MenuNew(WORD wID)
 {
 		
-	if (pck_isThreadWorking()) {
-		pck_forceBreakThreadWorking();
-		EnableButton(wID, FALSE);
-	}
-	else {
-		_beginthread(CreateNewPckFile, 0, this);
-	}
+	if (pck_isThreadWorking())
+		return;
+
+	_beginthread(CreateNewPckFile, 0, this);
 }
 
 void TInstDlg::MenuAdd(WORD wID)
 {
-	if (pck_isThreadWorking()) {
-		pck_forceBreakThreadWorking();
-		EnableButton(wID, FALSE);
-	}
-	else {
-		AddFiles();
-	}
+	if (pck_isThreadWorking())
+		return;
+
+	this->AddFiles();
 }
 
 void TInstDlg::MenuRebuild(WORD wID)
 {
-	if (pck_isThreadWorking()) {
-		pck_forceBreakThreadWorking();
-		EnableButton(wID, FALSE);
-	}
-	else {
+	if (pck_isThreadWorking())
+		return;
 
-		//pck_setMTMemoryUsed(m_PckHandle, 0);
-		_beginthread(RebuildPckFile, 0, this);
-	}
+	//pck_setMTMemoryUsed(m_PckHandle, 0);
+	_beginthread(RebuildPckFile, 0, this);
 }
 
 void TInstDlg::MenuCompressOpt()
@@ -97,16 +87,16 @@ void TInstDlg::MenuRename()
 	if(pck_isThreadWorking())
 		return;
 
-	HWND	hList = GetDlgItem(IDC_LIST);
+	HWND	hList = this->GetDlgItem(IDC_LIST);
 	::SetWindowLong(hList, GWL_STYLE, ::GetWindowLong(hList, GWL_STYLE) | LVS_EDITLABELS);
-	ListView_EditLabel(hList, m_iListHotItem);
+	ListView_EditLabel(hList, this->m_iListHotItem);
 }
 
 void TInstDlg::MenuDelete()
 {
 	if (pck_isThreadWorking())
 		return;
-	if (IDNO == MessageBox(GetLoadStr(IDS_STRING_ISDELETE), GetLoadStr(IDS_STRING_ISDELETETITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))
+	if (IDNO == this->MessageBoxW(::GetLoadStrW(IDS_STRING_ISDELETE), ::GetLoadStrW(IDS_STRING_ISDELETETITLE), MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON2))
 		return;
 
 	//pck_setMTMemoryUsed(m_PckHandle, 0);
@@ -120,7 +110,7 @@ void TInstDlg::MenuSelectAll()
 	item.mask = LVIF_STATE;
 	item.stateMask = item.state = LVIS_SELECTED;
 
-	HWND hList = GetDlgItem(IDC_LIST);
+	HWND hList = this->GetDlgItem(IDC_LIST);
 
 	int	nItemCount = ListView_GetItemCount(hList);
 
@@ -131,12 +121,12 @@ void TInstDlg::MenuSelectAll()
 
 void TInstDlg::MenuSelectReverse()
 {
-	LVITEM item = { 0 };
+	LVITEMW item = { 0 };
 
 	item.mask = LVIF_STATE;
 	item.stateMask = LVIS_SELECTED;
 
-	HWND hList = GetDlgItem(IDC_LIST);
+	HWND hList = this->GetDlgItem(IDC_LIST);
 
 	int	nItemCount = ListView_GetItemCount(hList);
 
@@ -152,7 +142,7 @@ void TInstDlg::MenuAttribute()
 	if (pck_isThreadWorking())
 		return;
 
-	ViewFileAttribute();
+	this->ViewFileAttribute();
 }
 
 void TInstDlg::MenuView()
@@ -160,7 +150,7 @@ void TInstDlg::MenuView()
 	if (pck_isThreadWorking())
 		return;
 
-	HWND	hWndList = GetDlgItem(IDC_LIST);
+	HWND	hWndList = this->GetDlgItem(IDC_LIST);
 
 	LVITEM	item = { 0 };
 
@@ -173,7 +163,7 @@ void TInstDlg::MenuView()
 	if (PCK_ENTRY_TYPE_FOLDER == entry_type)
 		return;
 
-	ViewFile((LPPCK_UNIFIED_FILE_ENTRY)item.lParam);
+	this->ViewFile((LPPCK_UNIFIED_FILE_ENTRY)item.lParam);
 }
 
 void TInstDlg::MenuAbout()
@@ -197,4 +187,16 @@ void TInstDlg::MenuStrip()
 		return;
 
 	_beginthread(StripPckFile, 0, this);
+}
+
+//È¡Ïû²Ù×÷
+void TInstDlg::MenuCancelPckOper()
+{
+	if (pck_isThreadWorking()) {
+		pck_forceBreakThreadWorking();
+		//EnableButton(wID, FALSE);
+	}
+	else {
+		this->EnbaleButtons(TRUE);
+	}
 }

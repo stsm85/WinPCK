@@ -1,8 +1,9 @@
 #pragma once
-#include "tlib.h"
-#include "resource.h"
-#include "ShowPictureWithZoom.h"
-#include "pck_handle.h"
+//#include "tlib.h"
+//#include "resource.h"
+//#include "ShowPictureWithZoom.h"
+#include <ShowPictureInterface.h>
+//#include "pck_handle.h"
 
 class CPriviewInDlg
 {
@@ -61,7 +62,7 @@ class TPicDlg : public TDlg
 protected:
 
 	//窗口标题
-	wchar_t			m_szTitle[MAX_PATH];
+	std::wstring	m_szTitle;
 
 	//待显示图片数据和大小
 	LPBYTE			*buf;
@@ -74,12 +75,12 @@ protected:
 	PICFORMAT		iFormat;
 
 	//记录当前鼠标位置
-	POINT			pointMouse;
-	BOOL			isMouseDown;
+	//POINT			pointMouse;
+	//BOOL			isMouseDown;
 
-	CShowPictureWithZoom *lpShowPicture;
+	std::unique_ptr<IShowPicture> lpShowPicture;
 
-	BOOL	SaveFile();
+	bool	SaveFile();
 
 	void	InitFixedShowPositionAndShowWindow();
 
@@ -92,17 +93,9 @@ public:
 
 	virtual BOOL	EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl);
 	virtual BOOL	EvCreate(LPARAM lParam);
-	//virtual BOOL	EvDrawItem(UINT ctlID, DRAWITEMSTRUCT *lpDis);
 	virtual BOOL	EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight);
-	//virtual BOOL	EventScroll(UINT uMsg, int nCode, int nPos, HWND scrollBar);
-	virtual BOOL	EvMouseMove(UINT fwKeys, POINTS pos);
-	virtual BOOL	EvMouseWheel(UINT nFlags, short zDelta, POINTS pos);
 	virtual BOOL	EventButton(UINT uMsg, int nHitTest, POINTS pos);
-	//virtual BOOL	EvTimer(WPARAM timerID, TIMERPROC proc);
-	//virtual BOOL	EventCtlColor(UINT uMsg, HDC hDcCtl, HWND hWndCtl, HBRUSH *result);
-
-	virtual BOOL	EvPaint(void);
-	//virtual BOOL	EvClose();
+	virtual BOOL	EvTimer(WPARAM timerID, TIMERPROC proc);
 
 };
 #pragma endregion

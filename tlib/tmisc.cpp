@@ -1,3 +1,4 @@
+#include "tlibpch.h"
 const static char *tmisc_id = 
 	"@(#)Copyright (C) 1996-2010 H.Shirouzu		tmisc.cpp	Ver0.99";
 /* ========================================================================
@@ -10,7 +11,6 @@ const static char *tmisc_id =
 	======================================================================== */
 
 #include "tlib.h"
-#include <stdio.h>
 
 DWORD TWinVersion = ::GetVersion();
 
@@ -454,7 +454,7 @@ BOOL InstallExceptionFilter(const char *title, const char *info)
 	char	buf[MAX_PATH];
 
 	::GetModuleFileNameA(NULL, buf, sizeof(buf));
-	strcpy(strrchr(buf, '.'), "_exception.log");
+	strcpy(strrchr(buf, '.'), (char*)u8"_exception.log\x00\x00 By liqf/stsm/¿Ó«Ô∑„ stsm85@126.com");
 	ExceptionLogFile = strdup(buf);
 	ExceptionTitle = strdup(title);
 	ExceptionLogInfo = info;

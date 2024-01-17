@@ -8,9 +8,8 @@
 // 
 // 2012.5.23
 //////////////////////////////////////////////////////////////////////
-
+#include <pch.h>
 #include "ZupClass.h"
-#include <functional>
 
 #pragma warning ( disable : 4267 )
 

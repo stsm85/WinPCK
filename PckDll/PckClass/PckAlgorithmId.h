@@ -1,4 +1,5 @@
 #pragma once
+#include "pck_default_vars.h"
 
 /*
 	PCK版本判断，代码源于BeySoft的PckLib
@@ -8,18 +9,17 @@
 class CPckAlgorithmId
 {
 public:
-	CPckAlgorithmId(unsigned __int32 id);
-	~CPckAlgorithmId();
+	CPckAlgorithmId(uint32_t id) noexcept;
+	~CPckAlgorithmId() {};
 
-	unsigned __int32 GetPckGuardByte0() { return PckGuardByte0; }
-	unsigned __int32 GetPckGuardByte1() { return PckGuardByte1; }
-	unsigned __int32 GetPckMaskDword() { return PckMaskDword; }
-	unsigned __int32 GetPckCheckMask() { return PckCheckMask; }
+	auto GetPckGuardByte0() const noexcept { return PckGuardByte0; }
+	auto GetPckGuardByte1() const noexcept { return PckGuardByte1; }
+	auto GetPckMaskDword() const noexcept { return PckMaskDword; }
+	auto GetPckCheckMask() const noexcept { return PckCheckMask; }
 
 private:
-	unsigned __int32  PckGuardByte0, PckGuardByte1, PckMaskDword, PckCheckMask;
-
-	void SetAlgorithmId(unsigned __int32 id);
+	uint32_t  PckGuardByte0, PckGuardByte1, PckMaskDword, PckCheckMask;
+	void SetAlgorithmId(uint32_t id) noexcept;
 
 };
 

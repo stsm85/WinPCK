@@ -7,10 +7,10 @@
 	Copyright				: H.Shirouzu
 	Reference				: 
 	======================================================================== */
-#include <stdio.h>
+#include "tlibpch.h"
 #include "tlib.h"
 #ifdef _USE_T_REG_
-static char *tregist_id =
+const static char *tregist_id =
 "@(#)Copyright (C) 1996-2010 H.Shirouzu		tregist.cpp	Ver0.97";
 
 #include "tregist.h"

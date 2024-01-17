@@ -1,12 +1,7 @@
 #pragma once
 
-#include "MapViewFileMultiPck.h"
 #include "PckClassWriteOperator.h"
 #include "PckClassLog.h"
-
-#include <functional>
-#include <deque>
-#include <mutex>
 
 
 //获取文件方式

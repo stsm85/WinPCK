@@ -37,7 +37,7 @@ public:
 
 	LPZUP_FILENAME_DICT	find(const char *keystr);
 
-	LPZUP_FILENAME_DICT	add(const char *keystr);
+	LPZUP_FILENAME_DICT	add(const std::string_view& keystr);
 
 
 protected:

@@ -9,11 +9,9 @@
 // 2018.6.4
 //////////////////////////////////////////////////////////////////////
 
-#include <Windows.h>
+#include "guipch.h"
 #include "ShowLogOnDlgListView.h"
-#include "resource.h"
-#include <commctrl.h>
-#include <stdio.h>
+
 
 CLogUnits LogUnits;
 

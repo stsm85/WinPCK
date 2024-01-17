@@ -1,3 +1,4 @@
+#include <pch.h>
 #include "PckThreadRunner.h"
 
 FETCHDATA_RET CPckThreadRunner::detectMaxToAddMemory(DWORD dwMallocSize)

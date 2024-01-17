@@ -8,7 +8,7 @@
 // 
 // 2012.5.23
 //////////////////////////////////////////////////////////////////////
-
+#include <pch.h>
 #include "ZupClass.h"
 
 CZupClass::CZupClass(LPPCK_RUNTIME_PARAMS inout) : 

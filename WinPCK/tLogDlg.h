@@ -1,6 +1,4 @@
 #pragma once
-
-#include "tlib.h"
 #include "resource.h"
 
 class TLogDlg : public TDlg

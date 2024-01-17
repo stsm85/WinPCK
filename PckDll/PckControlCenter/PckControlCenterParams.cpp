@@ -9,9 +9,9 @@
 // 
 // 2012.10.10
 //////////////////////////////////////////////////////////////////////
+#include <pch.h>
 
 #include "PckControlCenter.h"
-#include <thread>
 
 #pragma region Ïß³Ì¿ØÖÆ
 

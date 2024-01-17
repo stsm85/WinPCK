@@ -8,12 +8,8 @@
 // 
 // 2012.5.23
 //////////////////////////////////////////////////////////////////////
-
+#include <pch.h>
 #include "ZupClass.h"
-#include "..\base64\base64.h"
-#include <intrin.h>
-#include "CharsCodeConv.h"
-#include "TextLineSpliter.h"
 
 _inline void CZupClass::DecodeDict(LPZUP_FILENAME_DICT lpZupDict)
 {
@@ -29,19 +25,19 @@ _inline void CZupClass::DecodeDict(LPZUP_FILENAME_DICT lpZupDict)
 
 }
 
-void CZupClass::AddDict(std::string& base_file)
+void CZupClass::AddDict(const std::string_view base_file)
 {
 	char ch[2] = { 0 };
 	*ch = base_file.at(0);
 
 	if ('/' == *ch || '\\' == *ch)
 	{
-		std::vector<std::string> line_content;
-		CTextUnitsA::Split(base_file, line_content, ch, LINE_EMPTY_DELETE);
+		//std::vector<std::string> line_content;
+		auto line_content = CTextUnitsA::Split(base_file, ch, SPLIT_FLAG::DELETE_NULL_LINE);
 
 		for (int i = 0; i < line_content.size(); i++) {
 			LPZUP_FILENAME_DICT lpZupDict;
-			if (NULL != (lpZupDict = m_lpDictHash->add(line_content[i].c_str()))) {
+			if (NULL != (lpZupDict = m_lpDictHash->add(line_content[i]))) {
 				DecodeDict(lpZupDict);
 			}
 		}
@@ -49,7 +45,7 @@ void CZupClass::AddDict(std::string& base_file)
 	else {
 
 		LPZUP_FILENAME_DICT lpZupDict;
-		if (NULL != (lpZupDict = m_lpDictHash->add(base_file.c_str()))) {
+		if (NULL != (lpZupDict = m_lpDictHash->add(base_file))) {
 			DecodeDict(lpZupDict);
 		}
 	}
@@ -116,41 +112,38 @@ BOOL CZupClass::BuildZupBaseDict()
 		if(0x2D76 == *(uint16_t*)lpPckIndexTable->cFileIndex.szFilename) {
 			//wID = atoul(lpNode->szName + 2, NULL, 10);
 			//读取inc文件
-			char	*_incbuf = (char*)malloc(lpPckIndexTable->cFileIndex.dwFileClearTextSize+1);
+			std::string _incbuf(lpPckIndexTable->cFileIndex.dwFileClearTextSize, '\x0');
 
-			if(NULL == _incbuf) {
-				//lpNode = lpNode->next;
-				continue;
-			}
-
-			if(GetSingleFileData(lpPckIndexTable, _incbuf)) {
+			if(GetSingleFileData(lpPckIndexTable, _incbuf.data())) {
 
 				_incbuf[lpPckIndexTable->cFileIndex.dwFileClearTextSize] = 0;
-				std::vector<std::string> lines;
+				//std::vector<std::string> lines;
 
-				CTextUnitsA::SplitLine(_incbuf, lines, LINE_TRIM_LEFT | LINE_TRIM_RIGHT | LINE_EMPTY_DELETE);
+				auto lines = CTextUnitsA::SplitLine(_incbuf.c_str(), lpPckIndexTable->cFileIndex.dwFileClearTextSize, SPLIT_FLAG::TRIM_LEFT | SPLIT_FLAG::TRIM_RIGHT | SPLIT_FLAG::DELETE_NULL_LINE);
 				
 				for (int j = 0; j < lines.size(); j++) {
 
-					std::string& oneline = lines[j];
-					if (oneline.at(0) == '!' || oneline.at(0) == '+') {
-						std::vector<std::string> line_content;
-						CTextUnitsA::Split(oneline, line_content, " ");
-						AddDict(line_content[1]);
+					auto& oneline = lines[j];
+					/*
+					*			0         1         2         3         4         5
+					*			012345678901234567890123456789012345678901234567890123456789
+					行文本格式：!9cc030446e5ebc588d1d4357f4d73b3d aWNvbmxpc3RfZ3VpbGQ1MDcuZGRz
+					*/
+					if ((oneline.at(0) == '!' || oneline.at(0) == '+') && ' ' == oneline.at(33)) {
+						//auto line_content = CTextUnitsA::Split(oneline, " ");
+						//AddDict(line_content[1]);
+						this->AddDict(std::string_view(oneline.cbegin() + 34, oneline.cend()));
 					}
 				}
 			}
-			free(_incbuf);
 		}
 		lpPckIndexTable++;
 	}
-	//if(NULL == m_lpZupDict)
-	//	return FALSE;
-	//else
+
 	return TRUE;
 }
 
 const PCKINDEXTABLE* CZupClass::GetBaseFileIndex(const PCKINDEXTABLE* lpIndex, const PCKINDEXTABLE* lpZeroBaseIndex)
 {
-	return m_PckAllInfo.lpPckIndexTable + (lpIndex - lpZeroBaseIndex);
+	return this->m_PckAllInfo.lpPckIndexTable + (lpIndex - lpZeroBaseIndex);
 }

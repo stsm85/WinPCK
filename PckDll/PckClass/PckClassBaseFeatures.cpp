@@ -1,6 +1,5 @@
-//#include <Windows.h>
+#include <pch.h>
 #include "PckClassBaseFeatures.h"
-//#include <tchar.h>
 
 CPckClassBaseFeatures::CPckClassBaseFeatures():
 	m_PckAllInfo({ 0 }),

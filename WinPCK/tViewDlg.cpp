@@ -11,12 +11,8 @@
 
 #pragma warning ( disable : 4018 )
 #pragma warning ( disable : 4267 )
-
+#include "guipch.h"
 #include "tPreviewDlg.h"
-#include <stdio.h>
-#include "Raw2HexString.h"
-#include <tchar.h>
-#include "CharsCodeConv.h"
 
 TViewDlg::TViewDlg(LPBYTE *_buf, DWORD _dwSize, const wchar_t *_lpszFile, TWin *_win) : TDlg(IDD_DIALOG_VIEW, _win) ,
 	buf(_buf),

@@ -12,10 +12,6 @@
 #ifndef _GLOBALS_H_
 #define _GLOBALS_H_
 
-#include <windows.h>
-#include <assert.h>
-#include <vector>
-
 #ifndef UNICODE
 #error("please use Unicode charset") 
 #endif
@@ -23,7 +19,7 @@
 //****** some defines *******
 #define _USE_CUSTOMDRAW_
 
-#define	THIS_NAME			"WinPCK "
+#define	THIS_NAME			L"WinPCK "
 #define	THIS_DESC			L"完美世界系列游戏PCK文件包综合查看器 " 
 #define	THIS_AUTHOR			L"程序编写: stsm/liqf/李秋枫\r\n" \
 							"E-Mail: stsm85@126.com "
@@ -51,8 +47,8 @@
 
 #define	TEXT_INVALID_PATHCHAR			"\\/:*?\"<>|"
 
-#define	TEXT_FILE_FILTER				TEXT(	"PCK压缩文件(*.pck;*.zup)\0*.pck;*.zup\0")	\
-										TEXT(	"所有文件\0*.*\0\0")
+//#define	TEXT_FILE_FILTER				TEXT(	"PCK压缩文件(*.pck;*.zup)\0*.pck;*.zup\0")	\
+//										TEXT(	"所有文件\0*.*\0\0")
 
 #define IMGLIST_FOLDER	0
 #define IMGLIST_FILE	1

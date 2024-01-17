@@ -9,8 +9,9 @@
 // 2017.12.26
 //////////////////////////////////////////////////////////////////////
 
-#include "miscdlg.h"
-#include <shlwapi.h>
+#include "guipch.h"
+#include "tAttrDlg.h"
+
 
 TAttrDlg::TAttrDlg(const PCK_UNIFIED_FILE_ENTRY *_lpPckInfo, wchar_t *_lpszPath, TWin *_win) :
 	TDlg(IDD_DIALOG_ATTR, _win),
@@ -19,106 +20,61 @@ TAttrDlg::TAttrDlg(const PCK_UNIFIED_FILE_ENTRY *_lpPckInfo, wchar_t *_lpszPath,
 {
 }
 
-//TAttrDlg::~TAttrDlg()
-//{
-//}
-
 BOOL TAttrDlg::EvCreate(LPARAM lParam)
 {
-#define PRINTF_BYTESIZE	32
-#define PRINTF_SIZE		80
+	constexpr wchar_t	lpszFormat[] = L"{} ({} 字节)";
+	constexpr wchar_t	lpszFileFormat[] = L"{} ({} 字节)";
+	std::wstring sFilename;
 
-	wchar_t	*lpszFilename;
-	const wchar_t	*lpszwFilename;
-	wchar_t	szPrintf[PRINTF_SIZE];
-	wchar_t	szPrintfBytesize[PRINTF_BYTESIZE];
-	LPCWSTR	lpszFormat = L"%s (%llu 字节)";
-	LPCWSTR	lpszFileFormat = L"%s (%u 字节)";
+	if (PCK_ENTRY_TYPE_INDEX == this->lpPckInfo->entryType) {
 
-	if (PCK_ENTRY_TYPE_INDEX == lpPckInfo->entryType) {
-		wchar_t	szFilename[MAX_PATH_PCK_260];
+		this->SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件");
 
-		wcscpy(szFilename, lpPckInfo->szName);
-
-		SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件");
-
-		if (NULL != (lpszFilename = wcsrchr(szFilename, L'\\'))) {
-
-			*lpszFilename++ = 0;
-			SetDlgItemTextW(IDC_EDIT_ATTR_PATH, szFilename);
-
-			lpszwFilename = lpszFilename;
-
-		}
-		else if (NULL != (lpszFilename = wcsrchr(szFilename, L'/'))) {
-
-			*lpszFilename++ = 0;
-			SetDlgItemTextW(IDC_EDIT_ATTR_PATH, szFilename);
-
-			lpszwFilename = lpszFilename;
-
-		}
-		else {
-
-			lpszwFilename = lpPckInfo->szName;
-			SetDlgItemTextA(IDC_EDIT_ATTR_PATH, "");
-		}
-
-		SetDlgItemTextW(IDC_EDIT_ATTR_NAME, lpszwFilename);
+		fs::path searched_filename(this->lpPckInfo->szName);
+		sFilename = searched_filename.filename().wstring();
+		this->SetDlgItemTextW(IDC_EDIT_ATTR_PATH, searched_filename.parent_path().wstring().c_str());
+		this->SetDlgItemTextW(IDC_EDIT_ATTR_NAME, searched_filename.filename().wstring().c_str());
 	}
 	else {
-		SetDlgItemTextW(IDC_EDIT_ATTR_NAME, lpszwFilename = lpPckInfo->szName);
+		sFilename = this->lpPckInfo->szName;
+		this->SetDlgItemTextW(IDC_EDIT_ATTR_NAME, this->lpPckInfo->szName);
+		this->SetDlgItemTextW(IDC_EDIT_ATTR_PATH, this->lpszPath);
 	}
 
-	SetDlgItemTextW(IDC_EDIT_ATTR_PATH, lpszPath);
-
-	uint64_t qdwDirClearTextSize = pck_getFileSizeInEntry(lpPckInfo);
-	uint64_t qdwDirCipherTextSize = pck_getCompressedSizeInEntry(lpPckInfo);
+	uint64_t qdwDirClearTextSize = pck_getFileSizeInEntry(this->lpPckInfo);
+	uint64_t qdwDirCipherTextSize = pck_getCompressedSizeInEntry(this->lpPckInfo);
 
 	//压缩大小
-	swprintf_s(szPrintf, PRINTF_SIZE, lpszFileFormat,
-		StrFormatByteSizeW(qdwDirCipherTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-		qdwDirCipherTextSize);
-
-	SetDlgItemTextW(IDC_EDIT_ATTR_CIPHER, szPrintf);
-
-
+	this->SetDlgItemTextW(IDC_EDIT_ATTR_CIPHER, std::vformat(lpszFileFormat, std::make_wformat_args(::wbyte_format(qdwDirCipherTextSize), qdwDirCipherTextSize)).c_str());
 	//实际大小
-	swprintf_s(szPrintf, PRINTF_SIZE, lpszFileFormat,
-		StrFormatByteSizeW(qdwDirClearTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-		qdwDirClearTextSize);
-
-	SetDlgItemTextW(IDC_EDIT_ATTR_SIZE, szPrintf);
+	this->SetDlgItemTextW(IDC_EDIT_ATTR_SIZE, std::vformat(lpszFileFormat, std::make_wformat_args(::wbyte_format(qdwDirClearTextSize), qdwDirClearTextSize)).c_str());
 
 	//压缩率
 	if (0 == qdwDirClearTextSize)
-		SetDlgItemTextA(IDC_EDIT_ATTR_CMPR, "-");
+		this->SetDlgItemTextA(IDC_EDIT_ATTR_CMPR, "-");
 	else {
-		swprintf_s(szPrintf, PRINTF_SIZE, L"%.1f%%", qdwDirCipherTextSize / (double)qdwDirClearTextSize * 100);
-		SetDlgItemTextW(IDC_EDIT_ATTR_CMPR, szPrintf);
+		this->SetDlgItemTextW(IDC_EDIT_ATTR_CMPR, std::format(L"{:.1f}%", qdwDirCipherTextSize / (double)qdwDirClearTextSize * 100).c_str());
 	}
 
-	if (PCK_ENTRY_TYPE_FOLDER != (PCK_ENTRY_TYPE_FOLDER & lpPckInfo->entryType))//文件
+	if (PCK_ENTRY_TYPE_FOLDER != (PCK_ENTRY_TYPE_FOLDER & this->lpPckInfo->entryType))//文件
 	{
-		SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件");
+		this->SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件");
 
 		//包含
-		SetDlgItemTextA(IDC_EDIT_ATTR_FILECOUNT, "-");
+		this->SetDlgItemTextA(IDC_EDIT_ATTR_FILECOUNT, "-");
 
 		//偏移地址
-		swprintf_s(szPrintf, PRINTF_SIZE, L"%llu (0x%016llX)", pck_getFileOffset(lpPckInfo), pck_getFileOffset(lpPckInfo));
-		SetDlgItemTextW(IDC_EDIT_ATTR_ADDR, szPrintf);
+		this->SetDlgItemTextW(IDC_EDIT_ATTR_ADDR, std::format(L"{} (0x{:016X})", pck_getFileOffset(this->lpPckInfo), pck_getFileOffset(this->lpPckInfo)).c_str());
 	}
 	else {
 
-		SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件夹");
+		this->SetDlgItemTextW(IDC_EDIT_ATTR_TYPE, L"文件夹");
 
 		//包含
-		swprintf_s(szPrintf, PRINTF_SIZE, L"%u 个文件，%u 个文件夹", pck_getFilesCountInEntry(lpPckInfo), pck_getFoldersCountInEntry(lpPckInfo));
-		SetDlgItemTextW(IDC_EDIT_ATTR_FILECOUNT, szPrintf);
+		this->SetDlgItemTextW(IDC_EDIT_ATTR_FILECOUNT, std::format(L"{} 个文件，{} 个文件夹", pck_getFilesCountInEntry(this->lpPckInfo), pck_getFoldersCountInEntry(this->lpPckInfo)).c_str());
 
 		//偏移地址
-		SetDlgItemTextA(IDC_EDIT_ATTR_ADDR, "-");
+		this->SetDlgItemTextA(IDC_EDIT_ATTR_ADDR, "-");
 
 	}
 
@@ -129,41 +85,24 @@ BOOL TAttrDlg::EvCreate(LPARAM lParam)
 	qdwDirCipherTextSize = pck_getCompressedSizeInEntry(lpRootNode);
 
 	//文件总大小
-	swprintf_s(szPrintf, PRINTF_SIZE, lpszFormat,
-		StrFormatByteSizeW(qdwDirClearTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-		qdwDirClearTextSize);
-
-	SetDlgItemTextW(IDC_EDIT_ATTR_ALLSIZE, szPrintf);
+	this->SetDlgItemTextW(IDC_EDIT_ATTR_ALLSIZE, std::vformat(lpszFormat, std::make_wformat_args(::wbyte_format(qdwDirClearTextSize), qdwDirClearTextSize)).c_str());
 
 	//压缩包大小
-	swprintf_s(szPrintf, PRINTF_SIZE, lpszFormat,
-		StrFormatByteSizeW(qdwDirCipherTextSize, szPrintfBytesize, PRINTF_BYTESIZE),
-		qdwDirCipherTextSize);
-	SetDlgItemTextW(IDC_EDIT_ATTR_PCKSIZE, szPrintf);
+	this->SetDlgItemTextW(IDC_EDIT_ATTR_PCKSIZE, std::vformat(lpszFormat, std::make_wformat_args(::wbyte_format(qdwDirCipherTextSize), qdwDirCipherTextSize)).c_str());
 
 	//压缩率
-	swprintf_s(szPrintf, PRINTF_SIZE, L"%.1f%%", qdwDirCipherTextSize / (float)qdwDirClearTextSize * 100.0);
-	SetDlgItemTextW(IDC_EDIT_ATTR_PCKCMPR, szPrintf);
+	this->SetDlgItemTextW(IDC_EDIT_ATTR_PCKCMPR, std::format(L"{:.1f}%", qdwDirCipherTextSize / (float)qdwDirClearTextSize * 100.0).c_str());
 
 	//冗余数据量
-	uint64_t qwPckFileSize = pck_file_redundancy_data_size();
-	swprintf_s(szPrintf, PRINTF_SIZE, lpszFormat,
-		StrFormatByteSizeW(qwPckFileSize, szPrintfBytesize, PRINTF_BYTESIZE),
-		qwPckFileSize);
-	SetDlgItemTextW(IDC_EDIT_ATTR_DIRT, szPrintf);
+	auto const qwPckFileSize = pck_file_redundancy_data_size();
+	this->SetDlgItemTextW(IDC_EDIT_ATTR_DIRT, std::vformat(lpszFormat, std::make_wformat_args(::wbyte_format(qwPckFileSize), qwPckFileSize)).c_str());
 
 
 	//窗口文字
-	TCHAR	szTitle[MAX_PATH];
-	_stprintf_s(szTitle, MAX_PATH, TEXT("%s 属性"), lpszwFilename);
-	SetWindowText(szTitle);
-
-	Show();
+	this->SetWindowTextW(std::format(L"{} 属性", sFilename).c_str());
+	this->Show();
 
 	return	FALSE;
-
-#undef PRINTF_SIZE
-#undef PRINTF_BYTESIZE
 }
 
 BOOL TAttrDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)

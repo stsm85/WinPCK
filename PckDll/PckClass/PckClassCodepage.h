@@ -16,10 +16,11 @@ public:
 	static size_t	PckFilenameCode2UCS(const char *_in, wchar_t *_out, size_t _outsize);
 	//uc -> ansi cp936
 	static size_t	PckFilenameCode2Ansi(const wchar_t *_in, char *_out, size_t _outsize);
+#if 0
 	//ansi -> uc native
 	static size_t	NativeFilenameCode2UCS(const char *_in, wchar_t *_out, size_t _outsize);
 	//uc -> ansi native
 	static size_t	NativeFilenameCode2Ansi(const wchar_t *_in, char *_out, size_t _outsize);
-
+#endif
 };
 

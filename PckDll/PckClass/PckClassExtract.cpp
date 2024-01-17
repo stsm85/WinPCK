@@ -10,7 +10,7 @@
 // 2012.4.10
 //////////////////////////////////////////////////////////////////////
 #pragma warning ( disable : 4267 )
-
+#include <pch.h>
 #include "PckClass.h"
 
 BOOL CPckClass::GetSingleFileData(const PCKINDEXTABLE* const lpPckFileIndexTable, char *buffer, size_t sizeOfBuffer)

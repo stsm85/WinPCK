@@ -9,18 +9,15 @@
     <!--<ShowPlatformName>false</ShowPlatformName>
     <VSPlatformName Condition="('$(VisualStudioVersion)'=='16.0') And ('$(ShowPlatformName)'=='true')">VS2019</VSPlatformName>
     <VSPlatformName Condition="'$(ShowPlatformName)'=='false'"></VSPlatformName>-->
-    <IntDirName>build</IntDirName>
+    <IntDirName>obj</IntDirName>
     <!-- 生成文件=Makefile 应用程序(.exe)=Application dll=DynamicLibrary lib=StaticLibrary 实用工具=Utility -->
     <IsExecuteFile Condition="('$(ConfigurationType)'=='Application') Or ('$(ConfigurationType)'=='DynamicLibrary')">true</IsExecuteFile>
     <IsExecuteFile Condition="'$(IsExecuteFile)'!='true'">false</IsExecuteFile>
   </PropertyGroup>
   <PropertyGroup>
-    <OutDir Condition="'$(IsExecuteFile)'=='true'">$(SolutionDir)\$(Configuration)\$(VSPlatformName)\</OutDir>
-    <OutDir Condition="'$(IsExecuteFile)'=='false'">$(SolutionDir)\$(Configuration)\$(VSPlatformName)\libs\$(PlatformShortName)\</OutDir>
-    <IntDir>$(SolutionDir)\$(IntDirName)\$(VSPlatformName)\$(ProjectName)\$(PlatformShortName)\$(Configuration)\</IntDir>
-    <TargetName Condition="'$(IsExecuteFile)'=='true'">$(ProjectName)_$(PlatformShortName)</TargetName>
+    <OutDir Condition="'$(IsExecuteFile)'=='true'">$(SolutionDir)\bin\$(Configuration)_$(PlatformShortName)\</OutDir>
+    <OutDir Condition="'$(IsExecuteFile)'=='false'">$(SolutionDir)\$(IntDirName)\__libs\$(Configuration)_$(PlatformShortName)\</OutDir>
+    <IntDir>$(SolutionDir)\$(IntDirName)\$(ProjectName)\$(Configuration)_$(PlatformShortName)\</IntDir>
+    <TargetName Condition="'$(IsExecuteFile)'=='true'">$(ProjectName)</TargetName>
   </PropertyGroup>
-  <ImportGroup Label="PropertySheets">
-    <Import Project="$(SolutionDir)\Config\Project_optimize.props" Condition=" ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_optimize.props'))"/>
-  </ImportGroup>
 </Project>
