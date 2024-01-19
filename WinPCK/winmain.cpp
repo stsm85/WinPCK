@@ -14,8 +14,18 @@
 //#pragma warning ( disable : 4018 )
 #pragma warning ( disable : 4005 )
 
+#include <CommDlg/CRichEdit.h>
+
 #include "guipch.h"
 #include "winmain.h"
+#include <UnknownExceptionFilter.h>
+
+void clean_exit_works()
+{
+	//Logger->set_level(spdlog::level::debug);
+	Logger->critical("系统发生严重错误，正在退出...");
+	Logger->flush();
+}
 
 /*
 	WinMain
@@ -24,7 +34,6 @@ int WINAPI _tWinMain(HINSTANCE hI, HINSTANCE, LPTSTR cmdLine, int nCmdShow)
 {
 	return	TInstApp(hI, cmdLine, nCmdShow).Run();
 }
-
 
 TInstApp::TInstApp(HINSTANCE _hI, LPTSTR _cmdLine, int _nCmdShow) : TApp(_hI, _cmdLine, _nCmdShow) {}
 
@@ -57,7 +66,7 @@ TInstDlg::~TInstDlg() {}
 BOOL TInstDlg::EvCreate(LPARAM lParam)
 {
 
-	//InstallExceptionFilter(THIS_NAME, "%s\r\n异常信息已被保存到:\r\n%s\r\n");
+	InstallExceptionFilter(clean_exit_works);
 
 	int		cx = ::GetSystemMetrics(SM_CXFULLSCREEN), cy = ::GetSystemMetrics(SM_CYFULLSCREEN);
 

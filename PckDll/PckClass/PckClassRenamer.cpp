@@ -5,7 +5,7 @@
 BOOL CPckClassWriteOperator::RenameFilename()
 {
 	m_zlib.init_compressor(m_lpPckParams->dwCompressLevel);
-	Logger.i(TEXT_LOG_RENAME);
+	Logger.info(TEXT_LOG_RENAME);
 
 	//以下是创建一个文件，用来保存压缩后的文件
 	CMapViewFileMultiPckWrite cFileWrite(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys.dwMaxSinglePckSize);
@@ -33,7 +33,7 @@ BOOL CPckClassWriteOperator::RenameFilename()
 	
 	WriteHeadAndTail(&cFileWrite, &m_PckAllInfo, dwAddress, FALSE);
 
-	Logger.i(TEXT_LOG_WORKING_DONE);
+	Logger.info(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 }

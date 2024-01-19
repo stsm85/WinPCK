@@ -5,6 +5,7 @@ class TLogDlg : public TDlg
 {
 private:
 
+#if 0
 	HWND	hWndList;
 	wchar_t	szExePath[MAX_PATH];
 
@@ -18,7 +19,7 @@ private:
 
 	int		log_level_char_to_int(const char level);
 	void	_InsertLogIntoList(const char, const wchar_t *);
-
+#endif
 public:
 	TLogDlg(TWin *_win) : TDlg(IDD_DIALOG_LOG, _win) { }
 
@@ -27,6 +28,7 @@ public:
 	virtual BOOL	EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight);
 	virtual BOOL	EvClose();
 	virtual BOOL	EvNotify(UINT ctlID, NMHDR *pNmHdr);
-
+#if 0
 	void	InsertLogToList(const char, const wchar_t *);
+#endif
 };

@@ -8,6 +8,8 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 	CMapViewFileMultiPckRead cRead;
 
 	if(!cRead.OpenPckAndMappingRead(m_PckAllInfo.szFilename)) {
+
+		//Logger->error(TEXT_OPENNAME_FAIL, m_PckAllInfo.szFilename);
 		Logger_el(UCSTEXT(TEXT_OPENNAME_FAIL), m_PckAllInfo.szFilename);
 		return FALSE;
 	}
@@ -29,9 +31,10 @@ BOOL CPckClassIndex::ReadPckFileIndexes()
 	//存放每条文件索引的头部的两个DWORD压缩数据长度信息
 	DWORD			dwFileIndexTableCryptedDataLength[2];
 	DWORD			dwFileIndexTableClearDataLength = m_PckAllInfo.lpDetectedPckVerFunc->dwFileIndexSize;
-	DWORD			IndexCompressedFilenameDataLengthCryptKey[2] = { \
-		m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys.IndexCompressedFilenameDataLengthCryptKey1, \
-		m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys.IndexCompressedFilenameDataLengthCryptKey2 };
+	DWORD			IndexCompressedFilenameDataLengthCryptKey[] = {
+		m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys.IndexCompressedFilenameDataLengthCryptKey1,
+		m_PckAllInfo.lpDetectedPckVerFunc->cPckXorKeys.IndexCompressedFilenameDataLengthCryptKey2
+	};
 
 	//pck是压缩时，文件名的压缩长度不会超过0x100，所以当
 	//开始一个字节，如果0x75，就没有压缩，如果是0x74就是压缩的	0x75->FILEINDEX_LEVEL0

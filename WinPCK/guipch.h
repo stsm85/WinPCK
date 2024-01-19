@@ -30,6 +30,7 @@ namespace fs = std::filesystem;
 #include <Raw2HexString.h>
 #include <CharsCodeConv.h>
 #include <BytesConv.h>
+#include <TextEncoding.h>
 
 #include "globals.h"
 #include "resource.h"
@@ -37,5 +38,11 @@ namespace fs = std::filesystem;
 #include "pck_handle.h"
 
 #include "tlib.h"
+
+#include <spdloghelper/Logger.h>
+#include <spdloghelper/LoggerInit.h>
+
+#include <source_location>
+#include <spdlog\stopwatch.h>
 
 

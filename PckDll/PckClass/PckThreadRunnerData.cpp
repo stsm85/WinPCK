@@ -19,7 +19,7 @@ FETCHDATA_RET CPckThreadRunner::GetUncompressedDataFromFile(LPDATA_FETCH_METHOD 
 		lckCompressedflag.unlock();
 
 #if PCK_DEBUG_OUTPUT
-		Logger.logOutput(__FUNCTION__, "lpfirstFile_id=%d\r\n", lpOneFile->id);
+		Logger->trace(__FUNCTION__, "lpfirstFile_id={}", lpOneFile->id);
 #endif
 
 		LPBYTE lpCompressedBuffer = (BYTE*)MALLOCED_EMPTY_DATA;
@@ -28,7 +28,7 @@ FETCHDATA_RET CPckThreadRunner::GetUncompressedDataFromFile(LPDATA_FETCH_METHOD 
 		//构建文件名
 		memcpy(mystrcpy(pckFileIndex.cFileIndex.szwFilename, lpDataFetchMethod->szCurrentNodeString), lpOneFile->szwFilename + lpOneFile->nFileTitleLen, lpOneFile->nBytesToCopy - lpDataFetchMethod->nCurrentNodeStringLen);
 		//Unicode文件名转换为CP936的ANSI
-		CPckClassCodepage::PckFilenameCode2Ansi(pckFileIndex.cFileIndex.szwFilename, pckFileIndex.cFileIndex.szFilename, sizeof(pckFileIndex.cFileIndex.szwFilename));
+		CPckClassCodepage::PckFilenameCode2Ansi(pckFileIndex.cFileIndex.szwFilename, wcslen(pckFileIndex.cFileIndex.szwFilename), pckFileIndex.cFileIndex.szFilename, sizeof(pckFileIndex.cFileIndex.szwFilename));
 
 		//如果文件大小为0，则跳过打开文件步骤
 		if (0 != pckFileIndex.cFileIndex.dwFileClearTextSize) {
@@ -78,7 +78,7 @@ FETCHDATA_RET CPckThreadRunner::GetUncompressedDataFromPCK(LPDATA_FETCH_METHOD l
 		++(lpDataFetchMethod->dwProcessIndex);
 		lckCompressedflag.unlock();
 
-		Logger.logOutput(__FUNCTION__, "dwProcessIndex=%d\r\n", cDataFetchMethod.dwProcessIndex);
+		Logger.trace(__FUNCTION__ "dwProcessIndex={}", cDataFetchMethod.dwProcessIndex);
 
 		if (cDataFetchMethod.lpPckIndexTablePtrSrc->isInvalid)
 			continue;

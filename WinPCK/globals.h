@@ -19,7 +19,7 @@
 //****** some defines *******
 #define _USE_CUSTOMDRAW_
 
-#define	THIS_NAME			L"WinPCK "
+#define	THIS_NAME			"WinPCK "
 #define	THIS_DESC			L"完美世界系列游戏PCK文件包综合查看器 " 
 #define	THIS_AUTHOR			L"程序编写: stsm/liqf/李秋枫\r\n" \
 							"E-Mail: stsm85@126.com "

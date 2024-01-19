@@ -41,9 +41,6 @@
     <ClCompile Include="MapViewFileMulti.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MapViewFileMultiPck.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="MapViewFileMultiPckRead.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -60,6 +57,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MapViewFileWrite.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MapViewFileMultiPck.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -28,7 +28,7 @@ const uint32_t BASE64_DECODE[] = {
 
 
 //编码函数(原数据地址，原数据字节大小，编码输出地址)，使用char作为类型
-BEXTERN void BEXPORT base64_decode(const void* pdata, const uint32_t data_size, void* out_pcode)
+BEXTERN int BEXPORT base64_decode(const void* pdata, const uint32_t data_size, void* out_pcode)
 {
 	const uint8_t* input = (const uint8_t*)pdata;
 	const uint8_t* input_end = &input[data_size] - 4;
@@ -52,10 +52,13 @@ BEXTERN void BEXPORT base64_decode(const void* pdata, const uint32_t data_size, 
 
 	output[0] = decode0 << 2 | decode1 >> 4;
 
+	uint32_t out_size = output - out_pcode;
+
 	if (input[2] == '=') {
 
 		output[1] = decode1 << 4;
 		output[2] = 0;
+		return out_size + 2;
 	}
 	else if (input[3] == '=') {
 		uint32_t decode2 = BASE64_DECODE[input[2]];
@@ -63,6 +66,7 @@ BEXTERN void BEXPORT base64_decode(const void* pdata, const uint32_t data_size, 
 		output[1] = decode1 << 4 | decode2 >> 2;
 		output[2] = decode2 << 6;
 		output[3] = 0;
+		return out_size + 3;
 	}
 	else {
 		uint32_t decode2 = BASE64_DECODE[input[2]];
@@ -71,6 +75,7 @@ BEXTERN void BEXPORT base64_decode(const void* pdata, const uint32_t data_size, 
 		output[1] = decode1 << 4 | decode2 >> 2;
 		output[2] = decode2 << 6 | decode3;
 		output[3] = 0;
+		return out_size + 3;
 	}
 
 }

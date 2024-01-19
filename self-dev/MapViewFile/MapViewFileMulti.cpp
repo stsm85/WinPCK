@@ -1,10 +1,7 @@
 #include "pch_mvf.h"
 #include "MapViewFileMulti.h"
 
-CMapViewFileMulti::CMapViewFileMulti():
-	m_uqwCurrentPos{ 0 },
-	m_uqwFullSize{ 0 },
-	m_uqwMaxSize{ 0 }
+CMapViewFileMulti::CMapViewFileMulti()
 {
 	this->m_cross_view.clear();
 }
@@ -72,21 +69,6 @@ QWORD CMapViewFileMulti::GetFileSize() const
 	return this->m_uqwFullSize.qwValue;
 }
 
-//void CMapViewFileMulti::UnmapView(LPVOID lpTargetAddress)
-//{
-//	BOOL isCrossBuffer = FALSE;
-//	LPBYTE lastBuffer = NULL;
-//
-//	size_t cross_view_count = m_cross_view.size();
-//	for(int i = 0;i < cross_view_count;i++) {
-//		if(lastBuffer != m_cross_view[i].lpBufferTarget) {
-//			free(m_cross_view[i].lpBufferTarget);
-//			lastBuffer = m_cross_view[i].lpBufferTarget;
-//		}
-//	}
-//
-//
-//}
 
 void CMapViewFileMulti::UnmapViewAll()
 {

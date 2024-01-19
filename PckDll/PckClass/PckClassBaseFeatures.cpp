@@ -11,7 +11,7 @@ CPckClassBaseFeatures::CPckClassBaseFeatures():
 
 CPckClassBaseFeatures::~CPckClassBaseFeatures()
 {
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 void CPckClassBaseFeatures::ResetPckInfos()

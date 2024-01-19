@@ -20,7 +20,7 @@ CPckClassRebuildFilter::CPckClassRebuildFilter()
 CPckClassRebuildFilter::~CPckClassRebuildFilter()
 {
 	ResetRebuildFilterInIndexList();
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 #pragma region 读取文件并转换为Unicode
@@ -34,11 +34,12 @@ BOOL CPckClassRebuildFilter::OpenScriptFileAndConvBufToUcs2(const wchar_t * lpsz
 	if (nullptr == (lpBufferToRead = (char*)cFileRead.OpenMappingViewAllRead(lpszScriptFile))) 
 		return FALSE;
 
-	CTextConv2UCS2 cText2Ucs;
-	const wchar_t* lpszUnicodeString = cText2Ucs.GetUnicodeString(lpBufferToRead, cFileRead.GetFileSize());
+	//CTextConv2UCS2 cText2Ucs;
+	//const wchar_t* lpszUnicodeString = cText2Ucs.GetUnicodeString(lpBufferToRead, cFileRead.GetFileSize());
 
-	CTextUnitsW	cText2Line;
-	this->m_ScriptLines = cText2Line.SplitLine(lpszUnicodeString, wcslen(lpszUnicodeString), SPLIT_FLAG::TRIM_LEFT | SPLIT_FLAG::TRIM_RIGHT | SPLIT_FLAG::DELETE_NULL_LINE);
+	//need edit 临时变量，不可用
+	this->m_stored_Script = StringCodeConvChs().from_ansi(lpBufferToRead, cFileRead.GetFileSize()).to_wchar();
+	this->m_ScriptLines = CTextUnitsW::SplitLine(m_stored_Script, SPLIT_FLAG::TRIM_LEFT | SPLIT_FLAG::TRIM_RIGHT | SPLIT_FLAG::DELETE_NULL_LINE);
 
 	return TRUE;
 }
@@ -220,7 +221,7 @@ BOOL CPckClassRebuildFilter::ApplyScript2IndexList(LPPCK_PATH_NODE lpRootNode)
 
 			if(NULL == lpFoundNode) {
 
-				Logger.w(UCSTEXT("已解析脚本失败在: %s, 跳过..."), pFileOp->szFilename);
+				Logger.warn(UCSTEXT("已解析脚本失败在: {}, 跳过..."), pFileOp->szFilename);
 				bHasErrorHappend = TRUE;
 
 			} else {
@@ -245,7 +246,7 @@ BOOL CPckClassRebuildFilter::ParseScript(const wchar_t * lpszScriptFile)
 {
 
 	if (!OpenScriptFileAndConvBufToUcs2(lpszScriptFile)) {
-		Logger.w("读取脚本失败");
+		Logger.warn("读取脚本失败");
 		return FALSE; 
 	}
 
@@ -265,14 +266,14 @@ BOOL CPckClassRebuildFilter::ParseScript(const wchar_t * lpszScriptFile)
 			}
 			else {
 				//cause error m_ScriptLines
-				Logger.w("脚本解析失败在行%d: %ls, 跳过...", i, m_ScriptLines[i]);
+				Logger.warn(UCSTEXT("脚本解析失败在行%d: {}, 跳过..."), i, m_ScriptLines[i]);
 
 				return FALSE;
 			}
 		}
 	}
 
-	Logger.i("解析脚本成功");
+	Logger.info("解析脚本成功");
 	return TRUE;
 }
 
@@ -300,10 +301,10 @@ BOOL CPckClassRebuildFilter::Apply(LPPCK_PATH_NODE lpRootNode)
 
 	if (!rtn) {
 		ResetRebuildFilterInIndexList();
-		Logger.i("应用脚本失败");
+		Logger.info("应用脚本失败");
 	}
 	else {
-		Logger.i("应用脚本成功");
+		Logger.info("应用脚本成功");
 	}
 
 	return rtn;

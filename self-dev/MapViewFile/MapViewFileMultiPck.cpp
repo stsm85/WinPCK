@@ -1,57 +1,28 @@
 #include "pch_mvf.h"
-#if 0
-
 #include "MapViewFileMultiPck.h"
 
 
 CMapViewFileMultiPck::CMapViewFileMultiPck()
-{}
-
-CMapViewFileMultiPck::~CMapViewFileMultiPck() noexcept
-{}
-
-
-void CMapViewFileMultiPck::GetPkXName(LPSTR dst, LPCSTR src, int _pckid)
 {
-
-	strcpy_s(dst, MAX_PATH, src);
-	int slen = strlen(dst);
-	char *lpszDst = strrchr(dst, '.');
-
-	//.pck -> .pkx
-	switch(_pckid) {
-
-	case ID_PKX:
-		strcpy(lpszDst, ".pkx");
-		break;
-	case ID_PKG:
-		strcpy(lpszDst, ".pkg");
-		break;
-	default:
-		break;
-	}
-
+	this->SetPackageCountAndSuffix({ ".pck", ".pkx", ".pkg" });
 }
 
-void CMapViewFileMultiPck::GetPkXName(LPWSTR dst, LPCWSTR src, int _pckid)
+void CMapViewFileMultiPck::SetPackageCountAndSuffix(const std::vector<std::string>& name)
 {
-	wcscpy_s(dst, MAX_PATH, src);
-	int slen = wcslen(dst);
-	wchar_t *lpszDst = wcsrchr(dst, L'.');
+	this->m_package_count = name.size();
+	this->m_fileSuffix = name;
+	this->m_szPckFileName.resize(name.size());
+	this->m_uqwPckSize.resize(name.size());
+}
 
-	//.pck -> .pkx
-	switch(_pckid) {
-
-	case ID_PKX:
-		wcscpy(lpszDst, L".pkx");
-		break;
-	case ID_PKG:
-		wcscpy(lpszDst, L".pkg");
-		break;
-	default:
-		break;
+void CMapViewFileMultiPck::initialization_filenames(const fs::path& lpszFilename)
+{
+	for (auto& file : this->m_szPckFileName) {
+		file = lpszFilename;
 	}
 
+	for (int i = 1; i < this->m_szPckFileName.size(); i++)
+	{
+		this->m_szPckFileName[i].replace_extension(this->m_fileSuffix[i]);
+	}
 }
-#endif
-

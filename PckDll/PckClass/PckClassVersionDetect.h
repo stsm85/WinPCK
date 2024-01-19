@@ -121,16 +121,3 @@ private:
 	void	PrintInvalidVersionDebugInfo(const wchar_t * lpszPckFile);
 
 };
-
-class detectversion_error : public std::exception { // base of all generic_error exceptions
-public:
-	explicit detectversion_error(const char* prefix, const std::string& _Message) { buf.assign(prefix); buf.append(_Message); }
-	explicit detectversion_error(const char* prefix, const char* _Message) { buf.assign(prefix); buf.append(_Message); }
-	explicit detectversion_error(const std::string& _Message) { buf = _Message; }
-	explicit detectversion_error(const char* _Message) { buf.assign(_Message); }
-
-	virtual char const* what() const override { return buf.c_str(); };
-
-protected:
-	std::string buf;
-};

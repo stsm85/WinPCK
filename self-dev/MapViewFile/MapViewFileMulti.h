@@ -43,7 +43,6 @@ public:
 	void	SetFilePointer(LONGLONG lDistanceToMove, DWORD dwMoveMethod = FILE_BEGIN);
 	virtual	QWORD	GetFileSize() const;
 
-	//void	UnmapView(LPVOID lpTargetAddress);
 	void	UnmapViewAll();
 	void	UnMaping();
 	void	clear();
@@ -59,11 +58,11 @@ public:
 
 protected:
 	//当前文件指针位置
-	UNQWORD	m_uqwCurrentPos;
+	UNQWORD	m_uqwCurrentPos = 0;
 	//当前已打开文件总大小
-	UNQWORD m_uqwFullSize;
+	UNQWORD m_uqwFullSize = 0;
 	//当前可用文件的最大大小
-	UNQWORD m_uqwMaxSize;
+	UNQWORD m_uqwMaxSize = 0;
 
 	std::vector<FILE_CELL>	m_file_cell;
 	std::vector<CROSS_VIEW>	m_cross_view;
@@ -83,15 +82,14 @@ public:
 	CMapViewFileMultiRead();
 	virtual ~CMapViewFileMultiRead() noexcept;
 
-	BOOL	AddFile(fs::path lpszFilename);
-	//BOOL	AddFile(LPCWSTR lpszFilename);
+	BOOL	AddFile(const fs::path& lpszFilename);
 
 	BOOL	Mapping();
 	LPBYTE	View(QWORD dwAddress, DWORD dwSize);
 
 private:
 
-	BOOL	AddFile(CMapViewFileRead *lpRead, fs::path& lpszFilename);
+	BOOL	AddFile(CMapViewFileRead *lpRead, const fs::path& lpszFilename);
 
 };
 
@@ -102,8 +100,7 @@ public:
 	CMapViewFileMultiWrite();
 	virtual ~CMapViewFileMultiWrite() noexcept;
 
-	BOOL	AddFile(fs::path lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize, BOOL isNTFSSparseFile = FALSE);
-	//BOOL	AddFile(LPCWSTR lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize, BOOL isNTFSSparseFile = FALSE);
+	BOOL	AddFile(const fs::path& lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize, BOOL isNTFSSparseFile = FALSE);
 
 	BOOL	Mapping(QWORD dwMaxSize);
 	LPBYTE	View(QWORD dwAddress, DWORD dwSize);
@@ -116,7 +113,7 @@ public:
 
 private:
 
-	BOOL	AddFile(CMapViewFileWrite *lpWrite, QWORD qwMaxSize, fs::path& lpszFilename);
+	BOOL	AddFile(CMapViewFileWrite *lpWrite, QWORD qwMaxSize, const fs::path& lpszFilename);
 
 	//qwCurrentPckFilesize为已经存在的文件大小，qwToAddSpace是需要扩大的大小，返回值为（qwCurrentPckFilesize + 可以再扩大的最大大小）
 	QWORD	GetExpanedPckFilesize(QWORD qwDiskFreeSpace, QWORD qwToAddSpace, QWORD qwCurrentPckFilesize);

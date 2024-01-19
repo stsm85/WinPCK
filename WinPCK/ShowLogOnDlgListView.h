@@ -1,5 +1,6 @@
 #pragma once
 
+#if 0
 #include <functional>
 
 typedef std::function<void(const char, const wchar_t*)> InsertLogFunc;
@@ -57,3 +58,4 @@ void	PreInsertLogToList(const char, const wchar_t *);
 #define LOG_IMAGE_EMPTY					5
 #define LOG_IMAGE_COUNT					6
 
+#endif

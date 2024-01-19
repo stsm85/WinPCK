@@ -137,6 +137,7 @@
     <ClInclude Include="BytesConv.h" />
     <ClInclude Include="BytesSpeed.h" />
     <ClInclude Include="CharsCodeConv.h" />
+    <ClInclude Include="TranslateDict.h" />
     <ClInclude Include="driver_funcs.h" />
     <ClInclude Include="GetDragPath.h" />
     <ClInclude Include="getopt.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="StdFileFuncs.h" />
     <ClInclude Include="StopWatch.h" />
     <ClInclude Include="template_type.h" />
+    <ClInclude Include="TextEncoding.h" />
     <ClInclude Include="TextLineSpliter.h" />
     <ClInclude Include="UnknownExceptionFilter.h" />
   </ItemGroup>
@@ -159,6 +161,7 @@
     <ClCompile Include="BytesConv.cpp" />
     <ClCompile Include="BytesSpeed.cpp" />
     <ClCompile Include="CharsCodeConv.cpp" />
+    <ClCompile Include="TranslateDict.cpp" />
     <ClCompile Include="driver_funcs.cpp" />
     <ClCompile Include="GetDragPath.cpp" />
     <ClCompile Include="MemBufferReader.cpp" />
@@ -169,6 +172,7 @@
     <ClCompile Include="StackWalkerLiqf.cpp" />
     <ClCompile Include="StdFileFuncs.cpp" />
     <ClCompile Include="StopWatch.cpp" />
+    <ClCompile Include="TextEncoding.cpp" />
     <ClCompile Include="TextLineSpliter.cpp" />
     <ClCompile Include="UnknownExceptionFilter.cpp" />
   </ItemGroup>

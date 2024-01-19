@@ -32,6 +32,7 @@ private:
 		 "delete;;"
 		 "rmdir;;;";
 
+	std::wstring m_stored_Script;
 	std::vector<std::wstring_view>		m_ScriptLines;
 	std::vector<FILEOP>		m_FirstFileOp;
 	std::vector<LPPCKINDEXTABLE>	m_EditedNode;

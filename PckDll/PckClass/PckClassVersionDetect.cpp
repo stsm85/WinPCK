@@ -331,7 +331,7 @@ BOOL CPckClassVersionDetect::SetSavePckVersion(int verID)
 		return TRUE;
 	}
 	else
-		Logger.w(TEXT_INVALID_VERSION);
+		Logger.warn(TEXT_INVALID_VERSION);
 
 	return FALSE;
 }
@@ -370,7 +370,7 @@ void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(const wchar_t * lpszPc
 	auto lpRead = std::make_unique<CMapViewFileMultiPckRead>();
 
 	if (!lpRead->OpenPck(lpszPckFile)) {
-		Logger_el(TEXT_OPENNAME_FAIL, lpszPckFile);
+		Logger_el(UCSTEXT(TEXT_OPENNAME_FAIL), lpszPckFile);
 		return;
 	}
 
@@ -419,7 +419,7 @@ void CPckClassVersionDetect::PrintInvalidVersionDebugInfo(const wchar_t * lpszPc
 		szPrintf.append(cHexStrHead.GetHexString()).append("......\n").append(cHexStrTail.GetHexString());
 	}
 
-	Logger.d(szPrintf.c_str());
+	Logger.debug(szPrintf);
 //dect_err:
 	//delete lpRead;
 
@@ -442,7 +442,7 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCWSTR lpszPckFile)
 		CMapViewFileMultiPckRead cRead;
 
 		if (!cRead.OpenPck(lpszPckFile)) {
-			Logger_el(TEXT_OPENNAME_FAIL, lpszPckFile);
+			Logger_el(UCSTEXT(TEXT_OPENNAME_FAIL), lpszPckFile);
 			throw detectversion_error("open file error");
 		}
 
@@ -537,7 +537,7 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCWSTR lpszPckFile)
 					isFoundVer = get_pckAllInfo_by_version(cRead, PckTail, m_PckAllInfo, &cPckHead, detect_id, qwPckSizeInHeader);
 				}
 				catch (MyException ex) {
-					Logger.e(ex.what());
+					Logger.error(ex.what());
 					throw detectversion_error("get_pckAllInfo_by_version error");
 				}
 				break;
@@ -550,7 +550,7 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCWSTR lpszPckFile)
 					}
 				}
 				catch (MyException ex) {
-					Logger.e(ex.what());
+					Logger.error(ex.what());
 					throw detectversion_error("get_pckAllInfo_by_version error");
 				}
 				break;
@@ -560,7 +560,7 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCWSTR lpszPckFile)
 					isFoundVer = get_pckAllInfo_by_version(cRead, PckTail, m_PckAllInfo, (PCKHEAD_VXAJH*)&cPckHead, detect_id, qwPckSizeInHeader);
 				}
 				catch (MyException ex) {
-					Logger.e(ex.what());
+					Logger.error(ex.what());
 					throw detectversion_error("get_pckAllInfo_by_version error");
 				}
 				break;
@@ -572,7 +572,7 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCWSTR lpszPckFile)
 					isFoundVer = get_pckAllInfo_by_version(cRead, PckTail, m_PckAllInfo, (PCKHEAD_V2030*)&cPckHead, detect_id, qwPckSizeInHeader);
 				}
 				catch (MyException ex) {
-					Logger.e(ex.what());
+					Logger.error(ex.what());
 					throw detectversion_error("get_pckAllInfo_by_version error");
 				}
 				break;
@@ -587,7 +587,7 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCWSTR lpszPckFile)
 			throw detectversion_error("version not found");
 		}
 		else if (1 < ConfirmedIDs.size()) {
-			Logger.w("Confirmed version is lager than 2, choose the first");
+			Logger.warn("Confirmed version is lager than 2, choose the first");
 		}
 
 		auto ConfirmedID = ConfirmedIDs[0];
@@ -609,7 +609,7 @@ BOOL CPckClassVersionDetect::DetectPckVerion(LPCWSTR lpszPckFile)
 				cWrite.SetFilePointer(qwPckSizeInHeader);
 				cWrite.SetEndOfFile();
 
-				Logger.i("Pck file size does not match, adjusted from %llu to %llu", qwSizeFileBefore, qwPckSizeInHeader);
+				Logger.info("Pck file size does not match, adjusted from {} to {}", qwSizeFileBefore, qwPckSizeInHeader);
 
 			}
 		}

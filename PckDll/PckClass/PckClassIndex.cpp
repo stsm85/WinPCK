@@ -9,7 +9,7 @@ CPckClassIndex::~CPckClassIndex()
 {
 	if(NULL != m_PckAllInfo.lpPckIndexTable)
 		free(m_PckAllInfo.lpPckIndexTable);
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 void* CPckClassIndex::AllocMemory(size_t	sizeStuct)
@@ -42,7 +42,12 @@ void CPckClassIndex::GenerateUnicodeStringToIndex()
 		//文件名剩余空间,不占用最后的\0
 		lpPckIndexTable->nFilelenLeftBytes = MAX_PATH_PCK_256 - lpPckIndexTable->nFilelenBytes - 1;
 		//pck ansi -> unicode
-		CPckClassCodepage::PckFilenameCode2UCS(lpPckIndexTable->cFileIndex.szFilename, lpPckIndexTable->cFileIndex.szwFilename, sizeof(lpPckIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
+		lpPckIndexTable->nFilelenBytesW = CPckClassCodepage::PckFilenameCode2UCS(
+			lpPckIndexTable->cFileIndex.szFilename, 
+			lpPckIndexTable->nFilelenBytes,
+			lpPckIndexTable->cFileIndex.szwFilename, 
+			sizeof(lpPckIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
+		
 		++lpPckIndexTable;
 	}
 

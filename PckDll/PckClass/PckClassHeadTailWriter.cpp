@@ -5,7 +5,7 @@ CPckClassHeadTailWriter::CPckClassHeadTailWriter()
 
 CPckClassHeadTailWriter::~CPckClassHeadTailWriter()
 {
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 BOOL CPckClassHeadTailWriter::WriteHeadAndTail(CMapViewFileMultiPckWrite *lpWrite, LPPCK_ALL_INFOS lpPckAllInfo, QWORD &dwAddress, BOOL isRenewAddtional)

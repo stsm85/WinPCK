@@ -13,7 +13,7 @@ BOOL CPckThreadRunner::putCompressedDataQueue(PCKINDEXTABLE &cPckFileIndexToComp
 			cPckFileIndexToCompress.compressed_file_data = newbuf;
 			cPckFileIndexToCompress.dwMallocSize = cPckFileIndexToCompress.cFileIndex.dwFileCipherTextSize;
 			freeMaxToSubtractMemory(dwUnusedMemory);
-			Logger.logOutput(__FUNCTION__, "reduce memory usage success dwUnusedMemory = %u\r\n", dwUnusedMemory);
+			Logger.trace(__FUNCTION__ "reduce memory usage success dwUnusedMemory = {}", dwUnusedMemory);
 		}
 	}
 
@@ -51,7 +51,7 @@ BOOL CPckThreadRunner::getCompressedDataQueue(LPBYTE &lpBuffer, PCKINDEXTABLE_CO
 	while (m_QueueContent.empty()) {
 
 		if (!m_lpPckClassBase->CheckIfNeedForcedStopWorking()) {
-			Logger.logOutput(__FUNCTION__ "_Sleep", "SleepConditionVariableSRW\r\n");
+			Logger.trace(__FUNCTION__ "_Sleep, SleepConditionVariableSRW");
 
 			//std::unique_lock<std::mutex> lckQueue(m_LockQueue);
 			m_cvReadyToPut.wait(lckQueue);
@@ -59,14 +59,14 @@ BOOL CPckThreadRunner::getCompressedDataQueue(LPBYTE &lpBuffer, PCKINDEXTABLE_CO
 		else {
 			//m_LockQueue.unlock();
 
-			Logger.logOutput(__FUNCTION__ "_Sleep", "user cancled\r\n");
+			Logger.trace(__FUNCTION__ "_Sleep, user cancled");
 			lpBuffer = NULL;
 			m_Index_Compress.push_back(PCKINDEXTABLE_COMPRESS{ 0 });
 			return FALSE;
 		}
 	}
 
-	Logger.logOutput(__FUNCTION__ "_Sleep", "Awake\r\n");
+	Logger.trace(__FUNCTION__ "_Sleep, Awake");
 
 	PCKINDEXTABLE cPckFileIndexToCompress = m_QueueContent.front();
 	m_QueueContent.pop_front();
@@ -84,7 +84,7 @@ BOOL CPckThreadRunner::getCompressedDataQueue(LPBYTE &lpBuffer, PCKINDEXTABLE_CO
 	m_lpPckClassBase->FillAndCompressIndexData(&lpPckIndexTable, &cPckFileIndexToCompress.cFileIndex);
 	m_Index_Compress.push_back(lpPckIndexTable);
 
-	Logger.logOutput(__FUNCTION__ "_m_Index_Compress", "m_Index_Compress:%d\r\n", m_Index_Compress.size());
+	Logger.trace(__FUNCTION__ "_m_Index_Compress, m_Index_Compress:{}", m_Index_Compress.size());
 
 	lpBuffer = cPckFileIndexToCompress.compressed_file_data;
 
@@ -92,7 +92,7 @@ BOOL CPckThreadRunner::getCompressedDataQueue(LPBYTE &lpBuffer, PCKINDEXTABLE_CO
 	assert(NULL != lpBuffer);
 	if (0 != lpPckIndexTable.dwIndexDataLength) {
 		if (1 == (int)lpBuffer) {
-			Logger.logOutput(__FUNCTION__, "id(%05d), lpBuffer(0x%08x):0x0000000000000000, szFile(%s), esize:%d, dsize:%d\r\n",
+			Logger.trace(__FUNCTION__ "id({:05d}), lpBuffer(0x{:08x}):0x0000000000000000, szFile({}), esize:{}, dsize:{}",
 				m_dwCurrentQueuePosGet,
 				(int)lpBuffer,
 				cPckFileIndexToCompress.cFileIndex.szFilename,
@@ -100,7 +100,7 @@ BOOL CPckThreadRunner::getCompressedDataQueue(LPBYTE &lpBuffer, PCKINDEXTABLE_CO
 				cPckFileIndexToCompress.cFileIndex.dwFileClearTextSize);
 		}
 		else {
-			Logger.logOutput(__FUNCTION__, "id(%05d), lpBuffer(0x%08x):0x%016llx, szFile(%s), esize:%d, dsize:%d\r\n",
+			Logger.trace(__FUNCTION__ "id({:05d}), lpBuffer(0x{:08x}):0x{:016llx}, szFile({}), esize:{}, dsize:{}",
 				m_dwCurrentQueuePosGet,
 				(int)lpBuffer,
 				_byteswap_uint64(*(unsigned __int64*)lpBuffer),

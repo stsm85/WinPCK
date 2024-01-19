@@ -1,6 +1,7 @@
 #pragma once
-#include "PckDefines.h"
 
+#include "PckDefines.h"
+#if 0
 //»’÷æ
 #define	LOG_BUFFER						8192
 
@@ -70,6 +71,8 @@ private:
 
 extern CPckClassLog& Logger;
 
-#define LoggerExInternal2(msg, file, func, line, ...) Logger.e(##msg " at: "##file ", function: " func ", line: "#line, ##__VA_ARGS__)
+#endif
+
+#define LoggerExInternal2(msg, file, func, line, ...) Logger.error(##msg " at: "##file ", function: " func ", line: "#line, ##__VA_ARGS__)
 #define LoggerExInternal(msg, file, func, line, ...) LoggerExInternal2(msg, file, func, line, ##__VA_ARGS__)
 #define Logger_el(msg, ...) LoggerExInternal(msg, __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)

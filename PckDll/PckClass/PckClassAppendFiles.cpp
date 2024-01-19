@@ -42,7 +42,7 @@ BOOL CPckClassWriteOperator::UpdatePckFile(const wchar_t * szPckFile, const std:
 
 		cThreadParams.cDataFetchMethod.nCurrentNodeStringLen = wcslen(cThreadParams.cDataFetchMethod.szCurrentNodeString);
 
-		Logger.i(TEXT_LOG_UPDATE_ADD
+		Logger.info(TEXT_LOG_UPDATE_ADD
 			"-"
 			TEXT_LOG_LEVEL_THREAD, level, threadnum);
 
@@ -55,7 +55,7 @@ BOOL CPckClassWriteOperator::UpdatePckFile(const wchar_t * szPckFile, const std:
 		*cThreadParams.cDataFetchMethod.szCurrentNodeString = 0;
 		cThreadParams.cDataFetchMethod.nCurrentNodeStringLen = 0;
 
-		Logger.i(TEXT_LOG_UPDATE_NEW
+		Logger.info(TEXT_LOG_UPDATE_NEW
 			"-"
 			TEXT_LOG_LEVEL_THREAD, level, threadnum);
 
@@ -98,7 +98,7 @@ BOOL CPckClassWriteOperator::UpdatePckFile(const wchar_t * szPckFile, const std:
 	}
 
 	//日志
-	Logger.i(TEXT_UPDATE_FILE_INFO, m_PckAllInfo.dwFileCountToAdd, cThreadParams.qwCompressTotalFileSize);
+	Logger.info(TEXT_UPDATE_FILE_INFO, m_PckAllInfo.dwFileCountToAdd, cThreadParams.qwCompressTotalFileSize);
 
 #pragma region 创建目标文件
 	CMapViewFileMultiPckWrite cFileWriter(m_PckAllInfo.lpSaveAsPckVerFunc->cPckXorKeys.dwMaxSinglePckSize);
@@ -134,7 +134,7 @@ BOOL CPckClassWriteOperator::UpdatePckFile(const wchar_t * szPckFile, const std:
 	m_lpPckParams->cVarParams.dwDuplicateFileCount = dwDuplicateFileCount;
 	m_lpPckParams->cVarParams.dwFinalFileCount = m_PckAllInfo.dwFinalFileCount;
 
-	Logger.i(TEXT_LOG_WORKING_DONE);
+	Logger.info(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 

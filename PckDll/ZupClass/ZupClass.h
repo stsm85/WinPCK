@@ -30,23 +30,23 @@ public:
 	const	LPPCKINDEXTABLE		GetPckIndexTable() override;
 
 	//重建pck文件
-	virtual BOOL	RebuildPckFile(LPCWSTR lpszScriptFile, LPCWSTR szRebuildPckFile, BOOL bUseRecompress) override { Logger.e(TEXT_NOTSUPPORT);return FALSE; }
-	virtual BOOL	StripPck(LPCWSTR lpszStripedPckFile, int flag) override { Logger.e(TEXT_NOTSUPPORT); return FALSE; }
+	virtual BOOL	RebuildPckFile(LPCWSTR lpszScriptFile, LPCWSTR szRebuildPckFile, BOOL bUseRecompress) override { Logger.error(TEXT_NOTSUPPORT);return FALSE; }
+	virtual BOOL	StripPck(LPCWSTR lpszStripedPckFile, int flag) override { Logger.error(TEXT_NOTSUPPORT); return FALSE; }
 
 	//新建、更新pck文件
-	virtual BOOL	UpdatePckFile(LPCWSTR szPckFile, const std::vector<std::wstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert) override{ Logger.e(TEXT_NOTSUPPORT);return FALSE; }
+	virtual BOOL	UpdatePckFile(LPCWSTR szPckFile, const std::vector<std::wstring> &lpszFilePath, const PCK_PATH_NODE* lpNodeToInsert) override{ Logger.error(TEXT_NOTSUPPORT);return FALSE; }
 
 	//重命名文件
-	virtual BOOL	RenameFilename() override { Logger.e(TEXT_NOTSUPPORT);return FALSE; }
+	virtual BOOL	RenameFilename() override { Logger.error(TEXT_NOTSUPPORT);return FALSE; }
 
 	//删除一个节点
-	virtual void	DeleteNode(LPPCK_PATH_NODE lpNode) override { Logger.e(TEXT_NOTSUPPORT);}
-	virtual void	DeleteNode(LPPCKINDEXTABLE lpIndex) override { Logger.e(TEXT_NOTSUPPORT); }
+	virtual void	DeleteNode(LPPCK_PATH_NODE lpNode) override { Logger.error(TEXT_NOTSUPPORT);}
+	virtual void	DeleteNode(LPPCKINDEXTABLE lpIndex) override { Logger.error(TEXT_NOTSUPPORT); }
 
 	//重命名一个节点
-	virtual	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString) override { Logger.e(TEXT_NOTSUPPORT); return FALSE; }
-	virtual	BOOL	RenameIndex(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString) override { Logger.e(TEXT_NOTSUPPORT); return FALSE; }
-	virtual	BOOL	RenameIndex(LPPCKINDEXTABLE lpIndex, const wchar_t* lpszReplaceString) override { Logger.e(TEXT_NOTSUPPORT); return FALSE; }
+	virtual	BOOL	RenameNode(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString) override { Logger.error(TEXT_NOTSUPPORT); return FALSE; }
+	virtual	BOOL	RenameIndex(LPPCK_PATH_NODE lpNode, const wchar_t* lpszReplaceString) override { Logger.error(TEXT_NOTSUPPORT); return FALSE; }
+	virtual	BOOL	RenameIndex(LPPCKINDEXTABLE lpIndex, const wchar_t* lpszReplaceString) override { Logger.error(TEXT_NOTSUPPORT); return FALSE; }
 
 	//预览文件
 	virtual BOOL	GetSingleFileData(const PCKINDEXTABLE* const lpZupFileIndexTable, char *buffer, size_t sizeOfBuffer = 0) override;

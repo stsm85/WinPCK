@@ -1,8 +1,9 @@
 #pragma once
-#include <spdlog/spdlog.h>
 
-#define ENABLE_WINEDIT_LOGGER 1
-#define ENABLE_MULTILOGGER 0
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/xchar.h>
+
+#include <CharsCodeConv.h>
 
 constexpr auto DEFAULT_LOG_FORMAT = "[%Y-%m-%d %H:%M:%S] %L: %v";
 constexpr auto DEFAULT_LOGGER_NAME = "main";
@@ -10,6 +11,8 @@ constexpr auto DEFAULT_LOGGER_NAME = "main";
 class CLogger;
 class CEdit;
 class CRichEdit;
+
+namespace CppFMT = fmt::v9;
 
 //helper functions
 std::string get_date();
@@ -47,6 +50,349 @@ public:
 		return this->m_logfile;
 	}
 
+#ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
+
+	template<size_t _Size, typename... Args>
+	void log(spdlog::level::level_enum&& lvl, const char(&fmt)[_Size], Args&&...args)
+	{
+		auto fmtstr = CppFMT::vformat(CppFMT::string_view(fmt, _Size), CppFMT::make_format_args(std::forward<Args>(args)...));
+		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_utf8());
+		//this->m_defaultlogger->log(lvl, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void critical(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::critical, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void error(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::err, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void warn(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::warn, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+	template<size_t _Size, typename... Args>
+	void info(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::info, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void debug(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::debug, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void trace(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::trace, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void log(spdlog::level::level_enum&& lvl, const std::string& _text, Args&&...args)
+	{
+		auto fmtstr = CppFMT::vformat(_text, CppFMT::make_format_args(std::forward<Args>(args)...));
+		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_utf8());
+		//this->m_defaultlogger->log(lvl, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void critical(const std::string& _text, Args&&...args)
+	{
+		this->log(spdlog::level::critical, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void error(const std::string& _text, Args&&...args)
+	{
+		this->log(spdlog::level::err, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void warn(const std::string& _text, Args&&...args)
+	{
+		this->log(spdlog::level::warn, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void info(const std::string& _text, Args&&...args)
+	{
+		this->log(spdlog::level::info, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void debug(const std::string& _text, Args&&...args)
+	{
+		this->log(spdlog::level::debug, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void trace(const std::string& _text, Args&&...args)
+	{
+		this->log(spdlog::level::trace, _text, std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void log(spdlog::level::level_enum&& lvl, const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		auto fmtstr = CppFMT::vformat(CppFMT::wstring_view(fmt, _Size), CppFMT::make_wformat_args(std::forward<Args>(args)...));
+		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_utf8());
+	}
+
+	template<size_t _Size, typename... Args>
+	void critical(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::critical, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void error(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::err, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void warn(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::warn, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+	template<size_t _Size, typename... Args>
+	void info(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::info, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void debug(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::debug, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void trace(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::trace, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void log(spdlog::level::level_enum&& lvl, const std::wstring& _text, Args&&...args)
+	{
+		auto fmtstr = CppFMT::vformat(_text, CppFMT::make_wformat_args(std::forward<Args>(args)...));
+		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_utf8());
+	}
+
+	template<typename... Args>
+	void critical(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::critical, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void error(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::err, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void warn(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::warn, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void info(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::info, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void debug(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::debug, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void trace(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::trace, _text, std::forward<Args>(args)...);
+	}
+#else
+	template<size_t _Size, typename... Args>
+	void log(spdlog::level::level_enum&& lvl, const char(&fmt)[_Size], Args&&...args)
+	{
+		this->m_defaultlogger->log(lvl, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void critical(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->m_defaultlogger->critical(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void error(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->m_defaultlogger->error(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void warn(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->m_defaultlogger->warn(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+	template<size_t _Size, typename... Args>
+	void info(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->m_defaultlogger->info(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void debug(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->m_defaultlogger->debug(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void trace(const char(&fmt)[_Size], Args&&...args)
+	{
+		this->m_defaultlogger->trace(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void log(spdlog::level::level_enum&& lvl, const std::string& _text, Args&&...args)
+	{
+		this->m_defaultlogger->log(lvl, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void critical(const std::string& _text, Args&&...args)
+	{
+		this->m_defaultlogger->critical(_text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void error(const std::string& _text, Args&&...args)
+	{
+		this->m_defaultlogger->error(_text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void warn(const std::string& _text, Args&&...args)
+	{
+		this->m_defaultlogger->warn(_text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void info(const std::string& _text, Args&&...args)
+	{
+		this->m_defaultlogger->info(_text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void debug(const std::string& _text, Args&&...args)
+	{
+		this->m_defaultlogger->debug(_text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void trace(const std::string& _text, Args&&...args)
+	{
+		this->m_defaultlogger->trace(_text, std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void log(spdlog::level::level_enum&& lvl, const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		auto fmtstr = CppFMT::vformat(CppFMT::wstring_view(fmt, _Size), CppFMT::make_wformat_args(std::forward<Args>(args)...));
+		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_ansi());
+	}
+
+	template<size_t _Size, typename... Args>
+	void critical(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::critical, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void error(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::err, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void warn(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::warn, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+	template<size_t _Size, typename... Args>
+	void info(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::info, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void debug(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::debug, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<size_t _Size, typename... Args>
+	void trace(const wchar_t(&fmt)[_Size], Args&&...args)
+	{
+		this->log(spdlog::level::trace, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void log(spdlog::level::level_enum&& lvl, const std::wstring& _text, Args&&...args)
+	{
+		//need edit
+		auto fmtstr = CppFMT::vformat(_text, CppFMT::make_wformat_args(std::forward<Args>(args)...));
+		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_ansi());
+	}
+
+	template<typename... Args>
+	void critical(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::critical, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void error(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::err, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void warn(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::warn, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void info(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::info, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void debug(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::debug, _text, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void trace(const std::wstring& _text, Args&&...args)
+	{
+		this->log(spdlog::level::trace, _text, std::forward<Args>(args)...);
+	}
+#endif
 
 private:
 	auto log_file_name(const std::string& logger_name);
@@ -97,7 +443,7 @@ public:
 		}
 	}
 
-	auto operator->() const noexcept{
+	auto operator->() const noexcept {
 		return this->m_defaultlogger.get();
 	}
 
@@ -147,4 +493,4 @@ private:
 
 };
 
-extern CLogger& Logger;
+//extern CLogger& Logger;

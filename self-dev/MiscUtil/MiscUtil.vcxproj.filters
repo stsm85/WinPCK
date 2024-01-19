@@ -75,6 +75,12 @@
     <ClInclude Include="Raw2HexString.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TextEncoding.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TranslateDict.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TextLineSpliter.cpp">
@@ -126,6 +132,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Raw2HexString.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TextEncoding.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TranslateDict.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

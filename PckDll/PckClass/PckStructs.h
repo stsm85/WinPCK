@@ -225,6 +225,7 @@ typedef struct _PCK_INDEX_TABLE
 	uint32_t		dwMallocSize;						//申请空间使用的大小（>=压缩后的文件大小）
 	LPBYTE			compressed_file_data;				//此index对应的压缩数据
 	size_t			nFilelenBytes;			//文件名(pck ansi)长度字节数
+	size_t			nFilelenBytesW;			//文件名(pck ucs2)长度字节数
 	size_t			nFilelenLeftBytes;		//文件名(pck ansi)剩余可用字节数，重命名时用，使用MAX_PATH_PCK_256
 }PCKINDEXTABLE, *LPPCKINDEXTABLE;
 
@@ -235,6 +236,7 @@ typedef struct _PCK_PATH_NODE
 	wchar_t			szName[MAX_PATH_PCK_260];
 	uint32_t		dwFilesCount;
 	uint32_t		dwDirsCount;
+	size_t			nNameSizeUcs2;
 	size_t			nNameSizeAnsi;		//节点名的pck ansi 长度, 在..目录记录本目录路径（如gfx\下的..目录）的长度（ansi）
 	size_t			nMaxNameSizeAnsi;	//
 	uint64_t		qdwDirClearTextSize;

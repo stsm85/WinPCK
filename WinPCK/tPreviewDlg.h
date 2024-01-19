@@ -40,7 +40,7 @@ protected:
 	DWORD	dwSize;
 	const wchar_t	*lpszFile;
 
-	int		textType;
+	TextEncoding::EncodingType textType;
 
 	void	ShowRaw(LPBYTE lpbuf, size_t rawlength);
 

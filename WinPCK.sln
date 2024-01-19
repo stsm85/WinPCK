@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31402.337
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinPCK", "WinPCK\WinPCK.vcxproj", "{F18C7029-296A-4535-BD60-6D561C7E6DA7}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -35,6 +35,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShowImage", "Libraries\ShowImage\ShowImage.vcxproj", "{92C6653A-9B1F-40BF-B56A-EF629D657E43}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinCtl", "self-dev\WinCtl\WinCtl.vcxproj", "{5446566F-1EFA-4B98-9316-E2D48AECD46A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spdlog", "logger\spdlog\spdlog.vcxproj", "{B7601C61-87B2-4B07-8065-6A6EE0210001}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spdloghelper", "logger\spdloghelper\spdloghelper.vcxproj", "{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -178,6 +182,30 @@ Global
 		{5446566F-1EFA-4B98-9316-E2D48AECD46A}.Release|Win32.Build.0 = Release|Win32
 		{5446566F-1EFA-4B98-9316-E2D48AECD46A}.Release|x64.ActiveCfg = Release|x64
 		{5446566F-1EFA-4B98-9316-E2D48AECD46A}.Release|x64.Build.0 = Release|x64
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Debug|Win32.Build.0 = Debug|Win32
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Debug|x64.ActiveCfg = Debug|x64
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Debug|x64.Build.0 = Debug|x64
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Release_static|Win32.ActiveCfg = Release|Win32
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Release_static|Win32.Build.0 = Release|Win32
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Release_static|x64.ActiveCfg = Release|x64
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Release_static|x64.Build.0 = Release|x64
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Release|Win32.ActiveCfg = Release|Win32
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Release|Win32.Build.0 = Release|Win32
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Release|x64.ActiveCfg = Release|x64
+		{B7601C61-87B2-4B07-8065-6A6EE0210001}.Release|x64.Build.0 = Release|x64
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Debug|Win32.Build.0 = Debug|Win32
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Debug|x64.ActiveCfg = Debug|x64
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Debug|x64.Build.0 = Debug|x64
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Release_static|Win32.ActiveCfg = Release|Win32
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Release_static|Win32.Build.0 = Release|Win32
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Release_static|x64.ActiveCfg = Release|x64
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Release_static|x64.Build.0 = Release|x64
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Release|Win32.ActiveCfg = Release|Win32
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Release|Win32.Build.0 = Release|Win32
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Release|x64.ActiveCfg = Release|x64
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -194,6 +222,8 @@ Global
 		{AE3C161C-5BE4-49FC-8F0B-D4D8B298B56B} = {084C7049-8BAF-4548-8ED0-7C78F361E19C}
 		{92C6653A-9B1F-40BF-B56A-EF629D657E43} = {084C7049-8BAF-4548-8ED0-7C78F361E19C}
 		{5446566F-1EFA-4B98-9316-E2D48AECD46A} = {084C7049-8BAF-4548-8ED0-7C78F361E19C}
+		{B7601C61-87B2-4B07-8065-6A6EE0210001} = {ADB4D6E9-E53C-4717-8C2C-C8DAE11C470D}
+		{C8E4DF11-7839-464A-8F52-9F6B1A72FDC2} = {ADB4D6E9-E53C-4717-8C2C-C8DAE11C470D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3C8FE2B0-380D-4C31-A5AB-B81C480F49D8}

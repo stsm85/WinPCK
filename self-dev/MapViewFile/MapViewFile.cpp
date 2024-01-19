@@ -11,7 +11,7 @@
 #include "pch_mvf.h"
 #include "MapViewFile.h"
 
-
+#if 0
 #define PATH_LOCAL_PREFIX			"\\\\?\\"
 #define PATH_UNC_PREFIX				"\\\\?\\UNC"
 
@@ -21,12 +21,9 @@
 #define PATH_LOCAL_PREFIX_LEN		(strlen(PATH_LOCAL_PREFIX))
 #define PATH_UNC_PREFIX_LEN			(strlen(PATH_UNC_PREFIX))
 
+#endif
 
-
-CMapViewFile::CMapViewFile() :
-	hFile(NULL),
-	hFileMapping(NULL),
-	m_szDisk{ 0 }
+CMapViewFile::CMapViewFile()
 {
 	this->vMapAddress.clear();
 }
@@ -51,34 +48,8 @@ void CMapViewFile::clear()
 	}
 
 }
-#if 0
-void CMapViewFile::MakeUnlimitedPath(LPWSTR _dst, LPCWSTR	_src, size_t size)
-{
-	const WCHAR	*prefix;
-	// (isUNC ? 1 : 0) ... PATH_UNC_PREFIX ¤ÎˆöºÏ¡¢\\server -> \\?\UNC\server 
-	//  ¤Ë¤¹¤ë¤¿¤á¡¢\\server ¤Îî^¤Î \ ¤òÒ»¤Ä¢¤¹¡£
-	BOOL	isUNC = ('\\' == *_src) ? _src++, TRUE : FALSE;
 
-	prefix = isUNC ? PATHW_UNC_PREFIX : PATHW_LOCAL_PREFIX;
-
-	wcscpy_s(_dst, size, prefix);
-	wcscat_s(_dst, size, _src);
-
-}
-
-void CMapViewFile::MakeUnlimitedPath(LPSTR _dst, LPCSTR _src, size_t size)
-{
-	const char	*prefix;
-	BOOL	isUNC = ('\\' == *_src) ? _src++, TRUE : FALSE;
-	prefix = isUNC ? PATH_UNC_PREFIX : PATH_LOCAL_PREFIX;
-
-	strcpy_s(_dst, size, prefix);
-	strcat_s(_dst, size, _src);
-
-}
-#endif
-
-void CMapViewFile::GetDiskNameFromFilename(fs::path& lpszFilename)
+void CMapViewFile::GetDiskNameFromFilename(const fs::path& lpszFilename)
 {
 	this->m_szDisk = lpszFilename.root_path().string();
 }
@@ -106,13 +77,7 @@ BOOL CMapViewFile::FileExists(const fs::path& szFileName)
 		return TRUE;
 	return FALSE;
 }
-#if 0
-BOOL CMapViewFile::FileExists(LPCWSTR szFileName)
-{
-	DWORD dwResult = GetFileAttributesW(szFileName);
-	return (dwResult != INVALID_FILE_ATTRIBUTES && !(dwResult & FILE_ATTRIBUTE_DIRECTORY));
-}
-#endif
+
 BOOL CMapViewFile::Open(const fs::path& lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
 {
 
@@ -121,13 +86,10 @@ BOOL CMapViewFile::Open(const fs::path& lpszFilename, DWORD dwDesiredAccess, DWO
 	
 	if(this->FileExists(absolute_path) ||
 		((OPEN_EXISTING != dwCreationDisposition) && (TRUNCATE_EXISTING != dwCreationDisposition))) {
-		char szFilename[MAX_PATH];
+
 		if(INVALID_HANDLE_VALUE == (this->hFile = ::CreateFileW(absolute_path.wstring().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
-			//MakeUnlimitedPath(szFilename, m_szFullFilename, MAX_PATH);
-			//if(INVALID_HANDLE_VALUE == (hFile = CreateFileA(szFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
-				assert(FALSE);
-				return FALSE;
-			//}
+			assert(FALSE);
+			return FALSE;
 		}
 	} else {
 		return FALSE;
@@ -135,34 +97,7 @@ BOOL CMapViewFile::Open(const fs::path& lpszFilename, DWORD dwDesiredAccess, DWO
 
 	return TRUE;
 }
-#if 0
-BOOL CMapViewFile::Open(LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
-{
-	wchar_t	m_wszFullFilename[MAX_PATH];
 
-	GetFullPathNameW(lpszFilename, MAX_PATH, m_wszFullFilename, NULL);
-	GetDiskNameFromFilename(m_wszFullFilename);
-
-	if(FileExists(m_wszFullFilename) ||
-		((OPEN_EXISTING != dwCreationDisposition) && (TRUNCATE_EXISTING != dwCreationDisposition))) {
-		WCHAR szFilename[MAX_PATH];
-
-		if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(m_wszFullFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
-
-			MakeUnlimitedPath(szFilename, m_wszFullFilename, MAX_PATH);
-			if(INVALID_HANDLE_VALUE == (hFile = CreateFileW(szFilename, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL))) {
-				assert(FALSE);
-				return FALSE;
-			}
-
-		}
-	} else {
-		return FALSE;
-	}
-
-	return TRUE;
-}
-#endif
 
 uint8_t* CMapViewFile::ViewReal(QWORD qwAddress, DWORD dwSize, DWORD dwDesiredAccess)
 {
@@ -176,8 +111,6 @@ uint8_t* CMapViewFile::ViewReal(QWORD qwAddress, DWORD dwSize, DWORD dwDesiredAc
 	dwMapViewBlock64KAlignd = qwViewAddress.dwValue & 0xffff0000;
 	dwMapViewBlockLow = qwViewAddress.dwValue & 0xffff;
 	dwNumberOfBytesToMap = dwMapViewBlockLow + dwSize;
-
-	//DWORD dwDesiredAccess = isWriteMode ? FILE_MAP_WRITE : FILE_MAP_READ;
 
 	LPVOID lpMapAddress = MapViewOfFile(
 		this->hFileMapping, // Handle to mapping object.

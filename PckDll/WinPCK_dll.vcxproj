@@ -375,6 +375,9 @@
     <ClInclude Include="ZupClass\ZupHeader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\_Crack\ZenTaoLicense\ZenTaoLicense\logger\spdloghelper\spdloghelper.vcxproj">
+      <Project>{c8e4df11-7839-464a-8f52-9f6b1a72fdc2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\thirdparty\libdeflate\libdeflate.vcxproj">
       <Project>{2a3f22c4-d534-497b-82fc-f92a634fb20f}</Project>
     </ProjectReference>

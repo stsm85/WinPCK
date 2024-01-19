@@ -63,10 +63,8 @@ public:
 	virtual ~CMapViewFile() noexcept;
 
 	BOOL FileExists(const fs::path& szName);
-	//BOOL FileExists(LPCWSTR szName);
 
 	BOOL	Open(const fs::path& lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes);
-	//BOOL	Open(LPCWSTR lpszFilename, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes);
 
 	void	SetFilePointer(QWORD lDistanceToMove, DWORD dwMoveMethod = FILE_BEGIN);
 	QWORD	GetFilePointer();
@@ -78,7 +76,7 @@ public:
 	virtual LPBYTE	View(QWORD dwAddress, DWORD dwSize) = 0;
 	virtual LPBYTE	ReView(LPVOID lpMapAddressOld, QWORD dwAddress, DWORD dwSize) = 0;
 
-	void	UnmapView(LPVOID lpTargetAddress);
+	void	UnmapView(void* lpTargetAddress);
 	void	UnmapViewAll();
 	void	UnMaping();
 	void	clear();
@@ -93,23 +91,19 @@ protected:
 	////自动生成CreateFileMappingA时所需要的name
 	LPCSTR	GenerateMapName();
 
-	//void MakeUnlimitedPath(LPWSTR _dst, LPCWSTR	_src, size_t size);
-	//void MakeUnlimitedPath(LPSTR _dst, LPCSTR _src, size_t size);
-
-	void GetDiskNameFromFilename(fs::path& lpszFilename);
+	void GetDiskNameFromFilename(const fs::path& lpszFilename);
 
 	uint8_t*	ViewReal(QWORD qwAddress, DWORD dwSize, DWORD dwDesiredAccess);
 
 protected:
 
-	HANDLE	hFile;
-	HANDLE	hFileMapping;
-	//LPVOID	lpMapAddress;
+	HANDLE	hFile = nullptr;
+	HANDLE	hFileMapping = nullptr;
 	std::vector<const void*> vMapAddress;
 
 
 	//文件对应的磁盘
-	std::string	m_szDisk;
+	std::string	m_szDisk = "";
 
 	//用于存放MapName
 	char szFileMappingName[32];
@@ -130,19 +124,15 @@ public:
 	CMapViewFileRead();
 	virtual ~CMapViewFileRead() noexcept;
 
-	BOOL	Open(fs::path lpszFilename);
-	//BOOL	Open(LPCWSTR lpszFilename);
+	BOOL	Open(const fs::path& lpszFilename);
 
 	BOOL	Mapping();
 
 	virtual LPBYTE	View(QWORD dwAddress, DWORD dwSize) override;
 	virtual LPBYTE	ReView(LPVOID lpMapAddressOld, QWORD dwAddress, DWORD dwSize) override;
 
-	BOOL	OpenMappingRead(fs::path lpFileName);
-	//BOOL	OpenMappingRead(LPCWSTR lpFileName);
-
-	LPBYTE OpenMappingViewAllRead(fs::path lpFileName);
-	//LPBYTE OpenMappingViewAllRead(LPCWSTR lpFileName);
+	BOOL	OpenMappingRead(const fs::path& lpFileName);
+	LPBYTE	OpenMappingViewAllRead(const fs::path& lpFileName);
 
 	virtual BOOL	FlushFileBuffers() override { return TRUE; };
 
@@ -161,7 +151,6 @@ public:
 	virtual ~CMapViewFileWrite() noexcept;
 
 	BOOL	Open(const fs::path& lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile = FALSE);
-	//BOOL	Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile = FALSE);
 
 	BOOL	Mapping(QWORD dwMaxSize);
 
@@ -173,16 +162,13 @@ public:
 	DWORD	Write(LPVOID buffer, DWORD dwBytesToWrite);
 
 
-	BOOL	OpenMappingWrite(fs::path lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
-	//BOOL	OpenMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
+	BOOL	OpenMappingWrite(const fs::path& lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap);
 
 	virtual BOOL	FlushFileBuffers() override;
 
 private:
 
 	virtual void	SetSparseFile() override;
-	//BOOL	Write2(QWORD dwAddress, LPVOID buffer, DWORD dwBytesToWrite);
-
 
 };
 

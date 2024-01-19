@@ -6,7 +6,7 @@ CPckClassHeadTail::CPckClassHeadTail()
 
 CPckClassHeadTail::~CPckClassHeadTail()
 {
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 

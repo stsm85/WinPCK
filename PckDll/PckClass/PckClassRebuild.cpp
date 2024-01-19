@@ -14,7 +14,7 @@ CPckClassWriteOperator::CPckClassWriteOperator()
 
 CPckClassWriteOperator::~CPckClassWriteOperator()
 {
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 /********************************
@@ -53,7 +53,7 @@ BOOL CPckClassWriteOperator::StripPck(const wchar_t * lpszStripedPckFile, int fl
 BOOL CPckClassWriteOperator::RebuildPckFile(const wchar_t * szRebuildPckFile)
 {
 
-	Logger.i(TEXT_LOG_REBUILD);
+	Logger.info(TEXT_LOG_REBUILD);
 
 	
 	QWORD	dwAddress = PCK_DATA_START_AT;
@@ -95,7 +95,7 @@ BOOL CPckClassWriteOperator::RebuildPckFile(const wchar_t * szRebuildPckFile)
 	for(DWORD i = 0; i < dwFileCount; ++i) {
 
 		if(CheckIfNeedForcedStopWorking()) {
-			Logger.w(TEXT_USERCANCLE);
+			Logger.warn(TEXT_USERCANCLE);
 			break;
 		}
 
@@ -150,7 +150,7 @@ BOOL CPckClassWriteOperator::RebuildPckFile(const wchar_t * szRebuildPckFile)
 	//线程标记
 	SetThreadFlag(FALSE);
 
-	Logger.i(TEXT_LOG_WORKING_DONE);
+	Logger.info(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 }
@@ -160,7 +160,7 @@ BOOL CPckClassWriteOperator::RebuildPckFile(const wchar_t * szRebuildPckFile)
 BOOL CPckClassWriteOperator::RecompressPckFile(const wchar_t * szRecompressPckFile, int iStripMode)
 {
 
-	Logger.i(TEXT_LOG_RECOMPRESS);
+	Logger.info(TEXT_LOG_RECOMPRESS);
 
 	//QWORD	dwAddress = PCK_DATA_START_AT;
 	//DWORD	dwFileCount = m_PckAllInfo.dwFileCount;
@@ -216,7 +216,7 @@ BOOL CPckClassWriteOperator::RecompressPckFile(const wchar_t * szRecompressPckFi
 	CPckThreadRunner m_threadRunner(&cThreadParams);
 	m_threadRunner.start();
 
-	Logger.n(TEXT_LOG_WORKING_DONE);
+	Logger.info(TEXT_LOG_WORKING_DONE);
 
 	return TRUE;
 }

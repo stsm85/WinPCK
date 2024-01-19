@@ -134,6 +134,7 @@
 #define IDC_CHECK_GFX2                  1045
 #define IDC_CHECK_ECM                   1045
 #define IDC_RICHEDIT21                  1045
+#define IDC_EDIT_LOG                    1045
 #define IDC_PIC                         1046
 #define ID_MENU_COMPRESS_OPT            40000
 #define ID_MENU_OPEN                    40001
@@ -193,7 +194,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        199
+#define _APS_NEXT_RESOURCE_VALUE        200
 #define _APS_NEXT_COMMAND_VALUE         40055
 #define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           101

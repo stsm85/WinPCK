@@ -7,12 +7,12 @@ CMapViewFileMultiRead::CMapViewFileMultiRead()
 CMapViewFileMultiRead::~CMapViewFileMultiRead() noexcept
 {}
 
-BOOL CMapViewFileMultiRead::AddFile(CMapViewFileRead *lpRead, fs::path& lpszFilename)
+BOOL CMapViewFileMultiRead::AddFile(CMapViewFileRead *lpRead, const fs::path& lpszFilename)
 {
 	FILE_CELL cFileCell = {0};
 
 	//wcscpy_s(cFileCell.szFilename, lpszFilename);
-	cFileCell.szFilename = std::move(lpszFilename);
+	cFileCell.szFilename = lpszFilename;
 	cFileCell.lpMapView = lpRead;
 	cFileCell.qwCellSize = lpRead->GetFileSize();
 	cFileCell.qwCellAddressBegin = this->m_uqwFullSize.qwValue;
@@ -27,20 +27,7 @@ BOOL CMapViewFileMultiRead::AddFile(CMapViewFileRead *lpRead, fs::path& lpszFile
 	return TRUE;
 }
 
-BOOL CMapViewFileMultiRead::AddFile(fs::path lpszFilename)
-{
-	CMapViewFileRead *lpRead = new CMapViewFileRead();
-
-	if(!lpRead->Open(std::ref(lpszFilename))) {
-
-		delete lpRead;
-		return FALSE;
-	}
-
-	return this->AddFile(lpRead, std::ref(lpszFilename));
-}
-#if 0
-BOOL CMapViewFileMultiRead::AddFile(LPCWSTR lpszFilename)
+BOOL CMapViewFileMultiRead::AddFile(const fs::path& lpszFilename)
 {
 	CMapViewFileRead *lpRead = new CMapViewFileRead();
 
@@ -49,9 +36,10 @@ BOOL CMapViewFileMultiRead::AddFile(LPCWSTR lpszFilename)
 		delete lpRead;
 		return FALSE;
 	}
-	return AddFile(lpRead, lpszFilename);
+
+	return this->AddFile(lpRead, lpszFilename);
 }
-#endif
+
 BOOL CMapViewFileMultiRead::Mapping()
 {
 	size_t nCellCount = this->m_file_cell.size();

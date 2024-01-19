@@ -8,14 +8,14 @@ CMapViewFileMultiWrite::~CMapViewFileMultiWrite() noexcept
 {}
 
 
-BOOL CMapViewFileMultiWrite::AddFile(CMapViewFileWrite *lpWrite, QWORD qwMaxSize, fs::path& lpszFilename)
+BOOL CMapViewFileMultiWrite::AddFile(CMapViewFileWrite *lpWrite, QWORD qwMaxSize, const fs::path& lpszFilename)
 {
 	size_t nCellCount = this->m_file_cell.size();
 
 	FILE_CELL cFileCell = { 0 };
 
 	//wcscpy_s(cFileCell.szFilename, lpszFilename);
-	cFileCell.szFilename = std::move(lpszFilename);
+	cFileCell.szFilename = lpszFilename;
 	cFileCell.lpMapView = lpWrite;
 	cFileCell.qwCellSize = lpWrite->GetFileSize();
 #if 0
@@ -39,20 +39,7 @@ BOOL CMapViewFileMultiWrite::AddFile(CMapViewFileWrite *lpWrite, QWORD qwMaxSize
 	return TRUE;
 }
 
-BOOL CMapViewFileMultiWrite::AddFile(fs::path lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize, BOOL isNTFSSparseFile)
-{
-	CMapViewFileWrite *lpWrite = new CMapViewFileWrite();
-
-	if(!lpWrite->Open(std::ref(lpszFilename), dwCreationDisposition, isNTFSSparseFile)) {
-
-		delete lpWrite;
-		return FALSE;
-	}
-	return this->AddFile(lpWrite, qwMaxSize, std::ref(lpszFilename));
-}
-
-#if 0
-BOOL CMapViewFileMultiWrite::AddFile(LPCWSTR lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize, BOOL isNTFSSparseFile)
+BOOL CMapViewFileMultiWrite::AddFile(const fs::path& lpszFilename, DWORD dwCreationDisposition, QWORD qwMaxSize, BOOL isNTFSSparseFile)
 {
 	CMapViewFileWrite *lpWrite = new CMapViewFileWrite();
 
@@ -61,9 +48,9 @@ BOOL CMapViewFileMultiWrite::AddFile(LPCWSTR lpszFilename, DWORD dwCreationDispo
 		delete lpWrite;
 		return FALSE;
 	}
-	return AddFile(lpWrite, qwMaxSize, lpszFilename);
+	return this->AddFile(lpWrite, qwMaxSize, lpszFilename);
 }
-#endif
+
 
 BOOL CMapViewFileMultiWrite::Mapping(QWORD dwMaxSize)
 {

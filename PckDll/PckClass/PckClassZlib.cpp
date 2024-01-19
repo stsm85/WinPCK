@@ -13,7 +13,7 @@ CPckClassZlib::CPckClassZlib()
 
 CPckClassZlib::~CPckClassZlib()
 {
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 /*
@@ -62,7 +62,7 @@ uint32_t CPckClassZlib::compressBound(uint32_t sourceLen)
 		return m_PckCompressFunc.compressBound(sourceLen);
 	}
 	catch (std::bad_function_call ex) {
-		Logger.e(ex.what());
+		Logger.error(ex.what());
 	}
 	catch (...) {
 		Logger_el("Unknown Error.");
@@ -76,7 +76,7 @@ int	CPckClassZlib::compress(void *dest, ulong_t *destLen, const void *source, ui
 		return m_PckCompressFunc.compress(dest, destLen, source, sourceLen, m_compress_level);
 	}
 	catch (std::bad_function_call ex) {
-		Logger.e(ex.what());
+		Logger.error(ex.what());
 	}
 	catch (...) {
 		Logger_el("Unknown Error.");

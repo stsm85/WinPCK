@@ -10,13 +10,13 @@ FETCHDATA_RET CPckThreadRunner::detectMaxToAddMemory(DWORD dwMallocSize)
 
 			if (m_lpPckParams->cVarParams.dwMTMemoryUsed >= m_lpPckParams->dwMTMaxMemory) {
 
-				Logger.logOutput(__FUNCTION__ "_Sleep", "SleepConditionVariableSRW, dwMTMemoryUsed = %u, dwMTMaxMemory = %u\r\n", m_lpPckParams->cVarParams.dwMTMemoryUsed, m_lpPckParams->dwMTMaxMemory);
+				Logger.trace(__FUNCTION__ "_Sleep, SleepConditionVariableSRW, dwMTMemoryUsed = {}, dwMTMaxMemory = {}", m_lpPckParams->cVarParams.dwMTMemoryUsed, m_lpPckParams->dwMTMaxMemory);
 				m_memoryNotEnoughBlocked = TRUE;
 
 				if (m_cvMemoryNotEnough.wait_for(lckMaxMemory, std::chrono::seconds(5)) == std::cv_status::timeout)
-					Logger.logOutput(__FUNCTION__ "_Sleep", "TimeOut, dwMTMemoryUsed = %u, dwMTMaxMemory = %u\r\n", m_lpPckParams->cVarParams.dwMTMemoryUsed, m_lpPckParams->dwMTMaxMemory);
+					Logger.trace(__FUNCTION__ "_Sleep, TimeOut, dwMTMemoryUsed = {}, dwMTMaxMemory = {}", m_lpPckParams->cVarParams.dwMTMemoryUsed, m_lpPckParams->dwMTMaxMemory);
 				else
-					Logger.logOutput(__FUNCTION__ "_Sleep", "Awake, dwMTMemoryUsed = %u, dwMTMaxMemory = %u\r\n", m_lpPckParams->cVarParams.dwMTMemoryUsed, m_lpPckParams->dwMTMaxMemory);
+					Logger.trace(__FUNCTION__ "_Sleep, Awake, dwMTMemoryUsed = {}, dwMTMaxMemory = {}", m_lpPckParams->cVarParams.dwMTMemoryUsed, m_lpPckParams->dwMTMaxMemory);
 
 			}
 			else {
@@ -24,7 +24,7 @@ FETCHDATA_RET CPckThreadRunner::detectMaxToAddMemory(DWORD dwMallocSize)
 			}
 		}
 		else {
-			Logger.logOutput(__FUNCTION__ "_Sleep", "user cancled\r\n");
+			Logger.trace(__FUNCTION__ "_Sleep, user cancled");
 			return FD_CANCEL;
 		}
 	}
@@ -44,7 +44,7 @@ FETCHDATA_RET CPckThreadRunner::detectMaxAndAddMemory(LPBYTE &_out_buffer, DWORD
 		while (NULL == (_out_buffer = (LPBYTE)malloc(dwMallocSize + 1))) {
 			//ƒ⁄¥Ê…Í«Î ß∞‹£¨¥¶¿Ì
 			assert(FALSE);
-			Logger.logOutput(__FUNCTION__ "_Sleep", "malloc failure\r\n");
+			Logger.trace(__FUNCTION__ "_Sleep, malloc failure");
 			m_memoryNotEnoughBlocked = TRUE;
 
 			std::unique_lock<std::mutex> lckMaxMemory(m_LockMaxMemory);
@@ -64,7 +64,7 @@ FETCHDATA_RET CPckThreadRunner::detectMaxAndAddMemory(LPBYTE &_out_buffer, DWORD
 		{
 			std::lock_guard<std::mutex> lckMaxMemory(m_LockMaxMemory);
 			m_lpPckParams->cVarParams.dwMTMemoryUsed += dwMallocSize;
-			Logger.logOutput(__FUNCTION__ "_Addmem", "malloc size %u, dwMTMemoryUsed = %u\r\n", dwMallocSize, m_lpPckParams->cVarParams.dwMTMemoryUsed);
+			Logger.trace(__FUNCTION__ "_Addmem, malloc size {}, dwMTMemoryUsed = {}", dwMallocSize, m_lpPckParams->cVarParams.dwMTMemoryUsed);
 		}
 	}
 
@@ -77,11 +77,11 @@ void CPckThreadRunner::freeMaxToSubtractMemory(DWORD dwMallocSize)
 	{
 		std::lock_guard<std::mutex> lckMaxMemory(m_LockMaxMemory);
 		m_lpPckParams->cVarParams.dwMTMemoryUsed -= dwMallocSize;
-		Logger.logOutput(__FUNCTION__ "_freemem", "dwMTMemoryUsed = %u, -dwMallocSize = %u\r\n", m_lpPckParams->cVarParams.dwMTMemoryUsed, dwMallocSize);
+		Logger.trace(__FUNCTION__ "_freemem, dwMTMemoryUsed = {}, -dwMallocSize = {}", m_lpPckParams->cVarParams.dwMTMemoryUsed, dwMallocSize);
 	}
 
 	if (m_memoryNotEnoughBlocked) {
-		Logger.logOutput(__FUNCTION__ "_Sleep", "WakeAllConditionVariable\r\n");
+		Logger.trace(__FUNCTION__ "_Sleep, WakeAllConditionVariable");
 		m_memoryNotEnoughBlocked = FALSE;
 		m_cvMemoryNotEnough.notify_all();
 	}

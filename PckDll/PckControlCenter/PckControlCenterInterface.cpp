@@ -198,12 +198,12 @@ uint32_t CPckControlCenter::ListByNode(LPCENTRY lpFileEntry, void* _in_param, SH
 
 	const PCK_PATH_NODE* lpNodeToShowPtr = lpNodeToShow;
 
-	while (NULL != lpNodeToShowPtr && 0 != *lpNodeToShowPtr->szName) {
+	while (nullptr != lpNodeToShowPtr && 0 != *lpNodeToShowPtr->szName) {
 		//这里先显示文件夹
 		int entryType = lpNodeToShowPtr->entryType;
 		if ((PCK_ENTRY_TYPE_FOLDER == (PCK_ENTRY_TYPE_FOLDER & entryType))) {
 
-			if (NULL != lpNodeToShowPtr->child) {
+			if (nullptr != lpNodeToShowPtr->child) {
 				_showList(_in_param,
 					dwSerialNumber,
 					lpNodeToShowPtr->szName,

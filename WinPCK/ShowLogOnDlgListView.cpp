@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "guipch.h"
+#if 0
 #include "ShowLogOnDlgListView.h"
 
 
@@ -28,3 +29,4 @@ CLogUnits::CLogUnits()
 CLogUnits::~CLogUnits()
 {
 }
+#endif

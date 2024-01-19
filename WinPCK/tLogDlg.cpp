@@ -11,6 +11,8 @@
 
 #include "guipch.h"
 #include "tLogDlg.h"
+
+#if 0
 #include "ShowLogOnDlgListView.h"
 
 #define	LOG_BUFFER						8192
@@ -23,13 +25,14 @@
 #define LOG_IMAGE_DEBUG					4
 #define LOG_IMAGE_EMPTY					5
 #define LOG_IMAGE_COUNT					6
-
+#endif
 
 /*
 日志信息对话框
 */
 BOOL TLogDlg::EvCreate(LPARAM lParam)
 {
+#if 0
 	RECT rcList;
 
 	hWndList = GetDlgItem(IDC_LIST_LOG);
@@ -80,7 +83,11 @@ BOOL TLogDlg::EvCreate(LPARAM lParam)
 	*lpexeTitle = 0;
 
 	//Show();
+#endif
 
+	//日志系统
+	Logger.append_winedit_color_sink(this->GetDlgItem(IDC_EDIT_LOG), 1000);
+	Logger.show_log_msg(THIS_MAIN_CAPTION);
 	return	TRUE;
 }
 
@@ -95,7 +102,7 @@ BOOL TLogDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 
 	case IDCANCEL:
 		return	TRUE;
-
+#if 0
 	case ID_MENU_LOG_CLEAR:
 
 		ListView_DeleteAllItems(hWndList);
@@ -182,18 +189,19 @@ BOOL TLogDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 		}
 	}
 	break;
+#endif
 	}
 	return	FALSE;
 }
 
 BOOL TLogDlg::EvSize(UINT fwSizeType, WORD nWidth, WORD nHeight)
 {
-	::SetWindowPos(hWndList, NULL, 0, 0, nWidth, nHeight, SWP_NOZORDER | SWP_NOMOVE);
-	ListView_SetColumnWidth(hWndList, 0, nWidth - 24);
-
+	::SetWindowPos(this->GetDlgItem(IDC_EDIT_LOG), NULL, 0, 0, nWidth, nHeight, SWP_NOZORDER | SWP_NOMOVE);
+	//ListView_SetColumnWidth(hWndList, 0, nWidth - 24);
 	return TRUE;
 }
 
+#if 0
 BOOL TLogDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 {
 	switch(ctlID) {
@@ -221,6 +229,7 @@ BOOL TLogDlg::EvNotify(UINT ctlID, NMHDR *pNmHdr)
 
 	return FALSE;
 }
+#endif
 
 BOOL TLogDlg::EvClose()
 {
@@ -228,6 +237,7 @@ BOOL TLogDlg::EvClose()
 	return TRUE;
 }
 
+#if 0
 wchar_t*  TLogDlg::pszLogFileName()
 {
 	static wchar_t logfile[MAX_PATH];
@@ -354,3 +364,5 @@ void TLogDlg::_InsertLogIntoList(const char _loglevel, const wchar_t *_logtext)
 	}
 }
 #undef LEN_OF_PREFIX
+
+#endif

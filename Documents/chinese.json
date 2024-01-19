@@ -1,0 +1,20 @@
+{
+	"name": "简体中文",
+	"author": "liqf",
+	"version": "v1.0",
+	"date": "2024-01-18",
+	"gui": {
+		"menu": {
+			"111": "111"
+		},
+		"maindlg": {
+			"aaa": "bbb"
+		}
+	},
+	"dll": {
+		"aaa": "bbb"
+	},
+	"misc": {
+		"aaa": "bbb"
+	}
+}

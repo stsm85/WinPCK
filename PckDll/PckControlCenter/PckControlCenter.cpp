@@ -32,7 +32,7 @@ CPckControlCenter::~CPckControlCenter()
 	regMsgFeedback(NULL, DefaultFeedbackCallback);
 	Close();
 	uninit();
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 void CPckControlCenter::init()

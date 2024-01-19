@@ -16,7 +16,7 @@ CPckThreadRunner::CPckThreadRunner(LPTHREAD_PARAMS threadparams) :
 
 CPckThreadRunner::~CPckThreadRunner()
 {
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 void CPckThreadRunner::start()
@@ -68,7 +68,8 @@ void CPckThreadRunner::startThread()
 	std::thread t(pWriteThread);
 
 	std::for_each(threads.begin(), threads.end(), std::mem_fn(&std::thread::join));
-	Logger.n(TEXT_LOG_FLUSH_CACHE);
+	//should note the TEXT_LOG_FLUSH_CACHE message
+	Logger.info(TEXT_LOG_FLUSH_CACHE);
 	if (t.joinable())
 		t.join();
 }
@@ -118,7 +119,7 @@ void CPckThreadRunner::WriteThread(LPTHREAD_PARAMS threadparams)
 
 	if (!result) {
 
-		Logger.logOutput(__FUNCTION__, "Finished with errors\r\n");
+		Logger->error("{} Finished with errors", std::source_location::current().function_name());
 
 		threadparams->dwFileCountOfWriteTarget = nWrite;
 
@@ -126,13 +127,13 @@ void CPckThreadRunner::WriteThread(LPTHREAD_PARAMS threadparams)
 			free(dataToWrite);
 
 		uint32_t nQueueLen = m_QueueContent.size();
-		Logger.logOutput(__FUNCTION__ "_free", "m_QueueContent.size() = %d\r\n", nQueueLen);
+		Logger->error("{} _free", "m_QueueContent.size() = {}",std::source_location::current().function_name(), nQueueLen);
 
 		for (uint32_t i = 0; i < nQueueLen; i++) {
 
 			PCKINDEXTABLE *lpPckIndex = &m_QueueContent[i];
 			if (MALLOCED_EMPTY_DATA != (int)lpPckIndex->compressed_file_data) {
-				Logger.logOutput(__FUNCTION__ "_free", "free buffer(0x%08x)\r\n", (int)lpPckIndex->compressed_file_data);
+				Logger->error("{} _free, free buffer(0x{:016x})", std::source_location::current().function_name(), (LONG_PTR)lpPckIndex->compressed_file_data);
 				free(lpPckIndex->compressed_file_data);
 			}
 		}
@@ -145,7 +146,7 @@ void CPckThreadRunner::WriteThread(LPTHREAD_PARAMS threadparams)
 
 	}
 #pragma endregion
-	Logger.logOutput(__FUNCTION__, "Finished\r\n");
+	Logger->info("WriteThread Finished");
 
 	return;
 }
@@ -157,7 +158,7 @@ void CPckThreadRunner::CompressThread(FETCHDATA_FUNC GetUncompressedData)
 	{
 		std::lock_guard<std::mutex> lckThreadID(m_LockThreadID);
 		m_threadID++;
-		Logger.logOutput(__FUNCTION__, "mt_threadID++, %d\r\n", m_threadID);
+		Logger->debug("{} mt_threadID++, {}", std::source_location::current().function_name(), m_threadID);
 	}
 #endif
 
@@ -178,11 +179,11 @@ void CPckThreadRunner::CompressThread(FETCHDATA_FUNC GetUncompressedData)
 	{
 		std::lock_guard<std::mutex> lckThreadID(m_LockThreadID);
 		m_threadID--;
-		Logger.logOutput(__FUNCTION__, "mt_threadID--, %d\r\n", m_threadID);
+		Logger->debug("{} mt_threadID--, {}", std::source_location::current().function_name(), m_threadID);
 	}
 #endif
 
 	m_cvReadyToPut.notify_one();
-	Logger.logOutput(__FUNCTION__, "WakeConditionVariable(m_cvReadyToPut);\r\n");
+	Logger->trace("{} WakeConditionVariable(m_cvReadyToPut);", std::source_location::current().function_name());
 	return;
 }

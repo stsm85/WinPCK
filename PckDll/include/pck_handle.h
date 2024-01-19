@@ -29,12 +29,19 @@ typedef enum _PCKRTN
 #endif
 
 
-#ifdef _WINDLL	//.dll
+#ifdef _MAKE_DLL	//.dll
+#define WINPCK_API_CPP _declspec(dllexport)
 #define WINPCK_API EXTERN_C _declspec(dllexport)
-#elif defined(_DLL)	//.exe
+#elif defined(_MAKE_EXE)	//.exe
+#define WINPCK_API_CPP _declspec(dllimport)
 #define WINPCK_API EXTERN_C _declspec(dllimport)
 #else	//other
+#define WINPCK_API_CPP
 #define WINPCK_API EXTERN_C
+#endif
+
+#ifdef _MAKE_DLL	//.dll
+#define LOG_EXTERN_DEF_PCK_IMPORT _declspec(dllimport)
 #endif
 
 WINPCK_API LPCSTR		pck_version();

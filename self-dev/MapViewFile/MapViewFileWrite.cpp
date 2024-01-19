@@ -28,18 +28,7 @@ BOOL CMapViewFileWrite::Open(const fs::path& lpszFilename, DWORD dwCreationDispo
 	}
 	return FALSE;
 }
-#if 0
-BOOL CMapViewFileWrite::Open(LPCWSTR lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile)
-{
-	if (CMapViewFile::Open(lpszFilename, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, dwCreationDisposition, isNTFSSparseFile ? (FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_SPARSE_FILE) : FILE_ATTRIBUTE_NORMAL)) {
 
-		if (isNTFSSparseFile)
-			SetSparseFile();
-		return TRUE;
-	}
-	return FALSE;
-}
-#endif
 
 BOOL CMapViewFileWrite::Mapping(QWORD qwMaxSize)
 {
@@ -70,9 +59,9 @@ LPBYTE CMapViewFileWrite::ReView(LPVOID lpMapAddressOld, QWORD dwAddress, DWORD 
 }
 
 
-BOOL CMapViewFileWrite::OpenMappingWrite(fs::path lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap)
+BOOL CMapViewFileWrite::OpenMappingWrite(const fs::path& lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap)
 {
-	if(!this->Open(std::ref(lpFileName), dwCreationDisposition))
+	if(!this->Open(lpFileName, dwCreationDisposition))
 		return FALSE;
 
 	if(!this->Mapping(qdwSizeToMap))
@@ -80,19 +69,6 @@ BOOL CMapViewFileWrite::OpenMappingWrite(fs::path lpFileName, DWORD dwCreationDi
 
 	return TRUE;
 }
-
-#if 0
-BOOL CMapViewFileWrite::OpenMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap)
-{
-	if(!Open(lpFileName, dwCreationDisposition))
-		return FALSE;
-
-	if(!Mapping(qdwSizeToMap))
-		return FALSE;
-
-	return TRUE;
-}
-#endif
 
 BOOL CMapViewFileWrite::SetEndOfFile()
 {
@@ -122,10 +98,3 @@ void CMapViewFileWrite::SetSparseFile()
 	DWORD dw;
 	::DeviceIoControl(this->hFile, FSCTL_SET_SPARSE, NULL, 0, NULL, 0, &dw, NULL);
 }
-
-////使用MapViewOfFile进行写操作
-//BOOL CMapViewFileWrite::Write2(QWORD dwAddress, LPVOID buffer, DWORD dwBytesToWrite)
-//{
-//	return 1;
-//}
-

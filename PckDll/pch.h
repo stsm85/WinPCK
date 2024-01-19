@@ -30,3 +30,8 @@ namespace fs = std::filesystem;
 
 #include <MapViewFileMultiPck.h>
 
+#include <spdloghelper/Logger.h>
+#include <spdloghelper/LoggerInit.h>
+
+#include <source_location>
+#include <spdlog\stopwatch.h>

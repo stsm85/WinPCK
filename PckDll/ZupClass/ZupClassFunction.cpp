@@ -17,10 +17,11 @@ _inline void CZupClass::DecodeDict(LPZUP_FILENAME_DICT lpZupDict)
 
 	//base64½âÂë
 	DWORD	dwRealLen = lpZupDict->realstrlength;
-	base64_decode(lpZupDict->realbase64str, dwRealLen, szUTF8str);
+	auto szUTF8strSize = base64_decode(lpZupDict->realbase64str, dwRealLen, szUTF8str);
 
-	lpZupDict->wrealstrlength = U8toW(szUTF8str, lpZupDict->wrealstr, MAX_PATH_PCK, -1) - 1;
-	lpZupDict->realstrlength = CPckClassCodepage::PckFilenameCode2Ansi(lpZupDict->wrealstr, lpZupDict->realstr, MAX_PATH_PCK);
+	//lpZupDict->wrealstrlength = U8toW(szUTF8str, lpZupDict->wrealstr, MAX_PATH_PCK, -1) - 1;
+	lpZupDict->wrealstrlength = StringCodeConvChs().U8toW(szUTF8str, szUTF8strSize, lpZupDict->wrealstr, MAX_PATH_PCK);
+	lpZupDict->realstrlength = CPckClassCodepage::PckFilenameCode2Ansi(lpZupDict->wrealstr, lpZupDict->wrealstrlength, lpZupDict->realstr, MAX_PATH_PCK);
 
 
 }
@@ -32,7 +33,6 @@ void CZupClass::AddDict(const std::string_view base_file)
 
 	if ('/' == *ch || '\\' == *ch)
 	{
-		//std::vector<std::string> line_content;
 		auto line_content = CTextUnitsA::Split(base_file, ch, SPLIT_FLAG::DELETE_NULL_LINE);
 
 		for (int i = 0; i < line_content.size(); i++) {
@@ -117,7 +117,6 @@ BOOL CZupClass::BuildZupBaseDict()
 			if(GetSingleFileData(lpPckIndexTable, _incbuf.data())) {
 
 				_incbuf[lpPckIndexTable->cFileIndex.dwFileClearTextSize] = 0;
-				//std::vector<std::string> lines;
 
 				auto lines = CTextUnitsA::SplitLine(_incbuf.c_str(), lpPckIndexTable->cFileIndex.dwFileClearTextSize, SPLIT_FLAG::TRIM_LEFT | SPLIT_FLAG::TRIM_RIGHT | SPLIT_FLAG::DELETE_NULL_LINE);
 				

@@ -12,6 +12,7 @@
 #pragma warning ( disable : 4996 )
 #include <pch.h>
 
+#if 0
 #include "PckClassLog.h"
 
 
@@ -251,4 +252,5 @@ int CPckClassLog::logOutput(const char *file, const char *format, ...)
 
 	return ret;
 }
+#endif
 #endif

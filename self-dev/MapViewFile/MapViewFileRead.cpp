@@ -17,16 +17,11 @@ CMapViewFileRead::CMapViewFileRead()
 CMapViewFileRead::~CMapViewFileRead() noexcept
 {}
 
-BOOL CMapViewFileRead::Open(fs::path lpszFilename)
-{
-	return CMapViewFile::Open(std::ref(lpszFilename), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS);
-}
-#if 0
-BOOL CMapViewFileRead::Open(LPCWSTR lpszFilename)
+BOOL CMapViewFileRead::Open(const fs::path& lpszFilename)
 {
 	return CMapViewFile::Open(lpszFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS);
 }
-#endif
+
 BOOL CMapViewFileRead::Mapping()
 {
 	if(NULL == (this->hFileMapping = ::CreateFileMappingA(this->hFile, NULL, PAGE_READONLY, 0, 0, GenerateMapName()))) {
@@ -49,9 +44,9 @@ LPBYTE CMapViewFileRead::ReView(LPVOID lpMapAddressOld, QWORD dwAddress, DWORD d
 	return this->View(dwAddress, dwSize);
 }
 
-BOOL CMapViewFileRead::OpenMappingRead(fs::path lpFileName)
+BOOL CMapViewFileRead::OpenMappingRead(const fs::path& lpFileName)
 {
-	if(!(this->Open(std::ref(lpFileName))))
+	if(!(this->Open(lpFileName)))
 		return FALSE;
 
 	if(!(this->Mapping()))
@@ -59,31 +54,11 @@ BOOL CMapViewFileRead::OpenMappingRead(fs::path lpFileName)
 
 	return TRUE;
 }
-#if 0
-BOOL CMapViewFileRead::OpenMappingRead(LPCWSTR lpFileName)
-{
-	if(!(Open(lpFileName)))
-		return FALSE;
 
-	if(!(Mapping()))
-		return FALSE;
-
-	return TRUE;
-}
-#endif
-LPBYTE CMapViewFileRead::OpenMappingViewAllRead(fs::path lpFileName)
+LPBYTE CMapViewFileRead::OpenMappingViewAllRead(const fs::path& lpFileName)
 {
-	if(this->OpenMappingRead(std::ref(lpFileName)))
+	if(this->OpenMappingRead(lpFileName))
 		return this->View(0, 0);
 	else
 		return nullptr;
 }
-#if 0
-LPBYTE CMapViewFileRead::OpenMappingViewAllRead(LPCWSTR lpFileName)
-{
-	if(OpenMappingRead(lpFileName))
-		return View(0, 0);
-	else
-		return NULL;
-}
-#endif

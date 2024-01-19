@@ -3,6 +3,8 @@
 
 #pragma once
 
+#define SPDLOG_WCHAR_TO_UTF8_SUPPORT
+
 #include <spdlog/tweakme.h>
 #include <spdlog/details/null_mutex.h>
 

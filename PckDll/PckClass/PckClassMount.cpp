@@ -25,7 +25,7 @@ BOOL CPckClass::MountPckFile(LPCWSTR	szFile)
 		return TRUE;
 	}
 	catch (MyException e) {
-		Logger.e(e.what());
+		Logger.error(e.what());
 		return FALSE;
 	}
 	

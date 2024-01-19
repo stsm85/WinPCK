@@ -1,5 +1,5 @@
 #pragma once
-
+#include <array>
 #include "MapViewFileMulti.h"
 
 #ifdef _DEBUG
@@ -8,56 +8,50 @@
 #define _TEST_MAX_PCK_CELL 0
 #endif
 
+#if 0
 #define ID_PCK	0
 #define ID_PKX	1
 #define ID_PKG	2
 #define ID_END	3
+#endif
 
 
 class CMapViewFileMultiPck
 {
 public:
-	CMapViewFileMultiPck() {};
-	virtual ~CMapViewFileMultiPck() noexcept {};
+	CMapViewFileMultiPck();
+	virtual ~CMapViewFileMultiPck() = default;
 
-	//BOOL	CheckPckPackSize(QWORD qwPckSize);
-	
+	void SetPackageCountAndSuffix(const std::vector<std::string>& name);
+
 protected:
 
-	//void GetPkXName(LPSTR dst, LPCSTR src, int _pckid);
-	//void GetPkXName(LPWSTR dst, LPCWSTR src, int _pckid);
+	void initialization_filenames(const fs::path& lpszFilename);
+	int m_package_count = 1;
 
-	fs::path	m_szPckFileName[ID_END];
+	std::vector<std::string> m_fileSuffix;
+	std::vector<fs::path> m_szPckFileName;
+	std::vector<UNQWORD> m_uqwPckSize{ 0 };
 
-	UNQWORD m_uqwPckSize[ID_END];
 	//真实文件大小
-	UNQWORD m_uqwPckFileSize;
+	UNQWORD m_uqwPckFileSize{ 0 };
 	//PCK头结构中的文件大小
-	UNQWORD m_uqwPckStructSize;
+	UNQWORD m_uqwPckStructSize{ 0 };
 
 private:
 
-
-
 };
-
 
 class CMapViewFileMultiPckRead : 
 	public CMapViewFileMultiRead,
 	public CMapViewFileMultiPck
 {
 public:
-	CMapViewFileMultiPckRead();
-	virtual ~CMapViewFileMultiPckRead() noexcept;
+	CMapViewFileMultiPckRead() = default;
+	virtual ~CMapViewFileMultiPckRead() = default;
 
-	BOOL OpenPck(fs::path lpszFilename);
-	//BOOL OpenPck(LPCWSTR lpszFilename);
-
-	BOOL	OpenPckAndMappingRead(fs::path lpFileName);
-	//BOOL	OpenPckAndMappingRead(LPCWSTR lpFileName);
-
-	//LPBYTE OpenMappingAndViewAllRead(LPCSTR lpFileName);
-	//LPBYTE OpenMappingAndViewAllRead(LPCWSTR lpFileName);
+	BOOL	OpenPck(const fs::path& lpszFilename);
+	BOOL	OpenPckAndMappingRead(const fs::path& lpFileName);
 
 	QWORD	GetFileSize() const;
 
@@ -71,13 +65,10 @@ class CMapViewFileMultiPckWrite:
 {
 public:
 	CMapViewFileMultiPckWrite(QWORD qwMaxPckSize);
-	virtual ~CMapViewFileMultiPckWrite() noexcept;
+	virtual ~CMapViewFileMultiPckWrite() = default;
 
-	BOOL OpenPck(fs::path lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile = FALSE);
-	//BOOL OpenPck(LPCWSTR lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile = FALSE);
-
-	BOOL	OpenPckAndMappingWrite(fs::path lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap, BOOL isNTFSSparseFile = FALSE);
-	//BOOL	OpenPckAndMappingWrite(LPCWSTR lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap, BOOL isNTFSSparseFile = FALSE);
+	BOOL	OpenPck(const fs::path& lpszFilename, DWORD dwCreationDisposition, BOOL isNTFSSparseFile = FALSE);
+	BOOL	OpenPckAndMappingWrite(const fs::path&  lpFileName, DWORD dwCreationDisposition, QWORD qdwSizeToMap, BOOL isNTFSSparseFile = FALSE);
 
 private:
 

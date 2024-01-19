@@ -336,12 +336,8 @@ void TInstDlg::DeleteSetupReg()
 void TInstDlg::InitLogWindow()
 {
 
-	//Log windows
-	//logdlg = new TLogDlg(this);
 	this->m_logdlg.Create();
-	//SetLogListWnd(logdlg->GetListWnd());
-	//SetLogMainWnd(hWnd);
-
+#if 0
 	//绑定函数
 	LogUnits.setInsertLogFunc(std::bind(&TLogDlg::InsertLogToList, &this->m_logdlg, std::placeholders::_1, std::placeholders::_2));
 	LogUnits.setSetStatusBarInfoFunc(std::bind(&TInstDlg::SetStatusBarInfo, this, std::placeholders::_1));
@@ -351,7 +347,7 @@ void TInstDlg::InitLogWindow()
 
 	//启动日志
 	pck_logIW(THIS_MAIN_CAPTION " is started.");
-
+#endif
 }
 
 

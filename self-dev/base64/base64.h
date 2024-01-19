@@ -31,7 +31,7 @@ BEXTERN uint32_t BEXPORT decodeBound(const char* pdata,const uint32_t data_size)
 BEXTERN uint32_t BEXPORT encodeBound(const uint32_t data_size);
 
 BEXTERN void BEXPORT base64_encode(const void* pdata,const uint32_t data_size,void* out_pcode);
-BEXTERN void BEXPORT base64_decode(const void* pdata,const uint32_t data_size,void* out_pcode);
+BEXTERN int BEXPORT base64_decode(const void* pdata,const uint32_t data_size,void* out_pcode);
 
 #ifdef __cplusplus
 }

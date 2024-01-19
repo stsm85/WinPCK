@@ -57,7 +57,7 @@ BOOL CPckControlCenter::Open(const wchar_t * lpszFile)
 			break;
 		}
 
-		Logger.i(UCSTEXT(TEXT_LOG_OPENFILE), lpszFile);
+		Logger.info(UCSTEXT(TEXT_LOG_OPENFILE), lpszFile);
 
 		if(m_lpClassPck->Init(lpszFile)) {
 
@@ -81,7 +81,7 @@ void CPckControlCenter::Close()
 	if(NULL != m_lpClassPck) {
 
 		if(IsValidPck())
-			Logger.i(TEXT_LOG_CLOSEFILE);
+			Logger.info(TEXT_LOG_CLOSEFILE);
 
 		delete m_lpClassPck;
 		m_lpClassPck = NULL;

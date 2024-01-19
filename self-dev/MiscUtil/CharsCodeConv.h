@@ -1,127 +1,142 @@
 #ifndef _CharsCodeConv_H_
 #define _CharsCodeConv_H_
 
-#define _USE_WIN_API	1
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+#define _USE_ICONV 0
 
-#include <codecvt>
+#include <string>
+#include <string_view>
+#include <stdexcept>
 
-std::wstring AtoW(const std::string& src);
-std::string WtoA(const std::wstring& src);
-std::wstring U8toW(const std::string& src);
-std::string WtoU8(const std::wstring& src);
-
-
-#if _USE_WIN_API
-#ifndef _WIN32
-#undef _USE_WIN_API
-#define _USE_WIN_API	0
-#endif
-#endif
-
-#if _USE_WIN_API
-
-#define TEXT_TYPE_ANSI	0
-#define TEXT_TYPE_UCS2	1
-#define TEXT_TYPE_UTF8	2
-#define TEXT_TYPE_RAW	3
-
-#ifdef _DEBUG
-int AtoW(const char *src, wchar_t *dst, int bufsize, int max_len, int cp);
-int WtoA(const wchar_t *src, char *dst, int bufsize, int max_len, int cp);
-int U8toW(const char *src, wchar_t *dst, int bufsize, int max_len = -1);
-int WtoU8(const wchar_t *src, char *dst, int bufsize, int max_len = -1);
+#if _USE_ICONV
+#include <iconv.h>
 #else
-int AtoW(const char *src, wchar_t *dst, int bufsize, int max_len, int cp);
-int WtoA(const wchar_t *src, char *dst, int bufsize, int max_len, int cp);
-int U8toW(const char *src, wchar_t *dst, int bufsize, int max_len = -1);
-int WtoU8(const wchar_t *src, char *dst, int bufsize, int max_len = -1);
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 #endif
 
+#ifndef CP_ACP
+#define CP_ACP 0
+#endif
 
-/*
-返回值：TEXT_TYPE_ANSI-TEXT_TYPE_RAW
-_s：如果不是以0xfeff或0xbfbbef开头，不修改，否则+2或+3后返回
-*/
-int	TextDataType(const char* &_s, size_t size);
+#ifndef CP936
+#define CP936 936
+#endif
 
-class CCharsCodeConv
+/// <summary>
+/// 文字在GBK UTF8 和 UCS2编码之间转换
+/// </summary>
+
+template<uint32_t codepage>
+class StringCodeConvT
 {
 public:
-	CCharsCodeConv();
-	~CCharsCodeConv();
-	//返回的长度包含了\0
-	virtual int		GetConvertedStrLen() { return m_ConvertedStrLen - 1; }
+	StringCodeConvT() = default;
+	StringCodeConvT(const StringCodeConvT& other) = delete;
 
-protected:
+	StringCodeConvT(StringCodeConvT&& other);
 
-	void *	m_buffer;
-	int		m_ConvertedStrLen;
-	int		m_ok;
+	~StringCodeConvT() = default;
 
-};
+	template <size_t _Size>
+	StringCodeConvT(const char(&str)[_Size])
+	{
+		this->from_ansi(str, _Size - 1);
+	}
 
+	template <size_t _Size>
+	StringCodeConvT(const char8_t(&str)[_Size])
+	{
+		this->from_utf8((const char*)str, _Size - 1);
+	}
 
-class CAnsi2Ucs : public CCharsCodeConv
-{
-public:
-	CAnsi2Ucs(int cp) : codepage(cp) {}
-	virtual ~CAnsi2Ucs() {};
+	template <size_t _Size>
+	StringCodeConvT(const wchar_t(&str)[_Size])
+	{
+		this->from_wchar(str, _Size - 1);
+	}
 
-	const wchar_t *GetString(const char *_src, wchar_t *_dst = nullptr, int _dstsize = 0);	//ANSI和UNICODE互转
-	int		GetStrlen(const char *_src, wchar_t *_dst = nullptr, int _dstsize = 0);	//ANSI字符在对应的UNICODE的wcslen下的返回值
+	StringCodeConvT(const std::string& str);
+	StringCodeConvT(const std::u8string& str);
+	StringCodeConvT(const std::wstring& str);
+
+	StringCodeConvT&& copy_ansi(const std::string& str);
+	StringCodeConvT&& copy_utf8(const std::string& str);
+	StringCodeConvT&& copy_wchar(const std::wstring& str);
+
+	template <size_t _Size>
+	StringCodeConvT&& from_ansi(const char(&str)[_Size])
+	{
+		return this->from_ansi(str, _Size - 1);
+	}
+
+	template <size_t _Size>
+	StringCodeConvT&& from_utf8(const char(&str)[_Size])
+	{
+		return this->from_utf8(str, _Size - 1);
+	}
+
+	template <size_t _Size>
+	StringCodeConvT&& from_wchar(const wchar_t(&str)[_Size])
+	{
+		return this->from_wchar(str, _Size - 1);
+	}
+
+	StringCodeConvT&& from_ansi(const char* str, size_t _Size);
+	StringCodeConvT&& from_utf8(const char* str, size_t _Size);
+	StringCodeConvT&& from_wchar(const wchar_t* str, size_t _Size);
+
+	StringCodeConvT&& from_ansi(const std::string& str);
+	StringCodeConvT&& from_utf8(const std::string& str);
+	StringCodeConvT&& from_wchar(const std::wstring& str);
+
+	std::string to_ansi();
+	std::string to_utf8();
+	std::wstring to_wchar();
 
 private:
-	int		codepage;
-};
 
-class CUcs2Ansi : public CCharsCodeConv
-{
+	enum class CHAR_TYPE {
+		NONE,
+		ANSI,
+		UTF8,
+		UTF16LE
+	};
+
 public:
-	CUcs2Ansi(int cp) : codepage(cp) { }
-	virtual ~CUcs2Ansi() {};
+	int AtoW(const char* in, size_t insize, wchar_t* out, size_t outsize);
+	int WtoA(const wchar_t* in, size_t insize, char* out, size_t outsize);
 
-	const char *GetString(const wchar_t *_src, char *_dst = nullptr, int _dstsize = 0);
-	int		GetStrlen(const wchar_t *_src, char *_dst = nullptr, int _dstsize = 0);	//UNICODE字符在对应的ANSI的strlen下的返回值
+	int U8toW(const char* in, size_t insize, wchar_t* out, size_t outsize);
+	int WtoU8(const wchar_t* in, size_t insize, char* out, size_t outsize);
 
 private:
-	int		codepage;
+	void AtoW();
+	void WtoA();
+	void U8toW();
+	void WtoU8();
+
+	void U8toA();
+	void AtoU8();
+
+	std::string ansi_string;
+	std::wstring wchar_string;
+	std::string utf8_string;
+
+	std::string_view ansi_string_v;
+	std::wstring_view wchar_string_v;
+	std::string_view utf8_string_v;
+
+	CHAR_TYPE m_from_type = CHAR_TYPE::NONE;
+
+#if _USE_ICONV
+	constexpr auto codepage_str();
+#else
+	void assert_error(uint32_t dst, uint32_t src) const;
+#endif
+
 };
 
-class CU82Ucs : public CCharsCodeConv
-{
-public:
-	CU82Ucs(){}
-	virtual ~CU82Ucs() {};
-
-	const wchar_t *GetString(const char *_src, wchar_t *_dst = nullptr, int _dstsize = 0);	//ANSI和UNICODE互转
-	int		GetStrlen(const char *_src, wchar_t *_dst = nullptr, int _dstsize = 0);	//ANSI字符在对应的UNICODE的wcslen下的返回值
-};
-
-class CUcs2U8 : public CCharsCodeConv
-{
-public:
-	CUcs2U8(){}
-	virtual ~CUcs2U8() {};
-
-	const char *GetString(const wchar_t *_src, char *_dst = nullptr, int _dstsize = 0);
-	int		GetStrlen(const wchar_t *_src, char *_dst = nullptr, int _dstsize = 0);	//UNICODE字符在对应的ANSI的strlen下的返回值
-};
-
-class CTextConv2UCS2
-{
-public:
-	CTextConv2UCS2();
-	~CTextConv2UCS2();
-
-	const wchar_t* GetUnicodeString(const char* _str, int _strlen);
-
-private:
-	char*		unicode_str;
-
-	CAnsi2Ucs	cA2U;
-	CU82Ucs		c82U;
-};
-#endif //_USE_WIN_API
+typedef StringCodeConvT<CP_ACP> StringCodeConv;
+typedef StringCodeConvT<CP936> StringCodeConvChs;
 
 #endif //_CharsCodeConv_H_

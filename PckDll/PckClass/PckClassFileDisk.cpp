@@ -30,7 +30,7 @@ CPckClassFileDisk::CPckClassFileDisk()
 
 CPckClassFileDisk::~CPckClassFileDisk()
 {
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 #pragma region ¥≈≈Ãø’º‰¥Û–°

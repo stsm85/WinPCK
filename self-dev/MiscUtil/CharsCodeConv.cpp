@@ -6,320 +6,546 @@
 //
 // 此代码预计将会开源，任何基于此代码的修改发布请保留原作者信息
 // 
-// 2018.5.29
+// 2022.4.3
 //////////////////////////////////////////////////////////////////////
-
+//#include "pch.h"
 #include "CharsCodeConv.h"
 #include <stdint.h>
+#include <assert.h>
 
-//class chs_codecvt : public std::codecvt_byname<wchar_t, char, std::mbstate_t> {
-//public:
-//	chs_codecvt() : codecvt_byname("chs") { }
-//};
+constexpr char CH_INVALID = '_';
 
-class sys_codecvt : public std::codecvt_byname<wchar_t, char, std::mbstate_t> {
-public:
-	sys_codecvt() : codecvt_byname("") { }
-};
+template<uint32_t codepage>
+StringCodeConvT<codepage>::StringCodeConvT(StringCodeConvT&& other) {
+	this->m_from_type = other.m_from_type;
+	this->ansi_string = std::move(other.ansi_string);
+	this->utf8_string = std::move(other.utf8_string);
+	this->wchar_string = std::move(other.wchar_string);
 
-std::wstring AtoW(const std::string& src)
-{
-	std::wstring_convert<sys_codecvt> converter;
-	return converter.from_bytes(src);
+	this->ansi_string_v = std::move(other.ansi_string_v);
+	this->utf8_string_v = std::move(other.utf8_string_v);
+	this->wchar_string_v = std::move(other.wchar_string_v);
 }
 
-std::string WtoA(const std::wstring& src)
+template<uint32_t codepage>
+StringCodeConvT<codepage>::StringCodeConvT(const std::string& str)
 {
-	std::wstring_convert<sys_codecvt> converter;
-	return converter.to_bytes(src);
+	this->m_from_type = CHAR_TYPE::ANSI;
+	this->ansi_string_v = str;
 }
 
-std::wstring U8toW(const std::string& src)
+template<uint32_t codepage>
+StringCodeConvT<codepage>::StringCodeConvT(const std::u8string& str)
 {
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-	return converter.from_bytes(src);
+	this->m_from_type = CHAR_TYPE::UTF8;
+	this->utf8_string_v = std::move(std::string_view((const char*)str.data(), str.size()));
 }
 
-std::string WtoU8(const std::wstring& src)
+template<uint32_t codepage>
+StringCodeConvT<codepage>::StringCodeConvT(const std::wstring& str)
 {
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-	return converter.to_bytes(src);
+	this->m_from_type = CHAR_TYPE::UTF16LE;
+	this->wchar_string_v = str;
 }
 
-#if _USE_WIN_API
+template<uint32_t codepage>
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::copy_ansi(const std::string& str)
+{
+	this->m_from_type = CHAR_TYPE::ANSI;
+	this->ansi_string = str;
+	this->ansi_string_v = this->ansi_string;
 
-#include <Windows.h>
-int AtoW(const char *src, wchar_t *dst, int bufsize, int max_len, int cp)
-{
-	//返回的值是转换后的字符串使用strlen或wcslen的值+1
-	return	::MultiByteToWideChar(cp, 0, src, max_len, dst, bufsize);
-}
-int WtoA(const wchar_t *src, char *dst, int bufsize, int max_len, int cp)
-{
-	return	::WideCharToMultiByte(cp, 0, src, max_len, dst, bufsize, "_", 0);
+	return std::move(*this);
 }
 
-int U8toW(const char *src, wchar_t *dst, int bufsize, int max_len)
+template<uint32_t codepage>
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::copy_utf8(const std::string& str)
 {
-	//返回的值是转换后的字符串使用strlen或wcslen的值+1
-	return	::MultiByteToWideChar(CP_UTF8, 0, src, max_len, dst, bufsize);
-}
-int WtoU8(const wchar_t *src, char *dst, int bufsize, int max_len)
-{
-	return	::WideCharToMultiByte(CP_UTF8, 0, src, max_len, dst, bufsize, nullptr, 0);
-}
+	this->m_from_type = CHAR_TYPE::UTF8;
+	this->utf8_string = str;
+	this->utf8_string_v = this->utf8_string;
 
-#define DATATYPE_UTF8_DETECT_RTN {if(0 == *s) return TEXT_TYPE_RAW;else	{isNotUTF8 = TRUE; break;}}	
-
-static int DataType(const char *_s, size_t size)
-{
-	const uint8_t *s = (const uint8_t *)_s;
-	BOOL  isNotUTF8 = FALSE;
-	 
-	while (*s) {
-		if (*s <= 0x7f) {
-		}
-		else if (*s <= 0xdf) {
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN
-		}
-		else if (*s <= 0xef) {
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-		}
-		else if (*s <= 0xf7) {
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-		}
-		else if (*s <= 0xfb) {
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-		}
-		else if (*s <= 0xfd) {
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			if ((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-		}
-		++s;
-	}
-
-	while (*s) {
-		++s;
-	}
-
-	if (size > ((char*)s - _s))
-		return TEXT_TYPE_RAW;
-	else
-		return isNotUTF8 ? TEXT_TYPE_ANSI : TEXT_TYPE_UTF8;
-
+	return std::move(*this);
 }
 
-#undef DATATYPE_UTF8_DETECT_RTN
-
-int	TextDataType(const char* &_s, size_t size)
+template<uint32_t codepage>
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::copy_wchar(const std::wstring& str)
 {
-	int textType = TEXT_TYPE_ANSI;
-	if (0 != size) {
+	this->m_from_type = CHAR_TYPE::UTF16LE;
+	this->wchar_string = str;
+	this->wchar_string_v = this->wchar_string;
 
-		*(uint16_t*)(_s + size) = 0;
-
-		if (0xfeff == *(uint16_t*)_s) {
-
-			textType = TEXT_TYPE_UCS2;
-			_s += 2;
-		}
-		else if ((0xbbef == *(uint16_t*)_s) && (0xbf == *(_s + 3))) {
-
-			textType = TEXT_TYPE_UTF8;
-			_s += 3;
-		}
-		else {
-			textType = DataType((char*)_s, size);
-		}
-	}
-	return textType;
-}
-#pragma region CTextConv2UCS2
-
-CTextConv2UCS2::CTextConv2UCS2():
-	unicode_str(nullptr),
-	cA2U(CP_ACP)
-{
+	return std::move(*this);
 }
 
-CTextConv2UCS2::~CTextConv2UCS2()
+template<uint32_t codepage>
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_ansi(const char* str, size_t _Size)
 {
-	if (nullptr != unicode_str)
-		free(unicode_str);
+	this->m_from_type = CHAR_TYPE::ANSI;
+	this->ansi_string_v = std::move(std::string_view(str, _Size));;
+	return std::move(*this);
 }
 
-const wchar_t* CTextConv2UCS2::GetUnicodeString(const char* _str, int _strlen)
+template<uint32_t codepage>
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_utf8(const char* str, size_t _Size)
 {
+	this->m_from_type = CHAR_TYPE::UTF8;
+	this->utf8_string_v = std::move(std::string_view(str, _Size));
+	return std::move(*this);
+}
 
-	unicode_str = (char*)malloc(_strlen + 2);
+template<uint32_t codepage>
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_wchar(const wchar_t* str, size_t _Size)
+{
+	this->m_from_type = CHAR_TYPE::UTF16LE;
+	this->wchar_string_v = std::move(std::wstring_view(str, _Size));
+	return std::move(*this);
+}
 
-	if (nullptr == unicode_str)
-		return nullptr;
+template<uint32_t codepage>
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_ansi(const std::string& str)
+{
+	this->m_from_type = CHAR_TYPE::ANSI;
+	this->ansi_string_v = str;
+	return std::move(*this);
+}
 
-	*(unicode_str + _strlen) = 0;
-	memcpy(unicode_str, _str, _strlen);
+template<uint32_t codepage>
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_utf8(const std::string& str)
+{
+	this->m_from_type = CHAR_TYPE::UTF8;
+	this->utf8_string_v = str;
+	return std::move(*this);
+}
 
-	const char* _realstrbuf = unicode_str;
+template<uint32_t codepage>
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_wchar(const std::wstring& str)
+{
+	this->m_from_type = CHAR_TYPE::UTF16LE;
+	this->wchar_string_v = str;
+	return std::move(*this);
+}
+#if _USE_ICONV
 
-	int textType = TextDataType(_realstrbuf, _strlen);
 
-	switch (textType)
+
+template<uint32_t codepage>
+constexpr auto StringCodeConvT<codepage>::codepage_str()
+{
+	switch (codepage)
 	{
-	case TEXT_TYPE_ANSI:
-
-		return cA2U.GetString(_realstrbuf);
-		break;
-
-	case TEXT_TYPE_UCS2:
-		
-		return (wchar_t*)_realstrbuf;
-		break;
-
-	case TEXT_TYPE_UTF8:
-		return c82U.GetString(_realstrbuf);
-		break;
-
+	case CP936:
+		return "GBK";
+	case CP_ACP:
 	default:
+		return "";
+	}
+}
 
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::AtoW()
+{
+	/*
+	//IGNORE
+	//TRANSLIT
+	*/
+	auto cd = iconv_open("UTF-16LE", this->codepage_str());
+
+	if (cd == 0)
+		throw std::runtime_error("iconv_open error");
+
+	this->wchar_string.resize(this->ansi_string_v.size());
+
+	const char* in = this->ansi_string_v.data();
+	char* out = (char*)this->wchar_string.data();
+
+	size_t in_size = this->ansi_string_v.size();
+	size_t out_size = this->wchar_string.size() * sizeof(wchar_t);
+
+	while (0 != iconv(cd, &in, &in_size, &out, &out_size) && 0 != in_size)
+	{
+		//
+		if (0 != (0x80 & *in)) [[likely]]
+			{
+				in += 2;
+				in_size -= 2;
+			}
+		else {
+			in++;
+			in_size--;
+		}
+		*(uint16_t*)out = CH_INVALID;
+		out += sizeof(wchar_t);
+		out_size -= sizeof(wchar_t);
+	}
+	iconv_close(cd);
+
+	auto real_size = this->wchar_string.size() - out_size / sizeof(wchar_t);
+	this->wchar_string.resize(real_size);
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::WtoA()
+{
+	/*
+	//IGNORE
+	//TRANSLIT
+	*/
+	auto cd = iconv_open(this->codepage_str()/*"GBK//TRANSLIT"*/, "UTF-16LE");
+
+	if (cd == 0)
+		throw std::runtime_error("iconv_open error");
+
+	this->ansi_string.resize(this->wchar_string_v.size() * sizeof(wchar_t));
+
+	const char* in = (const char*)this->wchar_string_v.data();
+	char* out = (char*)this->ansi_string.data();
+
+	size_t in_size = this->wchar_string_v.size() * sizeof(wchar_t);
+	size_t out_size = this->ansi_string.size();
+
+	while (0 != iconv(cd, &in, &in_size, &out, &out_size) && 0 != in_size)
+	{
+		in += sizeof(wchar_t);
+		in_size -= sizeof(wchar_t);
+
+		*out = CH_INVALID;
+		out++;
+		out_size--;
+	}
+	iconv_close(cd);
+
+	auto real_size = this->ansi_string.size() - out_size;
+	this->ansi_string.resize(real_size);
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::U8toW()
+{
+	auto cd = iconv_open("UTF-16LE//IGNORE", "UTF-8");
+
+	if (cd == 0)
+		throw std::runtime_error("iconv_open error");
+
+	this->wchar_string.resize(this->utf8_string_v.size());
+
+	const char* in = (const char*)this->utf8_string_v.data();
+	char* out = (char*)this->wchar_string.data();
+
+	size_t in_size = this->utf8_string_v.size();
+	size_t out_size = this->wchar_string.size() * sizeof(wchar_t);
+
+
+	auto ret = iconv(cd, &in, &in_size, &out, &out_size);
+
+	assert(0 != ret);
+
+	iconv_close(cd);
+
+	auto real_size = this->wchar_string.size() - out_size / sizeof(wchar_t);
+	this->wchar_string.resize(real_size);
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::WtoU8()
+{
+
+	auto cd = iconv_open("UTF-8", "UTF-16LE");
+
+	if (cd == 0)
+		throw std::runtime_error("iconv_open error");
+
+	this->utf8_string.resize(this->wchar_string_v.size() * 3);
+
+	const char* in = (const char*)this->wchar_string_v.data();
+	char* out = (char*)this->utf8_string.data();
+
+	size_t in_size = this->wchar_string_v.size() * sizeof(wchar_t);
+	size_t out_size = this->utf8_string.size();
+
+
+	auto ret = iconv(cd, &in, &in_size, &out, &out_size);
+
+	assert(0 != ret);
+
+	iconv_close(cd);
+
+	auto real_size = this->utf8_string.size() - out_size;
+	this->utf8_string.resize(real_size);
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::U8toA()
+{
+
+	auto utf8_bytes = [](unsigned char s)
+		{
+			if (s <= 0x7f) {
+				return 1;
+			}
+			else if (s <= 0xdf) {
+				return 2;
+			}
+			else if (s <= 0xef) [[likely]] {
+				return 3;
+				}
+			else if (s <= 0xf7) {
+				return 4;
+			}
+			else if (s <= 0xfb) {
+				return 5;
+			}
+			else if (s <= 0xfd) {
+				return 6;
+			}
+			return 1;
+		};
+
+	auto cd = iconv_open(this->codepage_str()/*"//TRANSLIT"*/, "UTF-8");
+
+	if (cd == 0)
+		throw std::runtime_error("iconv_open error");
+
+	this->ansi_string.resize(this->utf8_string_v.size());
+
+	const char* in = (const char*)this->utf8_string_v.data();
+	char* out = (char*)this->ansi_string.data();
+
+	size_t in_size = this->utf8_string_v.size();
+	size_t out_size = this->ansi_string.size();
+
+
+	while (0 != iconv(cd, &in, &in_size, &out, &out_size) && 0 != in_size)
+	{
+		auto bytes = utf8_bytes(*(unsigned char*)in);
+		in += bytes;
+		in_size -= bytes;
+
+		*out = CH_INVALID;
+		out++;
+		out_size--;
+	}
+
+	iconv_close(cd);
+
+	auto real_size = this->ansi_string.size() - out_size;
+	this->ansi_string.resize(real_size);
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::AtoU8()
+{
+
+	auto cd = iconv_open("UTF-8", this->codepage_str());
+
+	if (cd == 0)
+		throw std::runtime_error("iconv_open error");
+
+	this->utf8_string.resize(this->ansi_string_v.size() * 3);
+
+	const char* in = (const char*)this->ansi_string_v.data();
+	char* out = (char*)this->utf8_string.data();
+
+	size_t in_size = this->ansi_string_v.size();
+	size_t out_size = this->utf8_string.size();
+
+	auto ret = iconv(cd, &in, &in_size, &out, &out_size);
+
+	assert(0 != ret);
+	iconv_close(cd);
+
+	auto real_size = this->utf8_string.size() - out_size;
+	this->utf8_string.resize(real_size);
+}
+
+#else //WINDOWS API
+
+template<uint32_t codepage>
+int StringCodeConvT<codepage>::AtoW(const char* in, size_t insize, wchar_t* out,size_t outsize)
+{
+	return ::MultiByteToWideChar(codepage, 0, in, insize, out, outsize);
+}
+
+template<uint32_t codepage>
+int StringCodeConvT<codepage>::WtoA(const wchar_t* in, size_t insize, char* out, size_t outsize)
+{
+	return ::WideCharToMultiByte(codepage, 0, in, insize, out, outsize, "_", 0);
+}
+
+template<uint32_t codepage>
+int StringCodeConvT<codepage>::U8toW(const char* in, size_t insize, wchar_t* out, size_t outsize)
+{
+	return ::MultiByteToWideChar(CP_UTF8, 0, in, insize, out, outsize);
+}
+
+template<uint32_t codepage>
+int StringCodeConvT<codepage>::WtoU8(const wchar_t* in, size_t insize, char* out, size_t outsize)
+{
+	return ::WideCharToMultiByte(CP_UTF8, 0, in, insize, out, outsize, nullptr, 0);
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::AtoW()
+{
+	this->wchar_string.resize(this->ansi_string_v.size());
+
+	auto len = ::MultiByteToWideChar(codepage, 0, this->ansi_string_v.data(), this->ansi_string_v.size(), this->wchar_string.data(), this->wchar_string.size());
+	this->wchar_string.resize(len);
+
+	this->wchar_string_v = this->wchar_string;
+
+	this->assert_error(len, this->ansi_string.size());
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::WtoA()
+{
+	this->ansi_string.resize(this->wchar_string_v.size() * 2);
+	auto len = ::WideCharToMultiByte(codepage, 0, this->wchar_string_v.data(), this->wchar_string_v.size(), this->ansi_string.data(), this->ansi_string.size(), "_", 0);
+	this->ansi_string.resize(len);
+
+	this->ansi_string_v = this->ansi_string;
+
+	this->assert_error(len, this->wchar_string.size());
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::U8toW()
+{
+
+	this->wchar_string.resize(this->utf8_string_v.size());
+
+	auto len = ::MultiByteToWideChar(CP_UTF8, 0, this->utf8_string_v.data(), this->utf8_string_v.size(), this->wchar_string.data(), this->wchar_string.size());
+	this->wchar_string.resize(len);
+
+	this->wchar_string_v = this->wchar_string;
+
+	this->assert_error(len, this->utf8_string.size());
+
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::WtoU8()
+{
+	this->utf8_string.resize(this->wchar_string_v.size() * 3);
+	auto len = ::WideCharToMultiByte(CP_UTF8, 0, this->wchar_string_v.data(), this->wchar_string_v.size(), this->utf8_string.data(), this->utf8_string.size(), nullptr, 0);
+	this->utf8_string.resize(len);
+
+	this->utf8_string_v = this->utf8_string;
+
+	this->assert_error(len, this->wchar_string.size());
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::U8toA()
+{
+	this->U8toW();
+	this->WtoA();
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::AtoU8()
+{
+	this->AtoW();
+	this->WtoU8();
+}
+
+template<uint32_t codepage>
+void StringCodeConvT<codepage>::assert_error(uint32_t dst, uint32_t src) const
+{
+	if (0 == dst && 0 != src)
+	{
+		std::string errmsg("[StringCodeConv] Unknown error.");
+		auto e = ::GetLastError();
+		if (0 != e)
+		{
+			LPVOID lpMsgBuf; // temporary message buffer
+			std::string szMessage;
+
+			// retrieve a message from the system message table
+			if (::FormatMessageA(
+				FORMAT_MESSAGE_ALLOCATE_BUFFER |
+				FORMAT_MESSAGE_FROM_SYSTEM |
+				FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				e,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+				(LPSTR)&lpMsgBuf,
+				0,
+				NULL))
+			{
+				errmsg.assign("[StringCodeConv] ");
+				errmsg.append((char*)lpMsgBuf);
+				LocalFree(lpMsgBuf);
+			}
+		}
+
+		throw std::runtime_error(errmsg);
+	}
+}
+
+#endif
+
+template<uint32_t codepage>
+std::string StringCodeConvT<codepage>::to_ansi()
+{
+
+	switch (this->m_from_type)
+	{
+	[[likely]] case CHAR_TYPE::UTF16LE:
+		this->WtoA();
 		break;
+	case CHAR_TYPE::UTF8:
+		this->U8toA();
+		break;
+	[[unlikely]] case CHAR_TYPE::NONE:
+	[[unlikely]] case CHAR_TYPE::ANSI:
+		throw std::runtime_error("convert route is invalid");
+		break;
+	}
+	return std::move(this->ansi_string);
+}
 
+template<uint32_t codepage>
+std::string StringCodeConvT<codepage>::to_utf8()
+{
+	switch (this->m_from_type)
+	{
+	[[likely]] case CHAR_TYPE::UTF16LE:
+		this->WtoU8();
+		break;
+	case CHAR_TYPE::ANSI:
+		this->AtoU8();
+		break;
+	[[unlikely]] case CHAR_TYPE::NONE:
+	[[unlikely]] case CHAR_TYPE::UTF8:
+		throw std::runtime_error("convert route is invalid");
+		break;
 	}
 
-	return nullptr;
+	return std::move(this->utf8_string);
 }
 
-#pragma endregion
-
-#pragma region CCharsCodeConv
-
-CCharsCodeConv::CCharsCodeConv() : m_ok(FALSE), m_buffer(nullptr)
-{}
-
-CCharsCodeConv::~CCharsCodeConv()
+template<uint32_t codepage>
+std::wstring StringCodeConvT<codepage>::to_wchar()
 {
-	if(nullptr != m_buffer)free(m_buffer);
-}
 
-const wchar_t * CAnsi2Ucs::GetString(const char *_src, wchar_t *_dst, int _dstsize)
-{
-	if(nullptr != _dst) {
-		//assert(0 != _dstsize);
-		m_ConvertedStrLen = AtoW(_src, _dst, _dstsize, -1, codepage);
-	} else {
-		int		len;
-		if((len = AtoW(_src, nullptr, 0, -1, codepage)) > 0) {
-			if(nullptr != m_buffer)free(m_buffer);
-			m_buffer = malloc(len * sizeof(wchar_t));
-			m_ConvertedStrLen = AtoW(_src, (wchar_t*)m_buffer, len, -1, codepage);
-		}
-	}
-	return	(wchar_t*)m_buffer;
-}
-
-int	CAnsi2Ucs::GetStrlen(const char *_src, wchar_t *_dst, int _dstsize)
-{
-	if(nullptr != _dst) {
-		//assert(0 != _dstsize);
-		return (AtoW(_src, _dst, _dstsize, -1, codepage) - 1);
-	} else {
-		return (AtoW(_src, nullptr, 0, -1, codepage) - 1);
+	switch (this->m_from_type)
+	{
+	case CHAR_TYPE::UTF8:
+		this->U8toW();
+		break;
+	[[likely]] case CHAR_TYPE::ANSI:
+		this->AtoW();
+		break;
+	[[unlikely]] case CHAR_TYPE::NONE:
+	[[unlikely]] case CHAR_TYPE::UTF16LE:
+		throw std::runtime_error("convert route is invalid");
+		break;
 	}
 
+	return std::move(this->wchar_string);
 }
 
-const char * CUcs2Ansi::GetString(const wchar_t *_src, char *_dst, int _dstsize)//_dstsize是指数组元素个数
-{
-
-	if(nullptr != _dst) {
-
-		//assert(0 != _dstsize);
-		m_ConvertedStrLen = WtoA(_src, _dst, _dstsize, -1, codepage);
-
-	} else {
-
-		int		len;
-		if((len = WtoA(_src, nullptr, 0, -1, codepage)) > 0) {
-			if(nullptr != m_buffer)free(m_buffer);
-			m_buffer = malloc(len * sizeof(char));
-			m_ConvertedStrLen = WtoA(_src, (char*)m_buffer, len, -1, codepage);
-		}
-	}
-	return	(char*)m_buffer;
-
-}
-
-int	CUcs2Ansi::GetStrlen(const wchar_t *_src, char *_dst, int _dstsize)
-{
-	if(nullptr != _dst) {
-		return (WtoA(_src, _dst, _dstsize, -1, codepage) - 1);
-	} else {
-		return (WtoA(_src, nullptr, 0, -1, codepage) - 1);
-	}
-}
-
-const char * CUcs2U8::GetString(const wchar_t *_src, char *_dst, int _dstsize)//_dstsize是指数组元素个数
-{
-
-	if(nullptr != _dst) {
-		//assert(0 != _dstsize);
-		m_ConvertedStrLen = WtoU8(_src, _dst, _dstsize);
-	} else {
-
-		int		len;
-		if((len = WtoU8(_src, nullptr, 0)) > 0) {
-			if(nullptr != m_buffer)free(m_buffer);
-			m_buffer = malloc(len * sizeof(char));
-			m_ConvertedStrLen = WtoU8(_src, (char*)m_buffer, len);
-		}
-	}
-	return	(char*)m_buffer;
-}
-
-int	CUcs2U8::GetStrlen(const wchar_t *_src, char *_dst, int _dstsize)
-{
-	if(nullptr != _dst) {
-		return (WtoU8(_src, _dst, _dstsize) - 1);
-	} else {
-		return (WtoU8(_src, nullptr, 0) - 1);
-	}
-}
-
-const wchar_t * CU82Ucs::GetString(const char *_src, wchar_t *_dst, int _dstsize)
-{
-	if(nullptr != _dst) {
-		//assert(0 != _dstsize);
-		m_ConvertedStrLen = U8toW(_src, _dst, _dstsize);
-	} else {
-		int		len;
-		if((len = U8toW(_src, nullptr, 0)) > 0) {
-			if(nullptr != m_buffer)free(m_buffer);
-			m_buffer = malloc(len * sizeof(wchar_t));
-			m_ConvertedStrLen = U8toW(_src, (wchar_t*)m_buffer, len);
-		}
-	}
-	return	(wchar_t*)m_buffer;
-}
-
-int	CU82Ucs::GetStrlen(const char *_src, wchar_t *_dst, int _dstsize)
-{
-	if(nullptr != _dst) {
-		//assert(0 != _dstsize);
-		return (U8toW(_src, _dst, _dstsize) - 1);
-	} else {
-		return (U8toW(_src, nullptr, 0) - 1);
-	}
-
-}
-
-#pragma endregion
-
-#endif //_USE_WIN_API
+template class StringCodeConvT<CP_ACP>;
+template class StringCodeConvT<CP936>;

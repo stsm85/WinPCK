@@ -20,7 +20,7 @@ CZupClass::~CZupClass()
 {
 	if(NULL != m_lpZupIndexTable)
 		free(m_lpZupIndexTable);
-	Logger.OutputVsIde(__FUNCTION__"\r\n");
+	Logger->trace(std::source_location::current().function_name());
 }
 
 CONST	LPPCKINDEXTABLE CZupClass::GetPckIndexTable()
@@ -52,7 +52,7 @@ void CZupClass::BuildDirTree()
 			uint8_t	*lpbuffer = cReadfile.View(lpZupIndexTable->cFileIndex.dwAddressOffset, lpZupIndexTable->cFileIndex.dwFileCipherTextSize);
 			if(NULL == lpbuffer) {
 
-				Logger_el(TEXT_VIEWMAPNAME_FAIL, m_PckAllInfo.szFilename);
+				Logger_el(UCSTEXT(TEXT_VIEWMAPNAME_FAIL), m_PckAllInfo.szFilename);
 				return;
 			}
 
@@ -78,9 +78,13 @@ void CZupClass::BuildDirTree()
 
 			cReadfile.UnmapViewAll();
 		} else {
-			//直接复制
+			//直接复制，此部分不需要解码
 			memcpy(lpZupIndexTable, lpPckIndexTable, sizeof(PCKINDEXTABLE));
-			CPckClassCodepage::PckFilenameCode2UCS(lpZupIndexTable->cFileIndex.szFilename, lpZupIndexTable->cFileIndex.szwFilename, sizeof(lpZupIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
+			lpZupIndexTable->nFilelenBytesW = CPckClassCodepage::PckFilenameCode2UCS(
+				lpZupIndexTable->cFileIndex.szFilename, 
+				lpZupIndexTable->nFilelenBytes,
+				lpZupIndexTable->cFileIndex.szwFilename, 
+				sizeof(lpZupIndexTable->cFileIndex.szwFilename) / sizeof(wchar_t));
 		}
 
 		lpPckIndexTable++;

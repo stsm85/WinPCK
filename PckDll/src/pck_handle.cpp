@@ -757,6 +757,8 @@ WINPCK_API uint32_t	pck_getUpdateResult_FinalFileCount()
 	return this_handle.GetUpdateResult_FinalFileCount();
 }
 
+
+#if 0
 //日志
 WINPCK_API void		log_regShowFunc(ShowLogW _ShowLogW)
 {
@@ -787,7 +789,7 @@ define_one_pck_log(E);
 define_one_pck_log(D);
 
 #undef define_one_pck_log
-
+#endif
 
 //打开、关闭、复原等事件注册
 WINPCK_API void		pck_regMsgFeedback(void* pTag, FeedbackCallback _FeedbackCallBack)

@@ -39,25 +39,25 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 
 		lpszTextShow = (char*)*buf;
 		
-		switch (textType = TextDataType(lpszTextShow, dwSize)) {
+		switch (textType = TextEncoding::TextDataType(lpszTextShow, dwSize)) {
 
-		case TEXT_TYPE_UCS2:
+		case TextEncoding::EncodingType::UCS2:
 			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (Unicode)", lpszFile);
 			SetDlgItemTextW(IDC_RICHEDIT_VIEW, (wchar_t *)lpszTextShow);
 			break;
 
-		case TEXT_TYPE_UTF8:
+		case TextEncoding::EncodingType::UTF8:
 			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (UTF-8)", lpszFile);
 			{
 				CU82Ucs cU82U;
 				SetDlgItemTextW(IDC_RICHEDIT_VIEW, cU82U.GetString(lpszTextShow));
 			}
 			break;
-		case TEXT_TYPE_ANSI:
+		case TextEncoding::EncodingType::ANSI:
 			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s", lpszFile);
 			SetDlgItemTextA(IDC_RICHEDIT_VIEW, (char *)lpszTextShow);
 			break;
-		case TEXT_TYPE_RAW:
+		case TextEncoding::EncodingType::RAW:
 			if (VIEW_RAW_MAX_BUFFER < dwSize)
 				dwSize = VIEW_RAW_MAX_BUFFER;
 
@@ -96,54 +96,6 @@ BOOL TViewDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 	}
 	return	FALSE;
 }
-
-#if 0
-#define DATATYPE_UTF8_DETECT_RTN {if(0 == *s) return TEXT_TYPE_RAW;else	{isNotUTF8 = TRUE; break;}}	
-
-int TViewDlg::DataType(const char *_s, size_t size)
-{
-	const u_char *s = (const u_char *)_s;
-	BOOL  isNotUTF8 = FALSE;
-
-	while(*s) {
-		if(*s <= 0x7f) {
-		} else if(*s <= 0xdf) {
-			if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN
-		} else if(*s <= 0xef) {
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			} else if(*s <= 0xf7) {
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			} else if(*s <= 0xfb) {
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			} else if(*s <= 0xfd) {
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-				if((*++s & 0xc0) != 0x80) DATATYPE_UTF8_DETECT_RTN;
-			}
-			++s;
-	}
-
-	while(*s) {
-		++s;
-	}
-
-	//int a = (char*)s - _s;
-
-	if(size > ((char*)s - _s))
-		return TEXT_TYPE_RAW;
-	else
-		return isNotUTF8 ? TEXT_TYPE_ANSI : TEXT_TYPE_UTF8;
-
-}
-#endif
 
 void TViewDlg::ShowRaw(LPBYTE lpbuf, size_t rawlength)
 {
