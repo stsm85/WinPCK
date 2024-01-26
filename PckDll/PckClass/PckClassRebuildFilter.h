@@ -5,7 +5,7 @@
 class CPckClassRebuildFilter
 {
 private:
-	typedef enum { OP_CheckFile = 0, OP_Protect, OP_Delete, OP_Rmdir, OP_Unknown } SCRIPTOP;
+	enum class SCRIPTOP { OP_CheckFile, OP_Protect, OP_Delete, OP_Rmdir, OP_Unknown };
 
 	typedef struct _FILEOPS
 	{

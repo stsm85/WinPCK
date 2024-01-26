@@ -47,3 +47,17 @@ void TInstDlg::SetStatusBarInfo(LPCWSTR lpszText)
 {
 	this->SetStatusBarText(4, lpszText);
 }
+
+
+void TInstDlg::log_callback(const spdlog::details::log_msg& msg)
+{
+
+	if (spdlog::level::off == msg.level)
+	{
+		this->SetStatusBarInfo(StringCodeConv().from_utf8(msg.payload.data(), msg.payload.size()).to_wchar().c_str());
+	}
+	else if (spdlog::level::warn <= msg.level)
+	{
+		this->m_logdlg.ShowWindow(SW_SHOW);
+	}
+}

@@ -325,6 +325,7 @@
   <ItemGroup>
     <ClInclude Include="globals.h" />
     <ClInclude Include="guipch.h" />
+    <ClInclude Include="loggerGuiSink.h" />
     <ClInclude Include="tStripDlg.h" />
     <ClInclude Include="tAttrDlg.h" />
     <ClInclude Include="tCompressOptDlg.h" />
@@ -366,6 +367,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Libraries\ShowImage\ShowImage.vcxproj">
       <Project>{92c6653a-9b1f-40bf-b56a-ef629d657e43}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\logger\spdloghelper\spdloghelper.vcxproj">
+      <Project>{c8e4df11-7839-464a-8f52-9f6b1a72fdc2}</Project>
     </ProjectReference>
     <ProjectReference Include="..\PckDll\WinPCK_dll.vcxproj">
       <Project>{b2803419-fdec-4f7d-b00c-e002d6ab5f56}</Project>

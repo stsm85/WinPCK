@@ -1,20 +1,23 @@
 #pragma once
+//////////////////////////////////////////////////////////////////////
+// TextLineSpliter.h
+// 
+//
+// 此程序由 李秋枫/stsm/liqf 编写
+//
+// 此代码预计将会开源，任何基于此代码的修改发布请保留原作者信息
+// 
+// 2024.1.1
+//////////////////////////////////////////////////////////////////////
+
+
 #include <string>
 #include <vector>
 #include <regex>
 
-//#define LINE_TRIM_LEFT		1
-//#define LINE_TRIM_RIGHT		2
-//#define LINE_EMPTY_DELETE	4
-
-//template <class T>
-//using Tx = std::basic_string<T, char_traits<T>, allocator<T>>;
-//, template<typename VELEM, typename = std::char_traits<VELEM>, typename = std::allocator<VELEM>> class TSTRING = std::basic_string>
-
 /// <summary>
 /// 文本按行分割
 /// </summary>
-
 
 enum class SPLIT_FLAG
 {

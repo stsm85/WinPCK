@@ -121,7 +121,8 @@ protected:
 
     virtual void sink_it_(const details::log_msg &msg) override
     {
-
+		if(spdlog::level::off == msg.level)
+			return;
         while (this->GetLineCount() > this->max_lines_)
         {
             this->DeleteLine(0, this->lines_per_delete);//É¾³ý10ÐÐ

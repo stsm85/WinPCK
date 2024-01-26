@@ -22,16 +22,6 @@ private:
 #define __ExceptionWithLine(msg, file, func, line) MyException( ##msg " at: "##file ", function: " func ", line: "#line)
 #define _ExceptionWithLine(msg, file, func, line) __ExceptionWithLine(msg, file, func, line)
 #define MyExceptionEx(msg) _ExceptionWithLine(msg, __FILE__, __FUNCTION__, __LINE__)
-#if 0
-template<class T, typename... Args>
-std::exception&& PckExceptionEx(const std::string& msg, Args&&...args)
-{
-	//auto fmtstr = CppFMT::vformat(CppFMT::string_view(fmt, _Size), CppFMT::make_format_args(std::forward<Args>(args)...));
-	auto fmtstr = CppFMT::vformat(msg, CppFMT::make_format_args(std::forward<Args>(args)...));
-	return MyException(fmtstr);
-}
-#endif
-
 
 class detectversion_error : public std::exception { // base of all generic_error exceptions
 public:

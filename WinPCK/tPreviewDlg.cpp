@@ -98,7 +98,7 @@ BOOL CPriviewInDlg::Show(const PCK_UNIFIED_FILE_ENTRY* const lpPckFileIndexToSho
 	if(NULL == m_buffer) {
 
 		if(0 != dwSize)
-			pck_logEA("malloc memory fail");
+			Logger.error("malloc memory fail");
 
 		delete dlg;
 		return FALSE;

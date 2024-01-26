@@ -12,7 +12,7 @@
 #include <pch.h>
 #include "PckClass.h"
 
-BOOL CPckClass::MountPckFile(LPCWSTR	szFile)
+BOOL CPckClass::MountPckFile(const wchar_t* szFile)
 {
 	try {
 		if (!DetectPckVerion(szFile))

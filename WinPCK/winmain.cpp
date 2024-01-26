@@ -80,7 +80,11 @@ BOOL TInstDlg::EvCreate(LPARAM lParam)
 	//MoveWindow((cx - xsize) / 2, (cy - ysize) / 2, xsize, ysize, TRUE);
 
 	//界面和数据初始化
-	SetWindowTextW(THIS_MAIN_CAPTION);
+	SetWindowTextW(_CRT_WIDE(THIS_MAIN_CAPTION));
+
+	//添加回调
+	Logger.append_callback_sink(std::bind(&TInstDlg::log_callback, this, std::placeholders::_1));
+
 	//初始化数据
 	initParams();
 

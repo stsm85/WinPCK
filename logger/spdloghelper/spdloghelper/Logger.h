@@ -1,9 +1,11 @@
 #pragma once
-
 #include <spdlog/spdlog.h>
-#include <spdlog/fmt/xchar.h>
+#include <spdlog/sinks/callback_sink.h>
 
-#include <CharsCodeConv.h>
+#include <spdlog/fmt/xchar.h>
+#include <locale>
+
+#define ENABLE_WINEDIT_LOGGER 1
 
 constexpr auto DEFAULT_LOG_FORMAT = "[%Y-%m-%d %H:%M:%S] %L: %v";
 constexpr auto DEFAULT_LOGGER_NAME = "main";
@@ -19,11 +21,114 @@ std::string get_date();
 std::string get_datetime();
 std::string get_datetime2();
 
+namespace spdlogger {
+
+#define STRING_ENABLE_IF  std::enable_if_t<std::is_same<T, std::string_view>::value || \
+	std::is_same<T, std::string>::value || \
+	std::is_same<T, CppFMT::string_view>::value, \
+	int> = 0
+
+#define WSTRING_ENABLE_IF  std::enable_if_t<std::is_same<T, std::wstring_view>::value || \
+	std::is_same<T, std::wstring>::value || \
+	std::is_same<T, CppFMT::wstring_view>::value, \
+	int> = 0
+
+	std::string WtoA(const wchar_t* from, size_t size);
+	std::wstring AtoW(const char* from, size_t size);
+	std::string WtoU8(const wchar_t* from, size_t size);
+	std::wstring U8toW(const char* from, size_t size);
+
+	template<typename T, WSTRING_ENABLE_IF>
+	std::string WtoA(const T& from)
+	{
+		return std::move(WtoA(from.data(), from.size()));
+	}
+
+	template<typename T, STRING_ENABLE_IF>
+	std::wstring AtoW(const T& from)
+	{
+		return std::move(AtoW(from.data(), from.size()));
+	}
+
+	template<typename T, WSTRING_ENABLE_IF>
+	std::string WtoU8(const T& from)
+	{
+		return std::move(WtoU8(from.data(), from.size()));
+	}
+
+	template<typename T, STRING_ENABLE_IF>
+	std::wstring U8toW(const T& from)
+	{
+		return std::move(U8toW(from.data(), from.size()));
+	}
+
+	template <size_t _Size>
+	std::string WtoA(const wchar_t(&str)[_Size])
+	{
+		return WtoA(str, _Size - 1);
+	}
+
+	template <size_t _Size>
+	std::wstring AtoW(const char(&str)[_Size])
+	{
+		return AtoW(str, _Size - 1);
+	}
+	template <size_t _Size>
+	std::string WtoU8(const wchar_t(&str)[_Size])
+	{
+		return WtoU8(str, _Size - 1);
+	}
+
+	template <size_t _Size>
+	std::wstring U8toW(const char(&str)[_Size])
+	{
+		return U8toW(str, _Size - 1);
+	}
+
+	template<typename T, typename Tr = std::remove_pointer_t<T>, std::enable_if_t<(std::is_same<T, wchar_t*>::value || std::is_same<T, const wchar_t*>::value) && std::is_pointer<T>::value, int> = 0>
+	std::string WtoA(T from)
+	{
+		const auto size = std::char_traits<Tr>::length(from);
+		return std::move(WtoA(from, size));
+	}
+
+	template<typename T, typename Tr = std::remove_pointer_t<T>, std::enable_if_t<(std::is_same<T, char*>::value || std::is_same<T, const char*>::value) && std::is_pointer<T>::value, int> = 0>
+	std::wstring AtoW(T from)
+	{
+		const auto size = std::char_traits<Tr>::length(from);
+		return std::move(AtoW(from, size));
+	}
+
+	template<typename T, typename Tr = std::remove_pointer_t<T>, std::enable_if_t<(std::is_same<T, wchar_t*>::value || std::is_same<T, const wchar_t*>::value) && std::is_pointer<T>::value, int> = 0>
+	std::string WtoU8(T from)
+	{
+		const auto size = std::char_traits<Tr>::length(from);
+		return std::move(WtoU8(from, size));
+	}
+
+	template<typename T, typename Tr = std::remove_pointer_t<T>, std::enable_if_t<(std::is_same<T, char*>::value || std::is_same<T, const char*>::value) && std::is_pointer<T>::value, int> = 0>
+	std::wstring U8toW(T from)
+	{
+		const auto size = std::char_traits<Tr>::length(from);
+		return std::move(U8toW(from, size));
+	}
+
+	std::string AtoU8(const std::string_view& src);
+	std::string U8toA(const std::string_view& src);
+
+	std::string AtoU8(const char* src, size_t size);
+	std::string U8toA(const char* src, size_t size);
+
+#undef STRING_ENABLE_IF
+#undef WSTRING_ENABLE_IF
+}
+
 class CLogger
 {
 public:
 	enum class LOGGER_TYPE
 	{
+		NONE,
 		CONSOLE_ONLY,
 		FILE_ONLY,
 		CONSOLE_FILE,
@@ -50,179 +155,39 @@ public:
 		return this->m_logfile;
 	}
 
+public:
+
 #ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
 
 	template<size_t _Size, typename... Args>
 	void log(spdlog::level::level_enum&& lvl, const char(&fmt)[_Size], Args&&...args)
 	{
-		auto fmtstr = CppFMT::vformat(CppFMT::string_view(fmt, _Size), CppFMT::make_format_args(std::forward<Args>(args)...));
-		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_utf8());
-		//this->m_defaultlogger->log(lvl, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void critical(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::critical, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void error(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::err, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void warn(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::warn, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-	template<size_t _Size, typename... Args>
-	void info(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::info, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void debug(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::debug, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void trace(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::trace, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
+		auto fmtstr = CppFMT::vformat(CppFMT::string_view(fmt, _Size - 1), CppFMT::make_format_args(std::forward<Args>(args)...));
+		this->m_defaultlogger->log(lvl, spdlogger::AtoU8(fmtstr.data(), fmtstr.size()));
 	}
 
 	template<typename... Args>
-	void log(spdlog::level::level_enum&& lvl, const std::string& _text, Args&&...args)
+	void log(spdlog::level::level_enum&& lvl, const CppFMT::string_view& _text, Args&&...args)
 	{
 		auto fmtstr = CppFMT::vformat(_text, CppFMT::make_format_args(std::forward<Args>(args)...));
-		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_utf8());
-		//this->m_defaultlogger->log(lvl, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void critical(const std::string& _text, Args&&...args)
-	{
-		this->log(spdlog::level::critical, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void error(const std::string& _text, Args&&...args)
-	{
-		this->log(spdlog::level::err, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void warn(const std::string& _text, Args&&...args)
-	{
-		this->log(spdlog::level::warn, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void info(const std::string& _text, Args&&...args)
-	{
-		this->log(spdlog::level::info, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void debug(const std::string& _text, Args&&...args)
-	{
-		this->log(spdlog::level::debug, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void trace(const std::string& _text, Args&&...args)
-	{
-		this->log(spdlog::level::trace, _text, std::forward<Args>(args)...);
+		this->m_defaultlogger->log(lvl, spdlogger::AtoU8(fmtstr.data(), fmtstr.size()));
 	}
 
 	template<size_t _Size, typename... Args>
 	void log(spdlog::level::level_enum&& lvl, const wchar_t(&fmt)[_Size], Args&&...args)
 	{
-		auto fmtstr = CppFMT::vformat(CppFMT::wstring_view(fmt, _Size), CppFMT::make_wformat_args(std::forward<Args>(args)...));
-		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_utf8());
-	}
-
-	template<size_t _Size, typename... Args>
-	void critical(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::critical, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void error(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::err, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void warn(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::warn, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-	template<size_t _Size, typename... Args>
-	void info(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::info, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void debug(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::debug, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void trace(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::trace, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+		auto fmtstr = CppFMT::vformat(CppFMT::wstring_view(fmt, _Size - 1), CppFMT::make_wformat_args(std::forward<Args>(args)...));
+		//auto fmtstr = CppFMT::vformat(std::forward<const wchar_t[_Size]>(fmt), CppFMT::make_wformat_args(std::forward<Args>(args)...));
+		this->m_defaultlogger->log(lvl, spdlogger::WtoU8(fmtstr.data(), fmtstr.size()));
 	}
 
 	template<typename... Args>
-	void log(spdlog::level::level_enum&& lvl, const std::wstring& _text, Args&&...args)
+	void log(spdlog::level::level_enum&& lvl, const CppFMT::wstring_view& _text, Args&&...args)
 	{
 		auto fmtstr = CppFMT::vformat(_text, CppFMT::make_wformat_args(std::forward<Args>(args)...));
-		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_utf8());
+		this->m_defaultlogger->log(lvl, spdlogger::WtoU8(fmtstr.data(), fmtstr.size()));
 	}
 
-	template<typename... Args>
-	void critical(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::critical, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void error(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::err, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void warn(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::warn, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void info(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::info, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void debug(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::debug, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void trace(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::trace, _text, std::forward<Args>(args)...);
-	}
 #else
 	template<size_t _Size, typename... Args>
 	void log(spdlog::level::level_enum&& lvl, const char(&fmt)[_Size], Args&&...args)
@@ -230,169 +195,72 @@ public:
 		this->m_defaultlogger->log(lvl, std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
 	}
 
-	template<size_t _Size, typename... Args>
-	void critical(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->m_defaultlogger->critical(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void error(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->m_defaultlogger->error(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void warn(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->m_defaultlogger->warn(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-	template<size_t _Size, typename... Args>
-	void info(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->m_defaultlogger->info(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void debug(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->m_defaultlogger->debug(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void trace(const char(&fmt)[_Size], Args&&...args)
-	{
-		this->m_defaultlogger->trace(std::forward<const char[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
 	template<typename... Args>
-	void log(spdlog::level::level_enum&& lvl, const std::string& _text, Args&&...args)
+	void log(spdlog::level::level_enum&& lvl, const CppFMT::string_view& _text, Args&&...args)
 	{
 		this->m_defaultlogger->log(lvl, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void critical(const std::string& _text, Args&&...args)
-	{
-		this->m_defaultlogger->critical(_text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void error(const std::string& _text, Args&&...args)
-	{
-		this->m_defaultlogger->error(_text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void warn(const std::string& _text, Args&&...args)
-	{
-		this->m_defaultlogger->warn(_text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void info(const std::string& _text, Args&&...args)
-	{
-		this->m_defaultlogger->info(_text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void debug(const std::string& _text, Args&&...args)
-	{
-		this->m_defaultlogger->debug(_text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void trace(const std::string& _text, Args&&...args)
-	{
-		this->m_defaultlogger->trace(_text, std::forward<Args>(args)...);
 	}
 
 	template<size_t _Size, typename... Args>
 	void log(spdlog::level::level_enum&& lvl, const wchar_t(&fmt)[_Size], Args&&...args)
 	{
-		auto fmtstr = CppFMT::vformat(CppFMT::wstring_view(fmt, _Size), CppFMT::make_wformat_args(std::forward<Args>(args)...));
-		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_ansi());
-	}
-
-	template<size_t _Size, typename... Args>
-	void critical(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::critical, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void error(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::err, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void warn(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::warn, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-	template<size_t _Size, typename... Args>
-	void info(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::info, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void debug(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::debug, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
-	}
-
-	template<size_t _Size, typename... Args>
-	void trace(const wchar_t(&fmt)[_Size], Args&&...args)
-	{
-		this->log(spdlog::level::trace, std::forward<const wchar_t[_Size]>(fmt), std::forward<Args>(args)...);
+		auto fmtstr = CppFMT::vformat(CppFMT::wstring_view(fmt, _Size - 1), CppFMT::make_wformat_args(std::forward<Args>(args)...));
+		//auto fmtstr = CppFMT::vformat(std::forward<const wchar_t[_Size]>(fmt), CppFMT::make_wformat_args(std::forward<Args>(args)...));
+		this->m_defaultlogger->log(lvl, spdlogger::WtoA(fmtstr.data(), fmtstr.size()));
 	}
 
 	template<typename... Args>
-	void log(spdlog::level::level_enum&& lvl, const std::wstring& _text, Args&&...args)
+	void log(spdlog::level::level_enum&& lvl, const CppFMT::wstring_view& _text, Args&&...args)
 	{
 		//need edit
 		auto fmtstr = CppFMT::vformat(_text, CppFMT::make_wformat_args(std::forward<Args>(args)...));
-		this->m_defaultlogger->log(lvl, StringCodeConv(fmtstr).to_ansi());
+		this->m_defaultlogger->log(lvl, spdlogger::WtoA(fmtstr.data(), fmtstr.size()));
 	}
 
-	template<typename... Args>
-	void critical(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::critical, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void error(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::err, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void warn(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::warn, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void info(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::info, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void debug(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::debug, _text, std::forward<Args>(args)...);
-	}
-
-	template<typename... Args>
-	void trace(const std::wstring& _text, Args&&...args)
-	{
-		this->log(spdlog::level::trace, _text, std::forward<Args>(args)...);
-	}
 #endif
+
+	template<typename... Args>
+	void off(Args&&...args)
+	{
+		this->log(spdlog::level::off, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void critical(Args&&...args)
+	{
+		this->log(spdlog::level::critical, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void error(Args&&...args)
+	{
+		this->log(spdlog::level::err, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void warn(Args&&...args)
+	{
+		this->log(spdlog::level::warn, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void info(Args&&...args)
+	{
+		this->log(spdlog::level::info, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void debug(Args&&...args)
+	{
+		this->log(spdlog::level::debug, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void trace(Args&&...args)
+	{
+		this->log(spdlog::level::trace, std::forward<Args>(args)...);
+	}
+
 
 private:
 	auto log_file_name(const std::string& logger_name);
@@ -400,6 +268,7 @@ private:
 public:
 	void append_winedit_sink(HWND richedit, int max_line, const std::string& logformat = DEFAULT_LOG_FORMAT);
 	void append_winedit_color_sink(HWND richedit, int max_line, const std::string& logformat = DEFAULT_LOG_FORMAT);
+	void append_callback_sink(const spdlog::custom_log_callback& callback, const std::string& logformat = DEFAULT_LOG_FORMAT);
 
 private:
 	template<class T>
@@ -408,6 +277,7 @@ private:
 	template<class T, typename... Args>
 	auto spdlog_sink(const std::string& logformat, Args&&...args);
 
+	auto null_sink(const std::string& logformat);
 	auto console_sink(const std::string& logformat);
 	auto file_sink(const std::string& logformat, const std::string& logger_name);
 	auto memory_sink(const std::string& logformat);
@@ -493,4 +363,3 @@ private:
 
 };
 
-//extern CLogger& Logger;

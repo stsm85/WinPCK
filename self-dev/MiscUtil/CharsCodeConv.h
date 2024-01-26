@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////
+// CharsCodeConv.h
+// 
+//
+// 此程序由 李秋枫/stsm/liqf 编写
+//
+// 此代码预计将会开源，任何基于此代码的修改发布请保留原作者信息
+// 
+// 2024.1.1
+//////////////////////////////////////////////////////////////////////
+
 #ifndef _CharsCodeConv_H_
 #define _CharsCodeConv_H_
 
@@ -22,6 +33,11 @@
 #define CP936 936
 #endif
 
+#define CONV_ENABLE_IF  std::enable_if_t<std::is_same<T, wchar_t>::value || \
+	std::is_same<T, char8_t>::value || \
+	std::is_same<T, char>::value, \
+	int> = 0
+
 /// <summary>
 /// 文字在GBK UTF8 和 UCS2编码之间转换
 /// </summary>
@@ -37,57 +53,93 @@ public:
 
 	~StringCodeConvT() = default;
 
-	template <size_t _Size>
-	StringCodeConvT(const char(&str)[_Size])
+	template <size_t _Size, typename T, CONV_ENABLE_IF>
+	StringCodeConvT(const T(&str)[_Size])
 	{
-		this->from_ansi(str, _Size - 1);
+		this->from(str, _Size - 1);
 	}
 
-	template <size_t _Size>
-	StringCodeConvT(const char8_t(&str)[_Size])
+	template <typename T, CONV_ENABLE_IF>
+	StringCodeConvT(const std::basic_string<T>& str)
 	{
-		this->from_utf8((const char*)str, _Size - 1);
+		this->from(str);
 	}
 
-	template <size_t _Size>
-	StringCodeConvT(const wchar_t(&str)[_Size])
+	template <typename T, CONV_ENABLE_IF>
+	StringCodeConvT(const std::basic_string_view<T>& str)
 	{
-		this->from_wchar(str, _Size - 1);
+		this->from(str);
 	}
 
-	StringCodeConvT(const std::string& str);
-	StringCodeConvT(const std::u8string& str);
-	StringCodeConvT(const std::wstring& str);
-
-	StringCodeConvT&& copy_ansi(const std::string& str);
-	StringCodeConvT&& copy_utf8(const std::string& str);
-	StringCodeConvT&& copy_wchar(const std::wstring& str);
-
-	template <size_t _Size>
-	StringCodeConvT&& from_ansi(const char(&str)[_Size])
+	template <size_t _Size, typename T, CONV_ENABLE_IF>
+	StringCodeConvT&& from(const T(&str)[_Size])
 	{
-		return this->from_ansi(str, _Size - 1);
+		return this->from(str, _Size - 1);
 	}
+
+	template <typename T, CONV_ENABLE_IF>
+	StringCodeConvT&& from(const T* str, const size_t _Size)
+	{
+		this->m_from_type = this->chartype<T>();
+
+		if (std::is_same<T, char>::value)
+			this->ansi_string_v = std::move(std::string_view((const char*)str, _Size));
+		else if (std::is_same<T, wchar_t>::value)
+			this->wchar_string_v = std::move(std::wstring_view((const wchar_t*)str, _Size));
+		else if (std::is_same<T, char8_t>::value)
+			this->utf8_string_v = std::move(std::string_view((const char*)str, _Size));
+
+		return std::move(*this);
+	}
+
+	template <typename T, CONV_ENABLE_IF>
+	StringCodeConvT&& from(const std::basic_string<T>& str)
+	{
+		return this->from(str.data(), str.size());
+	}
+
+	template <typename T, CONV_ENABLE_IF>
+	StringCodeConvT&& from(const std::basic_string_view<T>& str)
+	{
+		return this->from(str.data(), str.size());
+	}
+
+	template <typename T, CONV_ENABLE_IF>
+	StringCodeConvT&& copyfrom(const T* str, const size_t _Size)
+	{
+		this->m_from_type = this->chartype<T>();
+
+		if (std::is_same<T, char>::value) {
+			this->ansi_string.assign((const char*)str, _Size);
+			this->ansi_string_v = this->ansi_string;
+		}
+		else if (std::is_same<T, wchar_t>::value) {
+			this->wchar_string.assign((const wchar_t*)str, _Size);
+			this->wchar_string_v = this->wchar_string;
+		}
+		else if (std::is_same<T, char8_t>::value) {
+			this->utf8_string.assign((const char*)str, _Size);
+			this->utf8_string_v = this->utf8_string;
+		}
+		return std::move(*this);
+	}
+
+	template <typename T, CONV_ENABLE_IF>
+	StringCodeConvT&& copyfrom(const std::basic_string_view<T>& str)
+	{
+		return this->copyfrom(str.data(), str.size());
+	}
+
+	StringCodeConvT&& copyfrom_utf8(const std::string_view& str);
 
 	template <size_t _Size>
 	StringCodeConvT&& from_utf8(const char(&str)[_Size])
 	{
-		return this->from_utf8(str, _Size - 1);
+		return this->from((const char8_t*)str, _Size - 1);
 	}
 
-	template <size_t _Size>
-	StringCodeConvT&& from_wchar(const wchar_t(&str)[_Size])
-	{
-		return this->from_wchar(str, _Size - 1);
-	}
-
-	StringCodeConvT&& from_ansi(const char* str, size_t _Size);
-	StringCodeConvT&& from_utf8(const char* str, size_t _Size);
-	StringCodeConvT&& from_wchar(const wchar_t* str, size_t _Size);
-
-	StringCodeConvT&& from_ansi(const std::string& str);
-	StringCodeConvT&& from_utf8(const std::string& str);
-	StringCodeConvT&& from_wchar(const std::wstring& str);
+	StringCodeConvT&& from_utf8(const char* str, const size_t _Size);
+	StringCodeConvT&& from_utf8(const std::string_view& str);
 
 	std::string to_ansi();
 	std::string to_utf8();
@@ -102,12 +154,23 @@ private:
 		UTF16LE
 	};
 
-public:
-	int AtoW(const char* in, size_t insize, wchar_t* out, size_t outsize);
-	int WtoA(const wchar_t* in, size_t insize, char* out, size_t outsize);
+	template <typename T, CONV_ENABLE_IF>
+	constexpr CHAR_TYPE chartype() const
+	{
+		if (std::is_same<T, char>::value)
+			return CHAR_TYPE::ANSI;
+		else if (std::is_same<T, wchar_t>::value)
+			return CHAR_TYPE::UTF16LE;
+		else if (std::is_same<T, char8_t>::value)
+			return CHAR_TYPE::UTF8;
+	}
 
-	int U8toW(const char* in, size_t insize, wchar_t* out, size_t outsize);
-	int WtoU8(const wchar_t* in, size_t insize, char* out, size_t outsize);
+public:
+	int AtoW(const char* in, const size_t insize, wchar_t* out, const size_t outsize);
+	int WtoA(const wchar_t* in, const size_t insize, char* out, const size_t outsize);
+
+	int U8toW(const char* in, const size_t insize, wchar_t* out, const size_t outsize);
+	int WtoU8(const wchar_t* in, const size_t insize, char* out, const size_t outsize);
 
 private:
 	void AtoW();

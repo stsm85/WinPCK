@@ -24,6 +24,9 @@
     <ClInclude Include="spdloghelper\LoggerInit.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="spdloghelper\DetailLogger.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="spdloghelper\Logger.cpp">

@@ -184,7 +184,7 @@ class THashObj {
 public:
 	THashObj	*priorHash;
 	THashObj	*nextHash;
-	u_int		hashId;
+	UINT		hashId;
 
 public:
 	THashObj() { priorHash = nextHash = NULL; hashId = 0; }
@@ -209,9 +209,9 @@ public:
 	virtual ~THashTbl();
 	virtual BOOL	Init(int _hashNum);
 	virtual void	UnInit();
-	virtual void	Register(THashObj *obj, u_int hash_id);
+	virtual void	Register(THashObj *obj, UINT hash_id);
 	virtual void	UnRegister(THashObj *obj);
-	virtual THashObj *Search(const void *data, u_int hash_id);
+	virtual THashObj *Search(const void *data, UINT hash_id);
 	virtual int		GetRegisterNum() { return registerNum; }
 //	virtual u_int	MakeHashId(const void *data) = 0;
 };
@@ -227,7 +227,7 @@ struct TResHashObj : THashObj {
 class TResHash : public THashTbl {
 protected:
 	virtual BOOL IsSameVal(THashObj *obj, const void *val) {
-		return obj->hashId == *(u_int *)val;
+		return obj->hashId == *(UINT*)val;
 	}
 
 public:
@@ -481,7 +481,7 @@ public:
 	~TWinHashTbl() {}
 #pragma warning(push)
 #pragma warning(disable: 4302)
-	u_int	MakeHashId(HWND hWnd) { return (u_int)hWnd * 0xf3f77d13; }
+	UINT	MakeHashId(HWND hWnd) { return (UINT)hWnd * 0xf3f77d13; }
 #pragma warning(pop)
 };
 

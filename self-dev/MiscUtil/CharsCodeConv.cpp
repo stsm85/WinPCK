@@ -28,106 +28,24 @@ StringCodeConvT<codepage>::StringCodeConvT(StringCodeConvT&& other) {
 }
 
 template<uint32_t codepage>
-StringCodeConvT<codepage>::StringCodeConvT(const std::string& str)
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::copyfrom_utf8(const std::string_view& str)
 {
-	this->m_from_type = CHAR_TYPE::ANSI;
-	this->ansi_string_v = str;
-}
-
-template<uint32_t codepage>
-StringCodeConvT<codepage>::StringCodeConvT(const std::u8string& str)
-{
-	this->m_from_type = CHAR_TYPE::UTF8;
-	this->utf8_string_v = std::move(std::string_view((const char*)str.data(), str.size()));
-}
-
-template<uint32_t codepage>
-StringCodeConvT<codepage>::StringCodeConvT(const std::wstring& str)
-{
-	this->m_from_type = CHAR_TYPE::UTF16LE;
-	this->wchar_string_v = str;
-}
-
-template<uint32_t codepage>
-StringCodeConvT<codepage>&& StringCodeConvT<codepage>::copy_ansi(const std::string& str)
-{
-	this->m_from_type = CHAR_TYPE::ANSI;
-	this->ansi_string = str;
-	this->ansi_string_v = this->ansi_string;
-
-	return std::move(*this);
-}
-
-template<uint32_t codepage>
-StringCodeConvT<codepage>&& StringCodeConvT<codepage>::copy_utf8(const std::string& str)
-{
-	this->m_from_type = CHAR_TYPE::UTF8;
-	this->utf8_string = str;
-	this->utf8_string_v = this->utf8_string;
-
-	return std::move(*this);
-}
-
-template<uint32_t codepage>
-StringCodeConvT<codepage>&& StringCodeConvT<codepage>::copy_wchar(const std::wstring& str)
-{
-	this->m_from_type = CHAR_TYPE::UTF16LE;
-	this->wchar_string = str;
-	this->wchar_string_v = this->wchar_string;
-
-	return std::move(*this);
-}
-
-template<uint32_t codepage>
-StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_ansi(const char* str, size_t _Size)
-{
-	this->m_from_type = CHAR_TYPE::ANSI;
-	this->ansi_string_v = std::move(std::string_view(str, _Size));;
-	return std::move(*this);
+	return this->copyfrom((const char8_t*)str.data(), str.size());
 }
 
 template<uint32_t codepage>
 StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_utf8(const char* str, size_t _Size)
 {
-	this->m_from_type = CHAR_TYPE::UTF8;
-	this->utf8_string_v = std::move(std::string_view(str, _Size));
-	return std::move(*this);
+	return this->from((const char8_t*)str, _Size);
 }
 
 template<uint32_t codepage>
-StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_wchar(const wchar_t* str, size_t _Size)
+StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_utf8(const std::string_view& str)
 {
-	this->m_from_type = CHAR_TYPE::UTF16LE;
-	this->wchar_string_v = std::move(std::wstring_view(str, _Size));
-	return std::move(*this);
+	return this->from((const char8_t*)str.data(), str.size());
 }
 
-template<uint32_t codepage>
-StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_ansi(const std::string& str)
-{
-	this->m_from_type = CHAR_TYPE::ANSI;
-	this->ansi_string_v = str;
-	return std::move(*this);
-}
-
-template<uint32_t codepage>
-StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_utf8(const std::string& str)
-{
-	this->m_from_type = CHAR_TYPE::UTF8;
-	this->utf8_string_v = str;
-	return std::move(*this);
-}
-
-template<uint32_t codepage>
-StringCodeConvT<codepage>&& StringCodeConvT<codepage>::from_wchar(const std::wstring& str)
-{
-	this->m_from_type = CHAR_TYPE::UTF16LE;
-	this->wchar_string_v = str;
-	return std::move(*this);
-}
 #if _USE_ICONV
-
-
 
 template<uint32_t codepage>
 constexpr auto StringCodeConvT<codepage>::codepage_str()
@@ -361,25 +279,25 @@ void StringCodeConvT<codepage>::AtoU8()
 #else //WINDOWS API
 
 template<uint32_t codepage>
-int StringCodeConvT<codepage>::AtoW(const char* in, size_t insize, wchar_t* out,size_t outsize)
+int StringCodeConvT<codepage>::AtoW(const char* in, const size_t insize, wchar_t* out, const size_t outsize)
 {
 	return ::MultiByteToWideChar(codepage, 0, in, insize, out, outsize);
 }
 
 template<uint32_t codepage>
-int StringCodeConvT<codepage>::WtoA(const wchar_t* in, size_t insize, char* out, size_t outsize)
+int StringCodeConvT<codepage>::WtoA(const wchar_t* in, const size_t insize, char* out, const size_t outsize)
 {
 	return ::WideCharToMultiByte(codepage, 0, in, insize, out, outsize, "_", 0);
 }
 
 template<uint32_t codepage>
-int StringCodeConvT<codepage>::U8toW(const char* in, size_t insize, wchar_t* out, size_t outsize)
+int StringCodeConvT<codepage>::U8toW(const char* in, const size_t insize, wchar_t* out, const size_t outsize)
 {
 	return ::MultiByteToWideChar(CP_UTF8, 0, in, insize, out, outsize);
 }
 
 template<uint32_t codepage>
-int StringCodeConvT<codepage>::WtoU8(const wchar_t* in, size_t insize, char* out, size_t outsize)
+int StringCodeConvT<codepage>::WtoU8(const wchar_t* in, const size_t insize, char* out, const size_t outsize)
 {
 	return ::WideCharToMultiByte(CP_UTF8, 0, in, insize, out, outsize, nullptr, 0);
 }

@@ -49,8 +49,7 @@ BOOL TViewDlg::EvCreate(LPARAM lParam)
 		case TextEncoding::EncodingType::UTF8:
 			swprintf_s(szTitle, MAX_PATH, L"文本查看 - %s (UTF-8)", lpszFile);
 			{
-				CU82Ucs cU82U;
-				SetDlgItemTextW(IDC_RICHEDIT_VIEW, cU82U.GetString(lpszTextShow));
+				SetDlgItemTextW(IDC_RICHEDIT_VIEW, StringCodeConv().from_utf8(lpszTextShow, dwSize).to_wchar().c_str());
 			}
 			break;
 		case TextEncoding::EncodingType::ANSI:

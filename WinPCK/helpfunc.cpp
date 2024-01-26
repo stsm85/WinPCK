@@ -193,12 +193,12 @@ int TInstDlg::MyFeedbackCallback(void* pTag, int32_t eventId, size_t wParam, ssi
 	{
 	case PCK_FILE_OPEN_SUCESS:
 
-		pThis->SetWindowTextW(std::format(L"{} - {}", THIS_MAIN_CAPTION, reinterpret_cast<const wchar_t*>(lParam)).c_str());
+		pThis->SetWindowTextW(std::format(L"{} - {}", _CRT_WIDE(THIS_MAIN_CAPTION), reinterpret_cast<const wchar_t*>(lParam)).c_str());
 		break;
 
 	case PCK_FILE_CLOSE:
 
-		pThis->SetWindowTextW(THIS_MAIN_CAPTION);
+		pThis->SetWindowTextW(_CRT_WIDE(THIS_MAIN_CAPTION));
 		break;
 	}
 

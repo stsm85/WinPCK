@@ -69,7 +69,8 @@ void CPckThreadRunner::startThread()
 
 	std::for_each(threads.begin(), threads.end(), std::mem_fn(&std::thread::join));
 	//should note the TEXT_LOG_FLUSH_CACHE message
-	Logger.info(TEXT_LOG_FLUSH_CACHE);
+	Logger.off(TEXT_LOG_FLUSH_CACHE);
+	//Logger.info(TEXT_LOG_FLUSH_CACHE);
 	if (t.joinable())
 		t.join();
 }

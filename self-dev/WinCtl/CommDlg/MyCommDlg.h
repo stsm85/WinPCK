@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include <commdlg.h>
 #include <shlobj.h>
 #include <vector>
 #include <string>

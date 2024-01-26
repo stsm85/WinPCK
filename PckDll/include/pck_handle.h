@@ -185,6 +185,7 @@ WINPCK_API uint32_t		pck_getUpdateResult_ChangedFileCount();
 WINPCK_API uint32_t		pck_getUpdateResult_DuplicateFileCount();
 WINPCK_API uint32_t		pck_getUpdateResult_FinalFileCount();
 
+#if 0
 //日志
 WINPCK_API void			log_regShowFunc(ShowLogW _ShowLogCallBack);
 
@@ -215,6 +216,7 @@ WINPCK_API void			pck_logDW(LPCWSTR  _fmt, ...);
 #define pck_logW pck_logWA
 #define pck_logE pck_logEA
 #define pck_logD pck_logDA
+#endif
 #endif
 
 //打开、关闭、复原等事件注册

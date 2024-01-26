@@ -80,7 +80,7 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 
 		if (pck_isLastOptSuccess()) {
 
-			pck_logN(::GetLoadStrW(IDS_STRING_RENEWOK), timer.getElapsedTime());
+			Logger.off(::GetLoadStrW(IDS_STRING_RENEWOK), timer.getElapsedTime());
 		}
 		else {
 			pThis->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
@@ -114,9 +114,8 @@ VOID TInstDlg::UpdatePckFile(VOID *pParam)
 
 			pThis->MessageBoxW(sUpdateDetail.c_str(), L"更新报告", MB_OK | MB_ICONINFORMATION);
 
-			pck_logI(sUpdateDetail.c_str());
+			Logger.info(sUpdateDetail);
 		}
-
 
 		if (bHasPckOpened) {
 
@@ -252,15 +251,15 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 
 			if (pck_isLastOptSuccess()) {
 
-				pck_logN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+				Logger.off(::GetLoadStrW(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 			}
 			else {
-				pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+				pThis->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 			}
 
 		}
 		else {
-			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			pThis->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 		}
 
 		pThis->EnbaleButtons(TRUE);
@@ -280,7 +279,7 @@ VOID TInstDlg::RebuildPckFile(VOID	*pParam)
 	}
 	catch (std::exception ex)
 	{
-		pck_logIA(ex.what());
+		Logger.info(ex.what());
 	}
 
 	return;
@@ -340,15 +339,15 @@ VOID TInstDlg::StripPckFile(VOID *pParam)
 
 		if (pck_isLastOptSuccess()) {
 
-			pck_logN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+			Logger.off(::GetLoadStrW(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 		}
 		else {
-			pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+			pThis->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 		}
 
 	}
 	else {
-		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		pThis->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 	}
 
 	pThis->EnbaleButtons(TRUE);
@@ -408,7 +407,7 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 
 	fs::path filenameToSave(szFilenameToSave);
 
-	pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_COMPING), std::make_wformat_args( filenameToSave.filename().wstring())).c_str());
+	pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_COMPING), std::make_wformat_args(filenameToSave.filename().wstring())).c_str());
 
 	pThis->SetTimer(WM_TIMER_PROGRESS_100, TIMER_PROGRESS, NULL);
 
@@ -423,7 +422,7 @@ VOID TInstDlg::CreateNewPckFile(VOID	*pParam)
 		timer.stop();
 
 		if (pck_isLastOptSuccess()) {
-			pck_logN(GetLoadStr(IDS_STRING_REBUILDOK), timer.getElapsedTime());
+			Logger.off(::GetLoadStrW(IDS_STRING_REBUILDOK), timer.getElapsedTime());
 		}
 		else {
 			pThis->SetStatusBarInfo(GetLoadStrW(IDS_STRING_PROCESS_ERROR));
@@ -474,7 +473,7 @@ VOID TInstDlg::ToExtractAllFiles(VOID	*pParam)
 	}
 	else {
 
-		pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+		pThis->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 	}
 
 	pThis->EnbaleButtons(TRUE);
@@ -549,7 +548,7 @@ VOID TInstDlg::ToExtractSelectedFiles(VOID	*pParam)
 				pThis->SetStatusBarInfo(std::vformat(::GetLoadStrW(IDS_STRING_EXPOK), std::make_wformat_args(timer.getElapsedTime())).c_str());
 			}
 			else {
-				pThis->SetStatusBarInfo(GetLoadStr(IDS_STRING_PROCESS_ERROR));
+				pThis->SetStatusBarInfo(::GetLoadStrW(IDS_STRING_PROCESS_ERROR));
 			}
 
 			free(lpFileEntryArray);

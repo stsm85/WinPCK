@@ -153,6 +153,9 @@
     <ProjectReference Include="..\PckDll\WinPCK_dll.vcxproj">
       <Project>{b2803419-fdec-4f7d-b00c-e002d6ab5f56}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\self-dev\MiscUtil\MiscUtil.vcxproj">
+      <Project>{07355a14-ce36-40fe-9193-9117d3d5ab4f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

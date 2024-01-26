@@ -121,6 +121,9 @@
     <ClInclude Include="tRebuildOptDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="loggerGuiSink.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="icons\file.ico">

@@ -28,7 +28,7 @@ CPckClass::~CPckClass()
 	Logger->trace(std::source_location::current().function_name());
 }
 
-BOOL CPckClass::Init(LPCWSTR	szFile)
+BOOL CPckClass::Init(const wchar_t* szFile)
 {
 	wcscpy_s(m_PckAllInfo.szFilename, szFile);
 	::GetFileTitleW(m_PckAllInfo.szFilename, m_PckAllInfo.szFileTitle, MAX_PATH);

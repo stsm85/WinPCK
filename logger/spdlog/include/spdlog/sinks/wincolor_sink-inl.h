@@ -37,10 +37,13 @@ SPDLOG_INLINE wincolor_sink<ConsoleMutex>::wincolor_sink(void *out_handle, color
 #ifdef _WIN32
     if (::IsValidCodePage(CP_UTF8))
     {
-        if (!::SetConsoleCP(CP_UTF8))
-            ;// std::cout << "Could not set console input code page to UTF-8" << std::endl;
-        if (!::SetConsoleOutputCP(CP_UTF8))
-            ;// std::cout << "Could not set console output code page to UTF-8" << std::endl;
+        //if (!::SetConsoleCP(CP_UTF8))
+            //write_to_file_(memory_buf_t("Could not set console input code page to UTF-8\n"));
+        if (!::SetConsoleOutputCP(CP_UTF8)) {
+            memory_buf_t buffer;
+            buffer.append(string_view_t("Could not set console output code page to UTF-8\n"));
+            write_to_file_(buffer);
+        }
     }
     else {
         ;

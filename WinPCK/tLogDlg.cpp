@@ -12,6 +12,8 @@
 #include "guipch.h"
 #include "tLogDlg.h"
 
+#include <spdlog/sinks/callback_sink.h>
+
 #if 0
 #include "ShowLogOnDlgListView.h"
 
@@ -88,8 +90,23 @@ BOOL TLogDlg::EvCreate(LPARAM lParam)
 	//日志系统
 	Logger.append_winedit_color_sink(this->GetDlgItem(IDC_EDIT_LOG), 1000);
 	Logger.show_log_msg(THIS_MAIN_CAPTION);
+
+
+	//LogUnits.SetStatusBarInfo(_logtext);
 	return	TRUE;
 }
+//
+//void TLogDlg::log_callback(const spdlog::details::log_msg& msg)
+//{
+//
+//	if (spdlog::level::off == msg.level)
+//	{
+//		SetStatusBarInfo("");
+//	}else if (spdlog::level::warn <= msg.level)
+//	{
+//		this->ShowWindow(SW_SHOW);
+//	}
+//}
 
 BOOL TLogDlg::EvCommand(WORD wNotifyCode, WORD wID, LPARAM hwndCtl)
 {

@@ -150,6 +150,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="spdloghelper\DetailLogger.h" />
     <ClInclude Include="spdloghelper\Logger.h" />
     <ClInclude Include="spdloghelper\LoggerInit.h" />
     <ClInclude Include="spdloghelper\pch_spdlogh.h" />

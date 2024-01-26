@@ -250,7 +250,7 @@ BOOL CPckClass::StartExtract(LPPCK_PATH_NODE lpNodeToExtract, LPVOID lpvoidFileR
 	return TRUE;
 }
 
-BOOL CPckClass::DecompressFile(LPCWSTR	lpszFilename, const PCKINDEXTABLE* lpPckFileIndexTable, LPVOID lpvoidFileRead)
+BOOL CPckClass::DecompressFile(const wchar_t* lpszFilename, const PCKINDEXTABLE* lpPckFileIndexTable, LPVOID lpvoidFileRead)
 {
 	const PCKFILEINDEX* lpPckFileIndex = &lpPckFileIndexTable->cFileIndex;
 

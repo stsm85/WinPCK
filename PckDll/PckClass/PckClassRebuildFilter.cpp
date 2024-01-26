@@ -38,7 +38,7 @@ BOOL CPckClassRebuildFilter::OpenScriptFileAndConvBufToUcs2(const wchar_t * lpsz
 	//const wchar_t* lpszUnicodeString = cText2Ucs.GetUnicodeString(lpBufferToRead, cFileRead.GetFileSize());
 
 	//need edit 临时变量，不可用
-	this->m_stored_Script = StringCodeConvChs().from_ansi(lpBufferToRead, cFileRead.GetFileSize()).to_wchar();
+	this->m_stored_Script = StringCodeConvChs().from(lpBufferToRead, cFileRead.GetFileSize()).to_wchar();
 	this->m_ScriptLines = CTextUnitsW::SplitLine(m_stored_Script, SPLIT_FLAG::TRIM_LEFT | SPLIT_FLAG::TRIM_RIGHT | SPLIT_FLAG::DELETE_NULL_LINE);
 
 	return TRUE;
@@ -163,12 +163,12 @@ void CPckClassRebuildFilter::MarkFilterFlagToFileIndex(LPPCKINDEXTABLE	lpPckInde
 {
 	switch(op) {
 
-	case OP_Protect:
+	case SCRIPTOP::OP_Protect:
 		lpPckIndexTable->isProtected = TRUE;
 		break;
 
-	case OP_Delete:
-	case OP_Rmdir:
+	case SCRIPTOP::OP_Delete:
+	case SCRIPTOP::OP_Rmdir:
 		if((!lpPckIndexTable->isInvalid) && (!lpPckIndexTable->isProtected)) {
 
 			lpPckIndexTable->isToDeDelete = TRUE;
@@ -211,7 +211,7 @@ BOOL CPckClassRebuildFilter::ApplyScript2IndexList(LPPCK_PATH_NODE lpRootNode)
 
 		FILEOP * pFileOp = &m_FirstFileOp[i];
 
-		if(OP_CheckFile != pFileOp->op) {
+		if(SCRIPTOP::OP_CheckFile != pFileOp->op) {
 
 			//分解脚本中的目录
 			SepratePaths(pFileOp);
@@ -250,7 +250,7 @@ BOOL CPckClassRebuildFilter::ParseScript(const wchar_t * lpszScriptFile)
 		return FALSE; 
 	}
 
-	m_FirstFileOp.push_back(FILEOP{ 0 });
+	m_FirstFileOp.push_back(FILEOP{ .op= SCRIPTOP::OP_Unknown });
 	FILEOP * pFileOp = &m_FirstFileOp.back();
 
 	for (int i = 0; i < m_ScriptLines.size(); i++) {
@@ -260,7 +260,7 @@ BOOL CPckClassRebuildFilter::ParseScript(const wchar_t * lpszScriptFile)
 			//一行脚本分为两部分，操作和文件名
 			if (ParseOneLine(pFileOp, std::wstring(m_ScriptLines[i]))) {
 
-				m_FirstFileOp.push_back(FILEOP{ 0 });
+				m_FirstFileOp.push_back(FILEOP{ .op = SCRIPTOP::OP_Unknown });
 				pFileOp = &m_FirstFileOp.back();
 
 			}

@@ -70,7 +70,6 @@ private:
 	void RefreshProgress();
 	std::wstring BuildSaveDlgFilterString();
 
-
 	//threadproc.cpp
 	void EnbaleButtons(BOOL bEnbale);
 	static VOID UpdatePckFile(VOID *pParam);
@@ -172,6 +171,7 @@ private:
 
 private:
 	void SetStatusBarText(int iPart, LPCWSTR lpszText);
+	void log_callback(const spdlog::details::log_msg& msg);
 
 public:
 	void SetStatusBarTitle(LPCWSTR lpszText);

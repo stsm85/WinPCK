@@ -73,6 +73,11 @@ extern CPckClassLog& Logger;
 
 #endif
 
+#if 0
 #define LoggerExInternal2(msg, file, func, line, ...) Logger.error(##msg " at: "##file ", function: " func ", line: "#line, ##__VA_ARGS__)
 #define LoggerExInternal(msg, file, func, line, ...) LoggerExInternal2(msg, file, func, line, ##__VA_ARGS__)
 #define Logger_el(msg, ...) LoggerExInternal(msg, __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+
+#else
+#define Logger_el(...) DetailLog().error(##__VA_ARGS__)
+#endif
