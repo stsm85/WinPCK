@@ -14,7 +14,6 @@
 
 #define _USE_ICONV 0
 
-#include "template_type.h"
 #include <string>
 #include <string_view>
 #include <stdexcept>
@@ -34,6 +33,15 @@
 #define CP936 936
 #endif
 
+#define CHARTYPE2_IS_SAME	std::is_same<T, wchar_t>::value || \
+							std::is_same<T, char>::value
+
+#define CHARTYPE3_IS_SAME	std::is_same<T, wchar_t>::value || \
+							std::is_same<T, char8_t>::value || \
+							std::is_same<T, char>::value
+
+#define CHARTYPE2_ENABLE_IF  std::enable_if_t<CHARTYPE2_IS_SAME, int> = 0
+#define CHARTYPE3_ENABLE_IF  std::enable_if_t<CHARTYPE3_IS_SAME, int> = 0
 
 /// <summary>
 /// 文字在GBK UTF8 和 UCS2编码之间转换
