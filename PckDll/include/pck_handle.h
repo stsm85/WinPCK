@@ -28,8 +28,10 @@ typedef enum _PCKRTN
 #define EXTERN_C_END
 #endif
 
-
-#ifdef _MAKE_DLL	//.dll
+#ifdef _MAKE_GUI_WITH_LIB
+#define WINPCK_API_CPP
+#define WINPCK_API EXTERN_C
+#elif _MAKE_DLL	//.dll
 #define WINPCK_API_CPP _declspec(dllexport)
 #define WINPCK_API EXTERN_C _declspec(dllexport)
 #elif defined(_MAKE_EXE)	//.exe

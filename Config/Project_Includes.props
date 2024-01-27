@@ -67,6 +67,11 @@
       <PreprocessorDefinitions>$(UserDefinitions);_LIB;_MAKE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release_static') And ('$(ConfigurationType)'=='Application')">
+    <ClCompile>
+      <PreprocessorDefinitions>$(UserDefinitions);_MAKE_GUI_WITH_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(SolutionDir)\Config\Project_paths.props" Condition=" ('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_paths.props'))"/>
 	<Import Project="$(SolutionDir)\Config\Project_optimize.props" Condition="('$(SolutionDir)'!='') And (Exists('$(SolutionDir)\Config\Project_optimize.props'))"/>

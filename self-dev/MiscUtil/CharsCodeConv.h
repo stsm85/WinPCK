@@ -14,6 +14,7 @@
 
 #define _USE_ICONV 0
 
+#include "template_type.h"
 #include <string>
 #include <string_view>
 #include <stdexcept>
@@ -33,10 +34,6 @@
 #define CP936 936
 #endif
 
-#define CONV_ENABLE_IF  std::enable_if_t<std::is_same<T, wchar_t>::value || \
-	std::is_same<T, char8_t>::value || \
-	std::is_same<T, char>::value, \
-	int> = 0
 
 /// <summary>
 /// 文字在GBK UTF8 和 UCS2编码之间转换
@@ -53,78 +50,78 @@ public:
 
 	~StringCodeConvT() = default;
 
-	template <size_t _Size, typename T, CONV_ENABLE_IF>
+	template <size_t _Size, typename T, CHARTYPE3_ENABLE_IF>
 	StringCodeConvT(const T(&str)[_Size])
 	{
 		this->from(str, _Size - 1);
 	}
 
-	template <typename T, CONV_ENABLE_IF>
+	template <typename T, CHARTYPE3_ENABLE_IF>
 	StringCodeConvT(const std::basic_string<T>& str)
 	{
 		this->from(str);
 	}
 
-	template <typename T, CONV_ENABLE_IF>
+	template <typename T, CHARTYPE3_ENABLE_IF>
 	StringCodeConvT(const std::basic_string_view<T>& str)
 	{
 		this->from(str);
 	}
 
-	template <size_t _Size, typename T, CONV_ENABLE_IF>
+	template <size_t _Size, typename T, CHARTYPE3_ENABLE_IF>
 	StringCodeConvT&& from(const T(&str)[_Size])
 	{
 		return this->from(str, _Size - 1);
 	}
 
-	template <typename T, CONV_ENABLE_IF>
+	template <typename T, CHARTYPE3_ENABLE_IF>
 	StringCodeConvT&& from(const T* str, const size_t _Size)
 	{
 		this->m_from_type = this->chartype<T>();
 
-		if (std::is_same<T, char>::value)
+		if constexpr (std::is_same<T, char>::value)
 			this->ansi_string_v = std::move(std::string_view((const char*)str, _Size));
-		else if (std::is_same<T, wchar_t>::value)
+		else if constexpr (std::is_same<T, wchar_t>::value)
 			this->wchar_string_v = std::move(std::wstring_view((const wchar_t*)str, _Size));
-		else if (std::is_same<T, char8_t>::value)
+		else if constexpr (std::is_same<T, char8_t>::value)
 			this->utf8_string_v = std::move(std::string_view((const char*)str, _Size));
 
 		return std::move(*this);
 	}
 
-	template <typename T, CONV_ENABLE_IF>
+	template <typename T, CHARTYPE3_ENABLE_IF>
 	StringCodeConvT&& from(const std::basic_string<T>& str)
 	{
 		return this->from(str.data(), str.size());
 	}
 
-	template <typename T, CONV_ENABLE_IF>
+	template <typename T, CHARTYPE3_ENABLE_IF>
 	StringCodeConvT&& from(const std::basic_string_view<T>& str)
 	{
 		return this->from(str.data(), str.size());
 	}
 
-	template <typename T, CONV_ENABLE_IF>
+	template <typename T, CHARTYPE3_ENABLE_IF>
 	StringCodeConvT&& copyfrom(const T* str, const size_t _Size)
 	{
 		this->m_from_type = this->chartype<T>();
 
-		if (std::is_same<T, char>::value) {
+		if constexpr (std::is_same<T, char>::value) {
 			this->ansi_string.assign((const char*)str, _Size);
 			this->ansi_string_v = this->ansi_string;
 		}
-		else if (std::is_same<T, wchar_t>::value) {
+		else if constexpr (std::is_same<T, wchar_t>::value) {
 			this->wchar_string.assign((const wchar_t*)str, _Size);
 			this->wchar_string_v = this->wchar_string;
 		}
-		else if (std::is_same<T, char8_t>::value) {
+		else if constexpr (std::is_same<T, char8_t>::value) {
 			this->utf8_string.assign((const char*)str, _Size);
 			this->utf8_string_v = this->utf8_string;
 		}
 		return std::move(*this);
 	}
 
-	template <typename T, CONV_ENABLE_IF>
+	template <typename T, CHARTYPE3_ENABLE_IF>
 	StringCodeConvT&& copyfrom(const std::basic_string_view<T>& str)
 	{
 		return this->copyfrom(str.data(), str.size());
@@ -138,7 +135,7 @@ public:
 		return this->from((const char8_t*)str, _Size - 1);
 	}
 
-	StringCodeConvT&& from_utf8(const char* str, const size_t _Size);
+	StringCodeConvT&& from_utf8(const char* str, size_t _Size);
 	StringCodeConvT&& from_utf8(const std::string_view& str);
 
 	std::string to_ansi();
@@ -154,14 +151,14 @@ private:
 		UTF16LE
 	};
 
-	template <typename T, CONV_ENABLE_IF>
+	template <typename T, CHARTYPE3_ENABLE_IF>
 	constexpr CHAR_TYPE chartype() const
 	{
-		if (std::is_same<T, char>::value)
+		if constexpr (std::is_same<T, char>::value)
 			return CHAR_TYPE::ANSI;
-		else if (std::is_same<T, wchar_t>::value)
+		else if constexpr (std::is_same<T, wchar_t>::value)
 			return CHAR_TYPE::UTF16LE;
-		else if (std::is_same<T, char8_t>::value)
+		else if constexpr (std::is_same<T, char8_t>::value)
 			return CHAR_TYPE::UTF8;
 	}
 

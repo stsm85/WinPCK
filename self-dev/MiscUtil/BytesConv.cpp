@@ -14,10 +14,10 @@
 
 std::string byte_format(uint64_t bytes)
 {
-	constexpr char sizetext[][4] = { " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB" };
+	constexpr char sizetext[][4] = { "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	if (1024 > bytes)
 	{
-		return std::format("{} B", bytes);
+		return std::format("{}B", bytes);
 	}
 	else {
 		for (auto text : sizetext) {
@@ -34,10 +34,10 @@ std::string byte_format(uint64_t bytes)
 
 std::wstring wbyte_format(uint64_t bytes)
 {
-	constexpr wchar_t sizetext[][4] = { L" KB", L" MB", L" GB", L" TB", L" PB", L" EB", L" ZB", L" YB" };
+	constexpr wchar_t sizetext[][4] = { L"KB", L"MB", L"GB", L"TB", L"PB", L"EB", L"ZB", L"YB" };
 	if (1024 > bytes)
 	{
-		return std::format(L"{} B", bytes);
+		return std::format(L"{}B", bytes);
 	}
 	else {
 		for (auto text : sizetext) {

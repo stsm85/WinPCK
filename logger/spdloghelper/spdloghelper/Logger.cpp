@@ -33,16 +33,19 @@ namespace spdlogger {
 #define CP_UTF8 65001
 #endif
 
-
-	auto facet_in_out(auto& f, mbstate_t& _State, const char* _First1, const char* _Last1, const char*& _Mid1,
-		wchar_t* _First2, wchar_t* _Last2, wchar_t*& _Mid2){
-		return f.in(_State, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
+	template<typename Char, typename... Args>
+	auto facet_in_out(auto& f, Args&&...args)
+	{
+		if constexpr (std::is_same<Char, char>::value)
+		{
+			return f.in(std::forward<Args>(args)...);
+		}
+		else
+		{
+			return f.out(std::forward<Args>(args)...);
+		}
 	}
 
-	auto facet_in_out(auto& f, mbstate_t& _State, const wchar_t* _First1, const wchar_t* _Last1,
-		const wchar_t*& _Mid1, char* _First2, char* _Last2, char*& _Mid2) {
-		return f.out(_State, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
-	}
 
 	template<uint32_t codepage>
 	constexpr auto codepage_str()
@@ -58,7 +61,7 @@ namespace spdlogger {
 	}
 
 	template<typename T1, typename T2>
-	size_t WtoAtoW(auto& f, const T1* const _src, const size_t _src_size, T2* const _dst, const size_t _dst_size)
+	size_t WtoAtoW(auto& f, const T1* const _src, size_t _src_size, T2* const _dst, size_t _dst_size)
 	{
 		std::mbstate_t mb{}; // initial shift state
 		size_t to_end_size = _dst_size == 0 ? _src_size * f.max_length() + 1 : _dst_size;
@@ -69,7 +72,7 @@ namespace spdlogger {
 		T2* to_end = &_dst[to_end_size];
 		T2* to_next;
 
-		while (std::codecvt_base::error == facet_in_out(f, mb, from, from_end, from_next,
+		while (std::codecvt_base::error == facet_in_out<T1>(f, mb, from, from_end, from_next,
 			to, to_end, to_next) && from_end != from_next)
 		{
 			from = from_next + 1;
@@ -82,7 +85,7 @@ namespace spdlogger {
 	}
 
 #if 0
-	size_t WtoA(const wchar_t* const _src, const size_t _src_size, char* const _dst, const size_t _dst_size)
+	size_t WtoA(const wchar_t* const _src, size_t _src_size, char* const _dst, size_t _dst_size)
 	{
 		auto loc = std::locale("");
 		auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(loc);
@@ -123,12 +126,12 @@ namespace spdlogger {
 		return std::move(WtoAtoW<CP_UTF8, char, wchar_t>(from, size));
 	}
 
-	auto AtoU8(const std::string_view& src) -> std::string
+	std::string AtoU8(const std::string_view& src)
 	{
 		return std::move(WtoU8(AtoW(src)));
 	}
 
-	auto U8toA(const std::string_view& src) -> std::string
+	std::string U8toA(const std::string_view& src)
 	{
 		return std::move(WtoA(U8toW(src)));
 	}
