@@ -5,7 +5,7 @@
 #ifndef _COMPILE_AS_LIB
 #ifdef _MAKE_DLL	//.dll
 #define LOG_EXTERN_DEF _declspec(dllexport) 
-#elif defined(_DLL)	//.exe
+#elif defined(_MAKE_EXE)	//.exe
 #define LOG_EXTERN_DEF _declspec(dllimport) 
 #else	//other
 #define LOG_EXTERN_DEF 
