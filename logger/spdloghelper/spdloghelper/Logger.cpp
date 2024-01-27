@@ -22,9 +22,16 @@
 
 #include <iostream>
 
+#define USE_FACESET 0
+
+#if !USE_FACESET
+#include <CharsCodeConv.h>
+#endif
 
 namespace spdlogger {
 
+
+#if USE_FACESET
 #ifndef CP_ACP
 #define CP_ACP 0
 #endif
@@ -96,8 +103,13 @@ namespace spdlogger {
 	template<int codepage, typename T1, typename T2, typename STRING_T2 = std::basic_string<T2>>
 	STRING_T2 WtoAtoW(const T1* from, size_t from_size)
 	{
+#if 1
+		std::locale::global(std::locale(codepage_str<codepage>()));
+		auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(std::locale());
+#else
 		auto loc = std::locale(codepage_str<codepage>());
 		auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(loc);
+#endif
 		auto size = from_size * f.max_length();
 
 		STRING_T2 to(size, '\0');
@@ -105,6 +117,8 @@ namespace spdlogger {
 		to.resize(ret);
 		return std::move(to);
 	}
+
+
 
 	std::string WtoA(const wchar_t* from, size_t size)
 	{
@@ -145,6 +159,51 @@ namespace spdlogger {
 	{
 		return std::move(WtoA(U8toW(src, size)));
 	}
+#else
+
+std::string WtoA(const wchar_t* from, size_t size)
+{
+	return std::move(StringCodeConv().from(from, size).to_ansi());
+	}
+
+std::wstring AtoW(const char* from, size_t size)
+{
+	return std::move(StringCodeConv().from(from, size).to_wchar());
+}
+
+std::string WtoU8(const wchar_t* from, size_t size)
+{
+	return std::move(StringCodeConv().from(from, size).to_utf8());
+}
+
+std::wstring U8toW(const char* from, size_t size)
+{
+	return std::move(StringCodeConv().from_utf8(from, size).to_wchar());
+}
+
+std::string AtoU8(const std::string_view& src)
+{
+	return std::move(StringCodeConv(src).to_utf8());
+}
+
+std::string U8toA(const std::string_view& src)
+{
+	return std::move(StringCodeConv().from_utf8(src).to_ansi());
+}
+
+std::string AtoU8(const char* src, size_t size)
+{
+	return std::move(StringCodeConv().from(src, size).to_utf8());
+}
+
+std::string U8toA(const char* src, size_t size)
+{
+	return std::move(StringCodeConv().from_utf8(src, size).to_ansi());
+}
+
+#endif
+
+
 
 }
 
