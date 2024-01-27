@@ -69,7 +69,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="('$(Configuration)'=='Release_static') And ('$(ConfigurationType)'=='Application')">
     <ClCompile>
-      <PreprocessorDefinitions>$(UserDefinitions);_MAKE_GUI_WITH_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(UserDefinitions);_COMPILE_AS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ImportGroup Label="PropertySheets">

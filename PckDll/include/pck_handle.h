@@ -28,7 +28,7 @@ typedef enum _PCKRTN
 #define EXTERN_C_END
 #endif
 
-#ifdef _MAKE_GUI_WITH_LIB
+#ifdef _COMPILE_AS_LIB
 #define WINPCK_API_CPP
 #define WINPCK_API EXTERN_C
 #elif _MAKE_DLL	//.dll
@@ -40,10 +40,6 @@ typedef enum _PCKRTN
 #else	//other
 #define WINPCK_API_CPP
 #define WINPCK_API EXTERN_C
-#endif
-
-#ifdef _MAKE_DLL	//.dll
-#define LOG_EXTERN_DEF_PCK_IMPORT _declspec(dllimport)
 #endif
 
 WINPCK_API LPCSTR		pck_version();

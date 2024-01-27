@@ -2,23 +2,19 @@
 
 #include "Logger.h"
 
-#define LOGGER_INIT_IN_DLL 1
-
-
+#ifndef _COMPILE_AS_LIB
 #ifdef _MAKE_DLL	//.dll
-#define LOG_EXTERN_DEF _declspec(dllexport)
+#define LOG_EXTERN_DEF _declspec(dllexport) 
 #elif defined(_DLL)	//.exe
-#define LOG_EXTERN_DEF _declspec(dllimport)
+#define LOG_EXTERN_DEF _declspec(dllimport) 
 #else	//other
-#define LOG_EXTERN_DEF extern
+#define LOG_EXTERN_DEF 
+#endif
+#else
+#define LOG_EXTERN_DEF 
 #endif
 
-#if ! LOGGER_INIT_IN_DLL
-#undef LOG_EXTERN_DEF
-#define LOG_EXTERN_DEF extern
-#endif
-
-LOG_EXTERN_DEF CLogger& Logger;
+LOG_EXTERN_DEF extern CLogger& Logger;
 
 #define ENABLE_DETAILLOG 1
 
