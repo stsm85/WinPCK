@@ -145,9 +145,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\self-dev\MiscUtil\MiscUtil.vcxproj">
-      <Project>{07355a14-ce36-40fe-9193-9117d3d5ab4f}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\spdlog\spdlog.vcxproj">
       <Project>{b7601c61-87b2-4b07-8065-6a6ee0210001}</Project>
     </ProjectReference>

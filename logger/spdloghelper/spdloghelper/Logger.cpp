@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-#define USE_FACESET 0
+#define USE_FACESET 1
 
 #if !USE_FACESET
 #include <CharsCodeConv.h>
@@ -103,13 +103,10 @@ namespace spdlogger {
 	template<int codepage, typename T1, typename T2, typename STRING_T2 = std::basic_string<T2>>
 	STRING_T2 WtoAtoW(const T1* from, size_t from_size)
 	{
-#if 1
-		std::locale::global(std::locale(codepage_str<codepage>()));
-		auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(std::locale());
-#else
+
 		auto loc = std::locale(codepage_str<codepage>());
 		auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(loc);
-#endif
+
 		auto size = from_size * f.max_length();
 
 		STRING_T2 to(size, '\0');
@@ -117,8 +114,6 @@ namespace spdlogger {
 		to.resize(ret);
 		return std::move(to);
 	}
-
-
 
 	std::string WtoA(const wchar_t* from, size_t size)
 	{
@@ -202,8 +197,6 @@ std::string U8toA(const char* src, size_t size)
 }
 
 #endif
-
-
 
 }
 
