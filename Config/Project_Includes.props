@@ -22,7 +22,7 @@
     <IncludePath Condition="'$(ProjectName)'=='MiscUtil'">$(IncludePath);$(MiscUtil_Include);</IncludePath>
 	
     <IncludePath Condition="'$(ProjectName)'=='spdlog'">$(IncludePath);$(Spdlog_Include);</IncludePath>
-    <IncludePath Condition="'$(ProjectName)'=='spdloghelper'">$(IncludePath);$(Spdlog_Include);$(WinCtl_Include);$(MiscUtil_Include);</IncludePath>
+    <IncludePath Condition="'$(ProjectName)'=='spdloghelper'">$(IncludePath);$(Spdlog_Include);$(WinCtl_Include);</IncludePath>
     <IncludePath Condition="('$(ProjectName)'=='WinPCK')">$(IncludePath);$(WinPCK_Include);$(Spdlog_Include);</IncludePath>
     <IncludePath Condition="('$(ProjectName)'=='dlltester')">$(IncludePath);$(WinPCK_Include);$(Spdlog_Include);</IncludePath>
     <IncludePath Condition="('$(ProjectName)'=='pckdll')">$(IncludePath);$(PCKDLL_Include);$(Spdlog_Include);</IncludePath>
